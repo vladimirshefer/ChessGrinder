@@ -1,25 +1,32 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import MainPage from "pages/MainPage"
+import TournamentPage from "pages/TournamentPage"
+import Header from "components/Header";
+
+const queryClient = new QueryClient()
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className='App'>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <React.StrictMode>
+              <Header/>
+              <Routes>
+                <Route path="/" element={<MainPage/>}/>
+                <Route path="/tournament/:id" element={<TournamentPage/>}/>
+                <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
+                <Route path='/f' element={<Navigate to="/files"/>}/>
+                {/*<Route path="/files/*" element={<FilesPage/>}/>*/}
+                {/*<Route path="/edit/*" element={<FileEditPage/>}/>*/}
+              </Routes>
+            </React.StrictMode>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </div>
   );
 }
 
