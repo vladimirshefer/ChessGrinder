@@ -1,7 +1,7 @@
 import React from "react";
 import {MemberList} from "./MemberList";
 
-function Index() {
+function MainPage() {
     let members = [
         {
             name: "Alexander Boldyrev",
@@ -31,6 +31,7 @@ function Index() {
         },
     ]
 
+
     return <>
         Hello, World!
 
@@ -48,4 +49,4 @@ function Index() {
     </>
 }
 
-export default Index
+export default MainPage
