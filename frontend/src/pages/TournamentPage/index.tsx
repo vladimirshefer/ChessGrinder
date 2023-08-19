@@ -32,7 +32,7 @@ function TournamentPage() {
             },
         ]
     ]
-    let rounds = roundData.map((e, idx) => idx + 1 );
+    let rounds = roundData.map((e, idx) => idx + 1);
     let tournamentData = {
         participants: [
             {
@@ -67,16 +67,15 @@ function TournamentPage() {
         </div>
 
         {
-            !roundId ? <>
-                <h3>Status</h3>
-                <ResultsTable participants={tournamentData.participants}/>
-            </>: <></>
-        }
-        {
-            roundId ? <>
-                <h3>Round</h3>
-                <RoundTable matches={roundData[roundId - 1]}/>
-            </> : <></>
+            !roundId
+                ? <>
+                    <h3>Status</h3>
+                    <ResultsTable participants={tournamentData.participants}/>
+                </>
+                : <>
+                    <h3>Round</h3>
+                    <RoundTable matches={roundData[roundId - 1]}/>
+                </>
         }
     </>
 }
