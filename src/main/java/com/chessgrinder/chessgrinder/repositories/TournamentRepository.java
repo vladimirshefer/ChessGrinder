@@ -1,9 +1,11 @@
 package com.chessgrinder.chessgrinder.repositories;
 
+import java.util.*;
+
 import com.chessgrinder.chessgrinder.entities.*;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface TournamentRepository extends JpaRepository<Tournament, Integer> {
+public interface TournamentRepository extends PagingAndSortingRepository<Tournament, UUID> {
 }
