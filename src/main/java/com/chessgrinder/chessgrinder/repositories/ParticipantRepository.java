@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface RoundRepository extends JpaRepository<Round, Integer> {
+public interface ParticipantRepository extends JpaRepository<Participant, Integer> {
 }

@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface NicknameRepository extends JpaRepository<Participant, Integer> {
+public interface MatchRepository extends JpaRepository<Match, Integer> {
 }
