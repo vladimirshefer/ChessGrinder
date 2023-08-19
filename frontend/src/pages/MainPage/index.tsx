@@ -1,5 +1,6 @@
 import React from "react";
 import {MemberList} from "./MemberList";
+import {TournamentsList} from "./TournamentsList";
 
 function MainPage() {
     let members = [
@@ -31,21 +32,27 @@ function MainPage() {
         },
     ]
 
+    let tournaments = [
+        {
+            id: "uuid-uuid-1",
+            name: "Tournament 1",
+            date: "2023-07-10"
+        },
+        {
+            id: "uuid-uuid-2",
+            name: "Tournament 2",
+            date: "2023-07-17"
+        },
+        {
+            id: "uuid-uuid-3",
+            name: "Tournament 3",
+            date: "2023-07-24"
+        },
+    ]
 
     return <>
-        Hello, World!
-
         <MemberList members={members}/>
-
-        <div>
-            <h2>Tournaments</h2>
-            <ul>
-                <li><a href={"/tournament/Tournament 1"}>Tournament 1</a></li>
-                <li>Tournament 2</li>
-                <li>Tournament 3</li>
-            </ul>
-        </div>
-
+        <TournamentsList tournaments={tournaments}/>
     </>
 }
 
