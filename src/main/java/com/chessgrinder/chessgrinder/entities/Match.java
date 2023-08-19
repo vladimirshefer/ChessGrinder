@@ -11,19 +11,29 @@ import lombok.extern.slf4j.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "tournaments")
+@Table(name = "matches")
 @Slf4j
-public class Tournament {
+public class Match {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "date")
-    private Date date;
+    @ManyToOne
+    @JoinColumn(name = "round_id")
+    private Round round;
 
-    @Column(name = "status")
+    @ManyToOne
+    @JoinColumn(name = "player_id_1")
+    private User user1;
+
+    @ManyToOne
+    @JoinColumn(name = "player_id_2")
+    private User user2;
+
+    @Column(name = "result")
     @Enumerated(EnumType. STRING)
-    private TournamentStatus status;
+    private MatchResult result;
+
 }

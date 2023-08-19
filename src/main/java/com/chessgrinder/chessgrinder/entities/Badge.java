@@ -10,19 +10,22 @@ import lombok.extern.slf4j.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "rounds")
+@Table(name = "badges")
 @Slf4j
-public class Round {
+public class Badge {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "number")
-    private Integer number;
+    @Column(name = "titled")
+    private String title;
 
-    @ManyToOne
-    @JoinColumn(name="tournament_id")
-    private Tournament tournament;
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "picture_url")
+    private String pictureUrl;
+
 }

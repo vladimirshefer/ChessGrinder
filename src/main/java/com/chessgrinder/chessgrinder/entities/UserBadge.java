@@ -6,18 +6,24 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
-@Table(name = "Nicknames")
+@Table(name = "user_badges")
 @Slf4j
-public class Nickname {
+public class UserBadge {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "nickname_id")
-    private UUID nicknameId;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name="badge_id")
+    private Badge badge;
 }
