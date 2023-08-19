@@ -7,5 +7,5 @@ import org.springframework.data.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface MatchRepository extends PagingAndSortingRepository<Match, UUID> {
+public interface MatchRepository extends PagingAndSortingRepository<Match, UUID>, CrudRepository<Match, UUID> {
 }

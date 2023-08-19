@@ -13,6 +13,9 @@ import lombok.extern.slf4j.*;
 @Entity
 @Table(name = "matches")
 @Slf4j
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Match {
 
     @Id

@@ -7,5 +7,5 @@ import org.springframework.data.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface RoundRepository extends PagingAndSortingRepository<Round, UUID> {
+public interface RoundRepository extends PagingAndSortingRepository<Round, UUID>, CrudRepository<Round, UUID> {
 }

@@ -12,6 +12,9 @@ import lombok.extern.slf4j.*;
 @Entity
 @Table(name = "user_badges")
 @Slf4j
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserBadge {
 
     @Id

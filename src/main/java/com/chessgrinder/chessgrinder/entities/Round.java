@@ -12,6 +12,9 @@ import lombok.extern.slf4j.*;
 @Entity
 @Table(name = "rounds")
 @Slf4j
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Round {
 
     @Id

@@ -1,2 +1,2 @@
-GET {{host}}/users
+GET {{host}}/page/main
 Authorization: Basic {{token}}
