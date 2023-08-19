@@ -1,21 +1,39 @@
 import {Link, useParams} from "react-router-dom";
-import React from "react";
+import React, {useMemo} from "react";
+import ResultsTable from "./ResultsTable";
+import RoundTable from "./RoundTable";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
-    let roundId = roundIdStr ? parseInt(roundIdStr) : "1";
-    let rounds = [1, 2, 3];
+    let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
     let roundData = [
-        {
-            white: {
-                name: "Mikhail Boba",
+        [
+            {
+                white: "Mikhail Boba",
+                black: "Sergey Pavlov",
+                result: "DRAW"
             },
-            black: {
-                name: "Sergey Pavlov"
-            }
-        }
+            {
+                white: "Ivan Ivanov",
+                black: "Petr Petrov",
+                result: "WHITE_WIN"
+            },
+        ],
+        [
+            {
+                black: "Ivan Ivanov",
+                white: "Sergey Pavlov",
+                result: "BLACK_WIN"
+            },
+            {
+                white: "Mikhail Boba",
+                black: "Petr Petrov",
+                result: "WHITE_WIN"
+            },
+        ]
     ]
-    let tournamentData= {
+    let rounds = roundData.map((e, idx) => idx + 1 );
+    let tournamentData = {
         participants: [
             {
                 name: "Mikhail Boba",
@@ -35,8 +53,11 @@ function TournamentPage() {
             Tournament {id}
         </h2>
         <div>
+            <Link to={`/tournament/${id}`}>
+                <button>Home</button>
+            </Link>
             {rounds.map(rid => {
-                return <Link to={`/tournament/${id}/round/${rid}`}>
+                return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
                     <button style={{backgroundColor: rid === roundId ? "aqua" : "white"}}>
                         {rid}
                     </button>
@@ -44,26 +65,19 @@ function TournamentPage() {
             })}
             <button>+</button>
         </div>
-        <table>
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>PTS</th>
-                <th>BHZ</th>
-            </tr>
-            </thead>
-            <tbody>
-            {
-                tournamentData.participants.map(participant => {
-                    return <tr>
-                        <td>{participant.name}</td>
-                        <td>{participant.score}</td>
-                        <td>{participant.bhz}</td>
-                    </tr>
-                })
-            }
-            </tbody>
-        </table>
+
+        {
+            !roundId ? <>
+                <h3>Status</h3>
+                <ResultsTable participants={tournamentData.participants}/>
+            </>: <></>
+        }
+        {
+            roundId ? <>
+                <h3>Round</h3>
+                <RoundTable matches={roundData[roundId - 1]}/>
+            </> : <></>
+        }
     </>
 }
 
