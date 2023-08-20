@@ -14,6 +14,7 @@ public class TournamentMapper {
 
     public TournamentDto toDto(Tournament tournament) {
         return TournamentDto.builder()
+                .id(tournament.getId().toString())
                 .date(tournament.getDate())
                 .status(tournament.getStatus())
                 .build();
@@ -21,6 +22,7 @@ public class TournamentMapper {
 
     public List<TournamentDto> toDto(List<Tournament> tournaments) {
         return tournaments.stream().map(tournament -> TournamentDto.builder()
+                .id(tournament.getId().toString())
                 .date(tournament.getDate())
                 .status(tournament.getStatus())
                 .build())

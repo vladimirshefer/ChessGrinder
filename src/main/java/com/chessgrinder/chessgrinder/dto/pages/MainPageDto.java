@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class MainPageDto {
 
-    private List<UserDto> users;
+    private List<MemberDto> members;
     private List<TournamentDto> tournaments;
 }

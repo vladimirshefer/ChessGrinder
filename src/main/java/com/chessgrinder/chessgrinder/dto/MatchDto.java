@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 public class MatchDto {
 
-    private UserDto user1;
-    private UserDto user2;
+    private MemberDto user1;
+    private MemberDto user2;
     private MatchResult result;
 }

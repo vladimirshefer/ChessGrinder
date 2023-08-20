@@ -8,5 +8,5 @@ public class BadgeDto {
 
     private String title;
     private String description;
-    private String pictureUrl;
+    private String imageUrl;
 }

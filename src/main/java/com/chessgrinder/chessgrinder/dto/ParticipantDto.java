@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 public class ParticipantDto {
 
-    private UserDto user;
+    private MemberDto user;
     private String nickname;
     private BigDecimal score;
     private BigDecimal buchholz;

@@ -1,14 +1,10 @@
+import {MemberDto} from "lib/api/dto/MainPageData";
+
 export function MemberList(
     {
         members
     }: {
-        members: {
-            name: string,
-            badges: {
-                imageUrl: string,
-                description: string
-            }[],
-        }[]
+        members: MemberDto[]
     }
 ) {
     return <div>
@@ -26,7 +22,7 @@ export function MemberList(
                     <td>{member.name}</td>
                     <td>
                         {
-                            member.badges.map(badge => {
+                            (member.badges || []).map(badge => {
                                 return <span key={badge.imageUrl} title={badge.description}>{badge.imageUrl}</span>
                             })
                         }

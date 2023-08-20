@@ -16,7 +16,7 @@ public class BadgeMapper {
         return BadgeDto.builder()
                 .title(badge.getTitle())
                 .description(badge.getDescription())
-                .pictureUrl(badge.getPictureUrl())
+                .imageUrl(badge.getPictureUrl())
                 .build();
     }
     public List<BadgeDto> toDto(List<Badge> badges) {
@@ -24,7 +24,7 @@ public class BadgeMapper {
         return badges.stream().map(badge -> BadgeDto.builder()
                 .title(badge.getTitle())
                 .description(badge.getDescription())
-                .pictureUrl(badge.getPictureUrl())
+                .imageUrl(badge.getPictureUrl())
                 .build()
         ).toList();
     }

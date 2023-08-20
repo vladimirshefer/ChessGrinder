@@ -8,7 +8,8 @@ import lombok.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/page/tournament")
+@RequestMapping("/pages/tournament")
+@CrossOrigin(origins = "localhost:3000")
 @RequiredArgsConstructor
 public class TournamentController {
     private final TournamentPageService tournamentPageService;

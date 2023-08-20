@@ -24,7 +24,7 @@ public class MainPageService {
         List<Tournament> tournaments = (List<Tournament>) tournamentRepository.findAll();
 
         return MainPageDto.builder()
-                .users(userMapper.toDto(users))
+                .members(userMapper.toDto(users))
                 .tournaments(tournamentMapper.toDto(tournaments)).build();
     }
 }

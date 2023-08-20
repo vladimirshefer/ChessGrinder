@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 public class TournamentDto {
 
+    private String id;
     private Date date;
     private TournamentStatus status;
 

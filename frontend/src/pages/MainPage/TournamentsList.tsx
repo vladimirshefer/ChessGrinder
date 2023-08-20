@@ -1,14 +1,11 @@
 import {Link} from "react-router-dom";
+import {TournamentDto} from "lib/api/dto/MainPageData";
 
 export function TournamentsList(
     {
         tournaments
     }: {
-        tournaments: {
-            id: string,
-            name: string,
-            date: string,
-        }[]
+        tournaments: TournamentDto[]
     }
 ) {
     return <div>
