@@ -1,7 +1,8 @@
-package com.chessgrinder.chessgrinder.dto;
+package com.chessgrinder.chessgrinder.dto.pages;
 
 import java.util.*;
 
+import com.chessgrinder.chessgrinder.dto.*;
 import lombok.*;
 
 @Data

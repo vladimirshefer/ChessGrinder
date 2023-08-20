@@ -1,0 +1,2 @@
+GET {{host}}/page/tournament/6f2b8bf0-dc2a-46f9-8617-a60c876ef059
+Authorization: Basic {{token}}

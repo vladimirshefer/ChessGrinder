@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.entities;
 
+import java.math.*;
 import java.util.*;
 
 import jakarta.persistence.*;
@@ -26,6 +27,12 @@ public class Round {
     private Integer number;
 
     @ManyToOne
-    @JoinColumn(name="tournament_id")
+    @JoinColumn(name = "tournament_id")
     private Tournament tournament;
+
+    @OneToMany
+    private List<Match> matches;
+
+    @Column(name = "is_finished")
+    private boolean isFinished;
 }

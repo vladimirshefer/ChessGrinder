@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.entities;
 
+import java.math.*;
 import java.util.*;
 
 import jakarta.persistence.*;
@@ -32,4 +33,10 @@ public class Participant {
 
     @Column(name = "nickname")
     private String nickname;
+
+    @Column(name = "score")
+    private BigDecimal score;
+
+    @Column(name = "buchholz")
+    private BigDecimal buchholz;
 }
