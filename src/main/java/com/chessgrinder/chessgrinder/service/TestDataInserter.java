@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.service;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.enums.*;
 import com.chessgrinder.chessgrinder.repositories.*;
 import lombok.*;
 import org.springframework.boot.context.event.*;
@@ -17,6 +18,8 @@ public class TestDataInserter {
     final UserRepository userRepository;
     final BadgeRepository badgeRepository;
     final UserBadgeRepository userBadgeRepository;
+
+    final TournamentRepository tournamentRepository;
 
     @SneakyThrows
     @EventListener(ApplicationStartedEvent.class)
@@ -47,6 +50,13 @@ public class TestDataInserter {
         UserBadge userBadge2 = userBadgeRepository.save(UserBadge.builder().id(UUID.randomUUID()).user(user4).badge(badge2).build());
         UserBadge userBadge3 = userBadgeRepository.save(UserBadge.builder().id(UUID.randomUUID()).user(user3).badge(badge1).build());
         UserBadge userBadge4 = userBadgeRepository.save(UserBadge.builder().id(UUID.randomUUID()).user(user3).badge(badge2).build());
+
+        Tournament tournament1 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.ACTIVE).build());
+        Tournament tournament2 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.FINISHED).build());
+        Tournament tournament3 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.PLANNED).build());
+        Tournament tournament4 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.FINISHED).build());
+        Tournament tournament5 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.FINISHED).build());
+        Tournament tournament6 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.PLANNED).build());
 
     }
 }
