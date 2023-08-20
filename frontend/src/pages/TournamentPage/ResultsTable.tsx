@@ -1,10 +1,11 @@
 import React from "react";
+import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 
 function ResultsTable(
     {
         participants
     }: {
-        participants: { name: string, score: number, bhz: number }[],
+        participants: ParticipantDto[],
     }
 ) {
 
@@ -23,7 +24,7 @@ function ResultsTable(
                     return <tr key={participant.name}>
                         <td>{participant.name}</td>
                         <td>{participant.score}</td>
-                        <td>{participant.bhz}</td>
+                        <td>{participant.buchholz}</td>
                     </tr>
                 })
             }

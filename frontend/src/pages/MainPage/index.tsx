@@ -2,23 +2,14 @@ import React, {useMemo} from "react";
 import {MemberList} from "./MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
-import axios, {AxiosRequestConfig} from "axios";
-import MainPageData, {MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
+import {MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
+import mainPageRepository from "lib/pageRepository/MainPageRepository";
 
 function MainPage() {
     let data = useQuery(
         ["mainPage"],
-        async () => {
-            const {data} = await axios.get(
-                "http://localhost:8080/pages/main",
-                {
-                    headers: {
-                        "Authorization": "Basic dm92YTpzaGVmZXI="
-                    }
-                } as AxiosRequestConfig
-            );
-            return data as MainPageData;
-        });
+        mainPageRepository.getData
+    );
 
     let members: MemberDto[] = useMemo(() => data?.data?.members || [
         {

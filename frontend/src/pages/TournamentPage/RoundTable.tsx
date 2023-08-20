@@ -1,12 +1,10 @@
+import {MatchDto} from "lib/api/dto/TournamentPageData";
+
 function RoundTable(
     {
         matches
     }: {
-        matches: {
-            white: string,
-            black: string,
-            result: string
-        }[]
+        matches: MatchDto[]
     }
 ) {
     return <>
@@ -20,17 +18,18 @@ function RoundTable(
             </thead>
             <tbody>
             {
-                matches.map(match => {
-                    return <tr key={match.white + "_" + match.black}>
-                        <td>{match.white}</td>
+                matches.map((match, idx) => {
+                    return <tr key={idx}>
+                        <td>{match.white.name}</td>
                         <td>
-                            <select>
-                                <option selected={match.result === "WHITE_WIN"} value={"WHITE_WIN"}>White won</option>
-                                <option selected={match.result === "BLACK_WIN"} value={"BLACK_WIN"}>Black won</option>
-                                <option selected={match.result === "DRAW"} value={"DRAW"}>Draw</option>
+                            <select defaultValue={match.result || ""}>
+                                <option value={""}>Unknown</option>
+                                <option value={"WHITE_WIN"}>White won</option>
+                                <option value={"BLACK_WIN"}>Black won</option>
+                                <option value={"DRAW"}>Draw</option>
                             </select>
                         </td>
-                        <td>{match.black}</td>
+                        <td>{match.black.name}</td>
                     </tr>
                 })
             }
