@@ -13,7 +13,12 @@ function MainPage() {
         }
     );
 
-    let members: MemberDto[] = useMemo(() => data?.data?.members || [
+    function createTournament() {
+        mainPageRepository.postTournament()
+        refetch()
+    }
+
+    let members: MemberDto[] = useMemo(() => data?.members || [
         {
             name: "Alexander Boldyrev",
             badges: [
@@ -66,7 +71,7 @@ function MainPage() {
 
     return <>
         <MemberList members={members}/>
-        <TournamentsList tournaments={tournaments}/>
+        <TournamentsList tournaments={tournaments} createTournament={createTournament}/>
     </>
 }
 
