@@ -68,7 +68,7 @@ function TournamentPage() {
                 },
             ]
         } as RoundDto
-    ] as RoundDto[], [data, id])
+    ] as RoundDto[], [data])
     let rounds = roundData.map((e, idx) => idx + 1);
     let participants: ParticipantDto[] = useMemo(() => {
         return data?.participants || [
@@ -83,7 +83,7 @@ function TournamentPage() {
                 buchholz: 22
             } as ParticipantDto
         ]
-    }, [id, data])
+    }, [data])
 
     async function addParticipant(name: string) {
         await tournamentPageRepository.postParticipant(id!!, name)
