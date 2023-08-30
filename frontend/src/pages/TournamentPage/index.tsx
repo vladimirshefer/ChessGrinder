@@ -92,13 +92,16 @@ function TournamentPage() {
         <h2>
             Tournament {id}
         </h2>
-        <div>
+        <div className={"grid grid-cols-12 w-full px-2"}>
             <Link to={`/tournament/${id}`}>
-                <button>Home</button>
+                <button
+                    className={`p-2 rounded ${!roundId ? "bg-yellow-300" : "bg-gray-100 hover:bg-yellow-100"}`}
+                >Home
+                </button>
             </Link>
             {rounds.map(rid => {
                 return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
-                    <button style={{backgroundColor: rid === roundId ? "aqua" : "white"}}>
+                    <button className={`w-full rounded  p-2 ${rid===roundId ? "bg-blue-300" : "hover:bg-blue-100"}`}>
                         {rid}
                     </button>
                 </Link>
