@@ -1,4 +1,4 @@
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useMemo} from "react";
 import ResultsTable from "./ResultsTable";
 import RoundTable from "./RoundTable";
@@ -13,6 +13,8 @@ function TournamentPage() {
         queryKey: ["tournamentPage", id],
         queryFn: () => tournamentPageRepository.getData(id!!)
     });
+    let navigate = useNavigate()
+
     let roundData: RoundDto[] = useMemo(() => data?.rounds || [
         {
             matches: [
@@ -88,6 +90,13 @@ function TournamentPage() {
         await refetch()
     }
 
+    async function createRound() {
+        await tournamentPageRepository.postRound(id!!)
+        await refetch()
+        navigate(`/tournament/${id}` + (data && data.rounds ? `/round/${data.rounds.length + 1}` : ""))
+    }
+
+
     return <>
         <h2>
             Tournament {id}
@@ -101,12 +110,14 @@ function TournamentPage() {
             </Link>
             {rounds.map(rid => {
                 return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
-                    <button className={`w-full rounded  p-2 ${rid===roundId ? "bg-blue-300" : "hover:bg-blue-100"}`}>
+                    <button className={`w-full rounded  p-2 ${rid === roundId ? "bg-blue-300" : "hover:bg-blue-100"}`}>
                         {rid}
                     </button>
                 </Link>
             })}
-            <button>+</button>
+            <button className={`w-full rounded p-2 bg-gray-100`}
+                    onClick={createRound}
+            >+</button>
         </div>
 
         {
