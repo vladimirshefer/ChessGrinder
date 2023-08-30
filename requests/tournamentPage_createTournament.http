@@ -1,0 +1,13 @@
+POST {{host}}/tournament/
+Authorization: Basic {{token}}
+Content-Type: application/json
+
+{
+}
+
+// response
+//{
+//  "id": "UUID-UUID",
+//  "name": "name",
+//  "date": "2023-08-30",
+//}

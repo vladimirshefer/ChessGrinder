@@ -1,0 +1,9 @@
+POST {{host}}/tournament/tid/round
+Authorization: Basic {{token}}
+Content-Type: application/json
+
+{
+}
+
+// response
+// 200
