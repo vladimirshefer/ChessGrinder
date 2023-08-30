@@ -3,14 +3,14 @@ import React, {useMemo} from "react";
 import ResultsTable from "./ResultsTable";
 import RoundTable from "./RoundTable";
 import {useQuery} from "@tanstack/react-query";
-import tournamentPageRepository from "../../lib/pageRepository/TournamentPageRepository";
-import {MatchParticipantDto, ParticipantDto, RoundDto, TournamentPageData} from "../../lib/api/dto/TournamentPageData";
+import tournamentPageRepository from "lib/pageRepository/TournamentPageRepository";
+import {ParticipantDto, RoundDto} from "lib/api/dto/TournamentPageData";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
-    let {data} = useQuery({
-        queryKey: ["mainPage"],
+    let {data, refetch} = useQuery({
+        queryKey: ["tournamentPage", id],
         queryFn: () => tournamentPageRepository.getData(id!!)
     });
     let roundData: RoundDto[] = useMemo(() => data?.rounds || [
@@ -83,6 +83,11 @@ function TournamentPage() {
         ]
     }, [id, data])
 
+    async function addParticipant(name: string) {
+        await tournamentPageRepository.postParticipant(id!!, name)
+        await refetch()
+    }
+
     return <>
         <h2>
             Tournament {id}
@@ -105,7 +110,9 @@ function TournamentPage() {
             !roundId
                 ? <>
                     <h3>Status</h3>
-                    <ResultsTable participants={participants}/>
+                    <ResultsTable participants={participants} addParticipant={(it) => {
+                        addParticipant(it)
+                    }}/>
                 </>
                 : <>
                     <h3>Round</h3>
