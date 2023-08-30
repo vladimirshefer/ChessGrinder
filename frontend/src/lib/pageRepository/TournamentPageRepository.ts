@@ -1,7 +1,6 @@
 import {MatchDto, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import axios, {AxiosRequestConfig} from "axios";
 import {PROFILE, REST_API_HOST} from "./apiSettings";
-import {data} from "autoprefixer";
 
 export interface TournamentPageRepository {
     getData: (tournamentId: string) => Promise<TournamentPageData>
@@ -73,7 +72,7 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     }
 
     async postParticipant(tournamentId: string, participant: string) {
-        const {data} = await axios.post(
+        await axios.post(
             REST_API_HOST + `/tournament/${tournamentId}/participant`,
             participant,
             {

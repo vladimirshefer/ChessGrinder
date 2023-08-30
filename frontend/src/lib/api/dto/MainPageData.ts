@@ -19,4 +19,3 @@ export interface MainPageData {
     members: MemberDto[]
     tournaments: TournamentDto[]
 }
-export default MainPageData
