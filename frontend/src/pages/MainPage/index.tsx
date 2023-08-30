@@ -6,9 +6,11 @@ import {MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
 import mainPageRepository from "lib/pageRepository/MainPageRepository";
 
 function MainPage() {
-    let data = useQuery(
-        ["mainPage"],
-        mainPageRepository.getData
+    let {data, refetch} = useQuery({
+            queryKey: ["mainPage"],
+            queryFn:
+            mainPageRepository.getData
+        }
     );
 
     let members: MemberDto[] = useMemo(() => data?.data?.members || [
@@ -44,7 +46,7 @@ function MainPage() {
         } as MemberDto,
     ], [data])
 
-    let tournaments: TournamentDto[] = useMemo(() => data?.data?.tournaments || [
+    let tournaments: TournamentDto[] = useMemo(() => data?.tournaments || [
         {
             id: "uuid-uuid-1",
             name: "Tournament 1",

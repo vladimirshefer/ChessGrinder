@@ -9,11 +9,11 @@ import {MatchParticipantDto, ParticipantDto, RoundDto, TournamentPageData} from 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
-    let data = useQuery(
-        ["mainPage"],
-        () => tournamentPageRepository.getData(id!!)
-    );
-    let roundData: RoundDto[] = useMemo(() => data?.data?.rounds || [
+    let {data} = useQuery({
+        queryKey: ["mainPage"],
+        queryFn: () => tournamentPageRepository.getData(id!!)
+    });
+    let roundData: RoundDto[] = useMemo(() => data?.rounds || [
         {
             matches: [
                 {
@@ -69,7 +69,7 @@ function TournamentPage() {
     ] as RoundDto[], [data, id])
     let rounds = roundData.map((e, idx) => idx + 1);
     let participants: ParticipantDto[] = useMemo(() => {
-        return data?.data?.participants || [
+        return data?.participants || [
             {
                 name: "Mikhail Boba",
                 score: 5.5,
