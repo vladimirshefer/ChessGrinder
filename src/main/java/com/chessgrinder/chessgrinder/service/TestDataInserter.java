@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.service;
 
 import java.math.*;
+import java.time.*;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.entities.*;
@@ -50,12 +51,12 @@ public class TestDataInserter {
         UserBadge userBadge3 = userBadgeRepository.save(UserBadge.builder().id(UUID.randomUUID()).user(user3).badge(badge1).build());
         UserBadge userBadge4 = userBadgeRepository.save(UserBadge.builder().id(UUID.randomUUID()).user(user3).badge(badge2).build());
 
-        Tournament tournament1 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.ACTIVE).build());
-        Tournament tournament2 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.FINISHED).build());
-        Tournament tournament3 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.PLANNED).build());
-        Tournament tournament4 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.FINISHED).build());
-        Tournament tournament5 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.FINISHED).build());
-        Tournament tournament6 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(new Date()).status(TournamentStatus.PLANNED).build());
+        Tournament tournament1 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(LocalDateTime.now()).status(TournamentStatus.ACTIVE).build());
+        Tournament tournament2 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(LocalDateTime.now()).status(TournamentStatus.FINISHED).build());
+        Tournament tournament3 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(LocalDateTime.now()).status(TournamentStatus.PLANNED).build());
+        Tournament tournament4 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(LocalDateTime.now()).status(TournamentStatus.FINISHED).build());
+        Tournament tournament5 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(LocalDateTime.now()).status(TournamentStatus.FINISHED).build());
+        Tournament tournament6 = tournamentRepository.save(Tournament.builder().id(UUID.randomUUID()).date(LocalDateTime.now()).status(TournamentStatus.PLANNED).build());
 
         Participant participant1 = participantRepository.save(Participant.builder()
                 .id(UUID.randomUUID())

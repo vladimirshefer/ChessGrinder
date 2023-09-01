@@ -9,7 +9,7 @@ import lombok.*;
 public class ParticipantDto {
 
     private String userId;
-    private String name;
+    private String name; //NICKNAME
     private BigDecimal score;
     private BigDecimal buchholz;
 }

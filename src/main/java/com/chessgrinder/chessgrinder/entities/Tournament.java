@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.entities;
 
+import java.time.*;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.enums.*;
@@ -24,7 +25,7 @@ public class Tournament {
     private UUID id;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDateTime date;
 
     @Column(name = "status")
     @Enumerated(EnumType. STRING)

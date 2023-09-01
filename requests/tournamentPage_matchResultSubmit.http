@@ -1,10 +1,8 @@
-POST {{host}}/tournament/tid/round/1/match/
+POST {{host}}/tournament/2/round/1/match/3
 Authorization: Basic {{token}}
 Content-Type: application/json
 
 {
-  "white": "UUID",
-  "black": "UUID",
   "result": "WHITE_WIN",
 }
 

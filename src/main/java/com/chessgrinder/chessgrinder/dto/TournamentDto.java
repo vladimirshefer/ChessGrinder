@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.dto;
 
+import java.time.*;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.enums.*;
@@ -10,7 +11,7 @@ import lombok.*;
 public class TournamentDto {
 
     private String id;
-    private Date date;
+    private LocalDateTime date;
     private TournamentStatus status;
 
 

@@ -12,4 +12,6 @@ public interface RoundRepository extends PagingAndSortingRepository<Round, UUID>
 
     @Query("SELECT r FROM Round r WHERE r.tournament.id = :tournamentId")
     List<Round> findByTournamentId(UUID tournamentId);
+
+    Round findFirstByTournamentIdOrderByNumberDesc(UUID tournamentId);
 }
