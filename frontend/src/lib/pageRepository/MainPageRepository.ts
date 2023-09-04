@@ -56,11 +56,20 @@ class ProductionMainPageRepository implements MainPageRepository {
     }
 
     async postTournament() {
+        await axios.post(
+            REST_API_HOST + "/tournament",
+            {},
+            {
+                headers: {
+                    "Authorization": "Basic dm92YTpzaGVmZXI="
+                }
+            } as AxiosRequestConfig
+        );
     }
 }
 
 
-let mainPageRepository = PROFILE === "local"
+let mainPageRepository: MainPageRepository = PROFILE === "local"
     ? new LocalStorageMainPageRepository()
     : new ProductionMainPageRepository();
 

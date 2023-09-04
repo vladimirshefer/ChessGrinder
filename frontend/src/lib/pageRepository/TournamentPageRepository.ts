@@ -84,6 +84,15 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     }
 
     async postRound(tournamentId: string): Promise<void> {
+        await axios.post(
+            REST_API_HOST + `/tournament/${tournamentId}/round`,
+            {},
+            {
+                headers: {
+                    "Authorization": "Basic dm92YTpzaGVmZXI="
+                }
+            } as AxiosRequestConfig,
+        )
     }
 }
 

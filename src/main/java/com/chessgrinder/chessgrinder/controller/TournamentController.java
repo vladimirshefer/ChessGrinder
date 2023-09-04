@@ -1,12 +1,13 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import java.time.*;
-import java.util.*;
+import com.chessgrinder.chessgrinder.service.TournamentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.service.*;
-import lombok.*;
-import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/tournament")
@@ -16,9 +17,9 @@ public class TournamentController {
 
     private final TournamentService tournamentService;
 
-    @PostMapping()
-    public void createTournament(@RequestBody CreateTournamentRequestDto request) {
-        tournamentService.createTournament(request.getDate());
+    @PostMapping
+    public void createTournament() {
+        tournamentService.createTournament(LocalDateTime.now());
     }
 
 }
