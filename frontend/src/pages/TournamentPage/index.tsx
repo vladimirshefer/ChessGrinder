@@ -15,75 +15,9 @@ function TournamentPage() {
     });
     let navigate = useNavigate()
 
-    let roundData: RoundDto[] = useMemo(() => data?.rounds || [
-        {
-            matches: [
-                {
-                    white: {
-                        userId: "UUID-UUID-1",
-                        name: "Mikhail Boba",
-                    },
-                    black: {
-                        userId: "UUID-UUID-1",
-                        name: "Sergey Pavlov"
-                    },
-                    result: "DRAW"
-                },
-                {
-                    white: {
-                        userId: "UUID-UUID-1",
-                        name: "Ivan Ivanov"
-                    },
-                    black: {
-                        userId: "UUID-UUID-1",
-                        name: "Petr Petrov"
-                    },
-                    result: "WHITE_WIN"
-                },
-            ]
-        } as RoundDto,
-        {
-            matches: [
-                {
-                    black: {
-                        userId: "UUID-UUID-1",
-                        name: "Ivan Ivanov",
-                    },
-                    white: {
-                        userId: "UUID-UUID-1",
-                        name: "Sergey Pavlov"
-                    },
-                    result: "BLACK_WIN"
-                },
-                {
-                    white: {
-                        userId: "UUID-UUID-1",
-                        name: "Mikhail Boba"
-                    },
-                    black: {
-                        userId: "UUID-UUID-1",
-                        name: "Petr Petrov"
-                    },
-                    result: "WHITE_WIN"
-                },
-            ]
-        } as RoundDto
-    ] as RoundDto[], [data])
+    let roundData: RoundDto[] = useMemo(() => data?.rounds || [], [data])
     let rounds = roundData.map((e, idx) => idx + 1);
-    let participants: ParticipantDto[] = useMemo(() => {
-        return data?.participants || [
-            {
-                name: "Mikhail Boba",
-                score: 5.5,
-                buchholz: 24
-            } as ParticipantDto,
-            {
-                name: "Sergey Pavlov",
-                score: 5.0,
-                buchholz: 22
-            } as ParticipantDto
-        ]
-    }, [data])
+    let participants: ParticipantDto[] = useMemo(() => data?.participants || [], [data])
 
     async function addParticipant(name: string) {
         await tournamentPageRepository.postParticipant(id!!, name)
