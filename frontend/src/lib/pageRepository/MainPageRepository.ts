@@ -1,6 +1,6 @@
 import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
 import axios, {AxiosRequestConfig} from "axios";
-import {PROFILE, REST_API_HOST} from "./apiSettings";
+import {GLOBAL_SETTINGS} from "./apiSettings";
 
 interface MainPageRepository {
     getData: () => Promise<MainPageData>
@@ -45,7 +45,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
 class ProductionMainPageRepository implements MainPageRepository {
     async getData(): Promise<MainPageData> {
         const {data} = await axios.get(
-            REST_API_HOST + "/pages/main",
+            GLOBAL_SETTINGS.restApiHost + "/pages/main",
             {
                 headers: {
                     "Authorization": "Basic dm92YTpzaGVmZXI="
@@ -57,7 +57,7 @@ class ProductionMainPageRepository implements MainPageRepository {
 
     async postTournament() {
         await axios.post(
-            REST_API_HOST + "/tournament",
+            GLOBAL_SETTINGS.restApiHost + "/tournament",
             {},
             {
                 headers: {
@@ -69,7 +69,7 @@ class ProductionMainPageRepository implements MainPageRepository {
 }
 
 
-let mainPageRepository: MainPageRepository = PROFILE === "local"
+let mainPageRepository: MainPageRepository = GLOBAL_SETTINGS.getProfile() === "local"
     ? new LocalStorageMainPageRepository()
     : new ProductionMainPageRepository();
 

@@ -1,6 +1,6 @@
 import {MatchDto, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import axios, {AxiosRequestConfig} from "axios";
-import {PROFILE, REST_API_HOST} from "./apiSettings";
+import {GLOBAL_SETTINGS} from "./apiSettings";
 
 export interface TournamentPageRepository {
     getData: (tournamentId: string) => Promise<TournamentPageData>
@@ -61,7 +61,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
 class ProductionTournamentPageRepository implements TournamentPageRepository {
     async getData(tournamentId: string): Promise<TournamentPageData> {
         const {data} = await axios.get(
-            REST_API_HOST + `/pages/tournament/${tournamentId}`,
+            GLOBAL_SETTINGS.restApiHost + `/pages/tournament/${tournamentId}`,
             {
                 headers: {
                     "Authorization": "Basic dm92YTpzaGVmZXI="
@@ -73,7 +73,7 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
 
     async postParticipant(tournamentId: string, participant: string) {
         await axios.post(
-            REST_API_HOST + `/tournament/${tournamentId}/participant`,
+            GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/participant`,
             participant,
             {
                 headers: {
@@ -85,7 +85,7 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
 
     async postRound(tournamentId: string): Promise<void> {
         await axios.post(
-            REST_API_HOST + `/tournament/${tournamentId}/round`,
+            GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/round`,
             {},
             {
                 headers: {
@@ -96,7 +96,7 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     }
 }
 
-let tournamentPageRepository: TournamentPageRepository = PROFILE === "local"
+let tournamentPageRepository: TournamentPageRepository = GLOBAL_SETTINGS.getProfile() === "local"
     ? new LocalStorageTournamentPageRepository()
     : new ProductionTournamentPageRepository();
 

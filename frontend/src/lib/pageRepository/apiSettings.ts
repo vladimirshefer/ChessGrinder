@@ -1,3 +1,11 @@
-// export let PROFILE = "production"
-export let PROFILE = "local"
-export const REST_API_HOST = "http://localhost:8080";
+export let GLOBAL_SETTINGS = {
+    getProfile() {
+        return localStorage.getItem("cgd.profile") || "production";
+    },
+    setProfile(value: string | null) {
+        !!value ?
+            localStorage.setItem("cgd.profile", value)
+            : localStorage.removeItem("cgd.profile")
+    },
+    restApiHost: "http://localhost:8080",
+}

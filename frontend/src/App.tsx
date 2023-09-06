@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import MainPage from "pages/MainPage"
 import TournamentPage from "pages/TournamentPage"
 import Header from "components/Header";
+import AdminPage from "pages/AdminPage";
 
 const queryClient = new QueryClient()
 
@@ -18,10 +19,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<MainPage/>}/>
                 <Route path="/tournament/:id" element={<TournamentPage/>}/>
-                <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
-                <Route path='/f' element={<Navigate to="/files"/>}/>
-                {/*<Route path="/files/*" element={<FilesPage/>}/>*/}
-                {/*<Route path="/edit/*" element={<FileEditPage/>}/>*/}
+                <Route path="/admin" element={<AdminPage/>}/>
               </Routes>
             </React.StrictMode>
           </BrowserRouter>
