@@ -11,7 +11,7 @@ export function TournamentsList(
     }
 ) {
     return <div>
-        <h2>Tournaments</h2>
+        <h2 className={"text-xl my-2"}>Tournaments</h2>
         <ul className={"grid grid-cols-12"}>
             <li className={"col-span-3 rounded-md text-blue-800 h-[20vh] bg-gray-100 m-2 py-2 flex justify-center content-center"}>
                 <div>

@@ -8,30 +8,25 @@ export function MemberList(
     }
 ) {
     return <div>
-        <h2>Members</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Badges</th>
-            </tr>
-            </thead>
-            <tbody>
+        <h2 className={"text-xl my-2"}>Members</h2>
+        <div className={"w-full grid grid-cols-12"}>
             {members.map(member => {
-                return <tr key={member.name}>
-                    <td>{member.name}</td>
-                    <td>
+                return <>
+                    <div key={member.name}
+                         className={"col-span-6"}
+                    >{member.name}</div>
+                    <div key={`${member.name}_badges`}
+                         className={"col-span-6"}
+                    >
                         {
                             (member.badges || []).map(badge => {
                                 return <span key={badge.imageUrl} title={badge.description}>{badge.imageUrl}</span>
                             })
                         }
-                    </td>
-                </tr>
+                    </div>
+                </>
             })}
-            </tbody>
-
-        </table>
+        </div>
     </div>;
 }
 
