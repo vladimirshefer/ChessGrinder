@@ -36,20 +36,20 @@ function TournamentPage() {
             Tournament {id}
         </h2>
         <div className={"grid grid-cols-12 w-full px-2"}>
-            <Link to={`/tournament/${id}`}>
+            <Link className={"col-span-3 lg:col-span-1"} to={`/tournament/${id}`}>
                 <button
-                    className={`p-2 rounded ${!roundId ? "bg-yellow-300" : "bg-gray-100 hover:bg-yellow-100"}`}
+                    className={`w-full p-2 rounded ${!roundId ? "bg-yellow-300" : "bg-gray-100 hover:bg-yellow-100"}`}
                 >Home
                 </button>
             </Link>
             {rounds.map(rid => {
                 return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
-                    <button className={`w-full rounded  p-2 ${rid === roundId ? "bg-blue-300" : "hover:bg-blue-100"}`}>
+                    <button className={`w-full rounded p-2 ${rid === roundId ? "bg-blue-300" : "hover:bg-blue-100"}`}>
                         {rid}
                     </button>
                 </Link>
             })}
-            <button className={`w-full rounded p-2 bg-gray-100`}
+            <button className={`w-full rounded p-2 bg-gray-100 col-span-2 lg:col-span-1`}
                     onClick={createRound}
             >+</button>
         </div>
