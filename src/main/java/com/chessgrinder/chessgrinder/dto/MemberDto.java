@@ -7,7 +7,7 @@ import lombok.*;
 @Data
 @Builder
 public class MemberDto {
-
+    private String id;
     private String name;
     private List<BadgeDto> badges;
 }

@@ -5,6 +5,7 @@ export interface BadgeDto {
 }
 
 export interface MemberDto {
+    id: string
     name: string
     badges: BadgeDto[]
 }
