@@ -1,4 +1,4 @@
-import {MatchDto, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
+import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import axios, {AxiosRequestConfig} from "axios";
 import {GLOBAL_SETTINGS} from "./apiSettings";
 
@@ -8,6 +8,8 @@ export interface TournamentPageRepository {
     postParticipant(tournamentId: string, participant: string): Promise<void>
 
     postRound(tournamentId: string): Promise<void>
+
+    postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void>
 }
 
 class LocalStorageTournamentPageRepository implements TournamentPageRepository {
@@ -16,12 +18,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     }
 
     async postParticipant(tournamentId: string, participant: string) {
-        let tournament = await this.getData(tournamentId) || {
-            id: tournamentId,
-            name: tournamentId,
-            participants: [],
-            rounds: [],
-        };
+        let tournament = await this.getData(tournamentId) || this.getEmptyTournament(tournamentId);
         tournament.participants = tournament.participants || []
         tournament.participants.push({
             name: participant,
@@ -29,32 +26,62 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             score: 0,
             buchholz: 0,
         })
-        localStorage.setItem(`cgd.pages.tournament.${tournamentId}`, JSON.stringify(tournament))
+        this.saveTournament(tournamentId, tournament)
     }
 
     async postRound(tournamentId: string): Promise<void> {
-        let tournament = await this.getData(tournamentId) || {
-            id: tournamentId,
-            name: tournamentId,
-            participants: [],
-            rounds: [],
-        };
+        let tournament = await this.getData(tournamentId) || this.getEmptyTournament(tournamentId);
         tournament.rounds = tournament.rounds || []
         tournament.participants = tournament.participants || [];
         let matches: MatchDto[] = []
-        let matchesAmount = tournament.participants.length / 2;
+        let matchesAmount = Math.trunc(tournament.participants.length / 2);
         for (let i = 0; i < matchesAmount; i++) {
-            matches.push({
-                white: {name: tournament.participants[i*2].name} as ParticipantDto,
-                black: {name: tournament.participants[i*2 + 1].name} as ParticipantDto,
-                result: undefined
-            })
+            matches.push(this.createMatch(tournament.participants[i * 2], tournament.participants[i * 2 + 1]))
         }
         tournament.rounds.push({
             state: "STARTED",
             matches: matches
         })
+        this.saveTournament(tournamentId, tournament);
+    }
+
+    async postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void> {
+        let tournament: TournamentPageData = await this.getData(tournamentId);
+        if (!tournament) {
+            throw new Error(`No tournament with id ${tournamentId}`);
+        }
+        let round = tournament.rounds[roundId - 1];
+        if (!round) {
+            throw new Error(`Tournament ${tournamentId} has no round ${roundId}`)
+        }
+        let match = round.matches.find(it => it.id == matchId);
+        if (!match) {
+            throw new Error(`No match with id ${matchId} in tournament ${tournamentId}`)
+        }
+        match.result = result as MatchResult
+        this.saveTournament(tournamentId, tournament)
+    }
+
+    private saveTournament(tournamentId: string, tournament: TournamentPageData) {
         localStorage.setItem(`cgd.pages.tournament.${tournamentId}`, JSON.stringify(tournament))
+    }
+
+    private createMatch(white: ParticipantDto, black: ParticipantDto) {
+        return {
+            id: `${white.name}_${black.name}`,
+            white: {name: white.name} as ParticipantDto,
+            black: {name: black.name} as ParticipantDto,
+            result: undefined
+        };
+    }
+
+    private getEmptyTournament(tournamentId: string): TournamentPageData {
+        return {
+            id: tournamentId,
+            name: tournamentId,
+            participants: [],
+            rounds: [],
+        };
     }
 }
 
@@ -86,6 +113,18 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     async postRound(tournamentId: string): Promise<void> {
         await axios.post(
             GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/round`,
+            {},
+            {
+                headers: {
+                    "Authorization": "Basic dm92YTpzaGVmZXI="
+                }
+            } as AxiosRequestConfig,
+        )
+    }
+
+    async postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void> {
+        await axios.post(
+            GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/round/${roundId}/match/${matchId}`,
             {},
             {
                 headers: {

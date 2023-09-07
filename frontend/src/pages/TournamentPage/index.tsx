@@ -4,20 +4,18 @@ import ResultsTable from "./ResultsTable";
 import RoundTable from "./RoundTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/pageRepository/TournamentPageRepository";
-import {ParticipantDto, RoundDto} from "lib/api/dto/TournamentPageData";
+import {MatchDto, MatchResult, ParticipantDto, RoundDto} from "lib/api/dto/TournamentPageData";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
-    let {data, refetch} = useQuery({
+    let {data: tournamentData, refetch} = useQuery({
         queryKey: ["tournamentPage", id],
         queryFn: () => tournamentPageRepository.getData(id!!)
     });
     let navigate = useNavigate()
-
-    let roundData: RoundDto[] = useMemo(() => data?.rounds || [], [data])
-    let rounds = roundData.map((e, idx) => idx + 1);
-    let participants: ParticipantDto[] = useMemo(() => data?.participants || [], [data])
+    let roundNumbers = tournamentData?.rounds?.map((e, idx) => idx + 1) || [];
+    let participants: ParticipantDto[] = useMemo(() => tournamentData?.participants || [], [tournamentData])
 
     async function addParticipant(name: string) {
         await tournamentPageRepository.postParticipant(id!!, name)
@@ -27,9 +25,13 @@ function TournamentPage() {
     async function createRound() {
         await tournamentPageRepository.postRound(id!!)
         await refetch()
-        navigate(`/tournament/${id}` + (data && data.rounds ? `/round/${data.rounds.length + 1}` : ""))
+        navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""))
     }
 
+    async function submitMatchResult(match: MatchDto, result: MatchResult) {
+        await tournamentPageRepository.postMatchResult(id!!, roundId!!, match.id, result)
+        await refetch()
+    }
 
     return <>
         <h2>
@@ -42,7 +44,7 @@ function TournamentPage() {
                 >Home
                 </button>
             </Link>
-            {rounds.map(rid => {
+            {roundNumbers.map(rid => {
                 return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
                     <button className={`w-full rounded p-2 ${rid === roundId ? "bg-blue-300" : "hover:bg-blue-100"}`}>
                         {rid}
@@ -64,7 +66,10 @@ function TournamentPage() {
                 </>
                 : <>
                     <h3>Round</h3>
-                    <RoundTable matches={roundData[roundId - 1].matches}/>
+                    <RoundTable matches={tournamentData?.rounds[roundId - 1]?.matches || []}
+                    submitMatchResult={(match, result) => {
+                        submitMatchResult(match, result!!);
+                    }}/>
                 </>
         }
     </>

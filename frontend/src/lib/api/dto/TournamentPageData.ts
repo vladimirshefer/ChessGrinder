@@ -4,10 +4,13 @@ export interface MatchParticipantDto {
 }
 
 export interface MatchDto {
-    result: "WHITE_WIN" | "BLACK_WIN" | "DRAW" | undefined
+    id: string
+    result: MatchResult | undefined
     white: MatchParticipantDto
     black: MatchParticipantDto
 }
+
+export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW"
 
 export interface RoundDto {
     state: "FINISHED" | "STARTED"

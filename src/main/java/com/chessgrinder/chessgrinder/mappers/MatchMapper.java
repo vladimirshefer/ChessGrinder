@@ -16,6 +16,7 @@ public class MatchMapper {
     public MatchDto toDto(Match match) {
 
         return MatchDto.builder()
+                .id(match.getId().toString())
                 .white(userMapper.toDto(match.getUser1()))
                 .white(userMapper.toDto(match.getUser2()))
                 .result(match.getResult())
@@ -23,12 +24,6 @@ public class MatchMapper {
     }
 
     public List<MatchDto> toDto(List<Match> matches) {
-
-        return matches.stream().map(match -> MatchDto.builder()
-                .white(userMapper.toDto(match.getUser1()))
-                .black(userMapper.toDto(match.getUser1()))
-                .result(match.getResult())
-                .build())
-            .toList();
+        return matches.stream().map(this::toDto).toList();
     }
 }

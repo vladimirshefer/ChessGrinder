@@ -1,10 +1,12 @@
-import {MatchDto} from "lib/api/dto/TournamentPageData";
+import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
 
 function RoundTable(
     {
-        matches
+        matches,
+        submitMatchResult
     }: {
-        matches: MatchDto[]
+        matches: MatchDto[],
+        submitMatchResult: (match: MatchDto, result: MatchResult | null) => void,
     }
 ) {
     return <>
@@ -22,7 +24,10 @@ function RoundTable(
                     return <tr key={idx}>
                         <td>{match.white.name}</td>
                         <td>
-                            <select defaultValue={match.result || ""}>
+                            <select defaultValue={match.result || ""}
+                                    onChange={(e) => {
+                                        submitMatchResult(match, e.target.value as MatchResult)
+                                    }}>
                                 <option value={""}>Unknown</option>
                                 <option value={"WHITE_WIN"}>White won</option>
                                 <option value={"BLACK_WIN"}>Black won</option>

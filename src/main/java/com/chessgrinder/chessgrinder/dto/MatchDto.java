@@ -6,7 +6,7 @@ import lombok.*;
 @Data
 @Builder
 public class MatchDto {
-
+    private String id;
     private MemberDto white;
     private MemberDto black;
     private MatchResult result;
