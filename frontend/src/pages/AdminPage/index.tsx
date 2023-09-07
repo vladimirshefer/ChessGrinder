@@ -5,7 +5,7 @@ export default function AdminPage() {
         <h2>Admin Page</h2>
         <div className={"m-2"}>
             <span>Mode</span>
-            <select value={GLOBAL_SETTINGS.getProfile()}
+            <select defaultValue={GLOBAL_SETTINGS.getProfile()}
                     onChange={(e) => GLOBAL_SETTINGS.setProfile(e.target.value)}
                     name={"Mode"}
             >
