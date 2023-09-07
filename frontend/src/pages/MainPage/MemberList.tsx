@@ -20,7 +20,11 @@ export function MemberList(
                     >
                         {
                             (member.badges || []).map(badge => {
-                                return <span key={badge.imageUrl} title={badge.description}>{badge.imageUrl}</span>
+                                return <span
+                                    key={badge.imageUrl}
+                                    title={badge.description}
+                                    className={"cursor-default"}
+                                >{badge.imageUrl}</span>
                             })
                         }
                     </div>
