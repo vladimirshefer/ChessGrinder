@@ -13,61 +13,53 @@ function MainPage() {
         }
     );
 
-    function createTournament() {
-        mainPageRepository.postTournament()
-        refetch()
+    async function createTournament() {
+        await mainPageRepository.postTournament()
+        await refetch()
     }
 
-    let members: MemberDto[] = useMemo(() => data?.members || [
-        {
-            name: "Alexander Boldyrev",
-            badges: [
+    let members: MemberDto[] = useMemo(() => {
+        if (data?.members && data.members.length > 0) {
+            return data.members;
+        } else {
+            return [
                 {
-                    title: "",
-                    imageUrl: "💥",
-                    description: "Огонь-огонечек",
-                },
+                    id: "ab1234567",
+                    name: "Alexander Boldyrev",
+                    badges: [
+                        {
+                            title: "",
+                            imageUrl: "💥",
+                            description: "Огонь-огонечек",
+                        },
+                        {
+                            title: "",
+                            imageUrl: "🎃",
+                            description: "За участие в хэллоуин-вечеринке 2019",
+                        },
+                    ]
+                } as MemberDto,
                 {
-                    title: "",
-                    imageUrl: "🎃",
-                    description: "За участие в хэллоуин-вечеринке 2019",
-                },
-            ]
-        } as MemberDto,
-        {
-            name: "Vladimir Shefer",
-            badges: [
-                {
-                    title: "",
-                    imageUrl: "🍒",
-                    description: "Ягодный никнейм",
-                },
-                {
-                    title: "",
-                    imageUrl: "🎯",
-                    description: "За партию с самой высокой точностью на неделе.",
-                },
-            ]
-        } as MemberDto,
-    ], [data])
+                    id: "vs234823476",
+                    name: "Vladimir Shefer",
+                    badges: [
+                        {
+                            title: "",
+                            imageUrl: "🍒",
+                            description: "Ягодный никнейм",
+                        },
+                        {
+                            title: "",
+                            imageUrl: "🎯",
+                            description: "За партию с самой высокой точностью на неделе.",
+                        },
+                    ]
+                } as MemberDto,
+            ];
+        }
+    }, [data])
 
-    let tournaments: TournamentDto[] = useMemo(() => data?.tournaments || [
-        {
-            id: "uuid-uuid-1",
-            name: "Tournament 1",
-            date: "2023-07-10"
-        },
-        {
-            id: "uuid-uuid-2",
-            name: "Tournament 2",
-            date: "2023-07-17"
-        },
-        {
-            id: "uuid-uuid-3",
-            name: "Tournament 3",
-            date: "2023-07-24"
-        },
-    ], [data])
+    let tournaments: TournamentDto[] = useMemo(() => data?.tournaments || [], [data])
 
     return <>
         <MemberList members={members}/>
