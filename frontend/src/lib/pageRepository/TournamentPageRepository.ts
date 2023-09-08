@@ -18,7 +18,10 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     }
 
     async postParticipant(tournamentId: string, participant: string) {
-        let tournament = await this.getData(tournamentId) || this.getEmptyTournament(tournamentId);
+        let tournament = await this.getData(tournamentId);
+        if (!tournament) {
+            throw new Error(`No tournament with id ${tournamentId}`)
+        }
         tournament.participants = tournament.participants || []
         tournament.participants.push({
             name: participant,
