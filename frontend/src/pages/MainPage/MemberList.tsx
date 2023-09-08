@@ -1,21 +1,16 @@
 import {MemberDto} from "lib/api/dto/MainPageData";
-import React from "react";
+import React, {Fragment} from "react";
 import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
 
 export function MemberList(
     {
-        members
+        members,
+        createMember,
     }: {
-        members: MemberDto[]
+        members: MemberDto[],
+        createMember: (memberName: string) => void,
     }
 ) {
-    function createMember(selectedParticipant: string) {
-        members.push({
-            name: selectedParticipant,
-            id: selectedParticipant,
-            badges: [],
-        })
-    }
 
     return <div>
         <h2 className={"text-xl my-2"}>Members</h2>
@@ -28,13 +23,9 @@ export function MemberList(
                 />
             </div>
             {members.map(member => {
-                return <>
-                    <div key={member.name}
-                         className={"col-span-6"}
-                    >{member.name}</div>
-                    <div key={`${member.name}_badges`}
-                         className={"col-span-6"}
-                    >
+                return <Fragment key={member.name}>
+                    <div className={"col-span-6"}>{member.name}</div>
+                    <div className={"col-span-6"}>
                         {
                             (member.badges || []).map(badge => {
                                 return <span
@@ -45,7 +36,7 @@ export function MemberList(
                             })
                         }
                     </div>
-                </>
+                </Fragment>
             })}
         </div>
     </div>;

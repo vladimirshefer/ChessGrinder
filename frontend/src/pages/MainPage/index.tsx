@@ -1,70 +1,80 @@
-import React, {useMemo} from "react";
+import React from "react";
 import {MemberList} from "./MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
-import {MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
+import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
 import mainPageRepository from "lib/pageRepository/MainPageRepository";
 
+let mockMembers: MemberDto[] = [
+    {
+        id: "ab1234567",
+        name: "Alexander Boldyrev",
+        badges: [
+            {
+                title: "",
+                imageUrl: "💥",
+                description: "Огонь-огонечек",
+            },
+            {
+                title: "",
+                imageUrl: "🎃",
+                description: "За участие в хэллоуин-вечеринке 2019",
+            },
+        ]
+    } as MemberDto,
+    {
+        id: "vs234823476",
+        name: "Vladimir Shefer",
+        badges: [
+            {
+                title: "",
+                imageUrl: "🍒",
+                description: "Ягодный никнейм",
+            },
+            {
+                title: "",
+                imageUrl: "🎯",
+                description: "За партию с самой высокой точностью на неделе.",
+            },
+        ]
+    } as MemberDto,
+];
+
 function MainPage() {
-    let {data, refetch} = useQuery({
+
+    let {
+        data: {
+            members = mockMembers,
+            tournaments = [] as TournamentDto[]
+        } = {} as MainPageData,
+        refetch: refetchData,
+    } = useQuery({
             queryKey: ["mainPage"],
-            queryFn:
-            mainPageRepository.getData
+            queryFn: mainPageRepository.getData,
         }
     );
-
     async function createTournament() {
         await mainPageRepository.postTournament()
-        await refetch()
+        await refetchData()
+
+    }
+    function createMember(memberName: string) {
+        members.push({
+            name: memberName,
+            id: memberName,
+            badges: [],
+        })
+
     }
 
-    let members: MemberDto[] = useMemo(() => {
-        if (data?.members && data.members.length > 0) {
-            return data.members;
-        } else {
-            return [
-                {
-                    id: "ab1234567",
-                    name: "Alexander Boldyrev",
-                    badges: [
-                        {
-                            title: "",
-                            imageUrl: "💥",
-                            description: "Огонь-огонечек",
-                        },
-                        {
-                            title: "",
-                            imageUrl: "🎃",
-                            description: "За участие в хэллоуин-вечеринке 2019",
-                        },
-                    ]
-                } as MemberDto,
-                {
-                    id: "vs234823476",
-                    name: "Vladimir Shefer",
-                    badges: [
-                        {
-                            title: "",
-                            imageUrl: "🍒",
-                            description: "Ягодный никнейм",
-                        },
-                        {
-                            title: "",
-                            imageUrl: "🎯",
-                            description: "За партию с самой высокой точностью на неделе.",
-                        },
-                    ]
-                } as MemberDto,
-            ];
-        }
-    }, [data])
-
-    let tournaments: TournamentDto[] = useMemo(() => data?.tournaments || [], [data])
-
     return <>
-        <MemberList members={members}/>
+        <MemberList
+            members={members}
+            createMember={createMember}
+        />
         <TournamentsList tournaments={tournaments} createTournament={createTournament}/>
     </>
+
 }
 
 export default MainPage
