@@ -56,7 +56,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         if (!round) {
             throw new Error(`Tournament ${tournamentId} has no round ${roundId}`)
         }
-        let match = round.matches.find(it => it.id == matchId);
+        let match = round.matches.find(it => it.id === matchId);
         if (!match) {
             throw new Error(`No match with id ${matchId} in tournament ${tournamentId}`)
         }

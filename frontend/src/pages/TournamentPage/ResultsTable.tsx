@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from "react";
+import React, {useMemo} from "react";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import ToggleableSelectableTextInput from "../../components/ToggleableSelectableTextInput";
 

@@ -4,7 +4,7 @@ import ResultsTable from "./ResultsTable";
 import RoundTable from "./RoundTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/pageRepository/TournamentPageRepository";
-import {MatchDto, MatchResult, ParticipantDto, RoundDto} from "lib/api/dto/TournamentPageData";
+import {MatchDto, MatchResult, ParticipantDto} from "lib/api/dto/TournamentPageData";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
