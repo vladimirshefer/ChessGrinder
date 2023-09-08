@@ -50,21 +50,22 @@ function MainPage() {
         refetch: refetchData,
     } = useQuery({
             queryKey: ["mainPage"],
-            queryFn: mainPageRepository.getData,
+            queryFn: () => mainPageRepository.getData(),
         }
     );
+
     async function createTournament() {
         await mainPageRepository.postTournament()
         await refetchData()
-
     }
-    function createMember(memberName: string) {
-        members.push({
-            name: memberName,
-            id: memberName,
-            badges: [],
-        })
 
+    async function createMember(memberName: string) {
+        await mainPageRepository.createMember({
+            id: memberName,
+            name: memberName,
+            badges: []
+        })
+        await refetchData()
     }
 
     return <>

@@ -5,12 +5,13 @@ import {GLOBAL_SETTINGS} from "./apiSettings";
 interface MainPageRepository {
     getData: () => Promise<MainPageData>
     postTournament: () => Promise<void>
+    createMember: (member: MemberDto) => Promise<void>
 }
 
 class LocalStorageMainPageRepository implements MainPageRepository {
     async getData(): Promise<MainPageData> {
-        let members = JSON.parse(localStorage.getItem("cgd.pages.main.members") || "[]") as MemberDto[];
-        let tournaments = LocalStorageMainPageRepository.getTournaments();
+        let members = this.getMembersAsdf();
+        let tournaments = this.getTournaments();
         return {
             members: members,
             tournaments: tournaments
@@ -18,7 +19,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
     }
 
     async postTournament() {
-        let tournaments = LocalStorageMainPageRepository.getTournaments()
+        let tournaments = this.getTournaments()
         let id = `${Math.trunc(Math.random() * 1000000) + 1000000}`;
         tournaments.push({
             id: id,
@@ -26,6 +27,12 @@ class LocalStorageMainPageRepository implements MainPageRepository {
             date: LocalStorageMainPageRepository.getTodayDate(),
         })
         localStorage.setItem("cgd.pages.main.tournaments", JSON.stringify(tournaments))
+    }
+
+    async createMember(member: MemberDto): Promise<void> {
+        let members = this.getMembersAsdf();
+        members.push(member)
+        await this.saveMembers(members);
     }
 
     private static getTodayDate(): string {
@@ -36,8 +43,16 @@ class LocalStorageMainPageRepository implements MainPageRepository {
         return `${year}.${month}.${day}`
     }
 
-    private static getTournaments() {
+    private getTournaments(): TournamentDto[] {
         return JSON.parse(localStorage.getItem("cgd.pages.main.tournaments") || "[]") as TournamentDto[];
+    }
+
+    private getMembersAsdf(): MemberDto[] {
+        return JSON.parse(localStorage.getItem("cgd.pages.main.members") || "[]");
+    }
+
+    private saveMembers(members: MemberDto[]) {
+        localStorage.setItem("cgd.pages.main.members", JSON.stringify(members))
     }
 
 }
@@ -66,8 +81,19 @@ class ProductionMainPageRepository implements MainPageRepository {
             } as AxiosRequestConfig
         );
     }
-}
 
+    async createMember(member: MemberDto): Promise<void> {
+        await axios.post(
+            GLOBAL_SETTINGS.restApiHost + "/members",
+            member,
+            {
+                headers: {
+                    "Authorization": "Basic dm92YTpzaGVmZXI="
+                }
+            } as AxiosRequestConfig
+        );
+    }
+}
 
 let mainPageRepository: MainPageRepository = GLOBAL_SETTINGS.getProfile() === "local"
     ? new LocalStorageMainPageRepository()
