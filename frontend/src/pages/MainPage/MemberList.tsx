@@ -1,4 +1,6 @@
 import {MemberDto} from "lib/api/dto/MainPageData";
+import React from "react";
+import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
 
 export function MemberList(
     {
@@ -7,9 +9,24 @@ export function MemberList(
         members: MemberDto[]
     }
 ) {
+    function createMember(selectedParticipant: string) {
+        members.push({
+            name: selectedParticipant,
+            id: selectedParticipant,
+            badges: [],
+        })
+    }
+
     return <div>
         <h2 className={"text-xl my-2"}>Members</h2>
         <div className={"w-full grid grid-cols-12"}>
+            <div className={"col-span-12"}>
+                <ToggleableSelectableTextInput
+                    values={members.map(it => it.name)}
+                    buttonText={"Add member"}
+                    submitValue={createMember}
+                />
+            </div>
             {members.map(member => {
                 return <>
                     <div key={member.name}
