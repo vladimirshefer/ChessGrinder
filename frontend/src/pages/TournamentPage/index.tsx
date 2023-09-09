@@ -1,15 +1,15 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useMemo} from "react";
-import ResultsTable from "./ResultsTable";
-import RoundTable from "./RoundTable";
+import ResultsTable from "pages/TournamentPage/ResultsTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/pageRepository/TournamentPageRepository";
 import {MatchDto, MatchResult, ParticipantDto} from "lib/api/dto/TournamentPageData";
+import RoundTab from "pages/TournamentPage/RoundTab";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
-    let {data: tournamentData, refetch} = useQuery({
+    let {data: tournamentData, refetch, isSuccess: isDataReady} = useQuery({
         queryKey: ["tournamentPage", id],
         queryFn: () => tournamentPageRepository.getData(id!!)
     });
@@ -33,11 +33,13 @@ function TournamentPage() {
         await refetch()
     }
 
+    if (!isDataReady) return <>Loading</>
+
     return <>
-        <h2>
+        <h2 className={"text-lg font-bold mt-4"}>
             Tournament {id}
         </h2>
-        <div className={"grid grid-cols-12 w-full px-2"}>
+        <div className={"grid grid-cols-12 w-full px-2 my-4"}>
             <Link className={"col-span-3 lg:col-span-1"} to={`/tournament/${id}`}>
                 <button
                     className={`w-full p-2 rounded ${!roundId ? "bg-yellow-300" : "bg-gray-100 hover:bg-yellow-100"}`}
@@ -53,24 +55,27 @@ function TournamentPage() {
             })}
             <button className={`w-full rounded p-2 bg-gray-100 col-span-2 lg:col-span-1`}
                     onClick={createRound}
-            >+</button>
+            >+
+            </button>
         </div>
 
         {
             !roundId
-                ? <>
-                    <h3>Status</h3>
-                    <ResultsTable participants={participants} addParticipant={(it) => {
-                        addParticipant(it)
-                    }}/>
-                </>
-                : <>
-                    <h3>Round</h3>
-                    <RoundTable matches={tournamentData?.rounds[roundId - 1]?.matches || []}
-                    submitMatchResult={(match, result) => {
-                        submitMatchResult(match, result!!);
-                    }}/>
-                </>
+                ? (isDataReady ? <>
+                        <h3>Status</h3>
+                        <ResultsTable participants={participants} addParticipant={(it) => {
+                            addParticipant(it)
+                        }}/>
+                    </> : <>Loading</>
+                )
+                : (isDataReady ?
+                        <RoundTab
+                            round={tournamentData?.rounds[roundId - 1]!!}
+                            submitMatchResult={(match, result) => {
+                                submitMatchResult(match, result!!);
+                            }}
+                        /> : <>Loading</>
+                )
         }
     </>
 }

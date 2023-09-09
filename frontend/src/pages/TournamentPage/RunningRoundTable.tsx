@@ -1,7 +1,7 @@
 import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
 import {Fragment} from "react";
 
-function RoundTable(
+function RunningRoundTable(
     {
         matches,
         submitMatchResult
@@ -36,4 +36,4 @@ function RoundTable(
     </div>
 }
 
-export default RoundTable
+export default RunningRoundTable
