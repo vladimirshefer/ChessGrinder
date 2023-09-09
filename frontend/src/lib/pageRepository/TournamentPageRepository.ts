@@ -30,21 +30,35 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     }
 
     async postRound(tournamentId: string): Promise<void> {
-        let tournament = await this.getData(tournamentId);
+        let tournament = await this.getData(tournamentId)
         if (!tournament) {
-            throw new Error(`No tournament with id ${tournamentId}`);
+            throw new Error(`No tournament with id ${tournamentId}`)
         }
-        tournament.participants = tournament.participants || [];
+        let participants = tournament.participants || []
+        participants = [...participants]
+        this.shuffleArray(participants)
         let matches: MatchDto[] = []
-        let matchesAmount = Math.trunc(tournament.participants.length / 2);
+        let matchesAmount = Math.trunc(participants.length / 2)
         for (let i = 0; i < matchesAmount; i++) {
-            matches.push(this.createMatch(tournament.participants[i * 2], tournament.participants[i * 2 + 1]))
+            matches.push(this.createMatch(participants[i * 2], participants[i * 2 + 1]))
         }
         tournament.rounds.push({
             state: "STARTED",
             matches: matches
         })
-        this.saveTournament(tournamentId, tournament);
+        this.saveTournament(tournamentId, tournament)
+    }
+
+    /**
+     * Shuffles array in place.
+     * @param {Array} array items An array containing the items.
+     */
+    private shuffleArray(array: any[]) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
     }
 
     async postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void> {
