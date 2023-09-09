@@ -9,6 +9,8 @@ export interface TournamentPageRepository {
 
     postRound(tournamentId: string): Promise<void>
 
+    deleteRound(tournamentId: string, roundNumber: number): Promise<void>
+
     postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void>
 }
 
@@ -99,6 +101,15 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             rounds: [],
         };
     }
+
+    async deleteRound(tournamentId: string, roundNumber: number): Promise<void> {
+        let tournament = await this.getData(tournamentId)
+        if (!tournament) {
+            throw new Error(`No tournament with id ${tournamentId}`)
+        }
+        tournament.rounds = tournament.rounds.filter((_, i) => i !== roundNumber - 1)
+        this.saveTournament(tournamentId, tournament)
+    }
 }
 
 class ProductionTournamentPageRepository implements TournamentPageRepository {
@@ -142,6 +153,17 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
         await axios.post(
             GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/round/${roundId}/match/${matchId}`,
             {},
+            {
+                headers: {
+                    "Authorization": "Basic dm92YTpzaGVmZXI="
+                }
+            } as AxiosRequestConfig,
+        )
+    }
+
+    async deleteRound(tournamentId: string, roundNumber: number): Promise<void> {
+        await axios.delete(
+            GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/round/${roundNumber}`,
             {
                 headers: {
                     "Authorization": "Basic dm92YTpzaGVmZXI="

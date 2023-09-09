@@ -35,6 +35,12 @@ function TournamentPage() {
 
     if (!isDataReady) return <>Loading</>
 
+    async function deleteRound() {
+        await tournamentPageRepository.deleteRound(id!!, roundId!!)
+        navigate(`/tournament/${id}`)
+        alert(`Round ${roundId} is deleted`)
+    }
+
     return <>
         <h2 className={"text-lg font-bold mt-4"}>
             Tournament {id}
@@ -73,6 +79,12 @@ function TournamentPage() {
                             round={tournamentData?.rounds[roundId - 1]!!}
                             submitMatchResult={(match, result) => {
                                 submitMatchResult(match, result!!);
+                            }}
+                            submitRoundFinished={() => {
+
+                            }}
+                            deleteRound={() => {
+                                deleteRound();
                             }}
                         /> : <>Loading</>
                 )
