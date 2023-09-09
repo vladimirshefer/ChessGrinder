@@ -1,6 +1,6 @@
 export let GLOBAL_SETTINGS = {
     getProfile() {
-        return localStorage.getItem("cgd.profile") || "production";
+        return localStorage.getItem("cgd.profile") || "local";
     },
     setProfile(value: string | null) {
         !!value ?
