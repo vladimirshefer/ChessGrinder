@@ -20,7 +20,7 @@ export default function RoundTab(
     }
 ) {
     return <div>
-        { round.state == "STARTED" ?
+        { round.state === "STARTED" ?
             <RunningRoundTable matches={round.matches}
                                submitMatchResult={(match, result) => {
                                    submitMatchResult(match, result!!);

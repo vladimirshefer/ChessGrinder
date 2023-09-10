@@ -58,7 +58,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
         }
         let round = tournament.rounds[roundNumber - 1];
-        if (round.state != "STARTED") {
+        if (round.state !== "STARTED") {
             throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is already finished.`)
         }
         let participants = tournament.participants || []
@@ -142,7 +142,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
         }
         let round = tournament.rounds[roundNumber - 1];
-        if (round.state != "STARTED") {
+        if (round.state !== "STARTED") {
             throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is already finished.`)
         }
         round.state = "FINISHED"
@@ -158,7 +158,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
         }
         let round = tournament.rounds[roundNumber - 1];
-        if (round.state != "FINISHED") {
+        if (round.state !== "FINISHED") {
             throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is running.`)
         }
         round.state = "STARTED"
