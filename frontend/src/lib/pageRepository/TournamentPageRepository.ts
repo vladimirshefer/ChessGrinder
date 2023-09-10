@@ -13,7 +13,11 @@ export interface TournamentPageRepository {
 
     drawRound(tournamentId: string, roundNumber: number): Promise<void>
 
+    finishRound(tournamentId: string, roundNumber: number): Promise<void>
+
     postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void>
+
+    reopenRound(tournamentId: string, roundNumber: number): Promise<void>;
 }
 
 class LocalStorageTournamentPageRepository implements TournamentPageRepository {
@@ -128,6 +132,38 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         tournament.rounds = tournament.rounds.filter((_, i) => i !== roundNumber - 1)
         this.saveTournament(tournamentId, tournament)
     }
+
+    async finishRound(tournamentId: string, roundNumber: number): Promise<void> {
+        let tournament = await this.getData(tournamentId)
+        if (!tournament) {
+            throw new Error(`No tournament with id ${tournamentId}`)
+        }
+        if (!tournament.rounds || tournament.rounds.length < roundNumber) {
+            throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
+        }
+        let round = tournament.rounds[roundNumber - 1];
+        if (round.state != "STARTED") {
+            throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is already finished.`)
+        }
+        round.state = "FINISHED"
+        await this.saveTournament(tournamentId, tournament)
+    }
+
+    async reopenRound(tournamentId: string, roundNumber: number): Promise<void> {
+        let tournament = await this.getData(tournamentId)
+        if (!tournament) {
+            throw new Error(`No tournament with id ${tournamentId}`)
+        }
+        if (!tournament.rounds || tournament.rounds.length < roundNumber) {
+            throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
+        }
+        let round = tournament.rounds[roundNumber - 1];
+        if (round.state != "FINISHED") {
+            throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is running.`)
+        }
+        round.state = "STARTED"
+        await this.saveTournament(tournamentId, tournament)
+    }
 }
 
 class ProductionTournamentPageRepository implements TournamentPageRepository {
@@ -191,6 +227,14 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     }
 
     drawRound(tournamentId: string, roundNumber: number): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    finishRound(tournamentId: string, roundNumber: number): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    reopenRound(tournamentId: string, roundNumber: number): Promise<void> {
         return Promise.resolve(undefined);
     }
 }

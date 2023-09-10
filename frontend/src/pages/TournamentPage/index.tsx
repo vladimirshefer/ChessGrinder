@@ -43,7 +43,16 @@ function TournamentPage() {
     async function deleteRound() {
         await tournamentPageRepository.deleteRound(id!!, roundId!!)
         navigate(`/tournament/${id}`)
-        alert(`Round ${roundId} is deleted`)
+    }
+
+    async function finishRound() {
+        await tournamentPageRepository.finishRound(id!!, roundId!!)
+        await refetch()
+    }
+
+    async function reopenRound() {
+        await tournamentPageRepository.reopenRound(id!!, roundId!!)
+        await refetch()
     }
 
     return <>
@@ -86,10 +95,11 @@ function TournamentPage() {
                                 submitMatchResult(match, result!!);
                             }}
                             submitRoundFinished={() => {
-
+                                finishRound()
                             }}
                             deleteRound={() => deleteRound()}
                             drawRound={() => drawRound()}
+                            reopenRound={() => reopenRound()}
                         /> : <>Loading</>
                 )
         }

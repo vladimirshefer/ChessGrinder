@@ -8,20 +8,25 @@ export default function RoundTab(
         submitMatchResult,
         submitRoundFinished,
         deleteRound,
-        drawRound
+        reopenRound,
+        drawRound,
     }: {
         round: RoundDto,
         submitMatchResult: (match: MatchDto, result: MatchResult | null) => void,
         submitRoundFinished: () => void,
         deleteRound: () => void,
+        reopenRound: () => void,
         drawRound: () => void,
     }
 ) {
     return <div>
-        <RunningRoundTable matches={round.matches}
-                           submitMatchResult={(match, result) => {
-                               submitMatchResult(match, result!!);
-                           }}/>
+        { round.state == "STARTED" ?
+            <RunningRoundTable matches={round.matches}
+                               submitMatchResult={(match, result) => {
+                                   submitMatchResult(match, result!!);
+                               }}
+            /> : <div>Round is finished</div>
+        }
         <div className={"mt-2 px-2 w-full flex justify-end"}>
             <button className={"bg-red-200 p-1 rounded-md mx-1 px-1"}
                     onClick={() => {
@@ -35,10 +40,17 @@ export default function RoundTab(
                     onClick={() => drawRound()}
             >Draw
             </button>
-            <button className={"bg-blue-200 p-1 rounded-md mx-1"}
-                    onClick={() => submitRoundFinished()}
-            >Finish
-            </button>
+            {
+                round.state === "STARTED" ?
+                    <button className={"bg-blue-200 p-1 rounded-md mx-1"}
+                            onClick={() => submitRoundFinished()}
+                    >Finish
+                    </button> :
+                    <button
+                        className={"bg-blue-200 p-1 rounded-md mx-1"}
+                        onClick={() => reopenRound()}
+                    >Reopen</button>
+            }
         </div>
     </div>
 }
