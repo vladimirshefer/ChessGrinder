@@ -35,13 +35,15 @@ function ResultsTable(
                 />
             </div>
             {
-                participants.map(participant => {
-                    return <div className={"col-span-12 grid grid-cols-12"} key={participant.name}>
-                        <div className={"col-span-6"}>{participant.name}</div>
-                        <div className={"col-span-3"}>{participant.score}</div>
-                        <div className={"col-span-3"}>{participant.buchholz}</div>
-                    </div>
-                })
+                participants
+                    .sort((a, b) => -(a.score !== b.score ? a.score - b.score : a.buchholz - b.buchholz))
+                    .map(participant => {
+                        return <div className={"col-span-12 grid grid-cols-12"} key={participant.name}>
+                            <div className={"col-span-6"}>{participant.name}</div>
+                            <div className={"col-span-3"}>{participant.score}</div>
+                            <div className={"col-span-3"}>{participant.buchholz}</div>
+                        </div>
+                    })
             }
         </div>
     </>
