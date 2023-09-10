@@ -28,6 +28,11 @@ function TournamentPage() {
         navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""))
     }
 
+    async function drawRound() {
+        await tournamentPageRepository.drawRound(id!!, roundId!!)
+        await refetch()
+    }
+
     async function submitMatchResult(match: MatchDto, result: MatchResult) {
         await tournamentPageRepository.postMatchResult(id!!, roundId!!, match.id, result)
         await refetch()
@@ -83,9 +88,8 @@ function TournamentPage() {
                             submitRoundFinished={() => {
 
                             }}
-                            deleteRound={() => {
-                                deleteRound();
-                            }}
+                            deleteRound={() => deleteRound()}
+                            drawRound={() => drawRound()}
                         /> : <>Loading</>
                 )
         }

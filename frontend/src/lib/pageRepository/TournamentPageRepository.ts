@@ -3,13 +3,15 @@ import axios, {AxiosRequestConfig} from "axios";
 import {GLOBAL_SETTINGS} from "./apiSettings";
 
 export interface TournamentPageRepository {
-    getData: (tournamentId: string) => Promise<TournamentPageData>
+    getData(tournamentId: string): Promise<TournamentPageData>
 
     postParticipant(tournamentId: string, participant: string): Promise<void>
 
     postRound(tournamentId: string): Promise<void>
 
     deleteRound(tournamentId: string, roundNumber: number): Promise<void>
+
+    drawRound(tournamentId: string, roundNumber: number): Promise<void>
 
     postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void>
 }
@@ -36,6 +38,18 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         if (!tournament) {
             throw new Error(`No tournament with id ${tournamentId}`)
         }
+        tournament.rounds.push({
+            state: "STARTED",
+            matches: []
+        })
+        this.saveTournament(tournamentId, tournament)
+    }
+
+    async drawRound(tournamentId: string, roundNumber: number): Promise<void> {
+        let tournament = await this.getData(tournamentId)
+        if (!tournament) {
+            throw new Error(`No tournament with id ${tournamentId}`)
+        }
         let participants = tournament.participants || []
         participants = [...participants]
         this.shuffleArray(participants)
@@ -44,10 +58,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         for (let i = 0; i < matchesAmount; i++) {
             matches.push(this.createMatch(participants[i * 2], participants[i * 2 + 1]))
         }
-        tournament.rounds.push({
-            state: "STARTED",
-            matches: matches
-        })
+        tournament.rounds[roundNumber - 1].matches = matches
         this.saveTournament(tournamentId, tournament)
     }
 
@@ -170,6 +181,10 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
                 }
             } as AxiosRequestConfig,
         )
+    }
+
+    drawRound(tournamentId: string, roundNumber: number): Promise<void> {
+        return Promise.resolve(undefined);
     }
 }
 
