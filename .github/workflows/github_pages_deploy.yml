@@ -6,7 +6,7 @@ name: GitHub Pages Deploy
 on:
   push:
     branches: [ master ]
-#    paths: [ frontend ]
+    paths: [ "frontend/**" ]
   workflow_dispatch:
 
 jobs:
