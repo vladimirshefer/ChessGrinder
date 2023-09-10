@@ -50,6 +50,13 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         if (!tournament) {
             throw new Error(`No tournament with id ${tournamentId}`)
         }
+        if (!tournament.rounds || tournament.rounds.length < roundNumber) {
+            throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
+        }
+        let round = tournament.rounds[roundNumber - 1];
+        if (round.state != "STARTED") {
+            throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is already finished.`)
+        }
         let participants = tournament.participants || []
         participants = [...participants]
         this.shuffleArray(participants)
@@ -58,7 +65,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         for (let i = 0; i < matchesAmount; i++) {
             matches.push(this.createMatch(participants[i * 2], participants[i * 2 + 1]))
         }
-        tournament.rounds[roundNumber - 1].matches = matches
+        round.matches = matches
         this.saveTournament(tournamentId, tournament)
     }
 
