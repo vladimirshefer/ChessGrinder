@@ -37,32 +37,40 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         let pointsMap /*userId -> points*/ = new Map<string, number>()
         let buchholzMap/*userId -> buchholz points*/ = new Map<string, number>()
         let buchholzListMap/*userId -> arrayOf[enemy user points]*/ = new Map<string, number[]>()
+        let enemiesMap/*userId -> arrayOf[enemy user points]*/ = new Map<string, Set<string>>()
         let allMatches = tournamentData.rounds
             .filter(round => round.state === "FINISHED")
             .flatMap((round: RoundDto) => round.matches);
         allMatches.forEach(match => {
-            if (match.result === "WHITE_WIN") {
-                this.computeIfAbsent(pointsMap, match.white.userId, 1, i => i + 1)
-            }
-            if (match.result === "BLACK_WIN") {
-                this.computeIfAbsent(pointsMap, match.black.userId, 1, i => i + 1)
-            }
-            if (match.result === "DRAW") {
-                this.computeIfAbsent(pointsMap, match.white.userId, 0.5, i => i + 0.5)
-                this.computeIfAbsent(pointsMap, match.black.userId, 0.5, i => i + 0.5)
-            }
-        })
-        allMatches.forEach(match => {
             let whiteUserId = match.white.userId;
             let blackUserId = match.black.userId;
-            let blackPoints = pointsMap.get(blackUserId)!!;
-            let whitePoints = pointsMap.get(whiteUserId)!!;
-            this.computeIfAbsent(buchholzMap, whiteUserId, blackPoints, buchholz => buchholz + blackPoints)
-            this.computeIfAbsent(buchholzMap, blackUserId, whitePoints, buchholz => buchholz + whitePoints)
-            this.computeIfAbsent(buchholzListMap, whiteUserId, [blackPoints], enemyPoints => [...enemyPoints, blackPoints].sort())
-            this.computeIfAbsent(buchholzListMap, blackUserId, [whitePoints], enemyPoints => [...enemyPoints, whitePoints].sort())
+            if (match.result === "WHITE_WIN") {
+                this.computeIfAbsent(pointsMap, whiteUserId, 1, i => i + 1)
+            }
+            if (match.result === "BLACK_WIN") {
+                this.computeIfAbsent(pointsMap, blackUserId, 1, i => i + 1)
+            }
+            if (match.result === "DRAW") {
+                this.computeIfAbsent(pointsMap, whiteUserId, 0.5, i => i + 0.5)
+                this.computeIfAbsent(pointsMap, blackUserId, 0.5, i => i + 0.5)
+            }
+
+            this.computeIfAbsent(enemiesMap, whiteUserId, new Set<string>([blackUserId]), enemyPoints => enemyPoints.add(blackUserId))
+            this.computeIfAbsent(enemiesMap, blackUserId, new Set<string>([whiteUserId]), enemyPoints => enemyPoints.add(whiteUserId))
         })
-        return {pointsMap, buchholzMap, buchholzListMap}
+        enemiesMap.forEach((enemyIds, userId) => {
+            buchholzListMap.set(userId, Array.from(enemyIds).map(enemyId => {
+                let points = pointsMap.get(enemyId)
+                if (points === undefined) {
+                    throw new Error(`User ${userId} has no points in map. This should not happen.`)
+                }
+                return points
+            }))
+        })
+        buchholzListMap.forEach((enemyPoints, userId) => {
+            buchholzMap.set(userId, enemyPoints.reduce((a, b) => a + b))
+        })
+        return {pointsMap, enemiesMap, buchholzMap, buchholzListMap}
     }
 
     private computeIfAbsent<T>(map: Map<string, T>, key: string, defaultValue: T, valueMapper: (v: T) => T) {
