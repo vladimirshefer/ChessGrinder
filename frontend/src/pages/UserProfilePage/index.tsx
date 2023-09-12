@@ -36,12 +36,12 @@ export default function UserProfilePage() {
     }
 
     return <>
-        My profile
+        User {username}
 
         {
             isMyProfile ? (
                 <div>
-                    <button
+                    <button className={"bg-blue-200 rounded-full px-3"}
                         onClick={() => authService.clearAuthData()}>
                         Logout
                     </button>

@@ -19,7 +19,7 @@ function Header() {
                         <Link to={"/user"}
                               className={"px-1"}
                         >
-                            <button>Profile</button>
+                            <button>{authData.username}</button>
                         </Link>
                     )
                 }
