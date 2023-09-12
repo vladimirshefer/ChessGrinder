@@ -13,7 +13,7 @@ export default function LoginPage() {
         if (!!authData) {
             navigate("/user")
         }
-    }, [authData])
+    }, [authData, navigate])
 
     async function login(username: string, password: string) {
         await loginPageRepository.login(username, password)
