@@ -14,7 +14,7 @@ export default function UserProfilePage() {
                 navigate(`/user/${currentUserName}`)
             }
         }
-    }, [username, authData])
+    }, [username, authData, navigate])
 
     let isMyProfile = useMemo(() => {
         return !!username && username === authData?.username
