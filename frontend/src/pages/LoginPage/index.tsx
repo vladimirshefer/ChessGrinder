@@ -1,9 +1,19 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import loginPageRepository from "../../lib/pageRepository/LoginPageRepository";
+import {useAuthData} from "../../lib/auth/AuthService";
+import {useNavigate} from "react-router-dom";
 
 export default function LoginPage() {
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
+    let navigate = useNavigate()
+    let authData = useAuthData()
+
+    useEffect(() => {
+        if (!!authData) {
+            navigate("/user")
+        }
+    }, [authData])
 
     async function login(username: string, password: string) {
         await loginPageRepository.login(username, password)

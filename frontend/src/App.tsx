@@ -7,6 +7,7 @@ import TournamentPage from "pages/TournamentPage"
 import Header from "components/Header";
 import AdminPage from "pages/AdminPage";
 import LoginPage from "pages/LoginPage";
+import UserProfilePage from "./pages/UserProfilePage";
 
 const queryClient = new QueryClient()
 
@@ -23,8 +24,10 @@ function App() {
                 <Route path="/" element={<MainPage/>}/>
                 <Route path="/tournament/:id" element={<TournamentPage/>}/>
                 <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
-                <Route path="/Login" element={<LoginPage/>}/>
+                <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/admin" element={<AdminPage/>}/>
+                <Route path="/user" element={<UserProfilePage/>}/>
+                <Route path="/user/:username" element={<UserProfilePage/>}/>
               </Routes>
             </React.StrictMode>
           </ApplicationRouter>
