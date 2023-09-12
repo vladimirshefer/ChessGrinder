@@ -10,7 +10,7 @@ interface MainPageRepository {
 
 class LocalStorageMainPageRepository implements MainPageRepository {
     async getData(): Promise<MainPageData> {
-        let members = this.getMembersAsdf();
+        let members = this.getMembers();
         let tournaments = this.getTournaments();
         return {
             members: members,
@@ -30,7 +30,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
     }
 
     async createMember(member: MemberDto): Promise<void> {
-        let members = this.getMembersAsdf();
+        let members = this.getMembers();
         members.push(member)
         await this.saveMembers(members);
     }
@@ -47,7 +47,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
         return JSON.parse(localStorage.getItem("cgd.pages.main.tournaments") || "[]") as TournamentDto[];
     }
 
-    private getMembersAsdf(): MemberDto[] {
+    private getMembers(): MemberDto[] {
         return JSON.parse(localStorage.getItem("cgd.pages.main.members") || "[]");
     }
 
@@ -95,8 +95,21 @@ class ProductionMainPageRepository implements MainPageRepository {
     }
 }
 
-let mainPageRepository: MainPageRepository = GLOBAL_SETTINGS.getProfile() === "local"
-    ? new LocalStorageMainPageRepository()
-    : new ProductionMainPageRepository();
+let localStorageMainPageRepository = new LocalStorageMainPageRepository()
+let productionMainPageRepository = new ProductionMainPageRepository()
+
+let mainPageRepository = new Proxy<MainPageRepository>({} as unknown as MainPageRepository, {
+    get(target: MainPageRepository, p: string | symbol, receiver: any): any {
+        if (GLOBAL_SETTINGS.getProfile() === "local") {
+            return (localStorageMainPageRepository as any)[p]
+        } else {
+            return (productionMainPageRepository as any)[p]
+        }
+    }
+});
+
+// let mainPageRepository: MainPageRepository = GLOBAL_SETTINGS.getProfile() === "local"
+//     ? new LocalStorageMainPageRepository()
+//     // : new ProductionMainPageRepository();
 
 export default mainPageRepository;
