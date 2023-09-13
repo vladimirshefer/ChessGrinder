@@ -19,13 +19,13 @@ export default function LoginPage() {
         await loginPageRepository.login(username, password)
     }
 
-    return <div className={"grid grid-cols-12"}>
-        <span className={"col-span-6"}>Email:</span>
-        <input className={"col-span-6 border-b-2 outline-none border-blue-b-300"}
+    return <div className={"grid grid-cols-12 p-5"}>
+        <span className={"col-span-4"}>Username:</span>
+        <input className={"col-span-8 border-b-2 outline-none border-blue-b-300"}
                onChange={(e) => setUsername(e.target.value)}
         />
-        <span className={"col-span-6"}>Password:</span>
-        <input className={"col-span-6 border-b-2 outline-none border-blue-b-300"} type={"password"}
+        <span className={"col-span-4"}>Password:</span>
+        <input className={"col-span-8 border-b-2 outline-none border-blue-b-300"} type={"password"}
                onChange={(e) => setPassword(e.target.value)}
         />
         <button className={"col-span-12 bg-purple-200 rounded-full mt-2"}
