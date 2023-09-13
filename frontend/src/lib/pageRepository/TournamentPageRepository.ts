@@ -1,6 +1,6 @@
 import {MatchDto, MatchResult, ParticipantDto, RoundDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
-import axios, {AxiosRequestConfig} from "axios";
 import {GLOBAL_SETTINGS} from "./apiSettings";
+import restApiClient from "../api/RestApiClient";
 
 export interface TournamentPageRepository {
     getData(tournamentId: string): Promise<TournamentPageData>
@@ -225,74 +225,35 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
 
 class ProductionTournamentPageRepository implements TournamentPageRepository {
     async getData(tournamentId: string): Promise<TournamentPageData> {
-        const {data} = await axios.get(
-            GLOBAL_SETTINGS.restApiHost + `/pages/tournament/${tournamentId}`,
-            {
-                headers: {
-                    "Authorization": "Basic dm92YTpzaGVmZXI="
-                }
-            } as AxiosRequestConfig,
-        );
-        return data as TournamentPageData;
+        return await restApiClient.get<TournamentPageData>(`/pages/tournament/${tournamentId}`);
     }
 
     async postParticipant(tournamentId: string, participant: string) {
-        await axios.post(
-            GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/participant`,
-            participant,
-            {
-                headers: {
-                    "Authorization": "Basic dm92YTpzaGVmZXI="
-                }
-            } as AxiosRequestConfig,
-        )
+        await restApiClient.post(`/tournament/${tournamentId}/participant`, participant,)
     }
 
     async postRound(tournamentId: string): Promise<void> {
-        await axios.post(
-            GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/round`,
-            {},
-            {
-                headers: {
-                    "Authorization": "Basic dm92YTpzaGVmZXI="
-                }
-            } as AxiosRequestConfig,
-        )
+        await restApiClient.post(`/tournament/${tournamentId}/round`, {})
     }
 
     async postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void> {
-        await axios.post(
-            GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/round/${roundId}/match/${matchId}`,
-            {},
-            {
-                headers: {
-                    "Authorization": "Basic dm92YTpzaGVmZXI="
-                }
-            } as AxiosRequestConfig,
-        )
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundId}/match/${matchId}`, {})
     }
 
     async deleteRound(tournamentId: string, roundNumber: number): Promise<void> {
-        await axios.delete(
-            GLOBAL_SETTINGS.restApiHost + `/tournament/${tournamentId}/round/${roundNumber}`,
-            {
-                headers: {
-                    "Authorization": "Basic dm92YTpzaGVmZXI="
-                }
-            } as AxiosRequestConfig,
-        )
+        await restApiClient.delete(`/tournament/${tournamentId}/round/${roundNumber}`)
     }
 
-    drawRound(tournamentId: string, roundNumber: number): Promise<void> {
-        return Promise.resolve(undefined);
+    async drawRound(tournamentId: string, roundNumber: number): Promise<void> {
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/draw`)
     }
 
-    finishRound(tournamentId: string, roundNumber: number): Promise<void> {
-        return Promise.resolve(undefined);
+    async finishRound(tournamentId: string, roundNumber: number): Promise<void> {
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/finish`);
     }
 
-    reopenRound(tournamentId: string, roundNumber: number): Promise<void> {
-        return Promise.resolve(undefined);
+    async reopenRound(tournamentId: string, roundNumber: number): Promise<void> {
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/reopen`);
     }
 }
 

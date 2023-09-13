@@ -24,6 +24,14 @@ class RestApiClient {
         );
         return axiosResponse.data as T;
     }
+
+    async delete<T>(path: string) {
+        let axiosResponse = await axios.delete(
+            GLOBAL_SETTINGS.restApiHost + path,
+            this.axiosRequestConfig
+        );
+        return axiosResponse.data as T;
+    }
 }
 
 let restApiClient = new RestApiClient()
