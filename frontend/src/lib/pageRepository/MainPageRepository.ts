@@ -1,6 +1,6 @@
 import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
-import axios, {AxiosRequestConfig} from "axios";
 import {GLOBAL_SETTINGS} from "./apiSettings";
+import restApiClient from "../api/RestApiClient";
 
 interface MainPageRepository {
     getData: () => Promise<MainPageData>
@@ -59,39 +59,15 @@ class LocalStorageMainPageRepository implements MainPageRepository {
 
 class ProductionMainPageRepository implements MainPageRepository {
     async getData(): Promise<MainPageData> {
-        const {data} = await axios.get(
-            GLOBAL_SETTINGS.restApiHost + "/pages/main",
-            {
-                headers: {
-                    "Authorization": "Basic dm92YTpzaGVmZXI="
-                }
-            } as AxiosRequestConfig
-        );
-        return data as MainPageData;
+        return await restApiClient.get<MainPageData>("/pages/main");
     }
 
     async postTournament() {
-        await axios.post(
-            GLOBAL_SETTINGS.restApiHost + "/tournament",
-            {},
-            {
-                headers: {
-                    "Authorization": "Basic dm92YTpzaGVmZXI="
-                }
-            } as AxiosRequestConfig
-        );
+        await restApiClient.post("/tournament");
     }
 
     async createMember(member: MemberDto): Promise<void> {
-        await axios.post(
-            GLOBAL_SETTINGS.restApiHost + "/members",
-            member,
-            {
-                headers: {
-                    "Authorization": "Basic dm92YTpzaGVmZXI="
-                }
-            } as AxiosRequestConfig
-        );
+        await restApiClient.post("/members", member);
     }
 }
 
