@@ -1,5 +1,4 @@
 import {GLOBAL_SETTINGS} from "lib/pageRepository/apiSettings";
-import localStorageUtil from "lib/util/LocalStorageUtil";
 import authService from "lib/auth/AuthService";
 import mainPageRepository from "./MainPageRepository";
 
@@ -9,15 +8,6 @@ export interface LoginPageRepository {
 
 class LocalStorageLoginPageRepository implements LoginPageRepository {
     async login(username: string, password: string): Promise<string> {
-        let user = localStorageUtil.getObject<UserProfile>(`cgd.auth.users.${username}`)
-        if (!user) {
-            user = {
-                id: username,
-                name: username,
-                username: username,
-            };
-            localStorageUtil.setObject(`cgd.auth.users.${username}`, user)
-        }
         let memberDto = (await mainPageRepository.getData()).members.find(it => it.id === username);
         if (!memberDto) {
             await mainPageRepository.createMember({

@@ -8,6 +8,16 @@ class LocalStorageUtil {
     setObject<T>(key: string, value: T) {
         localStorage.setItem(key, JSON.stringify(value))
     }
+
+    getAllObjectsByPrefix<T>(keyPrefix: string): T[] {
+        let result = []
+        for (let localStorageKey in localStorage) {
+            if (localStorageKey.startsWith(`${keyPrefix}`)) {
+                result.push(JSON.parse(localStorage.getItem(localStorageKey)!!));
+            }
+        }
+        return result;
+    }
 }
 
 let localStorageUtil = new LocalStorageUtil();

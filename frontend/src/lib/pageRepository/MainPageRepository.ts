@@ -1,6 +1,7 @@
 import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
 import {GLOBAL_SETTINGS} from "./apiSettings";
 import restApiClient from "../api/RestApiClient";
+import localStorageUtil from "../util/LocalStorageUtil";
 
 interface MainPageRepository {
     getData: () => Promise<MainPageData>
@@ -30,9 +31,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
     }
 
     async createMember(member: MemberDto): Promise<void> {
-        let members = this.getMembers();
-        members.push(member)
-        await this.saveMembers(members);
+        localStorageUtil.setObject(`cgd.user.${member.id}`, member)
     }
 
     private static getTodayDate(): string {
@@ -48,11 +47,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
     }
 
     private getMembers(): MemberDto[] {
-        return JSON.parse(localStorage.getItem("cgd.pages.main.members") || "[]");
-    }
-
-    private saveMembers(members: MemberDto[]) {
-        localStorage.setItem("cgd.pages.main.members", JSON.stringify(members))
+        return localStorageUtil.getAllObjectsByPrefix("cgd.user.");
     }
 
 }
