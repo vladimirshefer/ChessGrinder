@@ -16,6 +16,7 @@ public class RoundService {
     public void createRound(UUID tournamentId) {
 
         Round lastExistedRound = roundRepository.findFirstByTournamentIdOrderByNumberDesc(tournamentId);
+        lastExistedRound.setFinished(true);
         Integer nextRoundNumber = lastExistedRound.getNumber() + 1;
 
         Round nextRound = Round.builder()
@@ -25,7 +26,10 @@ public class RoundService {
                 .matches(List.of())
                 .isFinished(false)
                 .build();
+
         //TODO do not create round if the tournament is finished
+
+        roundRepository.save(lastExistedRound);
         roundRepository.save(nextRound);
     }
 }

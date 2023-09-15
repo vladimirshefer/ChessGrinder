@@ -14,8 +14,11 @@ import org.springframework.transaction.annotation.*;
 @Component
 @RequiredArgsConstructor
 public class TournamentService {
+
+    private final SwissService swissService;
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
+    private final ParticipantRepository participantRepository;
 
     @Transactional
     public void createTournament(LocalDateTime date) {
@@ -28,6 +31,7 @@ public class TournamentService {
                 .build();
 
         tournament = tournamentRepository.save(tournament);
+
         Round firstRound = Round.builder()
                 .id(UUID.randomUUID())
                 .tournament(tournament)
@@ -38,4 +42,31 @@ public class TournamentService {
 
         roundRepository.save(firstRound);
     }
+
+    public void startTournament(UUID tournamentId) {
+
+        List<Participant> participants = participantRepository.findByTournamentId(tournamentId);
+        Round activeRoundInTournament = roundRepository.findActiveRoundInTournament(tournamentId);
+
+        List<Match> matchesInTheRound = swissService.makePairs(participants);
+
+        activeRoundInTournament.setMatches(matchesInTheRound);
+
+        tournamentRepository.findById(tournamentId).ifPresent(tournament -> {
+            tournament.setStatus(TournamentStatus.ACTIVE);
+            tournamentRepository.save(tournament);
+        });
+
+        roundRepository.save(activeRoundInTournament);
+    }
+
+    public void finishTournament(UUID tournamentId) {
+        tournamentRepository.findById(tournamentId).ifPresent(tournament -> {
+            tournament.setStatus(TournamentStatus.FINISHED);
+            tournamentRepository.save(tournament);
+        });
+    }
+
+
+
 }

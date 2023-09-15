@@ -19,7 +19,6 @@ public class UserBadge {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne

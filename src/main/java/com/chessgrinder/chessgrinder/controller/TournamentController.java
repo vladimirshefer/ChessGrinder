@@ -2,12 +2,10 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.service.TournamentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/tournament")
@@ -22,4 +20,13 @@ public class TournamentController {
         tournamentService.createTournament(LocalDateTime.now());
     }
 
+    @GetMapping("/{tournamentId}/start")
+    public void startTournament(@PathVariable UUID tournamentId) {
+        tournamentService.startTournament(tournamentId);
+    }
+
+    @GetMapping("/{tournamentId}/finish")
+    public void finishTournament(@PathVariable UUID tournamentId) {
+        tournamentService.finishTournament(tournamentId);
+    }
 }

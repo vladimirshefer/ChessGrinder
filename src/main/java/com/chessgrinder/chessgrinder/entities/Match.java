@@ -20,7 +20,6 @@ public class Match {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
@@ -29,11 +28,11 @@ public class Match {
 
     @ManyToOne
     @JoinColumn(name = "player_id_1")
-    private User user1;
+    private Participant participant1;
 
     @ManyToOne
     @JoinColumn(name = "player_id_2")
-    private User user2;
+    private Participant participant2;
 
     @Column(name = "result")
     @Enumerated(EnumType. STRING)

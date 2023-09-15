@@ -14,4 +14,7 @@ public interface RoundRepository extends PagingAndSortingRepository<Round, UUID>
     List<Round> findByTournamentId(UUID tournamentId);
 
     Round findFirstByTournamentIdOrderByNumberDesc(UUID tournamentId);
+
+    @Query("SELECT r FROM Round r WHERE r.isFinished = false AND r.tournament.id = :tournamentId")
+    Round findActiveRoundInTournament(UUID tournamentId);
 }

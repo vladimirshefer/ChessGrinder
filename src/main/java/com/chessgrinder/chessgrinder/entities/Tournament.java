@@ -21,7 +21,6 @@ public class Tournament {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "date")
@@ -30,4 +29,7 @@ public class Tournament {
     @Column(name = "status")
     @Enumerated(EnumType. STRING)
     private TournamentStatus status;
+
+    @OneToMany(mappedBy = "tournament")
+    private List<Round> rounds;
 }

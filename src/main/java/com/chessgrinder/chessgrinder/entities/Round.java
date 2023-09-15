@@ -20,7 +20,6 @@ public class Round {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "number")
@@ -30,7 +29,7 @@ public class Round {
     @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
-    @OneToMany
+    @OneToMany(mappedBy = "round")
     private List<Match> matches;
 
     @Column(name = "is_finished")
