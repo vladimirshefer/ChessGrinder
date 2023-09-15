@@ -1,6 +1,6 @@
 import {MatchDto, MatchResult, ParticipantDto, RoundDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import {GLOBAL_SETTINGS} from "./apiSettings";
-import restApiClient from "../api/RestApiClient";
+import restApiClient from "lib/api/RestApiClient";
 
 export interface TournamentPageRepository {
     getData(tournamentId: string): Promise<TournamentPageData>

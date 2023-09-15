@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
-import loginPageRepository from "../../lib/pageRepository/LoginPageRepository";
-import {useAuthData} from "../../lib/auth/AuthService";
+import loginPageRepository from "lib/pageRepository/LoginPageRepository";
+import {useAuthData} from "lib/auth/AuthService";
 import {useNavigate} from "react-router-dom";
 
 export default function LoginPage() {

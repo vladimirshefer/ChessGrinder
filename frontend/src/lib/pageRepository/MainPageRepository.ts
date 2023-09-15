@@ -1,7 +1,7 @@
 import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
-import {GLOBAL_SETTINGS} from "./apiSettings";
-import restApiClient from "../api/RestApiClient";
-import localStorageUtil from "../util/LocalStorageUtil";
+import {GLOBAL_SETTINGS} from "lib/pageRepository/apiSettings";
+import restApiClient from "lib/api/RestApiClient";
+import localStorageUtil from "lib/util/LocalStorageUtil";
 
 interface MainPageRepository {
     getData: () => Promise<MainPageData>

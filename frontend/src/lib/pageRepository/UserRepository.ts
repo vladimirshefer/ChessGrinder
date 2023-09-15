@@ -1,5 +1,5 @@
-import localStorageUtil from "../util/LocalStorageUtil";
-import {MemberDto} from "../api/dto/MainPageData";
+import localStorageUtil from "lib/util/LocalStorageUtil";
+import {MemberDto} from "lib/api/dto/MainPageData";
 
 export interface UserRepository {
     getUser(username: string): Promise<MemberDto | null>

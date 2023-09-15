@@ -1,4 +1,4 @@
-import {MatchDto, MatchResult, RoundDto} from "../../lib/api/dto/TournamentPageData";
+import {MatchDto, MatchResult, RoundDto} from "lib/api/dto/TournamentPageData";
 import RunningRoundTable from "./RunningRoundTable";
 import React from "react";
 
