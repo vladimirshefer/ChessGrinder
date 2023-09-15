@@ -20,7 +20,7 @@ public class MainPageService {
 
     public MainPageDto getInfoForMainPage() {
 
-        List<User> users = (List<User>) userRepository.findAll();
+        List<User> users = userRepository.findAll();
         List<Tournament> tournaments = (List<Tournament>) tournamentRepository.findAll();
 
         return MainPageDto.builder()
