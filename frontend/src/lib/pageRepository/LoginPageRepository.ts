@@ -24,12 +24,6 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
     }
 }
 
-interface UserProfile {
-    id: string
-    name: string
-    username: string
-}
-
 class RestApiLoginPageRepository implements LoginPageRepository {
     login(login: string, password: string): Promise<string> {
         return Promise.resolve("");
