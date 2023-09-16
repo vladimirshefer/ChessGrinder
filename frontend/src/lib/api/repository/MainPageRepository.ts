@@ -1,5 +1,5 @@
 import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
-import {GLOBAL_SETTINGS, qualifiedServiceProxy} from "lib/api/repository/apiSettings";
+import {qualifiedServiceProxy} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 

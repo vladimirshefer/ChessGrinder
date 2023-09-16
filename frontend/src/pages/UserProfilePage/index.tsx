@@ -45,7 +45,7 @@ export default function UserProfilePage() {
     }
 
     return <>
-        User {username}
+        User {userProfile?.name || userProfile?.id || "Unknown"}
 
         {
             isMyProfile ? (

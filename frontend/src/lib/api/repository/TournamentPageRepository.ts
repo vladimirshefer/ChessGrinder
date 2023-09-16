@@ -1,5 +1,5 @@
 import {MatchDto, MatchResult, ParticipantDto, RoundDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
-import {GLOBAL_SETTINGS, qualifiedService} from "./apiSettings";
+import {qualifiedService} from "./apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 
 export interface TournamentPageRepository {
