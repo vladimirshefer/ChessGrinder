@@ -1,5 +1,5 @@
 import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
-import {GLOBAL_SETTINGS} from "lib/pageRepository/apiSettings";
+import {GLOBAL_SETTINGS, qualifiedServiceProxy} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 
@@ -69,18 +69,9 @@ class ProductionMainPageRepository implements MainPageRepository {
 let localStorageMainPageRepository = new LocalStorageMainPageRepository()
 let productionMainPageRepository = new ProductionMainPageRepository()
 
-let mainPageRepository = new Proxy<MainPageRepository>({} as unknown as MainPageRepository, {
-    get(target: MainPageRepository, p: string | symbol, receiver: any): any {
-        if (GLOBAL_SETTINGS.getProfile() === "local") {
-            return (localStorageMainPageRepository as any)[p]
-        } else {
-            return (productionMainPageRepository as any)[p]
-        }
-    }
-});
-
-// let mainPageRepository: MainPageRepository = GLOBAL_SETTINGS.getProfile() === "local"
-//     ? new LocalStorageMainPageRepository()
-//     // : new ProductionMainPageRepository();
+let mainPageRepository = qualifiedServiceProxy({
+    local: localStorageMainPageRepository,
+    production: productionMainPageRepository,
+})
 
 export default mainPageRepository;

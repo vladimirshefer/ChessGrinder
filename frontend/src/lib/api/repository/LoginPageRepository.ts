@@ -1,4 +1,4 @@
-import {GLOBAL_SETTINGS} from "lib/pageRepository/apiSettings";
+import {qualifiedService} from "lib/api/repository/apiSettings";
 import authService from "lib/auth/AuthService";
 import mainPageRepository from "./MainPageRepository";
 
@@ -31,8 +31,10 @@ class RestApiLoginPageRepository implements LoginPageRepository {
 
 }
 
-let loginPageRepository: LoginPageRepository = GLOBAL_SETTINGS.getProfile() === "local"
-    ? new LocalStorageLoginPageRepository()
-    : new RestApiLoginPageRepository();
+
+let loginPageRepository: LoginPageRepository = qualifiedService({
+    local: new LocalStorageLoginPageRepository(),
+    production: new RestApiLoginPageRepository(),
+})
 
 export default loginPageRepository

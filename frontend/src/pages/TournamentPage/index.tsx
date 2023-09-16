@@ -2,7 +2,7 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useMemo} from "react";
 import ResultsTable from "pages/TournamentPage/ResultsTable";
 import {useQuery} from "@tanstack/react-query";
-import tournamentPageRepository from "lib/pageRepository/TournamentPageRepository";
+import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {MatchDto, MatchResult, ParticipantDto} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
 

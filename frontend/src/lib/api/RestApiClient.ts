@@ -1,5 +1,5 @@
 import axios, {AxiosRequestConfig} from "axios";
-import {GLOBAL_SETTINGS} from "lib/pageRepository/apiSettings";
+import {GLOBAL_SETTINGS} from "lib/api/repository/apiSettings";
 
 class RestApiClient {
     private axiosRequestConfig = {

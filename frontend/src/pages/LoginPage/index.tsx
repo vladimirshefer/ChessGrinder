@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import loginPageRepository from "lib/pageRepository/LoginPageRepository";
+import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {useAuthData} from "lib/auth/AuthService";
 import {useNavigate} from "react-router-dom";
 

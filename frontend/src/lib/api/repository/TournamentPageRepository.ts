@@ -1,5 +1,5 @@
 import {MatchDto, MatchResult, ParticipantDto, RoundDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
-import {GLOBAL_SETTINGS} from "./apiSettings";
+import {GLOBAL_SETTINGS, qualifiedService} from "./apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 
 export interface TournamentPageRepository {
@@ -257,8 +257,9 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     }
 }
 
-let tournamentPageRepository: TournamentPageRepository = GLOBAL_SETTINGS.getProfile() === "local"
-    ? new LocalStorageTournamentPageRepository()
-    : new ProductionTournamentPageRepository();
+let tournamentPageRepository: TournamentPageRepository = qualifiedService({
+    local: new LocalStorageTournamentPageRepository(),
+    production: new ProductionTournamentPageRepository()
+})
 
 export default tournamentPageRepository;

@@ -1,5 +1,6 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import {MemberDto} from "lib/api/dto/MainPageData";
+import {qualifiedService} from "./apiSettings";
 
 export interface UserRepository {
     getUser(username: string): Promise<MemberDto | null>
@@ -24,6 +25,9 @@ class LocalStorageUserProfileRepository implements UserRepository {
 
 }
 
-let userRepository = new LocalStorageUserProfileRepository()
+let userRepository = qualifiedService({
+    local: new LocalStorageUserProfileRepository(),
+    production: new LocalStorageUserProfileRepository(),
+})
 
 export default userRepository;

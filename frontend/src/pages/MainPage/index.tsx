@@ -3,7 +3,7 @@ import {MemberList} from "./MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
 import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
-import mainPageRepository from "lib/pageRepository/MainPageRepository";
+import mainPageRepository from "lib/api/repository/MainPageRepository";
 
 let mockMembers: MemberDto[] = [
     {

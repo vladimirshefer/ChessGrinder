@@ -1,4 +1,4 @@
-import {GLOBAL_SETTINGS} from "lib/pageRepository/apiSettings";
+import {GLOBAL_SETTINGS} from "lib/api/repository/apiSettings";
 
 export default function AdminPage() {
     return <>
