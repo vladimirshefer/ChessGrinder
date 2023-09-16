@@ -16,8 +16,10 @@ public class MatchController {
     private final MatchService matchService;
 
     @PostMapping()
-    public void submitMatchResult(@PathVariable UUID matchId,
-                                  @RequestBody SubmitMatchResultRequestDto submitMatchResultDto) {
+    public void submitMatchResult(
+            @PathVariable UUID matchId,
+            @RequestBody SubmitMatchResultRequestDto submitMatchResultDto
+    ) {
         matchService.submitMatchResult(matchId, submitMatchResultDto);
     }
 }
