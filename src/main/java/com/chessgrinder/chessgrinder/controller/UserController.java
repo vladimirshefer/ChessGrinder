@@ -1,14 +1,17 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.exceptions.*;
+import com.chessgrinder.chessgrinder.dto.MemberDto;
+import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
-@RestController("/user")
+@RestController
+@RequestMapping("/user")
+@CrossOrigin(origins = "localhost:3000")
 @RequiredArgsConstructor
 public class UserController {
 
