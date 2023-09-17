@@ -20,7 +20,7 @@ export default function RoundTab(
     }
 ) {
     return <div>
-        { round.state === "STARTED" ?
+        { !round.isFinished ?
             <RunningRoundTable matches={round.matches}
                                submitMatchResult={(match, result) => {
                                    submitMatchResult(match, result!!);
@@ -41,7 +41,7 @@ export default function RoundTab(
             >Draw
             </button>
             {
-                round.state === "STARTED" ?
+                !round.isFinished ?
                     <button className={"bg-blue-200 p-1 rounded-md mx-1"}
                             onClick={() => submitRoundFinished()}
                     >Finish

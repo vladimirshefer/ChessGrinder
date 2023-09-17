@@ -13,7 +13,7 @@ export interface MatchDto {
 export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW"
 
 export interface RoundDto {
-    state: "FINISHED" | "STARTED"
+    isFinished: boolean
     matches: MatchDto[]
 }
 

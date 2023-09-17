@@ -42,7 +42,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         let buchholzListMap/*userId -> arrayOf[enemy user points]*/ = new Map<string, number[]>()
         let enemiesMap/*userId -> arrayOf[enemy user points]*/ = new Map<string, Set<string>>()
         let allMatches = tournamentData.rounds
-            .filter(round => round.state === "FINISHED")
+            .filter(round => round.isFinished)
             .flatMap((round: RoundDto) => round.matches);
         allMatches.forEach(match => {
             let whiteUserId = match.white.userId;
@@ -103,8 +103,8 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             throw new Error(`No tournament with id ${tournamentId}`)
         }
         tournament.rounds.push({
-            state: "STARTED",
-            matches: []
+            isFinished: false,
+            matches: [],
         })
         this.saveTournament(tournamentId, tournament)
     }
@@ -118,7 +118,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
         }
         let round = tournament.rounds[roundNumber - 1];
-        if (round.state !== "STARTED") {
+        if (round.isFinished) {
             throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is already finished.`)
         }
         let participants = tournament.participants || []
@@ -202,10 +202,10 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
         }
         let round = tournament.rounds[roundNumber - 1];
-        if (round.state !== "STARTED") {
+        if (round.isFinished) {
             throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is already finished.`)
         }
-        round.state = "FINISHED"
+        round.isFinished = true
         await this.saveTournament(tournamentId, tournament)
     }
 
@@ -218,10 +218,10 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
         }
         let round = tournament.rounds[roundNumber - 1];
-        if (round.state !== "FINISHED") {
+        if (!round.isFinished) {
             throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is running.`)
         }
-        round.state = "STARTED"
+        round.isFinished = false
         await this.saveTournament(tournamentId, tournament)
     }
 }
