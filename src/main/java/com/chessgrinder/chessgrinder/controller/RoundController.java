@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.controller;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.dto.pages.*;
+import com.chessgrinder.chessgrinder.exceptions.*;
 import com.chessgrinder.chessgrinder.service.*;
 import lombok.*;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,14 @@ public class RoundController {
                             @RequestParam UUID userId) {
         roundService.markUserAsMissedInTournament(userId, tournamentId);
     }
+
+    @DeleteMapping("/{roundNumber}")
+    public void deleteRound(@PathVariable UUID tournamentId,
+                            @RequestParam Integer roundNumber) throws RoundNotFoundException {
+        roundService.deleteRound(tournamentId, roundNumber);
+    }
+
+
 
 
 

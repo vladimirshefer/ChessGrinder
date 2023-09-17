@@ -29,7 +29,7 @@ public class Round {
     @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
-    @OneToMany(mappedBy = "round")
+    @OneToMany(mappedBy = "round", cascade = CascadeType.REMOVE)
     private List<Match> matches;
 
     @Column(name = "is_finished")

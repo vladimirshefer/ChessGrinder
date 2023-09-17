@@ -3,12 +3,15 @@ package com.chessgrinder.chessgrinder.service;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.exceptions.*;
 import com.chessgrinder.chessgrinder.repositories.*;
 import lombok.*;
+import lombok.extern.slf4j.*;
 import org.springframework.stereotype.*;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RoundService {
 
     private final RoundRepository roundRepository;
@@ -66,7 +69,17 @@ public class RoundService {
         Participant participant = participantRepository.findByTournamentIdAndUserId(tournamentId, userId);
         participant.setMissing(true);
         participantRepository.save(participant);
+    }
 
+    public void deleteRound(UUID tournamentId, Integer roundNumber) throws RoundNotFoundException {
 
+        Round round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
+
+        if (round != null) {
+            roundRepository.delete(round);
+        } else {
+            log.error("There is no round with number: " + roundNumber + " in the tournament with id: " + tournamentId);
+            throw new RoundNotFoundException();
+        }
     }
 }
