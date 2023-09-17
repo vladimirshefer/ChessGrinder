@@ -1,15 +1,14 @@
 package com.chessgrinder.chessgrinder.service;
 
+import java.util.*;
+import java.util.stream.*;
+
 import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.*;
 import com.chessgrinder.chessgrinder.mappers.*;
 import com.chessgrinder.chessgrinder.repositories.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.*;
+import org.springframework.stereotype.*;
 
 @Service
 @RequiredArgsConstructor
