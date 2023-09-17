@@ -12,4 +12,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, UUID>, 
     @Override
     List<User> findAll();
 
+    Optional<User> findByUsername(String userName);
+
 }

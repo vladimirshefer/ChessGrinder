@@ -1,0 +1,3 @@
+GET /user/vshefer
+Authorization: Basic {{token}}
+Content-Type: application/json

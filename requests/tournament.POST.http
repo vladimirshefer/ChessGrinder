@@ -11,3 +11,7 @@ Content-Type: application/json
 //  "name": "name",
 //  "date": "2023-08-30",
 //}
+
+
+GET /user/{username OR userId}
+return MemberDto

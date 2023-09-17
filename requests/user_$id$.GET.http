@@ -1,0 +1,5 @@
+GET /user/1
+Authorization: Basic {{token}}
+Content-Type: application/json
+
+
