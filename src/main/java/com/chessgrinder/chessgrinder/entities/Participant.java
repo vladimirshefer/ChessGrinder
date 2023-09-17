@@ -38,4 +38,8 @@ public class Participant {
 
     @Column(name = "buchholz")
     private BigDecimal buchholz;
+
+    @Column(name = "is_missing")
+    private boolean isMissing;
+
 }
