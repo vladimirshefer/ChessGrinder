@@ -23,11 +23,15 @@ class LocalStorageMainPageRepository implements MainPageRepository {
     async postTournament() {
         let id = `${Math.trunc(Math.random() * 1000000) + 1000000}`;
         let tournament = {
-            id: id,
-            name: id,
             date: LocalStorageMainPageRepository.getTodayDate(),
             participants: [],
-            rounds: []
+            rounds: [],
+            tournament: {
+                id: id,
+                name: id,
+                date: "2023-07-01",
+                status: "",
+            } as TournamentDto
         } as TournamentPageData;
         localStorageUtil.setObject(`cgd.tournament.${id}`, tournament)
     }

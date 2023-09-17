@@ -172,10 +172,14 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
 
     private getEmptyTournament(tournamentId: string): TournamentPageData {
         return {
-            id: tournamentId,
-            name: tournamentId,
             participants: [],
             rounds: [],
+            tournament: {
+                id: tournamentId,
+                name: tournamentId,
+                status: "",
+                date: "2023-07-01",
+            }
         };
     }
 
@@ -244,15 +248,15 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     }
 
     async drawRound(tournamentId: string, roundNumber: number): Promise<void> {
-        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/matchup`)
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/action/matchup`)
     }
 
     async finishRound(tournamentId: string, roundNumber: number): Promise<void> {
-        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/finish`);
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/action/finish`);
     }
 
     async reopenRound(tournamentId: string, roundNumber: number): Promise<void> {
-        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/reopen`);
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/action/reopen`);
     }
 }
 

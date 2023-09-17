@@ -21,7 +21,7 @@ export default function RoundTab(
 ) {
     return <div>
         { !round.isFinished ?
-            <RunningRoundTable matches={round.matches}
+            <RunningRoundTable matches={round.matches || []}
                                submitMatchResult={(match, result) => {
                                    submitMatchResult(match, result!!);
                                }}

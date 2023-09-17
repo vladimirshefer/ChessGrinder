@@ -1,3 +1,5 @@
+import {TournamentDto} from "./MainPageData";
+
 export interface MatchParticipantDto {
     userId: string,
     name: string
@@ -25,8 +27,7 @@ export interface ParticipantDto {
 }
 
 export interface TournamentPageData {
-    id: string
-    name: string | undefined | null
     participants: ParticipantDto[]
-    rounds: RoundDto[]
+    rounds: RoundDto[],
+    tournament: TournamentDto,
 }
