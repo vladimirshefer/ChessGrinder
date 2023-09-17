@@ -4,14 +4,17 @@ import java.util.*;
 import java.util.stream.*;
 
 import com.chessgrinder.chessgrinder.dto.*;
+import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.*;
 import com.chessgrinder.chessgrinder.mappers.*;
 import com.chessgrinder.chessgrinder.repositories.*;
 import lombok.*;
+import lombok.extern.slf4j.*;
 import org.springframework.stereotype.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -24,34 +27,40 @@ public class UserService {
         return users.stream().map(userMapper::toDto).collect(Collectors.toList());
     }
 
-    public MemberDto getUserById(UUID userId) throws UserNotFoundException {
+    public MemberDto getUserByUserId(String userId) throws UserNotFoundException  {
 
-        return userRepository.findById(userId).map(user -> {
+        User user = userRepository.findById(UUID.fromString(userId)).orElse(null);
 
-            List<BadgeDto> badges = badgeMapper.toDto(badgeRepository.getAllBadgesByUserId(user.getId()));
+        if (user == null) {
+            log.error("There is no such user with id: '" + userId + "'" );
+            throw new UserNotFoundException();
+        }
+        List<BadgeDto> badges = badgeMapper.toDto(badgeRepository.getAllBadgesByUserId(user.getId()));
 
-            return MemberDto.builder()
-                    .id(userId.toString())
-                    .username(user.getUsername())
-                    .name(user.getName())
-                    .badges(badges)
-                    .build();
+        return MemberDto.builder()
+                .id(userId)
+                .username(user.getUsername())
+                .name(user.getName())
+                .badges(badges)
+                .build();
 
-        }).orElseThrow(UserNotFoundException::new); //TODO log userID;
     }
-
     public MemberDto getUserByUserName(String userName) throws UserNotFoundException  {
 
-        return userRepository.findByUsername(userName).map(user -> {
+        User user = userRepository.findByUsername(userName);
 
-            List<BadgeDto> badges = badgeMapper.toDto(badgeRepository.getAllBadgesByUserId(user.getId()));
+        if (user == null) {
+            log.error("There is no such user with username: '" + userName + "'" );
+            throw new UserNotFoundException();
+        }
+        List<BadgeDto> badges = badgeMapper.toDto(badgeRepository.getAllBadgesByUserId(user.getId()));
 
-            return MemberDto.builder()
+        return MemberDto.builder()
                     .id(user.getId().toString())
                     .username(userName)
                     .name(user.getName())
                     .badges(badges)
                     .build();
-        }).orElseThrow(UserNotFoundException::new);
+
     }
 }
