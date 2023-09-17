@@ -194,6 +194,7 @@ public class TestDataInserter {
                         .id(UUID.fromString("aaaa7777-1111-1111-1111-000000000001"))
                         .participant1(participant1)
                         .participant2(participant2)
+                        .result(MatchResult.WHITE_WIN)
                         .build()
         );
 
@@ -202,6 +203,7 @@ public class TestDataInserter {
                         .id(UUID.fromString("aaaa6666-1111-1111-1111-000000000002"))
                         .participant1(participant3)
                         .participant2(participant4)
+                        .result(MatchResult.BLACK_WIN)
                         .build()
         );
 
