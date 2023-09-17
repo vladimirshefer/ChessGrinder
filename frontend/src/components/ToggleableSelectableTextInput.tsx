@@ -5,8 +5,12 @@ export default function ToggleableSelectableTextInput(
         values,
         submitValue,
         buttonText = "Add",
+        selectOptionNameExtractor = (it) => it as unknown as string,
+        selectKeyExtractor = (it) => it as unknown as string,
     }: {
-        values: string[] | undefined,
+        values: any[] | undefined,
+        selectKeyExtractor?: (value: any) => string,
+        selectOptionNameExtractor?: (value: any) => string,
         submitValue: (value: string) => void,
         buttonText?: string,
     }
@@ -24,7 +28,13 @@ export default function ToggleableSelectableTextInput(
                                onChange={event => setSelectedValue(event.target.value)}
                         />
                         <datalist id="members">
-                            {values ? values.map(value => <option key={value} value={value}/>) : []}
+                            {values ? values.map(value =>
+                                <option
+                                    key={selectKeyExtractor(value)}
+                                    value={selectKeyExtractor(value)}>
+                                    {selectOptionNameExtractor(value)}
+                                </option>
+                            ) : []}
                         </datalist>
                     </div>
                     <div className={"col-span-3 px-2 grid grid-cols-12 gap-x-1"}>

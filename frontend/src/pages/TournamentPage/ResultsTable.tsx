@@ -1,6 +1,8 @@
 import React, {useMemo} from "react";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
-import ToggleableSelectableTextInput from "../../components/ToggleableSelectableTextInput";
+import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
+import {useQuery} from "@tanstack/react-query";
+import userRepository from "lib/api/repository/UserRepository";
 
 function ResultsTable(
     {
@@ -12,15 +14,14 @@ function ResultsTable(
     }
 ) {
 
-    let members = useMemo(() => [
-        "",
-        "Vladimir Shefer",
-        "Alexander Boldyrev",
-        "Stanislav Malov",
-        "Sergey Pavlov",
-        "Aikhan Ibrahimov",
-        "Mikhail Boba"
-    ].sort(), [])
+    let {data: users} = useQuery({
+        queryKey: ["users"],
+        queryFn: async () => {
+            return await userRepository.getUsers()
+        }
+    })
+
+    let members = useMemo(() => users || [], [users])
 
     return <>
         <div className={"w-full grid grid-cols-12"}>
@@ -30,6 +31,8 @@ function ResultsTable(
             <div className={"col-span-12 px-2 my-1"}>
                 <ToggleableSelectableTextInput
                     values={members}
+                    selectKeyExtractor={user => user.id}
+                    selectOptionNameExtractor={user => user.name}
                     buttonText={"Add participant"}
                     submitValue={addParticipant}
                 />

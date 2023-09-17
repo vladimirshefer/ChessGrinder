@@ -1,6 +1,7 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import {MemberDto} from "lib/api/dto/MainPageData";
 import {qualifiedService} from "./apiSettings";
+import restApiClient from "../RestApiClient";
 
 export interface UserRepository {
     getUser(username: string): Promise<MemberDto | null>
@@ -8,7 +9,7 @@ export interface UserRepository {
     getUsers(): Promise<MemberDto[]>
 }
 
-class LocalStorageUserProfileRepository implements UserRepository {
+class LocalStorageUserRepository implements UserRepository {
     private userKeyPrefix = "cgd.user";
 
     async getUser(username: string): Promise<MemberDto | null> {
@@ -25,9 +26,20 @@ class LocalStorageUserProfileRepository implements UserRepository {
 
 }
 
+class RestApiUserRepository implements UserRepository {
+    async getUser(username: string): Promise<MemberDto | null> {
+        return restApiClient.get(`/user/${username}`);
+    }
+
+    async getUsers(): Promise<MemberDto[]> {
+        return restApiClient.get(`/user`);
+    }
+
+}
+
 let userRepository = qualifiedService({
-    local: new LocalStorageUserProfileRepository(),
-    production: new LocalStorageUserProfileRepository(),
+    local: new LocalStorageUserRepository(),
+    production: new RestApiUserRepository(),
 })
 
 export default userRepository;

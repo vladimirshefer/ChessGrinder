@@ -6,7 +6,7 @@ import localStorageUtil from "lib/util/LocalStorageUtil";
 export interface TournamentPageRepository {
     getData(tournamentId: string): Promise<TournamentPageData | null>
 
-    postParticipant(tournamentId: string, participant: string): Promise<void>
+    postParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
 
     postRound(tournamentId: string): Promise<void>
 
@@ -85,15 +85,10 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         }
     }
 
-    async postParticipant(tournamentId: string, participant: string) {
+    async postParticipant(tournamentId: string, participant: ParticipantDto) {
         let tournament = await this.getData(tournamentId) || this.getEmptyTournament(tournamentId);
         tournament.participants = tournament.participants || []
-        tournament.participants.push({
-            name: participant,
-            userId: participant,
-            score: 0,
-            buchholz: 0,
-        })
+        tournament.participants.push(participant)
         this.saveTournament(tournamentId, tournament)
     }
 
@@ -232,7 +227,7 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
             .catch((e) => Promise.resolve(null));
     }
 
-    async postParticipant(tournamentId: string, participant: string) {
+    async postParticipant(tournamentId: string, participant: ParticipantDto) {
         await restApiClient.post(`/tournament/${tournamentId}/participant`, participant,)
     }
 

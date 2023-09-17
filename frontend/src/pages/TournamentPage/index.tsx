@@ -18,7 +18,12 @@ function TournamentPage() {
     let participants: ParticipantDto[] = useMemo(() => tournamentData?.participants || [], [tournamentData])
 
     async function addParticipant(name: string) {
-        await tournamentPageRepository.postParticipant(id!!, name)
+        await tournamentPageRepository.postParticipant(id!!, {
+            userId: name,
+            name: name,
+            buchholz: 0,
+            score: 0,
+        })
         await refetch()
     }
 
