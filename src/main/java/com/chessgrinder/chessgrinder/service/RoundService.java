@@ -18,7 +18,7 @@ public class RoundService {
     public void createRound(UUID tournamentId) {
 
         Round lastExistedRound = roundRepository.findFirstByTournamentIdOrderByNumberDesc(tournamentId);
-        Integer nextRoundNumber = lastExistedRound.getNumber() + 1;
+        Integer nextRoundNumber = lastExistedRound != null ? lastExistedRound.getNumber() + 1 : 1;
 
         Round nextRound = Round.builder()
                 .id(UUID.randomUUID())
