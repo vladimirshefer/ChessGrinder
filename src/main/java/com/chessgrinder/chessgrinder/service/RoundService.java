@@ -17,6 +17,7 @@ public class RoundService {
     private final RoundRepository roundRepository;
     private final ParticipantRepository participantRepository;
     private final SwissService swissService;
+    private final MatchRepository matchRepository;
 
     public void createRound(UUID tournamentId) {
 
@@ -56,16 +57,14 @@ public class RoundService {
     public void makeMatchUp(UUID tournamentId, Integer roundNumber) {
 
         List<Participant> participants = participantRepository.findByTournamentId(tournamentId);
-        Round activeRoundInTournament = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
+        Round round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
-        List<Match> matchesInTheRound = swissService.makePairs(participants);
-        activeRoundInTournament.setMatches(matchesInTheRound);
-
-        roundRepository.save(activeRoundInTournament);
+        List<Match> matches = swissService.makePairs(participants);
+        matches.forEach(match -> match.setRound(round));
+        matchRepository.saveAll(matches);
     }
 
     public void markUserAsMissedInTournament(UUID userId, UUID tournamentId) {
-
         Participant participant = participantRepository.findByTournamentIdAndUserId(tournamentId, userId);
         participant.setMissing(true);
         participantRepository.save(participant);
