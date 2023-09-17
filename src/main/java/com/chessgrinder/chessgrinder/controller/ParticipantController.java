@@ -15,7 +15,7 @@ public class ParticipantController {
 
     private final ParticipantService participantServiceService;
 
-    @PostMapping()
+    @PostMapping("/participant")
     public void addParticipantToTournament(@PathVariable UUID tournamentId,
                                            @RequestBody ParticipantDto participantDto) {
         participantServiceService.addParticipantToTheTournament(tournamentId, participantDto);

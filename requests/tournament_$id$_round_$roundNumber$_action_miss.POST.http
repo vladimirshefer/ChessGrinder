@@ -1,0 +1,3 @@
+POST {{host}}/tournament/1/round/2/action/miss?user=3
+Authorization: Basic {{token}}
+Content-Type: application/json

@@ -20,22 +20,22 @@ public class RoundController {
         roundService.createRound(tournamentId);
     }
 
-    @PostMapping("/{roundNumber}/finish")
+    @PostMapping("/{roundNumber}/action/finish")
     public void finishRound(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
         roundService.finishRound(tournamentId, roundNumber);
     }
 
-    @PostMapping("/{roundNumber}/reopen")
+    @PostMapping("/{roundNumber}/action/reopen")
     public void reopenRound(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
         roundService.reopenRound(tournamentId, roundNumber);
     }
 
-    @PostMapping("/{roundNumber}/matchup")
+    @PostMapping("/{roundNumber}/action/matchup")
     public void makeMatchUp(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
         roundService.makeMatchUp(tournamentId, roundNumber);
     }
 
-    @PostMapping("/{roundNumber}/miss")
+    @PostMapping("/{roundNumber}/action/miss")
     public void markUserAsMissedInTournament(@PathVariable UUID tournamentId,
                             @RequestParam UUID userId) {
         roundService.markUserAsMissedInTournament(userId, tournamentId);

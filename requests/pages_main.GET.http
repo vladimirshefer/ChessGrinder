@@ -1,2 +1,4 @@
+#Get all info for main page
+
 GET {{host}}/pages/main
 Authorization: Basic {{token}}

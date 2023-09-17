@@ -20,12 +20,12 @@ public class TournamentController {
         tournamentService.createTournament(LocalDateTime.now());
     }
 
-    @GetMapping("/{tournamentId}/start")
+    @GetMapping("/{tournamentId}/action/start")
     public void startTournament(@PathVariable UUID tournamentId) {
         tournamentService.startTournament(tournamentId);
     }
 
-    @GetMapping("/{tournamentId}/finish")
+    @GetMapping("/{tournamentId}/action/finish")
     public void finishTournament(@PathVariable UUID tournamentId) {
         tournamentService.finishTournament(tournamentId);
     }

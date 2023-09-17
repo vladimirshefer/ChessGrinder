@@ -3,7 +3,7 @@ Authorization: Basic {{token}}
 Content-Type: application/json
 
 {
-  "result": "WHITE_WIN",
+  "result": "WHITE_WIN"
 }
 
 // response

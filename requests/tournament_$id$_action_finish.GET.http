@@ -1,0 +1,3 @@
+GET {{host}}/tournament/1/action/finish
+Authorization: Basic {{token}}
+Content-Type: application/json

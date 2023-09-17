@@ -1,4 +1,4 @@
-POST {{host}}/tournament/820421ae-980d-4309-b6ba-93374ee153a2/round
+POST {{host}}/tournament/1/round
 Authorization: Basic {{token}}
 Content-Type: application/json
 
