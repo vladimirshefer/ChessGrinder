@@ -2,6 +2,7 @@ import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
 import {qualifiedServiceProxy} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
+import {TournamentPageData} from "../dto/TournamentPageData";
 
 interface MainPageRepository {
     getData: () => Promise<MainPageData>
@@ -20,14 +21,15 @@ class LocalStorageMainPageRepository implements MainPageRepository {
     }
 
     async postTournament() {
-        let tournaments = this.getTournaments()
         let id = `${Math.trunc(Math.random() * 1000000) + 1000000}`;
-        tournaments.push({
+        let tournament = {
             id: id,
             name: id,
             date: LocalStorageMainPageRepository.getTodayDate(),
-        })
-        localStorage.setItem("cgd.pages.main.tournaments", JSON.stringify(tournaments))
+            participants: [],
+            rounds: []
+        } as TournamentPageData;
+        localStorageUtil.setObject(`cgd.tournament.${id}`, tournament)
     }
 
     async createMember(member: MemberDto): Promise<void> {
@@ -43,7 +45,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
     }
 
     private getTournaments(): TournamentDto[] {
-        return JSON.parse(localStorage.getItem("cgd.pages.main.tournaments") || "[]") as TournamentDto[];
+        return localStorageUtil.getAllObjectsByPrefix("cgd.tournament.") as TournamentDto[];
     }
 
     private getMembers(): MemberDto[] {

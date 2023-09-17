@@ -1,9 +1,10 @@
 import {MatchDto, MatchResult, ParticipantDto, RoundDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import {qualifiedService} from "./apiSettings";
 import restApiClient from "lib/api/RestApiClient";
+import localStorageUtil from "lib/util/LocalStorageUtil";
 
 export interface TournamentPageRepository {
-    getData(tournamentId: string): Promise<TournamentPageData>
+    getData(tournamentId: string): Promise<TournamentPageData | null>
 
     postParticipant(tournamentId: string, participant: string): Promise<void>
 
@@ -21,16 +22,18 @@ export interface TournamentPageRepository {
 }
 
 class LocalStorageTournamentPageRepository implements TournamentPageRepository {
-    async getData(tournamentId: string): Promise<TournamentPageData> {
-        let tournament = JSON.parse(localStorage.getItem(`cgd.pages.tournament.${tournamentId}`) || "null");
+    async getData(tournamentId: string): Promise<TournamentPageData | null> {
+        let tournament = localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`)
+        console.log(tournament)
         if (tournament) {
             let {pointsMap, buchholzMap} = this.calculateResults(tournament)
             tournament.participants.forEach((participant: ParticipantDto) => {
                 participant.score = pointsMap.get(participant.userId) || 0
                 participant.buchholz = buchholzMap.get(participant.userId) || 0
             })
+            return tournament
         }
-        return tournament
+        return tournament || null
     }
 
     calculateResults(tournamentData: TournamentPageData) {
@@ -143,7 +146,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     }
 
     async postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void> {
-        let tournament: TournamentPageData = await this.getData(tournamentId);
+        let tournament = await this.getData(tournamentId);
         if (!tournament) {
             throw new Error(`No tournament with id ${tournamentId}`);
         }
@@ -160,7 +163,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     }
 
     private saveTournament(tournamentId: string, tournament: TournamentPageData) {
-        localStorage.setItem(`cgd.pages.tournament.${tournamentId}`, JSON.stringify(tournament))
+        localStorage.setItem(`cgd.tournament.${tournamentId}`, JSON.stringify(tournament))
     }
 
     private createMatch(white: ParticipantDto, black: ParticipantDto) {
@@ -224,8 +227,9 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
 }
 
 class ProductionTournamentPageRepository implements TournamentPageRepository {
-    async getData(tournamentId: string): Promise<TournamentPageData> {
-        return await restApiClient.get<TournamentPageData>(`/pages/tournament/${tournamentId}`);
+    async getData(tournamentId: string): Promise<TournamentPageData | null> {
+        return await restApiClient.get<TournamentPageData>(`/pages/tournament/${tournamentId}`)
+            .catch((e) => Promise.resolve(null));
     }
 
     async postParticipant(tournamentId: string, participant: string) {

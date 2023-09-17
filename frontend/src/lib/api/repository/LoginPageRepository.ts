@@ -31,7 +31,6 @@ class RestApiLoginPageRepository implements LoginPageRepository {
 
 }
 
-
 let loginPageRepository: LoginPageRepository = qualifiedService({
     local: new LocalStorageLoginPageRepository(),
     production: new RestApiLoginPageRepository(),

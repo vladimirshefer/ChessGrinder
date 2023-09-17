@@ -81,26 +81,27 @@ function TournamentPage() {
 
         {
             !roundId
-                ? (isDataReady ? <>
+                ? (
+                    <>
                         <h3>Status</h3>
                         <ResultsTable participants={participants} addParticipant={(it) => {
                             addParticipant(it)
                         }}/>
-                    </> : <>Loading</>
+                    </>
                 )
-                : (isDataReady ?
-                        <RoundTab
-                            round={tournamentData?.rounds[roundId - 1]!!}
-                            submitMatchResult={(match, result) => {
-                                submitMatchResult(match, result!!);
-                            }}
-                            submitRoundFinished={() => {
-                                finishRound()
-                            }}
-                            deleteRound={() => deleteRound()}
-                            drawRound={() => drawRound()}
-                            reopenRound={() => reopenRound()}
-                        /> : <>Loading</>
+                : (
+                    <RoundTab
+                        round={tournamentData?.rounds[roundId - 1]!!}
+                        submitMatchResult={(match, result) => {
+                            submitMatchResult(match, result!!);
+                        }}
+                        submitRoundFinished={() => {
+                            finishRound()
+                        }}
+                        deleteRound={() => deleteRound()}
+                        drawRound={() => drawRound()}
+                        reopenRound={() => reopenRound()}
+                    />
                 )
         }
     </>
