@@ -1,13 +1,16 @@
 package com.chessgrinder.chessgrinder.service;
 
-import java.math.*;
-import java.util.*;
+import com.chessgrinder.chessgrinder.entities.Match;
+import com.chessgrinder.chessgrinder.entities.Participant;
+import com.chessgrinder.chessgrinder.repositories.MatchRepository;
+import com.google.common.collect.Lists;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import com.chessgrinder.chessgrinder.entities.*;
-import com.chessgrinder.chessgrinder.repositories.*;
-import com.google.common.collect.*;
-import lombok.*;
-import org.springframework.stereotype.*;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -18,6 +21,8 @@ public class SwissService {
     private UUID tournamentId;
 
     public List<Match> makePairs(List<Participant> participants) {
+        if (participants.isEmpty()) return Collections.emptyList();
+
         List<Match> matches = new ArrayList<>();
 
         tournamentId = participants.get(0).getTournament().getId();
@@ -97,3 +102,4 @@ class ParticipantForPairing {
     Participant participant;
     boolean isBooked = false;
 }
+
