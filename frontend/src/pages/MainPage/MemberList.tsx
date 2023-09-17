@@ -1,6 +1,7 @@
 import {MemberDto} from "lib/api/dto/MainPageData";
 import React, {Fragment} from "react";
 import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
+import {Link} from "react-router-dom";
 
 export function MemberList(
     {
@@ -24,7 +25,11 @@ export function MemberList(
             </div>
             {members.map(member => {
                 return <Fragment key={member.name}>
-                    <div className={"col-span-6"}>{member.name}</div>
+                    <div className={"col-span-6"}>
+                        <Link to={`/user/${member.id}`}>
+                            {member.name}
+                        </Link>
+                    </div>
                     <div className={"col-span-6"}>
                         {
                             (member.badges || []).map(badge => {
