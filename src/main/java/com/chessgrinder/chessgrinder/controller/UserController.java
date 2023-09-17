@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -23,14 +22,16 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public MemberDto addParticipantToTournament(@PathVariable UUID userId) throws UserNotFoundException {
-        return userService.getUserById(userId);
-    }
+    public MemberDto addParticipantToTournament(@PathVariable String userId) throws UserNotFoundException {
+        try {
+            MemberDto user = userService.getUserByUserId(userId);
+            if (user != null) {
+                return user;
+            }
+        } catch (Exception e){
 
-    @GetMapping("/{userName}")
-    public MemberDto addParticipantToTournament(@PathVariable String userName) throws UserNotFoundException  {
-        return userService.getUserByUserName(userName);
+        }
+        return userService.getUserByUserName(userId);
     }
-
 
 }
