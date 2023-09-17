@@ -249,7 +249,7 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     }
 
     async drawRound(tournamentId: string, roundNumber: number): Promise<void> {
-        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/draw`)
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/matchup`)
     }
 
     async finishRound(tournamentId: string, roundNumber: number): Promise<void> {
