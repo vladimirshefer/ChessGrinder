@@ -29,7 +29,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
             tournament: {
                 id: id,
                 name: id,
-                date: "2023-07-01",
+                date: LocalStorageMainPageRepository.getTodayDate(),
                 status: "",
             } as TournamentDto
         } as TournamentPageData;
@@ -49,7 +49,7 @@ class LocalStorageMainPageRepository implements MainPageRepository {
     }
 
     private getTournaments(): TournamentDto[] {
-        return localStorageUtil.getAllObjectsByPrefix("cgd.tournament.") as TournamentDto[];
+        return (localStorageUtil.getAllObjectsByPrefix("cgd.tournament.") as TournamentPageData[]).map(it => it.tournament);
     }
 
     private getMembers(): MemberDto[] {
