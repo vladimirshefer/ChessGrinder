@@ -3,6 +3,7 @@ import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
+import {ListDto, MemberDto} from "../../lib/api/dto/MainPageData";
 
 function ResultsTable(
     {
@@ -14,11 +15,13 @@ function ResultsTable(
     }
 ) {
 
-    let {data: users} = useQuery({
+    let {
+        data: {
+            values: users = [] as MemberDto[]
+        } = {} as ListDto<MemberDto>
+    } = useQuery({
         queryKey: ["users"],
-        queryFn: async () => {
-            return await userRepository.getUsers()
-        }
+        queryFn: async () => await userRepository.getUsers()
     })
 
     let members = useMemo(() => users || [], [users])

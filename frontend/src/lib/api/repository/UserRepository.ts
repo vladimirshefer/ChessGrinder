@@ -1,12 +1,13 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {MemberDto} from "lib/api/dto/MainPageData";
-import {qualifiedService} from "./apiSettings";
-import restApiClient from "../RestApiClient";
+import {ListDto, MemberDto} from "lib/api/dto/MainPageData";
+import {qualifiedService} from "lib/api/repository/apiSettings";
+import restApiClient from "lib/api/RestApiClient";
+import authService from "lib/auth/AuthService";
 
 export interface UserRepository {
     getUser(username: string): Promise<MemberDto | null>
 
-    getUsers(): Promise<MemberDto[]>
+    getUsers(): Promise<ListDto<MemberDto>>
 
     getMe(): Promise<MemberDto | null>
 }
@@ -22,11 +23,17 @@ class LocalStorageUserRepository implements UserRepository {
         return JSON.parse(userStr)
     }
 
-    async getUsers(): Promise<MemberDto[]> {
-        return localStorageUtil.getAllObjectsByPrefix(`${this.userKeyPrefix}.`);
+    async getUsers(): Promise<ListDto<MemberDto>> {
+        return {
+            values: localStorageUtil.getAllObjectsByPrefix(`${this.userKeyPrefix}.`)
+        };
     }
 
     async getMe(): Promise<MemberDto | null> {
+        let username = authService.getAuthData()?.username;
+        if (username) {
+            return await this.getUser(username)
+        }
         return null;
     }
 
@@ -37,7 +44,7 @@ class RestApiUserRepository implements UserRepository {
         return restApiClient.get(`/user/${username}`);
     }
 
-    async getUsers(): Promise<MemberDto[]> {
+    async getUsers(): Promise<ListDto<MemberDto>> {
         return restApiClient.get(`/user`);
     }
 

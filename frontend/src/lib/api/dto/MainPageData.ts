@@ -12,6 +12,10 @@ export interface MemberDto {
     roles?: string[]
 }
 
+export interface ListDto<T extends any> {
+    values: T[]
+}
+
 export interface TournamentDto {
     id: string
     name: string

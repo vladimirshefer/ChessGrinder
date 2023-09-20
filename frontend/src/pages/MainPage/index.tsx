@@ -2,59 +2,22 @@ import React from "react";
 import {MemberList} from "./MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
-import {MainPageData, MemberDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
+import {ListDto, MemberDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
 import mainPageRepository from "lib/api/repository/MainPageRepository";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
-
-let mockMembers: MemberDto[] = [
-    {
-        id: "ab1234567",
-        name: "Alexander Boldyrev",
-        badges: [
-            {
-                title: "",
-                imageUrl: "💥",
-                description: "Огонь-огонечек",
-            },
-            {
-                title: "",
-                imageUrl: "🎃",
-                description: "За участие в хэллоуин-вечеринке 2019",
-            },
-        ],
-        username: "ab1234567",
-        roles: ["ADMIN"]
-    } as MemberDto,
-    {
-        id: "vs234823476",
-        name: "Vladimir Shefer",
-        badges: [
-            {
-                title: "",
-                imageUrl: "🍒",
-                description: "Ягодный никнейм",
-            },
-            {
-                title: "",
-                imageUrl: "🎯",
-                description: "За партию с самой высокой точностью на неделе.",
-            },
-        ]
-    } as MemberDto,
-];
+import userRepository from "lib/api/repository/UserRepository";
 
 function MainPage() {
 
     let {
         data: {
-            members = mockMembers,
-        } = {} as MainPageData,
-        refetch: refetchData,
+            values: members = [] as MemberDto[],
+        } = {} as ListDto<MemberDto>,
+        refetch: refetchUsers
     } = useQuery({
-            queryKey: ["mainPage"],
-            queryFn: () => mainPageRepository.getData(),
-        }
-    );
+        queryKey: ["members"],
+        queryFn: () => userRepository.getUsers(),
+    })
 
     let {
         data: {
@@ -78,12 +41,12 @@ function MainPage() {
             name: memberName,
             badges: []
         })
-        await refetchData()
+        await refetchUsers()
     }
 
     return <>
         <MemberList
-            members={members}
+            members={members!!}
             createMember={createMember}
         />
         <TournamentsList tournaments={tournaments} createTournament={createTournament}/>
