@@ -1,7 +1,7 @@
-import {TournamentDto, TournamentListDto} from "../dto/MainPageData";
-import {TournamentPageData} from "../dto/TournamentPageData";
-import localStorageUtil from "../../util/LocalStorageUtil";
-import restApiClient from "../RestApiClient";
+import {TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
+import {TournamentPageData} from "lib/api/dto/TournamentPageData";
+import localStorageUtil from "lib/util/LocalStorageUtil";
+import restApiClient from "lib/api/RestApiClient";
 import {qualifiedServiceProxy} from "./apiSettings";
 
 export interface TournamentRepository {
