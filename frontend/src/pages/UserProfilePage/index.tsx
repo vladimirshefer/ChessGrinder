@@ -1,8 +1,9 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import authService, {useAuthData} from "lib/auth/AuthService";
+import {useAuthData} from "lib/auth/AuthService";
 import {useEffect, useMemo} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
+import loginPageRepository from "lib/api/repository/LoginPageRepository";
 
 export default function UserProfilePage() {
     let {username} = useParams()
@@ -29,6 +30,10 @@ export default function UserProfilePage() {
         },
     })
 
+    async function logout() {
+        await loginPageRepository.logout()
+    }
+
     if (!username) {
         let currentUserName = authData?.username;
         if (!currentUserName) {
@@ -51,7 +56,7 @@ export default function UserProfilePage() {
             isMyProfile ? (
                 <div>
                     <button className={"bg-blue-200 rounded-full px-3"}
-                            onClick={() => authService.clearAuthData()}>
+                            onClick={() => logout()}>
                         Logout
                     </button>
                 </div>

@@ -1,34 +1,57 @@
 import axios, {AxiosRequestConfig} from "axios";
 import {GLOBAL_SETTINGS} from "lib/api/repository/apiSettings";
+import authService from "../auth/AuthService";
+
+let apiPathPrefix = "/api"
+
+let restAxios = axios
+    .create({
+        baseURL: GLOBAL_SETTINGS.restApiHost,
+        timeout: 1000,
+        // headers: {'X-Custom-Header': 'foobar'}
+    })
+
+restAxios.interceptors
+    .response
+    .use(response => {
+        return response;
+    }, error => {
+        if (error.response.status === 401) {
+            authService.clearAuthData();
+        }
+        return error;
+    });
 
 class RestApiClient {
-    private axiosRequestConfig = {
-        headers: {
-            "Authorization": "Basic dm92YTpzaGVmZXI="
-        }
-    } as AxiosRequestConfig;
 
-    async post<T>(path: string, body: any = undefined) {
-        let axiosResponse = await axios.post(
-            GLOBAL_SETTINGS.restApiHost + path,
-            body,
-            this.axiosRequestConfig
+    async post<T>(
+        path: string,
+        body: any = undefined,
+        pathPrefix: string = apiPathPrefix
+    ) {
+        let axiosResponse = await restAxios.post(
+            apiPathPrefix + path,
+            body
         );
         return axiosResponse.data as T;
     }
 
-    async get<T>(path: string) {
-        let axiosResponse = await axios.get(
-            GLOBAL_SETTINGS.restApiHost + path,
-            this.axiosRequestConfig
-        );
+    async get<T>(
+        path: string,
+        pathPrefix: string = apiPathPrefix
+    ) {
+        let axiosResponse = await restAxios.get(
+            apiPathPrefix + path
+        ).catch();
         return axiosResponse.data as T;
     }
 
-    async delete<T>(path: string) {
-        let axiosResponse = await axios.delete(
-            GLOBAL_SETTINGS.restApiHost + path,
-            this.axiosRequestConfig
+    async delete<T>(
+        path: string,
+        pathPrefix: string = apiPathPrefix
+    ) {
+        let axiosResponse = await restAxios.delete(
+            apiPathPrefix + path
         );
         return axiosResponse.data as T;
     }

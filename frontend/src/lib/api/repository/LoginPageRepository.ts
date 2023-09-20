@@ -1,9 +1,12 @@
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import authService from "lib/auth/AuthService";
 import mainPageRepository from "./MainPageRepository";
+import restApiClient from "lib/api/RestApiClient";
 
 export interface LoginPageRepository {
     login(username: string, password: string) : Promise<string>
+
+    logout(): Promise<void>
 }
 
 class LocalStorageLoginPageRepository implements LoginPageRepository {
@@ -12,6 +15,7 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
         if (!memberDto) {
             await mainPageRepository.createMember({
                 id: username,
+                username: username,
                 name: username,
                 badges: []
             })
@@ -22,11 +26,20 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
         })
         return username
     }
+
+    async logout(): Promise<void> {
+        authService.clearAuthData()
+    }
 }
 
 class RestApiLoginPageRepository implements LoginPageRepository {
-    login(login: string, password: string): Promise<string> {
-        return Promise.resolve("");
+    async login(login: string, password: string): Promise<string> {
+        return "";
+    }
+
+    async logout(): Promise<void> {
+        await restApiClient.get("/logout");
+        window.location.reload();
     }
 
 }

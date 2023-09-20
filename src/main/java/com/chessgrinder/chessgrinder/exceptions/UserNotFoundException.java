@@ -1,4 +1,8 @@
 package com.chessgrinder.chessgrinder.exceptions;
 
-public class UserNotFoundException extends Exception {
+import lombok.experimental.StandardException;
+
+@StandardException
+public class UserNotFoundException extends RuntimeException {
+
 }

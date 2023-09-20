@@ -62,6 +62,7 @@ function MainPage() {
     async function createMember(memberName: string) {
         await mainPageRepository.createMember({
             id: memberName,
+            username: memberName,
             name: memberName,
             badges: []
         })

@@ -6,11 +6,11 @@ rm -f /etc/nginx/sites-enabled/chessgrinder.local
 cp local.nginx.conf /etc/nginx/sites-enabled/chessgrinder.local
 
 echo "Registering local domain"
-if grep -Fxq "127.0.0.1 chessgrinder.local" /etc/hosts
+if grep -Fxq "127.0.0.1 chessgrinder.local.shefer.space" /etc/hosts
 then
     echo "Local domain already registered"
 else
-  echo "127.0.0.1 chessgrinder.local" >> /etc/hosts
+  echo "127.0.0.1 chessgrinder.local.shefer.space" >> /etc/hosts
 fi
 
 echo "Reloading nginx"

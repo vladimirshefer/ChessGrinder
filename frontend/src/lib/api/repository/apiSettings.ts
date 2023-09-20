@@ -7,7 +7,7 @@ export let GLOBAL_SETTINGS = {
             localStorage.setItem("cgd.profile", value)
             : localStorage.removeItem("cgd.profile")
     },
-    restApiHost: "http://localhost:8080",
+    restApiHost: "",
 }
 
 export function qualifiedService<T>(services: {[key: string /*profile name [local/production]*/]: T}): T {

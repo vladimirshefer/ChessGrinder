@@ -7,6 +7,8 @@ export interface UserRepository {
     getUser(username: string): Promise<MemberDto | null>
 
     getUsers(): Promise<MemberDto[]>
+
+    getMe(): Promise<MemberDto | null>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -24,6 +26,10 @@ class LocalStorageUserRepository implements UserRepository {
         return localStorageUtil.getAllObjectsByPrefix(`${this.userKeyPrefix}.`);
     }
 
+    async getMe(): Promise<MemberDto | null> {
+        return null;
+    }
+
 }
 
 class RestApiUserRepository implements UserRepository {
@@ -35,6 +41,9 @@ class RestApiUserRepository implements UserRepository {
         return restApiClient.get(`/user`);
     }
 
+    async getMe(): Promise<MemberDto | null> {
+        return restApiClient.get(`/user/me`);
+    }
 }
 
 let userRepository = qualifiedService({

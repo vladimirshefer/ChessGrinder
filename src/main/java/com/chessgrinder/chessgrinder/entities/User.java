@@ -6,6 +6,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.hibernate.annotations.UuidGenerator;
 
 @Getter
 @Setter
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.*;
 public class User {
     @Id
     @Column(name = "id", nullable = false)
+    @UuidGenerator
     private UUID id;
 
     /**
@@ -29,7 +31,8 @@ public class User {
     @Nullable
     private String username;
 
-    @Column(name = "name", nullable = false)
+    @Nullable
+    @Column(name = "name")
     private String name;
 
     /**
@@ -41,4 +44,11 @@ public class User {
 
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin = false;
+
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
+
+    public enum Provider {
+        LOCAL, GOOGLE, GITHUB
+    }
 }

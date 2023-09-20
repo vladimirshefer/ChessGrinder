@@ -20,6 +20,7 @@ public class UserMapper {
 
         if (userBadges == null || userBadges.isEmpty()) {
             return MemberDto.builder()
+                    .username(user.getUsername())
                     .id(user.getId().toString())
                     .name(user.getName())
                     .build();
@@ -27,6 +28,7 @@ public class UserMapper {
 
         return MemberDto.builder()
                 .id(user.getId().toString())
+                .username(user.getUsername())
                 .badges(badgeMapper.toDto(userBadges))
                 .name(user.getName())
                 .build();

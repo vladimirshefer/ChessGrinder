@@ -24,6 +24,19 @@ export default function LoginPage() {
     }
 
     return <div className={"grid grid-cols-12"}>
+        <div className={"col-span-12 grid grid-cols-12 p-4"}>
+            <div className={"col-span-12 font-bold"}>
+                <h3>Social login</h3>
+            </div>
+            <div className={"col-span-12"}>
+                <div className={"p-5"}>
+                    <a href={"/api/oauth2/authorization/google"}>
+                        <img className={"h-8 inline-block"} src={"/google_logo.png"} alt={"Sign in with Google"}></img>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <div className={"col-span-12 md:col-span-6 grid grid-cols-12 p-5 bg-gray-50 rounded-md mx-5 mt-5"}>
             <h3 className={"col-span-12 font-bold"}>Login</h3>
             <span className={"col-span-12 lg:col-span-4"}>Username:</span>
