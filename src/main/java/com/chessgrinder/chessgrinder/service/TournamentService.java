@@ -1,15 +1,20 @@
 package com.chessgrinder.chessgrinder.service;
 
-import java.time.*;
-import java.util.*;
+import com.chessgrinder.chessgrinder.dto.TournamentDto;
+import com.chessgrinder.chessgrinder.entities.Round;
+import com.chessgrinder.chessgrinder.entities.Tournament;
+import com.chessgrinder.chessgrinder.enums.TournamentStatus;
+import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
+import com.chessgrinder.chessgrinder.repositories.RoundRepository;
+import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.chessgrinder.chessgrinder.entities.*;
-import com.chessgrinder.chessgrinder.enums.*;
-import com.chessgrinder.chessgrinder.repositories.*;
-import lombok.*;
-import org.apache.commons.lang3.time.*;
-import org.springframework.stereotype.*;
-import org.springframework.transaction.annotation.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +23,11 @@ public class TournamentService {
     private final SwissService swissService;
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
-    private final ParticipantRepository participantRepository;
+    private final TournamentMapper tournamentMapper;
+
+    public List<TournamentDto> findTournaments() {
+        return tournamentRepository.findAll().stream().map(tournamentMapper::toDto).collect(Collectors.toList());
+    }
 
     @Transactional
     public void createTournament(LocalDateTime date) {
@@ -56,7 +65,6 @@ public class TournamentService {
             tournamentRepository.save(tournament);
         });
     }
-
 
 
 }

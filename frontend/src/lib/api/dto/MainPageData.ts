@@ -19,6 +19,10 @@ export interface TournamentDto {
     status?: string
 }
 
+export interface TournamentListDto{
+    tournaments: TournamentDto[]
+}
+
 export interface MainPageData {
     members: MemberDto[]
     tournaments: TournamentDto[]

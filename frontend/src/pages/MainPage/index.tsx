@@ -2,8 +2,9 @@ import React from "react";
 import {MemberList} from "./MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
-import {MainPageData, MemberDto, TournamentDto} from "lib/api/dto/MainPageData";
+import {MainPageData, MemberDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
 import mainPageRepository from "lib/api/repository/MainPageRepository";
+import tournamentRepository from "lib/api/repository/TournamentRepository";
 
 let mockMembers: MemberDto[] = [
     {
@@ -47,7 +48,6 @@ function MainPage() {
     let {
         data: {
             members = mockMembers,
-            tournaments = [] as TournamentDto[]
         } = {} as MainPageData,
         refetch: refetchData,
     } = useQuery({
@@ -56,9 +56,19 @@ function MainPage() {
         }
     );
 
+    let {
+        data: {
+            tournaments = [] as TournamentDto[],
+        } = {} as TournamentListDto,
+        refetch: refetchTournaments
+    } = useQuery({
+        queryKey: ["tournaments"],
+        queryFn: () => tournamentRepository.getTournaments()
+    })
+
     async function createTournament() {
-        await mainPageRepository.postTournament()
-        await refetchData()
+        await tournamentRepository.postTournament()
+        await refetchTournaments()
     }
 
     async function createMember(memberName: string) {

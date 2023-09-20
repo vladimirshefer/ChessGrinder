@@ -6,7 +6,6 @@ import {TournamentPageData} from "../dto/TournamentPageData";
 
 interface MainPageRepository {
     getData: () => Promise<MainPageData>
-    postTournament: () => Promise<void>
     createMember: (member: MemberDto) => Promise<void>
 }
 
@@ -20,32 +19,8 @@ class LocalStorageMainPageRepository implements MainPageRepository {
         };
     }
 
-    async postTournament() {
-        let id = `${Math.trunc(Math.random() * 1000000) + 1000000}`;
-        let tournament = {
-            date: LocalStorageMainPageRepository.getTodayDate(),
-            participants: [],
-            rounds: [],
-            tournament: {
-                id: id,
-                name: id,
-                date: LocalStorageMainPageRepository.getTodayDate(),
-                status: "",
-            } as TournamentDto
-        } as TournamentPageData;
-        localStorageUtil.setObject(`cgd.tournament.${id}`, tournament)
-    }
-
     async createMember(member: MemberDto): Promise<void> {
         localStorageUtil.setObject(`cgd.user.${member.id}`, member)
-    }
-
-    private static getTodayDate(): string {
-        const date = new Date();
-        let day = date.getDate();
-        let month = date.getMonth() + 1;
-        let year = date.getFullYear();
-        return `${year}-${month}-${day}`
     }
 
     private getTournaments(): TournamentDto[] {
@@ -61,10 +36,6 @@ class LocalStorageMainPageRepository implements MainPageRepository {
 class ProductionMainPageRepository implements MainPageRepository {
     async getData(): Promise<MainPageData> {
         return await restApiClient.get<MainPageData>("/pages/main");
-    }
-
-    async postTournament() {
-        await restApiClient.post("/tournament");
     }
 
     async createMember(member: MemberDto): Promise<void> {

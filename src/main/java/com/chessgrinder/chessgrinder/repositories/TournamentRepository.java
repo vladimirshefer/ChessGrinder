@@ -9,4 +9,6 @@ import org.springframework.data.rest.core.annotation.*;
 @RepositoryRestResource
 public interface TournamentRepository extends PagingAndSortingRepository<Tournament, UUID>, CrudRepository<Tournament, UUID> {
 
+    @Override
+    List<Tournament> findAll();
 }

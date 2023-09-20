@@ -7,6 +7,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -32,5 +33,10 @@ public class TournamentController {
     @GetMapping("/{tournamentId}/action/finish")
     public void finishTournament(@PathVariable UUID tournamentId) {
         tournamentService.finishTournament(tournamentId);
+    }
+
+    @GetMapping
+    public Object getTournaments() {
+        return Map.of("tournaments", tournamentService.findTournaments());
     }
 }

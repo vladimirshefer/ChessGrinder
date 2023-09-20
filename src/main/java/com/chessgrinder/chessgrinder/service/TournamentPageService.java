@@ -8,6 +8,7 @@ import com.chessgrinder.chessgrinder.mappers.*;
 import com.chessgrinder.chessgrinder.repositories.*;
 import lombok.*;
 import org.springframework.stereotype.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 @RequiredArgsConstructor
@@ -21,19 +22,16 @@ public class TournamentPageService {
     private final RoundMapper roundMapper;
 
     public TournamentPageDto getTournamentData(UUID tournamentId) {
-
-
-        Tournament tournament = tournamentRepository.findById(tournamentId).orElse(null);
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
         List<Participant> tournamentParticipants = participantRepository.findByTournamentId(tournamentId);
         List<Round> tournamentRounds = roundRepository.findByTournamentId(tournamentId);
 
-        TournamentPageDto tournamentDto = TournamentPageDto.builder()
+        return TournamentPageDto.builder()
                 .tournament(tournamentMapper.toDto(tournament))
                 .participants(participantMapper.toDto(tournamentParticipants))
                 .rounds(roundMapper.toDto(tournamentRounds))
                 .build();
-
-        return tournamentDto;
     }
 
 }
