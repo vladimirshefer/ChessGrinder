@@ -1,14 +1,14 @@
 package com.chessgrinder.chessgrinder.security;
 
+import com.chessgrinder.chessgrinder.entities.Role;
 import com.chessgrinder.chessgrinder.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class MyUserDetails implements UserDetails {
@@ -17,11 +17,10 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> result = new ArrayList<>();
-        if (user.isAdmin()) {
-            result.add(new SimpleGrantedAuthority("ADMIN"));
-        }
-        return result;
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override

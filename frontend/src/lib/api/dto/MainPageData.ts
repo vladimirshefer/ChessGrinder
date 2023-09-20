@@ -9,6 +9,7 @@ export interface MemberDto {
     username: string
     name: string
     badges: BadgeDto[]
+    roles?: string[]
 }
 
 export interface TournamentDto {

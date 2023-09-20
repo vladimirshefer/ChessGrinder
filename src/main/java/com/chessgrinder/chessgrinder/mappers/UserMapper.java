@@ -23,6 +23,7 @@ public class UserMapper {
                     .username(user.getUsername())
                     .id(user.getId().toString())
                     .name(user.getName())
+                    .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
                     .build();
         }
 
@@ -31,6 +32,7 @@ public class UserMapper {
                 .username(user.getUsername())
                 .badges(badgeMapper.toDto(userBadges))
                 .name(user.getName())
+                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
                 .build();
     }
 

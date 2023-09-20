@@ -27,7 +27,7 @@ public class User {
      * User login. Unique across all users. E.g. "vshefer".
      * Could be null for "guest" users.
      */
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     @Nullable
     private String username;
 
@@ -42,11 +42,18 @@ public class User {
     @Nullable
     private String password;
 
-    @Column(name = "is_admin", nullable = false)
-    private boolean isAdmin = false;
-
     @Enumerated(EnumType.STRING)
     private Provider provider;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "id"))
+    private Collection<Role> roles;
 
     public enum Provider {
         LOCAL, GOOGLE, GITHUB

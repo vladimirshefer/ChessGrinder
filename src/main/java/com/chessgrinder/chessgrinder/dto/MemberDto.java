@@ -25,4 +25,6 @@ public class MemberDto {
      * List of Badges (i.e. Achievements) of the user.
      */
     private List<BadgeDto> badges;
+
+    private List<String> roles;
 }

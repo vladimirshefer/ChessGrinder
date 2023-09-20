@@ -20,7 +20,9 @@ let mockMembers: MemberDto[] = [
                 imageUrl: "🎃",
                 description: "За участие в хэллоуин-вечеринке 2019",
             },
-        ]
+        ],
+        username: "ab1234567",
+        roles: ["ADMIN"]
     } as MemberDto,
     {
         id: "vs234823476",

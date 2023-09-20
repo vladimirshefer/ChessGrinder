@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/pages/tournament")
-@CrossOrigin(origins = "localhost:3000")
 @RequiredArgsConstructor
 public class TournamentPageController {
     private final TournamentPageService tournamentPageService;

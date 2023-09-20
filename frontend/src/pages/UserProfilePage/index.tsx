@@ -1,6 +1,6 @@
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useAuthData} from "lib/auth/AuthService";
-import {useEffect, useMemo} from "react";
+import React, {useEffect, useMemo} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
@@ -34,23 +34,38 @@ export default function UserProfilePage() {
         await loginPageRepository.logout()
     }
 
-    if (!username) {
-        let currentUserName = authData?.username;
-        if (!currentUserName) {
-            return <div>
-                <div>You are not logged in.</div>
-                <div>
-                    <Link to={"/login"}>
-                        <button>Login</button>
-                    </Link>
-                </div>
-            </div>
-        }
-
+    if (!userProfile) {
+        return <>No such user</>
     }
 
     return <>
-        User {userProfile?.name || userProfile?.id || "Unknown"}
+        <h1>
+            {userProfile.name || userProfile.username || userProfile.id || "Unknown"}
+        </h1>
+        <span>
+            @{userProfile.username}
+        </span>
+
+        <div>
+            Roles:
+            {
+                userProfile.roles?.map(role => {
+                    return <span key={role}>{role}</span>
+                })
+            }
+        </div>
+        <div>
+            Badges:
+            {
+                userProfile.badges.map(badge => {
+                    return <span
+                        key={badge.imageUrl}
+                        title={badge.description}
+                        className={"cursor-default"}
+                    >{badge.imageUrl}</span>
+                }) || <span>No achievements</span>
+            }
+        </div>
 
         {
             isMyProfile ? (

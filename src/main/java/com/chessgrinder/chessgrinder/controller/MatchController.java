@@ -1,20 +1,22 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import java.util.*;
-
-import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.service.*;
-import lombok.*;
+import com.chessgrinder.chessgrinder.dto.SubmitMatchResultRequestDto;
+import com.chessgrinder.chessgrinder.entities.Role;
+import com.chessgrinder.chessgrinder.service.MatchService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/tournament/{tournamentId}/round/{roundId}/match/{matchId}")
-@CrossOrigin(origins = "localhost:3000")
 @RequiredArgsConstructor
 public class MatchController {
 
     private final MatchService matchService;
 
+    @Secured(Role.Roles.ADMIN)
     @PostMapping()
     public void submitMatchResult(
             @PathVariable UUID matchId,
