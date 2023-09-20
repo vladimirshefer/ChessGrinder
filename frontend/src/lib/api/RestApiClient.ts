@@ -1,6 +1,6 @@
-import axios, {AxiosRequestConfig} from "axios";
+import axios from "axios";
 import {GLOBAL_SETTINGS} from "lib/api/repository/apiSettings";
-import authService from "../auth/AuthService";
+import authService from "lib/auth/AuthService";
 
 let apiPathPrefix = "/api"
 
