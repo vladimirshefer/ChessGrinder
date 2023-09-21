@@ -17,13 +17,8 @@ function TournamentPage() {
     let roundNumbers = tournamentData?.rounds?.map((e, idx) => idx + 1) || [];
     let participants: ParticipantDto[] = useMemo(() => tournamentData?.participants || [], [tournamentData])
 
-    async function addParticipant(name: string) {
-        await tournamentPageRepository.postParticipant(id!!, {
-            userId: name,
-            name: name,
-            buchholz: 0,
-            score: 0,
-        })
+    async function addParticipant(participant: ParticipantDto) {
+        await tournamentPageRepository.postParticipant(id!!, participant)
         await refetch()
     }
 

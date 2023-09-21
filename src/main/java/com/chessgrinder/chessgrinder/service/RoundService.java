@@ -13,6 +13,7 @@ import org.springframework.stereotype.*;
 @RequiredArgsConstructor
 @Slf4j
 public class RoundService {
+    private final TournamentRepository tournamentRepository;
 
     private final RoundRepository roundRepository;
     private final ParticipantRepository participantRepository;
@@ -21,20 +22,20 @@ public class RoundService {
 
     public void createRound(UUID tournamentId) {
 
+        Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow();
         Round lastExistedRound = roundRepository.findFirstByTournamentIdOrderByNumberDesc(tournamentId);
         Integer nextRoundNumber = lastExistedRound != null ? lastExistedRound.getNumber() + 1 : 1;
 
         Round nextRound = Round.builder()
                 .id(UUID.randomUUID())
                 .number(nextRoundNumber)
-                .tournament(lastExistedRound.getTournament())
+                .tournament(tournament)
                 .matches(List.of())
                 .isFinished(false)
                 .build();
 
         //TODO do not create round if the tournament is finished
 
-        roundRepository.save(lastExistedRound);
         roundRepository.save(nextRound);
     }
 

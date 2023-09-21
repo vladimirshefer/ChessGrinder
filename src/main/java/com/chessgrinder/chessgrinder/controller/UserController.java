@@ -1,17 +1,17 @@
 package com.chessgrinder.chessgrinder.controller;
 
+import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.MemberDto;
+import com.chessgrinder.chessgrinder.entities.Role;
+import com.chessgrinder.chessgrinder.entities.User;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
+import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -19,10 +19,11 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @GetMapping
-    public Object getUsers() {
-        return Map.of("values", userService.getAllUsers());
+    public ListDto<MemberDto> getUsers() {
+        return ListDto.<MemberDto>builder().values(userService.getAllUsers()).build();
     }
 
     @GetMapping("/{userId}")
@@ -32,7 +33,7 @@ public class UserController {
             if (user != null) {
                 return user;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
         return userService.getUserByUserName(userId);
@@ -41,7 +42,7 @@ public class UserController {
     @GetMapping("/me")
     public MemberDto me(
             Authentication authentication
-    ){
+    ) {
         if (authentication == null) {
             return null;
         }
@@ -51,6 +52,17 @@ public class UserController {
             return null;
         }
         return userService.getUserByUserName(email);
+    }
+
+    @Secured(Role.Roles.ADMIN)
+    @PostMapping("/guest")
+    public void createGuest(
+            @RequestBody MemberDto user
+    ) {
+        userRepository.save(User.builder()
+                .name(user.getName())
+                .provider(User.Provider.GUEST)
+                .build());
     }
 
 }

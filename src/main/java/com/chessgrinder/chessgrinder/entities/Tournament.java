@@ -30,6 +30,7 @@ public class Tournament {
     @Enumerated(EnumType. STRING)
     private TournamentStatus status;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "tournament")
     private List<Round> rounds;
 }

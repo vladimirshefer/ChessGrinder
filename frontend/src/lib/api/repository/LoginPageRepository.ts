@@ -1,6 +1,5 @@
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import authService from "lib/auth/AuthService";
-import mainPageRepository from "lib/api/repository/MainPageRepository";
 import restApiClient from "lib/api/RestApiClient";
 import userRepository from "lib/api/repository/UserRepository";
 
@@ -14,7 +13,7 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
     async login(username: string, password: string): Promise<string> {
         let memberDto = (await userRepository.getUsers()).values.find(it => it.id === username);
         if (!memberDto) {
-            await mainPageRepository.createMember({
+            await userRepository.postGuest({
                 id: username,
                 username: username,
                 name: username,

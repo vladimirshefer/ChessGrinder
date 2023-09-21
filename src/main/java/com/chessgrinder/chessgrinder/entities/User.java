@@ -56,6 +56,6 @@ public class User {
     private Collection<Role> roles;
 
     public enum Provider {
-        LOCAL, GOOGLE, GITHUB
+        GUEST, LOCAL, GOOGLE, GITHUB
     }
 }

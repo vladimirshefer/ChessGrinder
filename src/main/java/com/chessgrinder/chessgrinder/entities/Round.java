@@ -29,6 +29,7 @@ public class Round {
     @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "round", cascade = CascadeType.REMOVE)
     private List<Match> matches;
 

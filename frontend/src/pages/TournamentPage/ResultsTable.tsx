@@ -11,7 +11,7 @@ function ResultsTable(
         addParticipant
     }: {
         participants: ParticipantDto[],
-        addParticipant: (name: string) => void,
+        addParticipant: (participant: ParticipantDto) => void,
     }
 ) {
 
@@ -37,7 +37,12 @@ function ResultsTable(
                     selectKeyExtractor={user => user.id}
                     selectOptionNameExtractor={user => user.name}
                     buttonText={"Add participant"}
-                    submitValue={addParticipant}
+                    submitValue={(userId) => addParticipant({
+                        userId: userId,
+                        name: members.find(it => it.id === userId)?.name || userId,
+                        score: 0,
+                        buchholz: 0,
+                    })}
                 />
             </div>
             {

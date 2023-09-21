@@ -35,12 +35,13 @@ function MainPage() {
     }
 
     async function createMember(memberName: string) {
-        await mainPageRepository.createMember({
+        await userRepository.postGuest({
             id: memberName,
             username: memberName,
             name: memberName,
-            badges: []
-        })
+            badges: [],
+            roles: []
+        } as MemberDto)
         await refetchUsers()
     }
 

@@ -10,6 +10,8 @@ export interface UserRepository {
     getUsers(): Promise<ListDto<MemberDto>>
 
     getMe(): Promise<MemberDto | null>
+
+    postGuest(name: MemberDto): Promise<void>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -37,6 +39,10 @@ class LocalStorageUserRepository implements UserRepository {
         return null;
     }
 
+    async postGuest(user: MemberDto): Promise<void> {
+        localStorageUtil.setObject(`cgd.user.${user.id}`, user)
+    }
+
 }
 
 class RestApiUserRepository implements UserRepository {
@@ -50,6 +56,10 @@ class RestApiUserRepository implements UserRepository {
 
     async getMe(): Promise<MemberDto | null> {
         return restApiClient.get(`/user/me`);
+    }
+
+    async postGuest(user: MemberDto): Promise<void> {
+        await restApiClient.post(`/user/guest`, user);
     }
 }
 

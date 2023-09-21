@@ -1,10 +1,7 @@
 package com.chessgrinder.chessgrinder.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.List;
@@ -25,6 +22,7 @@ public class Role {
     @Column(unique = true)
     private String name;
 
+    @ToString.Exclude
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
 
