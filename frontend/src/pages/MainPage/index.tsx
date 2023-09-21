@@ -3,7 +3,6 @@ import {MemberList} from "./MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
 import {ListDto, MemberDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
-import mainPageRepository from "lib/api/repository/MainPageRepository";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import userRepository from "lib/api/repository/UserRepository";
 
