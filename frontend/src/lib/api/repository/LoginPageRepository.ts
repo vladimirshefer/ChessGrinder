@@ -4,20 +4,22 @@ import restApiClient from "lib/api/RestApiClient";
 import userRepository from "lib/api/repository/UserRepository";
 
 export interface LoginPageRepository {
-    login(username: string, password: string) : Promise<string>
+    login(username: string, password: string): Promise<string>
 
     logout(): Promise<void>
 }
 
 class LocalStorageLoginPageRepository implements LoginPageRepository {
     async login(username: string, password: string): Promise<string> {
+        let roles = username.toLowerCase().includes("admin") ? ["ADMIN"] : [];
         let memberDto = (await userRepository.getUsers()).values.find(it => it.id === username);
         if (!memberDto) {
             await userRepository.postGuest({
                 id: username,
                 username: username,
                 name: username,
-                badges: []
+                badges: [],
+                roles
             })
         }
         authService.setAuthData({
