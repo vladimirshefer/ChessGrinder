@@ -33,3 +33,6 @@ build/
 .vscode/
 
 application-local.properties
+
+## Production log files
+*.log
