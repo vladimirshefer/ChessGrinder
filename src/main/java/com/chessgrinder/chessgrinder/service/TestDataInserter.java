@@ -9,10 +9,12 @@ import com.chessgrinder.chessgrinder.enums.*;
 import com.chessgrinder.chessgrinder.repositories.*;
 import lombok.*;
 import org.springframework.boot.context.event.*;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.*;
 import org.springframework.transaction.annotation.*;
 
+@Profile("local")
 @Component
 @RequiredArgsConstructor
 public class TestDataInserter {
