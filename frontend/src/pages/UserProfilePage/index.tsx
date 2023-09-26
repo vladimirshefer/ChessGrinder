@@ -4,6 +4,7 @@ import React, {useEffect, useMemo} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
+import {MemberDto} from "lib/api/dto/MainPageData";
 
 export default function UserProfilePage() {
     let {username} = useParams()
@@ -26,7 +27,7 @@ export default function UserProfilePage() {
     let {data: userProfile} = useQuery({
         queryKey: ["profile", username],
         queryFn: () => {
-            return userRepository.getUser(username!!)
+            return username ? userRepository.getUser(username) : Promise.reject<MemberDto>()
         },
     })
 
@@ -69,8 +70,8 @@ export default function UserProfilePage() {
 
         {
             isMyProfile ? (
-                <div>
-                    <button className={"bg-blue-200 rounded-full px-3"}
+                <div className={"p-5"}>
+                    <button className={"bg-blue-200 rounded-full px-5 py-1"}
                             onClick={() => logout()}>
                         Logout
                     </button>
