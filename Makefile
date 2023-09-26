@@ -1,6 +1,6 @@
 
 prod_java_stop: ## Stop currently running java application
-	kill $(lsof -ti:8080) >/dev/null 2>/dev/null || echo "Not running"
+	kill $$(lsof -ti:8080) >/dev/null 2>/dev/null || echo "Not running"
 
 prod_java_run: ## Run java application
 	(java -jar -Dspring.profiles.active=production ./target/ChessGrinder-*.jar >> java.log &)
@@ -11,7 +11,7 @@ prod_java_build: ## Build (compile and package java application)
 prod_java_redeploy: prod_java_build prod_java_stop prod_java_run ## Kill current java app, build new version and run
 
 prod_js_stop: ## Stop current js (frontend) app
-	kill $(lsof -ti:3000) >/dev/null 2>/dev/null || echo "Not running"
+	kill $$(lsof -ti:3000) >/dev/null 2>/dev/null || echo "Not running"
 
 prod_js_build: ## Build frontend application
 	cd frontend && npm ci && npm run build
