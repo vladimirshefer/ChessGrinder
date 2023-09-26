@@ -22,14 +22,17 @@ class LocalStorageTournamentRepository implements TournamentRepository {
                 id: id,
                 name: id,
                 date: LocalStorageTournamentRepository.getTodayDate(),
-                status: "",
+                status: "PLANNED",
             } as TournamentDto
         } as TournamentPageData;
         localStorageUtil.setObject(`cgd.tournament.${id}`, tournament)
     }
 
     async finishTournament(tournamentId: string): Promise<void> {
-        throw new Error("Unsupported operation")
+        let tournament = localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`);
+        if (!tournament) throw new Error(`No such tournament with id ${tournamentId}`)
+        tournament.tournament.status = "FINISHED"
+        localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
     }
 
     async getTournaments(): Promise<TournamentListDto> {
@@ -41,7 +44,10 @@ class LocalStorageTournamentRepository implements TournamentRepository {
     }
 
     async startTournament(tournamentId: string): Promise<void> {
-        throw new Error("Unsupported operation")
+        let tournament = localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`);
+        if (!tournament) throw new Error(`No such tournament with id ${tournamentId}`)
+        tournament.tournament.status = "ACTIVE"
+        localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
     }
 
     public static getTodayDate(): string {

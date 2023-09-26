@@ -3,15 +3,15 @@ import React, {useMemo} from "react";
 import ResultsTable from "pages/TournamentPage/ResultsTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
-import {MatchDto, MatchResult, ParticipantDto} from "lib/api/dto/TournamentPageData";
+import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
     let {data: tournamentData, refetch, isSuccess: isDataReady} = useQuery({
-        queryKey: ["tournamentPage", id],
-        queryFn: () => tournamentPageRepository.getData(id!!)
+        queryKey: ["tournamentPageData", id],
+        queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
     });
     let navigate = useNavigate()
     let roundNumbers = tournamentData?.rounds?.map((e, idx) => idx + 1) || [];

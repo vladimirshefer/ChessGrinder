@@ -24,7 +24,6 @@ export interface TournamentPageRepository {
 class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     async getData(tournamentId: string): Promise<TournamentPageData | null> {
         let tournament = localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`)
-        console.log(tournament)
         if (tournament) {
             let {pointsMap, buchholzMap} = this.calculateResults(tournament)
             tournament.participants.forEach((participant: ParticipantDto) => {
@@ -88,7 +87,8 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     }
 
     async postParticipant(tournamentId: string, participant: ParticipantDto) {
-        let tournament = await this.getData(tournamentId) || this.getEmptyTournament(tournamentId);
+        let tournament = await this.getData(tournamentId);
+        if (!tournament) throw new Error(`No tournament with id ${tournamentId}`)
         tournament.participants = tournament.participants || []
         tournament.participants.push(participant)
         this.saveTournament(tournamentId, tournament)
@@ -169,19 +169,6 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             white: {userId: white.userId, name: white.name} as ParticipantDto,
             black: {userId: black.userId, name: black.name} as ParticipantDto,
             result: undefined
-        };
-    }
-
-    private getEmptyTournament(tournamentId: string): TournamentPageData {
-        return {
-            participants: [],
-            rounds: [],
-            tournament: {
-                id: tournamentId,
-                name: tournamentId,
-                status: "",
-                date: "2023-07-01",
-            }
         };
     }
 

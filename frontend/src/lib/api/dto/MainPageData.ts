@@ -16,14 +16,16 @@ export interface ListDto<T extends any> {
     values: T[]
 }
 
+export type TournamentStatus = "FINISHED" | "ACTIVE" | "PLANNED"
+
 export interface TournamentDto {
     id: string
     name: string
     date: string
-    status?: string
+    status?: TournamentStatus
 }
 
-export interface TournamentListDto{
+export interface TournamentListDto {
     tournaments: TournamentDto[]
 }
 
