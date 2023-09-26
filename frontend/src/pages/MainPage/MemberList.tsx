@@ -19,7 +19,7 @@ export function MemberList(
             <div className={"col-span-12"}>
                 <ToggleableSelectableTextInput
                     values={members.map(it => it.name)}
-                    buttonText={"Add member"}
+                    buttonText={"Add guest"}
                     submitValue={createMember}
                 />
             </div>
