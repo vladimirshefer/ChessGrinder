@@ -27,7 +27,8 @@ function App() {
         } else {
             authService.setAuthData({
                 username: me!!.username,
-                accessToken: ""
+                roles: me.roles,
+                accessToken: "",
             })
         }
     }

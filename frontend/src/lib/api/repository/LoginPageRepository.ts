@@ -25,6 +25,7 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
         authService.setAuthData({
             username: username,
             accessToken: username,
+            roles: memberDto?.roles || roles
         })
         return username
     }

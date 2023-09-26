@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 
 export interface AuthData {
     username: string
+    roles?: string[]
     accessToken: string
 }
 
