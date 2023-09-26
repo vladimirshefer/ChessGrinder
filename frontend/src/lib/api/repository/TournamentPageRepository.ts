@@ -49,9 +49,11 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             let blackUserId = match.black.userId;
             if (match.result === "WHITE_WIN") {
                 this.computeIfAbsent(pointsMap, whiteUserId, 1, i => i + 1)
+                this.computeIfAbsent(pointsMap, blackUserId, 0, i => i)
             }
             if (match.result === "BLACK_WIN") {
                 this.computeIfAbsent(pointsMap, blackUserId, 1, i => i + 1)
+                this.computeIfAbsent(pointsMap, whiteUserId, 0, i => i)
             }
             if (match.result === "DRAW") {
                 this.computeIfAbsent(pointsMap, whiteUserId, 0.5, i => i + 0.5)
