@@ -5,6 +5,7 @@ import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
+import ConditionalOnUserRole from "components/ConditionalOnUserRole";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
@@ -73,10 +74,12 @@ function TournamentPage() {
                     </button>
                 </Link>
             })}
-            <button className={`w-full rounded p-2 bg-gray-100 col-span-2 lg:col-span-1`}
-                    onClick={createRound}
-            >+
-            </button>
+            <ConditionalOnUserRole role={"ADMIN"}>
+                <button className={`w-full rounded p-2 bg-gray-100 col-span-2 lg:col-span-1`}
+                        onClick={createRound}
+                >+
+                </button>
+            </ConditionalOnUserRole>
         </div>
 
         {

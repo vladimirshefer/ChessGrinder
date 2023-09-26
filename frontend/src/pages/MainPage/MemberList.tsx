@@ -2,6 +2,7 @@ import {MemberDto} from "lib/api/dto/MainPageData";
 import React, {Fragment} from "react";
 import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
 import {Link} from "react-router-dom";
+import ConditionalOnUserRole from "components/ConditionalOnUserRole";
 
 export function MemberList(
     {
@@ -17,11 +18,13 @@ export function MemberList(
         <h2 className={"text-xl my-2"}>Members</h2>
         <div className={"w-full grid grid-cols-12"}>
             <div className={"col-span-12"}>
-                <ToggleableSelectableTextInput
-                    values={members.map(it => it.name)}
-                    buttonText={"Add guest"}
-                    submitValue={createMember}
-                />
+                <ConditionalOnUserRole role={"ADMIN"}>
+                    <ToggleableSelectableTextInput
+                        values={members.map(it => it.name)}
+                        buttonText={"Add guest"}
+                        submitValue={createMember}
+                    />
+                </ConditionalOnUserRole>
             </div>
             {members.map(member => {
                 return <Fragment key={member.name}>

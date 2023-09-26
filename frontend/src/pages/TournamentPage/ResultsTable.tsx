@@ -3,7 +3,8 @@ import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
-import {ListDto, MemberDto} from "../../lib/api/dto/MainPageData";
+import {ListDto, MemberDto} from "lib/api/dto/MainPageData";
+import ConditionalOnUserRole from "components/ConditionalOnUserRole";
 
 function ResultsTable(
     {
@@ -31,20 +32,22 @@ function ResultsTable(
             <span className={"col-span-6"}>Name</span>
             <span className={"col-span-3"}>PTS</span>
             <span className={"col-span-3"}>BHZ</span>
-            <div className={"col-span-12 px-2 my-1"}>
-                <ToggleableSelectableTextInput
-                    values={members}
-                    selectKeyExtractor={user => user.id}
-                    selectOptionNameExtractor={user => user.name}
-                    buttonText={"Add participant"}
-                    submitValue={(userId) => addParticipant({
-                        userId: userId,
-                        name: members.find(it => it.id === userId)?.name || userId,
-                        score: 0,
-                        buchholz: 0,
-                    })}
-                />
-            </div>
+            <ConditionalOnUserRole role={"ADMIN"}>
+                <div className={"col-span-12 px-2 my-1"}>
+                    <ToggleableSelectableTextInput
+                        values={members}
+                        selectKeyExtractor={user => user.id}
+                        selectOptionNameExtractor={user => user.name}
+                        buttonText={"Add participant"}
+                        submitValue={(userId) => addParticipant({
+                            userId: userId,
+                            name: members.find(it => it.id === userId)?.name || userId,
+                            score: 0,
+                            buchholz: 0,
+                        })}
+                    />
+                </div>
+            </ConditionalOnUserRole>
             {
                 participants
                     .sort((a, b) => -(a.score !== b.score ? a.score - b.score : a.buchholz - b.buchholz))
