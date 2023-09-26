@@ -29,7 +29,8 @@ function ResultsTable(
 
     return <>
         <div className={"w-full grid grid-cols-12"}>
-            <span className={"col-span-6"}>Name</span>
+            <span className={"col-span-1"}></span>
+            <span className={"col-span-5"}>Name</span>
             <span className={"col-span-3"}>PTS</span>
             <span className={"col-span-3"}>BHZ</span>
             <ConditionalOnUserRole role={"ADMIN"}>
@@ -51,9 +52,10 @@ function ResultsTable(
             {
                 participants
                     .sort((a, b) => -(a.score !== b.score ? a.score - b.score : a.buchholz - b.buchholz))
-                    .map(participant => {
+                    .map((participant, idx) => {
                         return <div className={"col-span-12 grid grid-cols-12"} key={participant.name}>
-                            <div className={"col-span-6"}>{participant.name}</div>
+                            <div className={"col-span-1"}>{idx + 1}</div>
+                            <div className={"col-span-5"}>{participant.name}</div>
                             <div className={"col-span-3"}>{participant.score}</div>
                             <div className={"col-span-3"}>{participant.buchholz}</div>
                         </div>
