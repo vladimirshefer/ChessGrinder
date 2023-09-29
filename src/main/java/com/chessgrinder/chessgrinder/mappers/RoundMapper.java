@@ -13,21 +13,21 @@ public class RoundMapper {
 
     private final MatchMapper matchMapper;
 
-    public List<RoundDto> toDto(List<Round> rounds) {
+    public List<RoundDto> toDto(List<RoundEntity> roundEntities) {
 
-        return rounds.stream().map(round -> RoundDto.builder()
+        return roundEntities.stream().map(round -> RoundDto.builder()
                 .isFinished(round.isFinished())
                 .number(round.getNumber())
-                .matches(matchMapper.toDto(round.getMatches()))
+                .matches(matchMapper.toDto(round.getMatchEntities()))
                 .build())
             .toList();
     }
 
-    public RoundDto toDto(Round round) {
+    public RoundDto toDto(RoundEntity roundEntity) {
 
         return RoundDto.builder()
-                .isFinished(round.isFinished())
-                .number(round.getNumber())
+                .isFinished(roundEntity.isFinished())
+                .number(roundEntity.getNumber())
                 .build();
     }
 }

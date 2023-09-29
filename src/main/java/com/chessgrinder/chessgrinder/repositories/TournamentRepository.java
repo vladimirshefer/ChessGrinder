@@ -7,8 +7,8 @@ import org.springframework.data.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface TournamentRepository extends PagingAndSortingRepository<Tournament, UUID>, CrudRepository<Tournament, UUID> {
+public interface TournamentRepository extends PagingAndSortingRepository<TournamentEntity, UUID>, CrudRepository<TournamentEntity, UUID> {
 
     @Override
-    List<Tournament> findAll();
+    List<TournamentEntity> findAll();
 }

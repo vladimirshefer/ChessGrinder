@@ -2,8 +2,8 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.MemberDto;
-import com.chessgrinder.chessgrinder.entities.Role;
-import com.chessgrinder.chessgrinder.entities.User;
+import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
@@ -38,6 +38,7 @@ public class UserController {
         }
         return userService.getUserByUserName(userId);
     }
+    //TODO test
 
     @GetMapping("/me")
     public MemberDto me(
@@ -54,14 +55,14 @@ public class UserController {
         return userService.getUserByUserName(email);
     }
 
-    @Secured(Role.Roles.ADMIN)
+    @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping("/guest")
     public void createGuest(
             @RequestBody MemberDto user
     ) {
-        userRepository.save(User.builder()
+        userRepository.save(UserEntity.builder()
                 .name(user.getName())
-                .provider(User.Provider.GUEST)
+                .provider(UserEntity.Provider.GUEST)
                 .build());
     }
 

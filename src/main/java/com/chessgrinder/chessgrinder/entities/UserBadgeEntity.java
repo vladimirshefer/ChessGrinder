@@ -10,24 +10,22 @@ import lombok.extern.slf4j.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "badges")
+@Table(name = "user_badges_table")
 @Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Badge {
+public class UserBadgeEntity {
 
     @Id
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "titled")
-    private String title;
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private UserEntity userEntity;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "picture_url")
-    private String pictureUrl;
-
+    @ManyToOne
+    @JoinColumn(name="badge_id")
+    private BadgeEntity badgeEntity;
 }

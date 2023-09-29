@@ -12,12 +12,12 @@ import lombok.extern.slf4j.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "tournaments")
+@Table(name = "tournaments_table")
 @Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tournament {
+public class TournamentEntity {
 
     @Id
     @Column(name = "id")
@@ -31,6 +31,6 @@ public class Tournament {
     private TournamentStatus status;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "tournament")
-    private List<Round> rounds;
+    @OneToMany(mappedBy = "tournamentEntity")
+    private List<RoundEntity> roundEntities;
 }

@@ -13,17 +13,17 @@ public class MatchMapper {
 
     private final UserMapper userMapper;
 
-    public MatchDto toDto(Match match) {
+    public MatchDto toDto(MatchEntity matchEntity) {
 
         return MatchDto.builder()
-                .id(match.getId().toString())
-                .white(userMapper.toDto(match.getParticipant1().getUser()))
-                .black(userMapper.toDto(match.getParticipant2().getUser()))
-                .result(match.getResult())
+                .id(matchEntity.getId().toString())
+                .white(userMapper.toDto(matchEntity.getParticipantEntity1().getUserEntity()))
+                .black(userMapper.toDto(matchEntity.getParticipantEntity2().getUserEntity()))
+                .result(matchEntity.getResult())
                 .build();
     }
 
-    public List<MatchDto> toDto(List<Match> matches) {
-        return matches.stream().map(this::toDto).toList();
+    public List<MatchDto> toDto(List<MatchEntity> matchEntities) {
+        return matchEntities.stream().map(this::toDto).toList();
     }
 }

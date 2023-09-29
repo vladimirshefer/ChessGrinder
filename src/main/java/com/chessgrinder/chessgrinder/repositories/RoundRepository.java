@@ -8,17 +8,17 @@ import org.springframework.data.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface RoundRepository extends PagingAndSortingRepository<Round, UUID>, CrudRepository<Round, UUID> {
+public interface RoundRepository extends PagingAndSortingRepository<RoundEntity, UUID>, CrudRepository<RoundEntity, UUID> {
 
-    @Query("SELECT r FROM Round r WHERE r.tournament.id = :tournamentId")
-    List<Round> findByTournamentId(UUID tournamentId);
+    @Query("SELECT r FROM RoundEntity r WHERE r.tournamentEntity.id = :tournamentId")
+    List<RoundEntity> findByTournamentEntityId(UUID tournamentId);
 
-    Round findFirstByTournamentIdOrderByNumberDesc(UUID tournamentId);
+    RoundEntity findFirstByTournamentEntityIdOrderByNumberDesc(UUID tournamentId);
 
-    @Query("SELECT r FROM Round r WHERE r.isFinished = false AND r.tournament.id = :tournamentId")
-    Round findActiveRoundInTournament(UUID tournamentId);
+    @Query("SELECT r FROM RoundEntity r WHERE r.isFinished = false AND r.tournamentEntity.id = :tournamentId")
+    RoundEntity findActiveRoundInTournament(UUID tournamentId);
 
-    @Query("SELECT r FROM Round r WHERE r.tournament.id = :tournamentId and r.number = :roundNumber")
-    Round findByTournamentIdAndNumber(UUID tournamentId, Integer roundNumber);
+    @Query("SELECT r FROM RoundEntity r WHERE r.tournamentEntity.id = :tournamentId and r.number = :roundNumber")
+    RoundEntity findByTournamentIdAndNumber(UUID tournamentId, Integer roundNumber);
 
 }

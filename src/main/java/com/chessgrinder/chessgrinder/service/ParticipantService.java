@@ -19,19 +19,19 @@ public class ParticipantService {
     private final UserRepository userRepository;
     public void addParticipantToTheTournament(UUID tournamentId, ParticipantDto participantDto) {
 
-        Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(); //TODO Exception
-        User user = userRepository.findById(UUID.fromString(participantDto.getUserId())).orElse(null);
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow(); //TODO Exception
+        UserEntity userEntity = userRepository.findById(UUID.fromString(participantDto.getUserId())).orElse(null);
 
 
-        Participant participant = Participant.builder()
+        ParticipantEntity participantEntity = ParticipantEntity.builder()
                 .id(UUID.randomUUID())
-                .tournament(tournament)
+                .tournamentEntity(tournamentEntity)
                 .nickname(participantDto.getName())
-                .user(user)
+                .userEntity(userEntity)
                 .score(BigDecimal.ZERO)
                 .buchholz(BigDecimal.ZERO)
                 .build();
 
-        participantRepository.save(participant);
+        participantRepository.save(participantEntity);
     }
 }

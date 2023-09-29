@@ -1,7 +1,7 @@
 package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.SubmitMatchResultRequestDto;
-import com.chessgrinder.chessgrinder.entities.Role;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.service.MatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -16,7 +16,7 @@ public class MatchController {
 
     private final MatchService matchService;
 
-    @Secured(Role.Roles.ADMIN)
+    @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping()
     public void submitMatchResult(
             @PathVariable UUID matchId,

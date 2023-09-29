@@ -4,7 +4,6 @@ import java.util.*;
 
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
-import com.chessgrinder.chessgrinder.enums.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 
@@ -12,16 +11,16 @@ import org.springframework.stereotype.*;
 @RequiredArgsConstructor
 public class TournamentMapper {
 
-    public TournamentDto toDto(Tournament tournament) {
+    public TournamentDto toDto(TournamentEntity tournamentEntity) {
         return TournamentDto.builder()
-                .id(tournament.getId().toString())
-                .date(tournament.getDate())
-                .status(tournament.getStatus())
+                .id(tournamentEntity.getId().toString())
+                .date(tournamentEntity.getDate())
+                .status(tournamentEntity.getStatus())
                 .build();
     }
 
-    public List<TournamentDto> toDto(List<Tournament> tournaments) {
-        return tournaments.stream().map(tournament -> TournamentDto.builder()
+    public List<TournamentDto> toDto(List<TournamentEntity> tournamentEntities) {
+        return tournamentEntities.stream().map(tournament -> TournamentDto.builder()
                 .id(tournament.getId().toString())
                 .date(tournament.getDate())
                 .status(tournament.getStatus())

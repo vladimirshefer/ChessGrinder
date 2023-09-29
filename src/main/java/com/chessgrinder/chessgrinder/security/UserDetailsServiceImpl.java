@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.security;
 
-import com.chessgrinder.chessgrinder.entities.User;
+import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,13 +17,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
+        UserEntity userEntity = userRepository.findByUsername(username);
 
-        if (user == null) {
+        if (userEntity == null) {
             throw new UsernameNotFoundException("Could not find user");
         }
 
-        return new MyUserDetails(user);
+        return new MyUserDetails(userEntity);
     }
 
 }

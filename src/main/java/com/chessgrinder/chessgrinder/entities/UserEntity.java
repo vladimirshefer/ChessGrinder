@@ -12,12 +12,12 @@ import org.hibernate.annotations.UuidGenerator;
 @Setter
 @ToString
 @Entity
-@Table(name = "users")
+@Table(name = "users_table")
 @Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class UserEntity {
     @Id
     @Column(name = "id", nullable = false)
     @UuidGenerator
@@ -49,11 +49,9 @@ public class User {
     @ManyToMany
     @JoinTable(
             name = "users_roles",
-            joinColumns = @JoinColumn(
-                    name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "id"))
-    private Collection<Role> roles;
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Collection<RoleEntity> roleEntities;
 
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB

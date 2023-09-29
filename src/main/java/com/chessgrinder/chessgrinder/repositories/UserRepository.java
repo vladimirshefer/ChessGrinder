@@ -7,11 +7,11 @@ import org.springframework.data.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface UserRepository extends PagingAndSortingRepository<User, UUID>, CrudRepository<User, UUID> {
+public interface UserRepository extends PagingAndSortingRepository<UserEntity, UUID>, CrudRepository<UserEntity, UUID> {
 
     @Override
-    List<User> findAll();
+    List<UserEntity> findAll();
 
-    User findByUsername(String userName);
+    UserEntity findByUsername(String userName);
 
 }

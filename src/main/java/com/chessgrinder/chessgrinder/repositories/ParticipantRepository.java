@@ -8,12 +8,12 @@ import org.springframework.data.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface ParticipantRepository extends PagingAndSortingRepository<Participant, UUID>, CrudRepository<Participant, UUID> {
+public interface ParticipantRepository extends PagingAndSortingRepository<ParticipantEntity, UUID>, CrudRepository<ParticipantEntity, UUID> {
 
-    @Query("SELECT p FROM Participant p WHERE p.tournament.id = :tournamentId")
-    List<Participant> findByTournamentId(UUID tournamentId);
+    @Query("SELECT p FROM ParticipantEntity p WHERE p.tournamentEntity.id = :tournamentId")
+    List<ParticipantEntity> findByTournamentId(UUID tournamentId);
 
-    @Query("SELECT p FROM Participant p WHERE p.tournament.id = :tournamentId AND p.user.id = :userId")
-    Participant findByTournamentIdAndUserId(UUID tournamentId, UUID userId);
+    @Query("SELECT p FROM ParticipantEntity p WHERE p.tournamentEntity.id = :tournamentId AND p.userEntity.id = :userId")
+    ParticipantEntity findByTournamentIdAndUserId(UUID tournamentId, UUID userId);
 
 }

@@ -1,6 +1,5 @@
 package com.chessgrinder.chessgrinder.entities;
 
-import java.math.*;
 import java.util.*;
 
 import jakarta.persistence.*;
@@ -11,12 +10,12 @@ import lombok.extern.slf4j.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "rounds")
+@Table(name = "rounds_table")
 @Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Round {
+public class RoundEntity {
 
     @Id
     @Column(name = "id")
@@ -27,11 +26,11 @@ public class Round {
 
     @ManyToOne
     @JoinColumn(name = "tournament_id")
-    private Tournament tournament;
+    private TournamentEntity tournamentEntity;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "round", cascade = CascadeType.REMOVE)
-    private List<Match> matches;
+    @OneToMany(mappedBy = "roundEntity", cascade = CascadeType.REMOVE)
+    private List<MatchEntity> matchEntities;
 
     @Column(name = "is_finished")
     private boolean isFinished;

@@ -11,12 +11,12 @@ import lombok.extern.slf4j.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "participants")
+@Table(name = "participants_table")
 @Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Participant {
+public class ParticipantEntity {
 
     @Id
     @Column(name = "id")
@@ -24,11 +24,11 @@ public class Participant {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity userEntity;
 
     @ManyToOne
     @JoinColumn(name = "tournament_id")
-    private Tournament tournament;
+    private TournamentEntity tournamentEntity;
 
     @Column(name = "nickname")
     private String nickname;

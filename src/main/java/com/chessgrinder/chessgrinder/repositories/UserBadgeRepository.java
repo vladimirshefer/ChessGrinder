@@ -7,6 +7,6 @@ import org.springframework.data.repository.*;
 import org.springframework.data.rest.core.annotation.*;
 
 @RepositoryRestResource
-public interface UserBadgeRepository extends PagingAndSortingRepository<UserBadge, UUID>, CrudRepository<UserBadge, UUID> {
+public interface UserBadgeRepository extends PagingAndSortingRepository<UserBadgeEntity, UUID>, CrudRepository<UserBadgeEntity, UUID> {
 
 }

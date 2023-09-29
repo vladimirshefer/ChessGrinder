@@ -11,12 +11,12 @@ import lombok.extern.slf4j.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "matches")
+@Table(name = "matches_table")
 @Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Match {
+public class MatchEntity {
 
     @Id
     @Column(name = "id")
@@ -24,15 +24,15 @@ public class Match {
 
     @ManyToOne
     @JoinColumn(name = "round_id")
-    private Round round;
+    private RoundEntity roundEntity;
 
     @ManyToOne
     @JoinColumn(name = "player_id_1")
-    private Participant participant1;
+    private ParticipantEntity participantEntity1;
 
     @ManyToOne
     @JoinColumn(name = "player_id_2")
-    private Participant participant2;
+    private ParticipantEntity participantEntity2;
 
     @Column(name = "result")
     @Enumerated(EnumType. STRING)

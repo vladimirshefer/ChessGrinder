@@ -22,15 +22,15 @@ public class TournamentPageService {
     private final RoundMapper roundMapper;
 
     public TournamentPageDto getTournamentData(UUID tournamentId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
-        List<Participant> tournamentParticipants = participantRepository.findByTournamentId(tournamentId);
-        List<Round> tournamentRounds = roundRepository.findByTournamentId(tournamentId);
+        List<ParticipantEntity> tournamentParticipantEntities = participantRepository.findByTournamentId(tournamentId);
+        List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentEntityId(tournamentId);
 
         return TournamentPageDto.builder()
-                .tournament(tournamentMapper.toDto(tournament))
-                .participants(participantMapper.toDto(tournamentParticipants))
-                .rounds(roundMapper.toDto(tournamentRounds))
+                .tournament(tournamentMapper.toDto(tournamentEntity))
+                .participants(participantMapper.toDto(tournamentParticipantEntities))
+                .rounds(roundMapper.toDto(tournamentRoundEntities))
                 .build();
     }
 

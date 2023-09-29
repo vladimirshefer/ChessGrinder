@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.entities.Role;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.service.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -18,19 +18,19 @@ public class TournamentController {
 
     private final TournamentService tournamentService;
 
-    @Secured(Role.Roles.ADMIN)
+    @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping
     public void createTournament() {
         tournamentService.createTournament(LocalDateTime.now());
     }
 
-    @Secured(Role.Roles.ADMIN)
+    @Secured(RoleEntity.Roles.ADMIN)
     @GetMapping("/{tournamentId}/action/start")
     public void startTournament(@PathVariable UUID tournamentId) {
         tournamentService.startTournament(tournamentId);
     }
 
-    @Secured(Role.Roles.ADMIN)
+    @Secured(RoleEntity.Roles.ADMIN)
     @GetMapping("/{tournamentId}/action/finish")
     public void finishTournament(@PathVariable UUID tournamentId) {
         tournamentService.finishTournament(tournamentId);

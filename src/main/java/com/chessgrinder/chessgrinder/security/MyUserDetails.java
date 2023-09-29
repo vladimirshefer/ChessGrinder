@@ -1,7 +1,7 @@
 package com.chessgrinder.chessgrinder.security;
 
-import com.chessgrinder.chessgrinder.entities.Role;
-import com.chessgrinder.chessgrinder.entities.User;
+import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,24 +13,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MyUserDetails implements UserDetails {
 
-    private final User user;
+    private final UserEntity userEntity;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream()
-                .map(Role::getName)
+        return userEntity.getRoleEntities().stream()
+                .map(RoleEntity::getName)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return userEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return userEntity.getUsername();
     }
 
     @Override

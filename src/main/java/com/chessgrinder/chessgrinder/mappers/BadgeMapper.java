@@ -11,17 +11,17 @@ import org.springframework.stereotype.*;
 @RequiredArgsConstructor
 public class BadgeMapper {
 
-    public BadgeDto toDto(Badge badge) {
+    public BadgeDto toDto(BadgeEntity badgeEntity) {
 
         return BadgeDto.builder()
-                .title(badge.getTitle())
-                .description(badge.getDescription())
-                .imageUrl(badge.getPictureUrl())
+                .title(badgeEntity.getTitle())
+                .description(badgeEntity.getDescription())
+                .imageUrl(badgeEntity.getPictureUrl())
                 .build();
     }
-    public List<BadgeDto> toDto(List<Badge> badges) {
+    public List<BadgeDto> toDto(List<BadgeEntity> badgeEntities) {
 
-        return badges.stream().map(badge -> BadgeDto.builder()
+        return badgeEntities.stream().map(badge -> BadgeDto.builder()
                 .title(badge.getTitle())
                 .description(badge.getDescription())
                 .imageUrl(badge.getPictureUrl())

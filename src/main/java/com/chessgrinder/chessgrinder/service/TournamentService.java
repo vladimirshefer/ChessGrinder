@@ -1,8 +1,8 @@
 package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
-import com.chessgrinder.chessgrinder.entities.Round;
-import com.chessgrinder.chessgrinder.entities.Tournament;
+import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
@@ -33,23 +33,23 @@ public class TournamentService {
     public void createTournament(LocalDateTime date) {
 
 
-        Tournament tournament = Tournament.builder()
+        TournamentEntity tournamentEntity = TournamentEntity.builder()
                 .id(UUID.randomUUID())
                 .date(date)
                 .status(TournamentStatus.PLANNED)
                 .build();
 
-        tournament = tournamentRepository.save(tournament);
+        tournamentEntity = tournamentRepository.save(tournamentEntity);
 
-        Round firstRound = Round.builder()
+        RoundEntity firstRoundEntity = RoundEntity.builder()
                 .id(UUID.randomUUID())
-                .tournament(tournament)
-                .matches(List.of())
+                .tournamentEntity(tournamentEntity)
+                .matchEntities(List.of())
                 .number(1)
                 .isFinished(false)
                 .build();
 
-        roundRepository.save(firstRound);
+        roundRepository.save(firstRoundEntity);
     }
 
     public void startTournament(UUID tournamentId) {

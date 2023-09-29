@@ -3,7 +3,7 @@ package com.chessgrinder.chessgrinder.controller;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.entities.Role;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.service.*;
 import lombok.*;
 import org.springframework.security.access.annotation.Secured;
@@ -16,7 +16,7 @@ public class ParticipantController {
 
     private final ParticipantService participantServiceService;
 
-    @Secured(Role.Roles.ADMIN)
+    @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping("/participant")
     public void addParticipantToTournament(@PathVariable UUID tournamentId,
                                            @RequestBody ParticipantDto participantDto) {
