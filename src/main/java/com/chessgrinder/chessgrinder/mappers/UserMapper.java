@@ -17,14 +17,8 @@ public class UserMapper {
     public MemberDto toDto(User user) {
 
         List<Badge> userBadges = badgeRepository.getAllBadgesByUserId(user.getId());
-
-        if (userBadges == null || userBadges.isEmpty()) {
-            return MemberDto.builder()
-                    .username(user.getUsername())
-                    .id(user.getId().toString())
-                    .name(user.getName())
-                    .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
-                    .build();
+        if (userBadges == null) {
+            userBadges = Collections.emptyList();
         }
 
         return MemberDto.builder()
