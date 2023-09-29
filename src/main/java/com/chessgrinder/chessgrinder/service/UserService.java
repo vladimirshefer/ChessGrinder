@@ -2,11 +2,13 @@ package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.dto.BadgeDto;
 import com.chessgrinder.chessgrinder.dto.MemberDto;
+import com.chessgrinder.chessgrinder.entities.Role;
 import com.chessgrinder.chessgrinder.entities.User;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.BadgeMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.BadgeRepository;
+import com.chessgrinder.chessgrinder.repositories.RoleRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final BadgeMapper badgeMapper;
     private final BadgeRepository badgeRepository;
+    private final RoleRepository roleRepository;
 
     public List<MemberDto> getAllUsers() {
         var users = userRepository.findAll();
@@ -78,6 +81,12 @@ public class UserService {
             newUser.setUsername(username.getEmail());
             newUser.setName(username.getName());
             newUser.setProvider(User.Provider.GOOGLE);
+
+            if (List.of("quameu@gmail.com", "al.boldyrev1@gmail.com").contains(username.getEmail())) {
+                Role adminRole = roleRepository.findByName(Role.Roles.ADMIN)
+                        .orElseThrow(() -> new IllegalStateException("Could not find ADMIN role"));
+                newUser.setRoles(List.of(adminRole));
+            }
 
             userRepository.save(newUser);
         }
