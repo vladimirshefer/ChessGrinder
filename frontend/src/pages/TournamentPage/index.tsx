@@ -74,7 +74,7 @@ function TournamentPage() {
                     </button>
                 </Link>
             })}
-            <ConditionalOnUserRole role={"ADMIN"}>
+            <ConditionalOnUserRole role={"ROLE_ADMIN"}>
                 <button className={`w-full rounded p-2 bg-gray-100 col-span-2 lg:col-span-1`}
                         onClick={createRound}
                 >+

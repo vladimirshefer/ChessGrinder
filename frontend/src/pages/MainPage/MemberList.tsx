@@ -18,7 +18,7 @@ export function MemberList(
         <h2 className={"text-xl my-2"}>Members</h2>
         <div className={"w-full grid grid-cols-12"}>
             <div className={"col-span-12"}>
-                <ConditionalOnUserRole role={"ADMIN"}>
+                <ConditionalOnUserRole role={"ROLE_ADMIN"}>
                     <ToggleableSelectableTextInput
                         values={members.map(it => it.name)}
                         buttonText={"Add guest"}

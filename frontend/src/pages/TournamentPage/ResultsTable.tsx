@@ -33,7 +33,7 @@ function ResultsTable(
             <span className={"col-span-5"}>Name</span>
             <span className={"col-span-3"}>PTS</span>
             <span className={"col-span-3"}>BHZ</span>
-            <ConditionalOnUserRole role={"ADMIN"}>
+            <ConditionalOnUserRole role={"ROLE_ADMIN"}>
                 <div className={"col-span-12 px-2 my-1"}>
                     <ToggleableSelectableTextInput
                         values={members}
