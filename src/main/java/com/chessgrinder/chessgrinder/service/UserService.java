@@ -43,14 +43,8 @@ public class UserService {
             log.error("There is no such user with id: '" + userId + "'");
             throw new UserNotFoundException("There is no such user with id: '" + userId + "'");
         }
-        List<BadgeDto> badges = badgeMapper.toDto(badgeRepository.getAllBadgesByUserId(user.getId()));
 
-        return MemberDto.builder()
-                .id(userId)
-                .username(user.getUsername())
-                .name(user.getName())
-                .badges(badges)
-                .build();
+        return userMapper.toDto(user);
 
     }
 
@@ -62,15 +56,8 @@ public class UserService {
             log.error("There is no such user with username: '" + userName + "'");
             throw new UserNotFoundException("There is no such user with username: '" + userName + "'");
         }
-        List<BadgeDto> badges = badgeMapper.toDto(badgeRepository.getAllBadgesByUserId(user.getId()));
 
-        return MemberDto.builder()
-                    .id(user.getId().toString())
-                    .username(userName)
-                    .name(user.getName())
-                    .badges(badges)
-                    .build();
-
+        return userMapper.toDto(user);
     }
 
     public void processOAuthPostLogin(CustomOAuth2User username) {
