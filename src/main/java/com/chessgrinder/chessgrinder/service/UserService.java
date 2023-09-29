@@ -84,7 +84,7 @@ public class UserService {
 
             if (List.of("quameu@gmail.com", "al.boldyrev1@gmail.com").contains(username.getEmail())) {
                 Role adminRole = roleRepository.findByName(Role.Roles.ADMIN)
-                        .orElseThrow(() -> new IllegalStateException("Could not find ADMIN role"));
+                        .orElseGet(() -> roleRepository.save(Role.builder().name(Role.Roles.ADMIN).build()));
                 newUser.setRoles(List.of(adminRole));
             }
 
