@@ -25,9 +25,9 @@ public class ParticipantService {
 
         ParticipantEntity participantEntity = ParticipantEntity.builder()
                 .id(UUID.randomUUID())
-                .tournamentEntity(tournamentEntity)
+                .tournament(tournamentEntity)
                 .nickname(participantDto.getName())
-                .userEntity(userEntity)
+                .user(userEntity)
                 .score(BigDecimal.ZERO)
                 .buchholz(BigDecimal.ZERO)
                 .build();

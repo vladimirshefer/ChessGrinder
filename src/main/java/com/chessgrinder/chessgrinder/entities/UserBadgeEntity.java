@@ -23,9 +23,9 @@ public class UserBadgeEntity {
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    private UserEntity userEntity;
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name="badge_id")
-    private BadgeEntity badgeEntity;
+    private BadgeEntity badge;
 }

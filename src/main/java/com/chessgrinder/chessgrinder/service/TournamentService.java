@@ -43,8 +43,8 @@ public class TournamentService {
 
         RoundEntity firstRoundEntity = RoundEntity.builder()
                 .id(UUID.randomUUID())
-                .tournamentEntity(tournamentEntity)
-                .matchEntities(List.of())
+                .tournament(tournamentEntity)
+                .matches(List.of())
                 .number(1)
                 .isFinished(false)
                 .build();

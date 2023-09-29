@@ -24,15 +24,15 @@ public class MatchEntity {
 
     @ManyToOne
     @JoinColumn(name = "round_id")
-    private RoundEntity roundEntity;
+    private RoundEntity round;
 
     @ManyToOne
     @JoinColumn(name = "player_id_1")
-    private ParticipantEntity participantEntity1;
+    private ParticipantEntity participant1;
 
     @ManyToOne
     @JoinColumn(name = "player_id_2")
-    private ParticipantEntity participantEntity2;
+    private ParticipantEntity participant2;
 
     @Column(name = "result")
     @Enumerated(EnumType. STRING)

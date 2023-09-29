@@ -23,14 +23,14 @@ public class RoundService {
     public void createRound(UUID tournamentId) {
 
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow();
-        RoundEntity lastExistedRoundEntity = roundRepository.findFirstByTournamentEntityIdOrderByNumberDesc(tournamentId);
+        RoundEntity lastExistedRoundEntity = roundRepository.findFirstByTournamentIdOrderByNumberDesc(tournamentId);
         Integer nextRoundNumber = lastExistedRoundEntity != null ? lastExistedRoundEntity.getNumber() + 1 : 1;
 
         RoundEntity nextRoundEntity = RoundEntity.builder()
                 .id(UUID.randomUUID())
                 .number(nextRoundNumber)
-                .tournamentEntity(tournamentEntity)
-                .matchEntities(List.of())
+                .tournament(tournamentEntity)
+                .matches(List.of())
                 .isFinished(false)
                 .build();
 
@@ -61,7 +61,7 @@ public class RoundService {
         RoundEntity roundEntity = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
         List<MatchEntity> matchEntities = swissService.makePairs(participantEntities);
-        matchEntities.forEach(match -> match.setRoundEntity(roundEntity));
+        matchEntities.forEach(match -> match.setRound(roundEntity));
         matchRepository.saveAll(matchEntities);
     }
 

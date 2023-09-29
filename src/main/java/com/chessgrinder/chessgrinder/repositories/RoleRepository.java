@@ -1,13 +1,12 @@
 package com.chessgrinder.chessgrinder.repositories;
 
-import com.chessgrinder.chessgrinder.entities.Role;
-import org.springframework.data.repository.ListCrudRepository;
+import java.util.*;
 
-import java.util.Optional;
-import java.util.UUID;
+import com.chessgrinder.chessgrinder.entities.*;
+import org.springframework.data.repository.*;
 
-public interface RoleRepository extends ListCrudRepository<Role, UUID> {
+public interface RoleRepository extends ListCrudRepository<RoleEntity, UUID> {
 
-    Optional<Role> findByName(String name);
+    Optional<RoleEntity> findByName(String name);
 
 }

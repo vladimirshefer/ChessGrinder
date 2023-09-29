@@ -13,7 +13,7 @@ public class ParticipantMapper {
     public List<ParticipantDto> toDto(List<ParticipantEntity> participantEntities) {
 
        return participantEntities.stream().map(participant -> ParticipantDto.builder()
-                        .userId(participant.getUserEntity().getId().toString())
+                        .userId(participant.getUser().getId().toString())
                         .name(participant.getNickname())
                         .buchholz(participant.getBuchholz())
                         .score(participant.getScore()).build())

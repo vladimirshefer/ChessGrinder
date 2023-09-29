@@ -17,7 +17,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return userEntity.getRoleEntities().stream()
+        return userEntity.getRoles().stream()
                 .map(RoleEntity::getName)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());

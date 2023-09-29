@@ -26,11 +26,11 @@ public class RoundEntity {
 
     @ManyToOne
     @JoinColumn(name = "tournament_id")
-    private TournamentEntity tournamentEntity;
+    private TournamentEntity tournament;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "roundEntity", cascade = CascadeType.REMOVE)
-    private List<MatchEntity> matchEntities;
+    @OneToMany(mappedBy = "round", cascade = CascadeType.REMOVE)
+    private List<MatchEntity> matches;
 
     @Column(name = "is_finished")
     private boolean isFinished;

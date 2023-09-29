@@ -51,7 +51,7 @@ public class UserEntity {
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Collection<RoleEntity> roleEntities;
+    private Collection<RoleEntity> roles;
 
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB

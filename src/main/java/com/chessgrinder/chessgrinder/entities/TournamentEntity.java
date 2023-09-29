@@ -31,6 +31,6 @@ public class TournamentEntity {
     private TournamentStatus status;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "tournamentEntity")
-    private List<RoundEntity> roundEntities;
+    @OneToMany(mappedBy = "tournament")
+    private List<RoundEntity> rounds;
 }

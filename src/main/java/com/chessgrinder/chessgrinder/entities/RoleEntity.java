@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "roles_table")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role {
+public class RoleEntity {
 
     @Id
     @UuidGenerator
@@ -25,7 +25,7 @@ public class Role {
 
     @ToString.Exclude
     @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    private List<UserEntity> users;
 
     public static class Roles {
         public static final String ADMIN = "ROLE_ADMIN";

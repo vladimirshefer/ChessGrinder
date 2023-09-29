@@ -24,11 +24,11 @@ public class ParticipantEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "tournament_id")
-    private TournamentEntity tournamentEntity;
+    private TournamentEntity tournament;
 
     @Column(name = "nickname")
     private String nickname;

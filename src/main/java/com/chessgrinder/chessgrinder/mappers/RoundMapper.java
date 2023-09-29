@@ -18,7 +18,7 @@ public class RoundMapper {
         return roundEntities.stream().map(round -> RoundDto.builder()
                 .isFinished(round.isFinished())
                 .number(round.getNumber())
-                .matches(matchMapper.toDto(round.getMatchEntities()))
+                .matches(matchMapper.toDto(round.getMatches()))
                 .build())
             .toList();
     }

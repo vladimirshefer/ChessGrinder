@@ -10,12 +10,12 @@ import org.springframework.data.rest.core.annotation.*;
 @RepositoryRestResource
 public interface MatchRepository extends PagingAndSortingRepository<MatchEntity, UUID>, CrudRepository<MatchEntity, UUID> {
 
-    @Query("SELECT m FROM MatchEntity m WHERE m.roundEntity.tournamentEntity.id = :tournamentId")
+    @Query("SELECT m FROM MatchEntity m WHERE m.round.tournament.id = :tournamentId")
     List<MatchEntity> findAllByTournamentId(UUID tournamentId);
 
-    MatchEntity findByParticipantEntity1AndParticipantEntity2(ParticipantEntity participantEntity1, ParticipantEntity participantEntity2);
+    MatchEntity findByParticipant1AndParticipant2(ParticipantEntity participant1, ParticipantEntity participant2);
 
-    @Query("SELECT m FROM MatchEntity m WHERE (m.roundEntity.tournamentEntity.id = :tournamentId AND m.participantEntity1 = :participantEntity1 AND m.participantEntity2 = :participantEntity2) OR (m.roundEntity.tournamentEntity.id = :tournamentId AND m.participantEntity1 = :participantEntity2 AND m.participantEntity2 = :participantEntity1) ")
-    MatchEntity findMatchBetweenTwoParticipantsInTournament(UUID tournamentId, ParticipantEntity participantEntity1, ParticipantEntity participantEntity2);
+    @Query("SELECT m FROM MatchEntity m WHERE (m.round.tournament.id = :tournamentId AND m.participant1 = :participant1 AND m.participant2 = :participant2) OR (m.round.tournament.id = :tournamentId AND m.participant1 = :participant2 AND m.participant2 = :participant1) ")
+    MatchEntity findMatchBetweenTwoParticipantsInTournament(UUID tournamentId, ParticipantEntity participant1, ParticipantEntity participant2);
 
 }

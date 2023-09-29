@@ -17,8 +17,8 @@ public class MatchMapper {
 
         return MatchDto.builder()
                 .id(matchEntity.getId().toString())
-                .white(userMapper.toDto(matchEntity.getParticipantEntity1().getUserEntity()))
-                .black(userMapper.toDto(matchEntity.getParticipantEntity2().getUserEntity()))
+                .white(userMapper.toDto(matchEntity.getParticipant1().getUser()))
+                .black(userMapper.toDto(matchEntity.getParticipant2().getUser()))
                 .result(matchEntity.getResult())
                 .build();
     }

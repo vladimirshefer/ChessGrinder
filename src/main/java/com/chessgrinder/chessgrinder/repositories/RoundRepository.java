@@ -10,15 +10,15 @@ import org.springframework.data.rest.core.annotation.*;
 @RepositoryRestResource
 public interface RoundRepository extends PagingAndSortingRepository<RoundEntity, UUID>, CrudRepository<RoundEntity, UUID> {
 
-    @Query("SELECT r FROM RoundEntity r WHERE r.tournamentEntity.id = :tournamentId")
-    List<RoundEntity> findByTournamentEntityId(UUID tournamentId);
+    @Query("SELECT r FROM RoundEntity r WHERE r.tournament.id = :tournamentId")
+    List<RoundEntity> findByTournamentId(UUID tournamentId);
 
-    RoundEntity findFirstByTournamentEntityIdOrderByNumberDesc(UUID tournamentId);
+    RoundEntity findFirstByTournamentIdOrderByNumberDesc(UUID tournamentId);
 
-    @Query("SELECT r FROM RoundEntity r WHERE r.isFinished = false AND r.tournamentEntity.id = :tournamentId")
+    @Query("SELECT r FROM RoundEntity r WHERE r.isFinished = false AND r.tournament.id = :tournamentId")
     RoundEntity findActiveRoundInTournament(UUID tournamentId);
 
-    @Query("SELECT r FROM RoundEntity r WHERE r.tournamentEntity.id = :tournamentId and r.number = :roundNumber")
+    @Query("SELECT r FROM RoundEntity r WHERE r.tournament.id = :tournamentId and r.number = :roundNumber")
     RoundEntity findByTournamentIdAndNumber(UUID tournamentId, Integer roundNumber);
 
 }

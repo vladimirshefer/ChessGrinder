@@ -14,9 +14,9 @@ import org.springframework.stereotype.*;
 public class UserMapper {
     private final BadgeRepository badgeRepository;
     private final BadgeMapper badgeMapper;
-    public MemberDto toDto(User user) {
+    public MemberDto toDto(UserEntity user) {
 
-        List<Badge> userBadges = badgeRepository.getAllBadgesByUserId(user.getId());
+        List<BadgeEntity> userBadges = badgeRepository.getAllBadgesByUserId(user.getId());
         if (userBadges == null) {
             userBadges = Collections.emptyList();
         }
@@ -26,11 +26,11 @@ public class UserMapper {
                 .username(user.getUsername())
                 .badges(badgeMapper.toDto(userBadges))
                 .name(user.getName())
-                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                .roles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toList()))
                 .build();
     }
 
-    public List<MemberDto> toDto(List<User> users) {
+    public List<MemberDto> toDto(List<UserEntity> users) {
         return users.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

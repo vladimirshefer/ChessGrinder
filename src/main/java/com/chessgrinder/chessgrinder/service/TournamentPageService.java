@@ -25,7 +25,7 @@ public class TournamentPageService {
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
         List<ParticipantEntity> tournamentParticipantEntities = participantRepository.findByTournamentId(tournamentId);
-        List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentEntityId(tournamentId);
+        List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
 
         return TournamentPageDto.builder()
                 .tournament(tournamentMapper.toDto(tournamentEntity))

@@ -11,7 +11,6 @@ import lombok.*;
 import org.springframework.boot.context.event.*;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.*;
 import org.springframework.transaction.annotation.*;
 
 @Profile("local")
@@ -61,10 +60,10 @@ public class TestDataInserter {
                 .pictureUrl("🦀")
                 .build());
 
-        UserBadgeEntity userBadgeEntity1 = userBadgeRepository.save(UserBadgeEntity.builder().id(UUID.fromString("aaaa3333-1111-1111-1111-000000000001")).userEntity(userEntityTest1).badgeEntity(badgeEntity1).build());
-        UserBadgeEntity userBadgeEntity2 = userBadgeRepository.save(UserBadgeEntity.builder().id(UUID.fromString("aaaa3333-1111-1111-1111-000000000002")).userEntity(userEntityTest2).badgeEntity(badgeEntity2).build());
-        UserBadgeEntity userBadgeEntity3 = userBadgeRepository.save(UserBadgeEntity.builder().id(UUID.fromString("aaaa3333-1111-1111-1111-000000000003")).userEntity(userEntityTest3).badgeEntity(badgeEntity1).build());
-        UserBadgeEntity userBadgeEntity4 = userBadgeRepository.save(UserBadgeEntity.builder().id(UUID.fromString("aaaa3333-1111-1111-1111-000000000004")).userEntity(userEntityTest4).badgeEntity(badgeEntity2).build());
+        UserBadgeEntity userBadgeEntity1 = userBadgeRepository.save(UserBadgeEntity.builder().id(UUID.fromString("aaaa3333-1111-1111-1111-000000000001")).user(userEntityTest1).badge(badgeEntity1).build());
+        UserBadgeEntity userBadgeEntity2 = userBadgeRepository.save(UserBadgeEntity.builder().id(UUID.fromString("aaaa3333-1111-1111-1111-000000000002")).user(userEntityTest2).badge(badgeEntity2).build());
+        UserBadgeEntity userBadgeEntity3 = userBadgeRepository.save(UserBadgeEntity.builder().id(UUID.fromString("aaaa3333-1111-1111-1111-000000000003")).user(userEntityTest3).badge(badgeEntity1).build());
+        UserBadgeEntity userBadgeEntity4 = userBadgeRepository.save(UserBadgeEntity.builder().id(UUID.fromString("aaaa3333-1111-1111-1111-000000000004")).user(userEntityTest4).badge(badgeEntity2).build());
 
         TournamentEntity tournamentEntity1 = tournamentRepository.save(TournamentEntity.builder().id(UUID.fromString("aaaa4444-1111-1111-1111-000000000001")).date(LocalDateTime.now()).status(TournamentStatus.ACTIVE).build());
         TournamentEntity tournamentEntity2 = tournamentRepository.save(TournamentEntity.builder().id(UUID.fromString("aaaa4444-1111-1111-1111-000000000002")).date(LocalDateTime.now()).status(TournamentStatus.FINISHED).build());
@@ -80,8 +79,8 @@ public class TestDataInserter {
                 .nickname("participantTEST1")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest1)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest1)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity2 = participantRepository.save(ParticipantEntity.builder()
@@ -89,8 +88,8 @@ public class TestDataInserter {
                 .nickname("participantTEST2")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest2)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest2)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity3 = participantRepository.save(ParticipantEntity.builder()
@@ -98,8 +97,8 @@ public class TestDataInserter {
                 .nickname("participantTEST3")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest3)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest3)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity4 = participantRepository.save(ParticipantEntity.builder()
@@ -107,8 +106,8 @@ public class TestDataInserter {
                 .nickname("participantTEST4")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest4)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest4)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity5 = participantRepository.save(ParticipantEntity.builder()
@@ -116,8 +115,8 @@ public class TestDataInserter {
                 .nickname("participantTEST5")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest5)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest5)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity6 = participantRepository.save(ParticipantEntity.builder()
@@ -125,8 +124,8 @@ public class TestDataInserter {
                 .nickname("participantTEST6")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest6)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest6)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity7 = participantRepository.save(ParticipantEntity.builder()
@@ -134,8 +133,8 @@ public class TestDataInserter {
                 .nickname("participantTEST7")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest7)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest7)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity8 = participantRepository.save(ParticipantEntity.builder()
@@ -143,8 +142,8 @@ public class TestDataInserter {
                 .nickname("participantTEST8")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest8)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest8)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity9 = participantRepository.save(ParticipantEntity.builder()
@@ -152,8 +151,8 @@ public class TestDataInserter {
                 .nickname("participantTEST9")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest9)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest9)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity10 = participantRepository.save(ParticipantEntity.builder()
@@ -161,8 +160,8 @@ public class TestDataInserter {
                 .nickname("participantTEST10")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest10)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest10)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity11 = participantRepository.save(ParticipantEntity.builder()
@@ -170,8 +169,8 @@ public class TestDataInserter {
                 .nickname("participantTEST11")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest11)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest11)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity12 = participantRepository.save(ParticipantEntity.builder()
@@ -179,8 +178,8 @@ public class TestDataInserter {
                 .nickname("participantTEST12")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest12)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest12)
+                .tournament(tournamentEntity1)
                 .build());
 
         ParticipantEntity participantEntity13 = participantRepository.save(ParticipantEntity.builder()
@@ -188,16 +187,16 @@ public class TestDataInserter {
                 .nickname("participantTEST13")
                 .score(BigDecimal.valueOf(1))
                 .buchholz(BigDecimal.valueOf(1.5))
-                .userEntity(userEntityTest13)
-                .tournamentEntity(tournamentEntity1)
+                .user(userEntityTest13)
+                .tournament(tournamentEntity1)
                 .build());
 
 
         MatchEntity matchEntity1 = matchRepository.save(
                 MatchEntity.builder()
                         .id(UUID.fromString("aaaa7777-1111-1111-1111-000000000001"))
-                        .participantEntity1(participantEntity1)
-                        .participantEntity2(participantEntity2)
+                        .participant1(participantEntity1)
+                        .participant2(participantEntity2)
                         .result(MatchResult.WHITE_WIN)
                         .build()
         );
@@ -205,8 +204,8 @@ public class TestDataInserter {
         MatchEntity matchEntity2 = matchRepository.save(
                 MatchEntity.builder()
                         .id(UUID.fromString("aaaa6666-1111-1111-1111-000000000002"))
-                        .participantEntity1(participantEntity3)
-                        .participantEntity2(participantEntity4)
+                        .participant1(participantEntity3)
+                        .participant2(participantEntity4)
                         .result(MatchResult.BLACK_WIN)
                         .build()
         );
@@ -217,15 +216,15 @@ public class TestDataInserter {
         RoundEntity roundEntity1 = roundRepository.save(
                 RoundEntity.builder()
                         .id(UUID.fromString("aaaa6666-1111-1111-1111-000000000001"))
-                        .tournamentEntity(tournamentEntity1)
+                        .tournament(tournamentEntity1)
                         .number(100)
                         .isFinished(true)
-                        .matchEntities(List.of(matchEntity1, matchEntity2))
+                        .matches(List.of(matchEntity1, matchEntity2))
                         .build()
         );
 
-        matchEntity1.setRoundEntity(roundEntity1);
-        matchEntity2.setRoundEntity(roundEntity1);
+        matchEntity1.setRound(roundEntity1);
+        matchEntity2.setRound(roundEntity1);
 
         matchRepository.save(matchEntity1);
         matchRepository.save(matchEntity2);

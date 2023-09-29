@@ -25,7 +25,7 @@ public class SwissService {
 
         List<MatchEntity> matchEntities = new ArrayList<>();
 
-        tournamentId = participantEntities.get(0).getTournamentEntity().getId();
+        tournamentId = participantEntities.get(0).getTournament().getId();
 
         List<ParticipantEntity> sortedParticipantEntities = participantEntities.stream()
                 .sorted(Comparator.comparing(ParticipantEntity::getScore).reversed()).toList();
@@ -45,7 +45,7 @@ public class SwissService {
 
             MatchEntity matchEntity = MatchEntity.builder()
                     .id(UUID.randomUUID())
-                    .participantEntity1(participant1.getParticipantEntity())
+                    .participant1(participant1.getParticipantEntity())
                     .build();
 
             participant1.setBooked(true);
@@ -80,14 +80,14 @@ public class SwissService {
 
     public MatchEntity findMatchForParticipant(List<ParticipantForPairing> players, MatchEntity matchEntity) {
 
-        ParticipantEntity first = matchEntity.getParticipantEntity1();
+        ParticipantEntity first = matchEntity.getParticipant1();
         for (ParticipantForPairing participantForPairing: players) {
 
             ParticipantEntity second = participantForPairing.getParticipantEntity();
             MatchEntity hasMatchWithTwoPlayersBeenInTournamentEntity = matchRepository.findMatchBetweenTwoParticipantsInTournament(tournamentId, first, second);
 
             if (hasMatchWithTwoPlayersBeenInTournamentEntity == null && !participantForPairing.isBooked()) {
-                matchEntity.setParticipantEntity2(second);
+                matchEntity.setParticipant2(second);
                 participantForPairing.setBooked(true);
                 return matchEntity;
             }
