@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -38,5 +39,13 @@ public class TournamentController {
     @GetMapping
     public Object getTournaments() {
         return Map.of("tournaments", tournamentService.findTournaments());
+    }
+
+    @PostMapping("{tournamentId}/action/participate")
+    public Object participate(
+            @PathVariable UUID tournamentId,
+            Principal principal
+    ) {
+        return principal.getName();
     }
 }
