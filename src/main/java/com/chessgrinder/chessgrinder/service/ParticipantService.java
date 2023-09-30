@@ -17,6 +17,7 @@ public class ParticipantService {
     private final TournamentRepository tournamentRepository;
 
     private final UserRepository userRepository;
+
     public void addParticipantToTheTournament(UUID tournamentId, ParticipantDto participantDto) {
 
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow(); //TODO Exception
@@ -34,4 +35,12 @@ public class ParticipantService {
 
         participantRepository.save(participantEntity);
     }
+
+    public void delete(UUID tournamentId, UUID userId) {
+        ParticipantEntity participant = participantRepository.findByTournamentIdAndUserId(tournamentId, userId);
+        if (participant != null) {
+            participantRepository.delete(participant);
+        }
+    }
+
 }

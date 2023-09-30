@@ -9,9 +9,11 @@ import ConditionalOnUserRole from "components/ConditionalOnUserRole";
 function ResultsTable(
     {
         participants,
-        addParticipant
+        openParticipant,
+        addParticipant,
     }: {
         participants: ParticipantDto[],
+        openParticipant: (participant: ParticipantDto) => void,
         addParticipant: (participant: ParticipantDto) => void,
     }
 ) {
@@ -55,7 +57,11 @@ function ResultsTable(
                     .map((participant, idx) => {
                         return <div className={"col-span-12 grid grid-cols-12"} key={participant.name}>
                             <div className={"col-span-1"}>{idx + 1}</div>
-                            <div className={"col-span-5"}>{participant.name}</div>
+                            <div className={"col-span-5"}>
+                                <button onClick={() => openParticipant(participant)}>
+                                    {participant.name}
+                                </button>
+                            </div>
                             <div className={"col-span-3"}>{participant.score}</div>
                             <div className={"col-span-3"}>{participant.buchholz}</div>
                         </div>

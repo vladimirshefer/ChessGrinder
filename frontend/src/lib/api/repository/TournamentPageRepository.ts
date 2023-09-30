@@ -6,8 +6,6 @@ import localStorageUtil from "lib/util/LocalStorageUtil";
 export interface TournamentPageRepository {
     getData(tournamentId: string): Promise<TournamentPageData | null>
 
-    postParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
-
     postRound(tournamentId: string): Promise<void>
 
     deleteRound(tournamentId: string, roundNumber: number): Promise<void>
@@ -84,14 +82,6 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         } else {
             map.set(key, valueMapper(previousValue))
         }
-    }
-
-    async postParticipant(tournamentId: string, participant: ParticipantDto) {
-        let tournament = await this.getData(tournamentId);
-        if (!tournament) throw new Error(`No tournament with id ${tournamentId}`)
-        tournament.participants = tournament.participants || []
-        tournament.participants.push(participant)
-        this.saveTournament(tournamentId, tournament)
     }
 
     async postRound(tournamentId: string): Promise<void> {
@@ -218,10 +208,6 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     async getData(tournamentId: string): Promise<TournamentPageData | null> {
         return await restApiClient.get<TournamentPageData>(`/pages/tournament/${tournamentId}`)
             .catch((e) => Promise.resolve(null));
-    }
-
-    async postParticipant(tournamentId: string, participant: ParticipantDto) {
-        await restApiClient.post(`/tournament/${tournamentId}/participant`, participant,)
     }
 
     async postRound(tournamentId: string): Promise<void> {

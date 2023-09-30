@@ -6,6 +6,7 @@ import tournamentPageRepository from "lib/api/repository/TournamentPageRepositor
 import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
 import ConditionalOnUserRole from "components/ConditionalOnUserRole";
+import participantRepository from "lib/api/repository/ParticipantRepository";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
@@ -19,8 +20,12 @@ function TournamentPage() {
     let participants: ParticipantDto[] = useMemo(() => tournamentData?.participants || [], [tournamentData])
 
     async function addParticipant(participant: ParticipantDto) {
-        await tournamentPageRepository.postParticipant(id!!, participant)
+        await participantRepository.postParticipant(id!!, participant)
         await refetch()
+    }
+
+    async function openParticipant(participant: ParticipantDto) {
+        navigate(`/tournament/${id}/participant/${participant.userId}`)
     }
 
     async function createRound() {
@@ -87,9 +92,14 @@ function TournamentPage() {
                 ? (
                     <>
                         <h3>Status</h3>
-                        <ResultsTable participants={participants} addParticipant={(it) => {
-                            addParticipant(it)
-                        }}/>
+                        <ResultsTable participants={participants}
+                                      addParticipant={(it) => {
+                                          addParticipant(it)
+                                      }}
+                                      openParticipant={(it) => {
+                                          openParticipant(it)
+                                      }}
+                        />
                     </>
                 )
                 : (

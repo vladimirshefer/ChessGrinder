@@ -10,16 +10,25 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/tournament/{tournamentId}")
+@RequestMapping("/tournament/{tournamentId}/participant")
 @RequiredArgsConstructor
 public class ParticipantController {
 
-    private final ParticipantService participantServiceService;
+    private final ParticipantService participantService;
 
     @Secured(RoleEntity.Roles.ADMIN)
-    @PostMapping("/participant")
+    @PostMapping
     public void addParticipantToTournament(@PathVariable UUID tournamentId,
                                            @RequestBody ParticipantDto participantDto) {
-        participantServiceService.addParticipantToTheTournament(tournamentId, participantDto);
+        participantService.addParticipantToTheTournament(tournamentId, participantDto);
+    }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @DeleteMapping("/{userId}")
+    public void delete(
+            @PathVariable UUID tournamentId,
+            @PathVariable UUID userId
+    ) {
+        participantService.delete(tournamentId, userId);
     }
 }
