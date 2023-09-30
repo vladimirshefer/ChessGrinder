@@ -2,7 +2,7 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.MemberDto;
-import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/user")
@@ -45,7 +46,7 @@ public class UserController {
             Authentication authentication
     ) {
         if (authentication == null) {
-            return null;
+            throw new ResponseStatusException(401, "Not logged in", null);
         }
         CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
         String email = principal.getEmail();
