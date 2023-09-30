@@ -43,12 +43,7 @@ CREATE TABLE IF NOT EXISTS participants_table(
     nickname      VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS rounds_matches(
-    matches_id UUID NOT NULL UNIQUE CONSTRAINT fk__rounds_matches__matches_table REFERENCES matches_table,
-    round_id   UUID NOT NULL CONSTRAINT fk__rounds_matches__rounds_table REFERENCES rounds_table
-);
-
-CREATE TABLE IF NOT EXISTS user_badges(
+CREATE TABLE IF NOT EXISTS users_badges_table(
     badge_id UUID CONSTRAINT fk__user_badges__badges_table REFERENCES badges_table,
     id       UUID NOT NULL PRIMARY KEY,
     user_id  UUID CONSTRAINT fk__user_badges__users_table REFERENCES users_table

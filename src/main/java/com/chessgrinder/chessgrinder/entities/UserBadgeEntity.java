@@ -10,7 +10,7 @@ import lombok.extern.slf4j.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "user_badges_table")
+@Table(name = "users_badges_table")
 @Slf4j
 @Builder
 @NoArgsConstructor
