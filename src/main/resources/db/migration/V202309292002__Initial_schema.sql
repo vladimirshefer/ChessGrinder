@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS participants_table(
     id            UUID NOT NULL PRIMARY KEY,
     tournament_id UUID CONSTRAINT fk__participants_table__tournaments_table REFERENCES tournaments_table,
     user_id       UUID CONSTRAINT fk__participants_table__users_table REFERENCES users_table,
-    nickname      VARCHAR(255)
+    nickname      VARCHAR(255),
+    is_missing    BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS users_badges_table(
