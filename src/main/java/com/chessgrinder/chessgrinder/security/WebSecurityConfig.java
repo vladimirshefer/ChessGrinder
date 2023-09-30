@@ -10,8 +10,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -51,8 +49,6 @@ public class WebSecurityConfig {
                                 .successHandler((request, response, authentication) -> {
                                     if (authentication.getPrincipal() instanceof CustomOAuth2User customOAuth2User) {
                                         userService.processOAuthPostLogin(customOAuth2User);
-                                        Authentication authentication1 = new Oauth2AuthenticationWrapper(authentication, customOAuth2User);
-                                        SecurityContextHolder.getContext().setAuthentication(authentication1);
                                     }
                                     response.sendRedirect("/");
                                 })
