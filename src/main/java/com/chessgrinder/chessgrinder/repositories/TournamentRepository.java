@@ -1,12 +1,12 @@
 package com.chessgrinder.chessgrinder.repositories;
 
-import java.util.*;
+import com.chessgrinder.chessgrinder.entities.TournamentEntity;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.chessgrinder.chessgrinder.entities.*;
-import org.springframework.data.repository.*;
-import org.springframework.data.rest.core.annotation.*;
+import java.util.List;
+import java.util.UUID;
 
-@RepositoryRestResource
 public interface TournamentRepository extends PagingAndSortingRepository<TournamentEntity, UUID>, CrudRepository<TournamentEntity, UUID> {
 
     @Override

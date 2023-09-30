@@ -1,13 +1,13 @@
 package com.chessgrinder.chessgrinder.repositories;
 
-import java.util.*;
+import com.chessgrinder.chessgrinder.entities.RoundEntity;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.chessgrinder.chessgrinder.entities.*;
-import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.*;
-import org.springframework.data.rest.core.annotation.*;
+import java.util.List;
+import java.util.UUID;
 
-@RepositoryRestResource
 public interface RoundRepository extends PagingAndSortingRepository<RoundEntity, UUID>, CrudRepository<RoundEntity, UUID> {
 
     @Query("SELECT r FROM RoundEntity r WHERE r.tournament.id = :tournamentId")

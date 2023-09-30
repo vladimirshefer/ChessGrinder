@@ -1,12 +1,11 @@
 package com.chessgrinder.chessgrinder.repositories;
 
-import java.util.*;
+import com.chessgrinder.chessgrinder.entities.UserBadgeEntity;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.chessgrinder.chessgrinder.entities.*;
-import org.springframework.data.repository.*;
-import org.springframework.data.rest.core.annotation.*;
+import java.util.UUID;
 
-@RepositoryRestResource
 public interface UserBadgeRepository extends PagingAndSortingRepository<UserBadgeEntity, UUID>, CrudRepository<UserBadgeEntity, UUID> {
 
 }

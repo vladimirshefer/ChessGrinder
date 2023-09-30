@@ -1,13 +1,14 @@
 package com.chessgrinder.chessgrinder.repositories;
 
-import java.util.*;
+import com.chessgrinder.chessgrinder.entities.MatchEntity;
+import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.chessgrinder.chessgrinder.entities.*;
-import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.*;
-import org.springframework.data.rest.core.annotation.*;
+import java.util.List;
+import java.util.UUID;
 
-@RepositoryRestResource
 public interface MatchRepository extends PagingAndSortingRepository<MatchEntity, UUID>, CrudRepository<MatchEntity, UUID> {
 
     @Query("SELECT m FROM MatchEntity m WHERE m.round.tournament.id = :tournamentId")
