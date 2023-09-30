@@ -6,6 +6,8 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UuidGenerator;
 
 @Getter
@@ -45,10 +47,10 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-
     @ManyToMany
+    @Fetch(FetchMode.JOIN)
     @JoinTable(
-            name = "users_roles",
+            name = "users_roles_table",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Collection<RoleEntity> roles;
