@@ -67,13 +67,6 @@ public class UserService {
             newUser.setUsername(oAuth2User.getEmail());
             newUser.setName(oAuth2User.getFullName());
             newUser.setProvider(UserEntity.Provider.GOOGLE);
-
-            if (List.of("quameu@gmail.com", "al.boldyrev1@gmail.com").contains(oAuth2User.getEmail())) {
-                RoleEntity adminRole = roleRepository.findByName(RoleEntity.Roles.ADMIN)
-                        .orElseGet(() -> roleRepository.save(RoleEntity.builder().name(RoleEntity.Roles.ADMIN).build()));
-                newUser.setRoles(List.of(adminRole));
-            }
-
             user = userRepository.save(newUser);
         }
 
