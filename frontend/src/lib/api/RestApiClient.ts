@@ -16,7 +16,7 @@ restAxios.interceptors
     .use(response => {
         return response;
     }, error => {
-        if (error.response.status === 401) {
+        if (!error?.response || error.response.status === 401) {
             authService.clearAuthData();
         }
         return error;
