@@ -10,6 +10,7 @@ import LoginPage from "pages/LoginPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import userRepository from "./lib/api/repository/UserRepository";
 import authService from "./lib/auth/AuthService";
+import ParticipantPage from "./pages/ParticipantPage";
 
 const queryClient = new QueryClient()
 
@@ -43,6 +44,7 @@ function App() {
                 <Route path="/" element={<MainPage/>}/>
                 <Route path="/tournament/:id" element={<TournamentPage/>}/>
                 <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
+                <Route path="/tournament/:tournamentId/participant/:userId" element={<ParticipantPage/>}/>
                 <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/admin" element={<AdminPage/>}/>
                 <Route path="/user" element={<UserProfilePage/>}/>
