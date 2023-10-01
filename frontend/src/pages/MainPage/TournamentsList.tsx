@@ -2,6 +2,7 @@ import {Link} from "react-router-dom";
 import {TournamentDto} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole from "components/ConditionalOnUserRole";
 import loc from "strings/loc";
+import tournamentRepository from "lib/api/repository/TournamentRepository";
 
 export function TournamentsList(
     {
@@ -30,7 +31,7 @@ export function TournamentsList(
             {tournaments.map(tournament => {
                 return <li key={tournament.id}
                            className={"col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 rounded-md h-[20vh] bg-gray-100 m-2 py-2 flex justify-center content-center"}>
-                    <div>
+                    <div className={"grig grid-cols-12"}>
                         <Link to={`/tournament/${tournament.id}`}>
                             {tournament.name || tournament.id}
                         </Link>
@@ -39,7 +40,9 @@ export function TournamentsList(
                             {tournament.date}
                         </small>
                         <div className={"col-span-12 p-2"}>
-                            <button>
+                            <button
+                                onClick={() => tournamentRepository.participate(tournament.id)}
+                            >
                                 {loc("Participate")}
                             </button>
                         </div>

@@ -3,12 +3,14 @@ import {TournamentPageData} from "lib/api/dto/TournamentPageData";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import restApiClient from "lib/api/RestApiClient";
 import {qualifiedServiceProxy} from "./apiSettings";
+import {AuthData} from "lib/auth/AuthService";
 
 export interface TournamentRepository {
     postTournament: () => Promise<void>
     startTournament: (tournamentId: string) => Promise<void>
     finishTournament: (tournamentId: string) => Promise<void>
     getTournaments: () => Promise<TournamentListDto>
+    participate: (tournamentId: string) => Promise<void>
 }
 
 class LocalStorageTournamentRepository implements TournamentRepository {
@@ -50,6 +52,24 @@ class LocalStorageTournamentRepository implements TournamentRepository {
         localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
     }
 
+    async participate(tournamentId: string): Promise<void> {
+        let tournament = localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`);
+        if (!tournament) throw new Error(`No such tournament with id ${tournamentId}`)
+        let participants = tournament.participants;
+        let authData = localStorageUtil.getObject<AuthData>("cgd.auth");
+        if (!authData || !authData?.username) throw new Error("Not logged in");
+        if (!!participants.find(p => p.userId === authData?.username)) {
+            throw new Error("You are already participating")
+        }
+        participants.push({
+            userId: authData.username,
+            name: authData.username,
+            buchholz: 0,
+            score: 0,
+        })
+        localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
+    }
+
     public static getTodayDate(): string {
         const date = new Date();
         let day = date.getDate();
@@ -74,6 +94,10 @@ class RestApiTournamentRepository implements TournamentRepository {
 
     async getTournaments(): Promise<TournamentListDto> {
         return await restApiClient.get<TournamentListDto>("/tournament");
+    }
+
+    async participate(tournamentId: string): Promise<void> {
+        await restApiClient.post(`/tournament/${tournamentId}/action/participate`)
     }
 }
 
