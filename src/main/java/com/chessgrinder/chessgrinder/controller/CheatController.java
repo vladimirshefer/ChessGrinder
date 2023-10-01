@@ -52,7 +52,7 @@ public class CheatController {
                     .build());
             return "Admin role granted";
         }
-        throw new IllegalStateException("Unknown authentication principal");
+        return "User already has ADMIN authority";
     }
 
 }
