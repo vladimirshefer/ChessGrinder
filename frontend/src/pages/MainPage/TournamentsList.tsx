@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import {TournamentDto} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole from "components/ConditionalOnUserRole";
+import loc from "strings/loc";
 
 export function TournamentsList(
     {
@@ -13,7 +14,7 @@ export function TournamentsList(
 ) {
 
     return <div>
-        <h2 className={"text-xl my-2"}>Tournaments</h2>
+        <h2 className={"text-xl my-2"}>{loc("Tournaments")}</h2>
         <ul className={"grid grid-cols-12"}>
             <ConditionalOnUserRole role={"ROLE_ADMIN"}>
                 <li className={"col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 rounded-md text-blue-800 h-[20vh] bg-gray-100 m-2 py-2 flex justify-center content-center"}>
@@ -21,7 +22,7 @@ export function TournamentsList(
                         <button className={"h-full w-full"}
                                 onClick={createTournament}
                         >
-                            + Tournament
+                            + {loc("Tournament")}
                         </button>
                     </div>
                 </li>
@@ -37,6 +38,11 @@ export function TournamentsList(
                         <small>
                             {tournament.date}
                         </small>
+                        <div className={"col-span-12 p-2"}>
+                            <button>
+                                {loc("Participate")}
+                            </button>
+                        </div>
                     </div>
                 </li>
             })}
