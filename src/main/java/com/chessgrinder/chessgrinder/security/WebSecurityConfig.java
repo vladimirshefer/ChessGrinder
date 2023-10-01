@@ -23,6 +23,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
         securedEnabled = true,
         jsr250Enabled = true
 )
+@Slf4j
 public class WebSecurityConfig {
 
     @Autowired
@@ -47,9 +48,14 @@ public class WebSecurityConfig {
                         oauth2Login
                                 .userInfoEndpoint(it -> it.userService(oauthUserService))
                                 .successHandler((request, response, authentication) -> {
+                                    log.debug("Successfully authenticated user "+ authentication.getName() +" via oauth2");
                                     if (authentication.getPrincipal() instanceof CustomOAuth2User customOAuth2User) {
                                         userService.processOAuthPostLogin(customOAuth2User);
                                     }
+                                    response.sendRedirect("/");
+                                })
+                                .failureHandler((request, response, exception) -> {
+                                    log.warn("Could not login user vis oauth2", exception);
                                     response.sendRedirect("/");
                                 })
                 )

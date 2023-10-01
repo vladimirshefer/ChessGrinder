@@ -6,6 +6,7 @@ import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,13 +23,28 @@ import java.util.HashSet;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateSecurityAuthoritiesHandlerInterceptor implements HandlerInterceptor {
 
     private final UserRepository userRepository;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        try {
+            refreshAuthentication();
+        } catch (Exception e) {
+            log.error("Could not refresh user authentication", e);
+        }
+        return true;
+    }
+
+    private void refreshAuthentication() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()) {
+            return;
+        }
+
         var authorities = new HashSet<GrantedAuthority>();
         if (auth.isAuthenticated()) {
             authorities.add(new SimpleGrantedAuthority(RoleEntity.Roles.USER));
@@ -43,7 +59,7 @@ public class UpdateSecurityAuthoritiesHandlerInterceptor implements HandlerInter
             );
         }
 
-        Authentication newAuth = null;
+        Authentication newAuth = auth;
 
         if (auth instanceof OAuth2AuthenticationToken oAuth2AuthenticationToken) {
             OAuth2User principal = oAuth2AuthenticationToken.getPrincipal();
@@ -54,12 +70,11 @@ public class UpdateSecurityAuthoritiesHandlerInterceptor implements HandlerInter
                         oAuth2AuthenticationToken.getAuthorizedClientRegistrationId()
                 );
             }
-        } else {
-            newAuth = auth;
         }
 
+        log.trace("Refreshing user Authentication");
+
         SecurityContextHolder.getContext().setAuthentication(newAuth);
-        return true;
     }
 
 }
