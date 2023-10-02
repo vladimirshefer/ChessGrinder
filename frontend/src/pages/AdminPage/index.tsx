@@ -1,14 +1,16 @@
-import {GLOBAL_SETTINGS} from "lib/api/repository/apiSettings";
+import {useMode} from "lib/api/repository/apiSettings";
 import authService from "lib/auth/AuthService";
 
 export default function AdminPage() {
+    let [mode, setMode] = useMode()
+
     return <>
         <h2>Admin Page</h2>
         <div className={"m-2"}>
             <span>Mode</span>
-            <select defaultValue={GLOBAL_SETTINGS.getProfile()}
+            <select defaultValue={mode}
                     onChange={(e) => {
-                        GLOBAL_SETTINGS.setProfile(e.target.value);
+                        setMode(e.target.value);
                         authService.setAuthData(null);
                     }}
                     name={"Mode"}
@@ -28,6 +30,6 @@ export default function AdminPage() {
                     }
                 }}
             >Clear</button>
-        </div>
+        </div>s
     </>
 }
