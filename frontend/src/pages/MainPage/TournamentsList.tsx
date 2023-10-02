@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 import {TournamentDto} from "lib/api/dto/MainPageData";
-import ConditionalOnUserRole from "components/ConditionalOnUserRole";
+import ConditionalOnUserRole, {ConditionalOnAuthorized} from "components/ConditionalOnUserRole";
 import loc from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 
@@ -40,11 +40,13 @@ export function TournamentsList(
                             {tournament.date}
                         </small>
                         <div className={"col-span-12 p-2"}>
-                            <button
-                                onClick={() => tournamentRepository.participate(tournament.id)}
-                            >
-                                {loc("Participate")}
-                            </button>
+                            <ConditionalOnAuthorized>
+                                <button
+                                    onClick={() => tournamentRepository.participate(tournament.id)}
+                                >
+                                    {loc("Participate")}
+                                </button>
+                            </ConditionalOnAuthorized>
                         </div>
                     </div>
                 </li>

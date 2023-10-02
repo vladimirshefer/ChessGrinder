@@ -12,10 +12,41 @@ export default function ConditionalOnUserRole(
 ) {
     let authData = useAuthData();
     let show = useMemo(() => {
-        return authData?.roles?.includes(role)
+        return authData?.roles?.includes(role) || false
     }, [authData, role])
 
-    if (show) {
+    return <Conditional on={show}>
+        {children}
+    </Conditional>
+}
+
+export function ConditionalOnAuthorized(
+    {
+        children
+    } : {
+        children: ReactElement | ReactElement[]
+    }
+) {
+    let authData = useAuthData();
+    let show = useMemo(() => {
+        return !!authData
+    }, [authData])
+
+    return <Conditional on={show}>
+        {children}
+    </Conditional>
+}
+
+export function Conditional(
+    {
+        on,
+        children,
+    }: {
+        on: boolean,
+        children: ReactElement | ReactElement[]
+    }
+) {
+    if (on) {
         return <>{children}</>
     } else return <>{[] as ReactElement []}</>
 }
