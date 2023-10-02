@@ -1,5 +1,6 @@
 import {ReactElement, useMemo} from "react";
-import {useAuthData} from "../lib/auth/AuthService";
+import {useAuthData} from "lib/auth/AuthService";
+import {useMode} from "lib/api/repository/apiSettings";
 
 export default function ConditionalOnUserRole(
     {
@@ -33,6 +34,22 @@ export function ConditionalOnAuthorized(
     }, [authData])
 
     return <Conditional on={show}>
+        {children}
+    </Conditional>
+}
+
+export function ConditionalOnMode(
+    {
+        mode,
+        children
+    } : {
+        mode: string,
+        children: ReactElement | ReactElement[]
+    }
+) {
+    let [currentMode] = useMode()
+
+    return <Conditional on={currentMode === mode}>
         {children}
     </Conditional>
 }
