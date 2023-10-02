@@ -1,4 +1,5 @@
 import {GLOBAL_SETTINGS} from "lib/api/repository/apiSettings";
+import authService from "lib/auth/AuthService";
 
 export default function AdminPage() {
     return <>
@@ -6,7 +7,10 @@ export default function AdminPage() {
         <div className={"m-2"}>
             <span>Mode</span>
             <select defaultValue={GLOBAL_SETTINGS.getProfile()}
-                    onChange={(e) => GLOBAL_SETTINGS.setProfile(e.target.value)}
+                    onChange={(e) => {
+                        GLOBAL_SETTINGS.setProfile(e.target.value);
+                        authService.setAuthData(null);
+                    }}
                     name={"Mode"}
             >
                 <option>local</option>
