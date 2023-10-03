@@ -47,6 +47,7 @@ function Header() {
                                 <NavLink to={"user"} text={authData.username}/>
                             )
                         }
+                        <NavLink to={"/badges"} text={loc("Badges")}/>
                         <NavLink to={"/admin"} text={loc("Admin")}/>
                     </ul>
                 </div>

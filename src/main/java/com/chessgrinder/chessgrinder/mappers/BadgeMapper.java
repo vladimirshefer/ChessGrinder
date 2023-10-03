@@ -14,18 +14,13 @@ public class BadgeMapper {
     public BadgeDto toDto(BadgeEntity badgeEntity) {
 
         return BadgeDto.builder()
+                .id(badgeEntity.getId().toString())
                 .title(badgeEntity.getTitle())
                 .description(badgeEntity.getDescription())
                 .imageUrl(badgeEntity.getPictureUrl())
                 .build();
     }
     public List<BadgeDto> toDto(List<BadgeEntity> badgeEntities) {
-
-        return badgeEntities.stream().map(badge -> BadgeDto.builder()
-                .title(badge.getTitle())
-                .description(badge.getDescription())
-                .imageUrl(badge.getPictureUrl())
-                .build()
-        ).toList();
+        return badgeEntities.stream().map(this::toDto).toList();
     }
 }
