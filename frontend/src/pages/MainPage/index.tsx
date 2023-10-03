@@ -5,6 +5,8 @@ import {useQuery} from "@tanstack/react-query";
 import {ListDto, MemberDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import userRepository from "lib/api/repository/UserRepository";
+import loc from "strings/loc";
+import {Link} from "react-router-dom";
 
 function MainPage() {
 
@@ -49,6 +51,13 @@ function MainPage() {
             members={members!!}
             createMember={createMember}
         />
+        <div className={"grid p-2"}>
+            <Link to={"/users"}>
+                <button className={"btn bg-primary w-full"}>
+                    {loc("All users")}
+                </button>
+            </Link>
+        </div>
         <TournamentsList tournaments={tournaments} createTournament={createTournament}/>
     </>
 

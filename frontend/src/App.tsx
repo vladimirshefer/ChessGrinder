@@ -12,6 +12,7 @@ import userRepository from "lib/api/repository/UserRepository";
 import authService from "lib/auth/AuthService";
 import ParticipantPage from "pages/ParticipantPage";
 import BadgesPage from "pages/BadgesPage";
+import UsersPage from "pages/UsersPage";
 
 const queryClient = new QueryClient()
 
@@ -35,28 +36,29 @@ function App() {
         }
     }
 
-  return (
-      <div className='App'>
-        <QueryClientProvider client={queryClient}>
-          <ApplicationRouter>
-            <React.StrictMode>
-              <Header/>
-              <Routes>
-                <Route path="/" element={<MainPage/>}/>
-                <Route path="/tournament/:id" element={<TournamentPage/>}/>
-                <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
-                <Route path="/tournament/:tournamentId/participant/:userId" element={<ParticipantPage/>}/>
-                <Route path="/login" element={<LoginPage/>}/>
-                <Route path="/admin" element={<AdminPage/>}/>
-                <Route path="/user" element={<UserProfilePage/>}/>
-                <Route path="/user/:username" element={<UserProfilePage/>}/>
-                <Route path="/badges" element={<BadgesPage/>}/>
-              </Routes>
-            </React.StrictMode>
-          </ApplicationRouter>
-        </QueryClientProvider>
-      </div>
-  );
+    return (
+        <div className='App'>
+            <QueryClientProvider client={queryClient}>
+                <ApplicationRouter>
+                    <React.StrictMode>
+                        <Header/>
+                        <Routes>
+                            <Route path="/" element={<MainPage/>}/>
+                            <Route path="/tournament/:id" element={<TournamentPage/>}/>
+                            <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
+                            <Route path="/tournament/:tournamentId/participant/:userId" element={<ParticipantPage/>}/>
+                            <Route path="/login" element={<LoginPage/>}/>
+                            <Route path="/admin" element={<AdminPage/>}/>
+                            <Route path="/user" element={<UserProfilePage/>}/>
+                            <Route path="/user/:username" element={<UserProfilePage/>}/>
+                            <Route path="/users" element={<UsersPage/>}/>
+                            <Route path="/badges" element={<BadgesPage/>}/>
+                        </Routes>
+                    </React.StrictMode>
+                </ApplicationRouter>
+            </QueryClientProvider>
+        </div>
+    );
 }
 
 export default App;
