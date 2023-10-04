@@ -2,7 +2,7 @@ import {MemberDto} from "lib/api/dto/MainPageData";
 import React, {Fragment} from "react";
 import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
 import {Link} from "react-router-dom";
-import ConditionalOnUserRole from "components/ConditionalOnUserRole";
+import ConditionalOnUserRole from "components/Conditional";
 
 export function MemberList(
     {

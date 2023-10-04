@@ -62,6 +62,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
             throw new Error("You are already participating")
         }
         participants.push({
+            id: authData.username,
             userId: authData.username,
             name: authData.username,
             buchholz: 0,

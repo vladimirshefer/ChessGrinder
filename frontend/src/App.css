@@ -7,4 +7,24 @@
 .btn {
   @apply py-1;
   @apply px-2;
+  @apply uppercase;
+  @apply text-center;
+}
+
+.btn-dark {
+  @apply btn;
+  @apply bg-black;
+  @apply text-white;
+}
+
+.btn-danger {
+  @apply btn;
+  @apply bg-red-500;
+  @apply text-white;
+}
+
+.btn-light {
+  @apply btn;
+  @apply bg-gray-300;
+  @apply text-black;
 }

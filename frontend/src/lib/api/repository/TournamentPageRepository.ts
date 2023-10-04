@@ -25,8 +25,8 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         if (tournament) {
             let {pointsMap, buchholzMap} = this.calculateResults(tournament)
             tournament.participants.forEach((participant: ParticipantDto) => {
-                participant.score = pointsMap.get(participant.userId) || 0
-                participant.buchholz = buchholzMap.get(participant.userId) || 0
+                participant.score = pointsMap.get(participant.id!!) || 0
+                participant.buchholz = buchholzMap.get(participant.id!!) || 0
             })
             return tournament
         }
@@ -42,23 +42,23 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             .filter(round => round.isFinished)
             .flatMap((round: RoundDto) => round.matches);
         allMatches.forEach(match => {
-            let whiteUserId = match.white.userId;
-            let blackUserId = match.black.userId;
+            let whiteId = match.white.id!!;
+            let blackId = match.black.id!!;
             if (match.result === "WHITE_WIN") {
-                this.computeIfAbsent(pointsMap, whiteUserId, 1, i => i + 1)
-                this.computeIfAbsent(pointsMap, blackUserId, 0, i => i)
+                this.computeIfAbsent(pointsMap, whiteId, 1, i => i + 1)
+                this.computeIfAbsent(pointsMap, blackId, 0, i => i)
             }
             if (match.result === "BLACK_WIN") {
-                this.computeIfAbsent(pointsMap, blackUserId, 1, i => i + 1)
-                this.computeIfAbsent(pointsMap, whiteUserId, 0, i => i)
+                this.computeIfAbsent(pointsMap, blackId, 1, i => i + 1)
+                this.computeIfAbsent(pointsMap, whiteId, 0, i => i)
             }
             if (match.result === "DRAW") {
-                this.computeIfAbsent(pointsMap, whiteUserId, 0.5, i => i + 0.5)
-                this.computeIfAbsent(pointsMap, blackUserId, 0.5, i => i + 0.5)
+                this.computeIfAbsent(pointsMap, whiteId, 0.5, i => i + 0.5)
+                this.computeIfAbsent(pointsMap, blackId, 0.5, i => i + 0.5)
             }
 
-            this.computeIfAbsent(enemiesMap, whiteUserId, new Set<string>([blackUserId]), enemyPoints => enemyPoints.add(blackUserId))
-            this.computeIfAbsent(enemiesMap, blackUserId, new Set<string>([whiteUserId]), enemyPoints => enemyPoints.add(whiteUserId))
+            this.computeIfAbsent(enemiesMap, whiteId, new Set<string>([blackId]), enemyPoints => enemyPoints.add(blackId))
+            this.computeIfAbsent(enemiesMap, blackId, new Set<string>([whiteId]), enemyPoints => enemyPoints.add(whiteId))
         })
         enemiesMap.forEach((enemyIds, userId) => {
             buchholzListMap.set(userId, Array.from(enemyIds).map(enemyId => {
@@ -108,7 +108,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         if (round.isFinished) {
             throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is already finished.`)
         }
-        let participants = tournament.participants || []
+        let participants: ParticipantDto[] = tournament.participants || []
         participants = [...participants]
         this.shuffleArray(participants)
         let matches: MatchDto[] = []
@@ -153,11 +153,11 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
         localStorage.setItem(`cgd.tournament.${tournamentId}`, JSON.stringify(tournament))
     }
 
-    private createMatch(white: ParticipantDto, black: ParticipantDto) {
+    private createMatch(white: ParticipantDto, black: ParticipantDto): MatchDto {
         return {
             id: `${white.name}_${black.name}`,
-            white: {userId: white.userId, name: white.name} as ParticipantDto,
-            black: {userId: black.userId, name: black.name} as ParticipantDto,
+            white: white,
+            black: black,
             result: undefined
         };
     }

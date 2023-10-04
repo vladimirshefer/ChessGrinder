@@ -11,14 +11,14 @@ import org.springframework.stereotype.*;
 @RequiredArgsConstructor
 public class MatchMapper {
 
-    private final UserMapper userMapper;
+    private final ParticipantMapper participantMapper;
 
     public MatchDto toDto(MatchEntity matchEntity) {
 
         return MatchDto.builder()
                 .id(matchEntity.getId().toString())
-                .white(userMapper.toDto(matchEntity.getParticipant1().getUser()))
-                .black(userMapper.toDto(matchEntity.getParticipant2().getUser()))
+                .white(participantMapper.toDto(matchEntity.getParticipant1()))
+                .black(participantMapper.toDto(matchEntity.getParticipant2()))
                 .result(matchEntity.getResult())
                 .build();
     }

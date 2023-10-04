@@ -1,12 +1,111 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import React, {useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import ResultsTable from "pages/TournamentPage/ResultsTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
-import ConditionalOnUserRole from "components/ConditionalOnUserRole";
+import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
+import {ListDto, MemberDto} from "lib/api/dto/MainPageData";
+import userRepository from "lib/api/repository/UserRepository";
+import {AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
+import loc from "strings/loc";
+
+function AddParticipant(
+    {
+        participants,
+        addParticipant
+    }: {
+        participants: ParticipantDto[],
+        addParticipant: (participant: ParticipantDto) => Promise<void>
+    }
+) {
+    let [inputEnabled, setInputEnabled] = useState<boolean>(false);
+    let [selectedValue, setSelectedValue] = useState<string>("")
+    let [nickName, setNickName] = useState("")
+
+    let {
+        data: {
+            values: users = [] as MemberDto[]
+        } = {} as ListDto<MemberDto>
+    } = useQuery({
+        queryKey: ["users"],
+        queryFn: async () => await userRepository.getUsers(),
+        enabled: inputEnabled
+    })
+
+    async function getSubmitValue(userId: string) {
+        let participant: ParticipantDto = {
+            id: userId || nickName,
+            userId: userId || undefined,
+            name: nickName || participants.find(it => it.id === userId)?.name || userId,
+            score: 0,
+            buchholz: 0,
+        };
+        console.log(participant)
+        return await addParticipant(participant);
+    }
+
+    return <div className={"col-span-12 px-2 my-1"}>
+
+        <>
+            <Conditional on={!inputEnabled}>
+                <button className={"w-full bg-black text-white p-1 uppercase"}
+                        onClick={() => setInputEnabled(true)}> {loc("Add participant")} </button>
+            </Conditional>
+            <Conditional on={inputEnabled}>
+                <div className={"w-full grid grid-cols-12 p-1"}>
+                    <div className={"col-span-12 lg:col-span-9"}>
+                        <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-none"}
+                               autoFocus list="users" name="user"
+                               onChange={event => setSelectedValue(event.target.value)}
+                               placeholder={loc("Username")}
+                        />
+                        <datalist id="users">
+                            {users ? users.map(user =>
+                                <option
+                                    key={user.id}
+                                    value={user.id}>
+                                    {user.name}
+                                </option>
+                            ) : []}
+                        </datalist>
+                        <span className={"text-left text-sm w-full block text-gray-500 px-2"}
+                        >
+                            <AiOutlineInfoCircle className={"inline-block mr-1"}/>
+                            {loc("Leave empty for anonymous/guest participant")}
+                        </span>
+                    </div>
+                    <div className={"col-span-12 lg:col-span-9"}>
+                        <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-none"}
+                               name={"nickname"}
+                               onChange={event => setNickName(event.target.value)}
+                               placeholder={loc("Nickname")}
+                        />
+                    </div>
+                    <div className={"col-span-12 lg:col-span-3 p-1 px-2 grid grid-cols-12 gap-x-1"}>
+                        <button className={"btn-dark w-full col-span-8"}
+                                onClick={() => {
+                                    if (selectedValue || nickName) {
+                                        getSubmitValue(selectedValue);
+                                    }
+                                    setInputEnabled(false)
+                                }}>
+                            Add
+                        </button>
+                        <button className={"btn-light w-full bg-red-300 col-span-4"}
+                                onClick={() => {
+                                    setInputEnabled(false)
+                                }}>
+                            <span className={"inline-block"}><AiOutlineClose/></span>
+                        </button>
+                    </div>
+                </div>
+            </Conditional>
+        </>
+    </div>;
+}
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
@@ -25,7 +124,7 @@ function TournamentPage() {
     }
 
     async function openParticipant(participant: ParticipantDto) {
-        navigate(`/tournament/${id}/participant/${participant.userId}`)
+        navigate(`/tournament/${id}/participant/${participant.id}`)
     }
 
     async function createRound() {
@@ -92,10 +191,10 @@ function TournamentPage() {
                 ? (
                     <>
                         <h3>Status</h3>
+                        <ConditionalOnUserRole role={"ROLE_ADMIN"}>
+                            <AddParticipant participants={participants} addParticipant={addParticipant}/>
+                        </ConditionalOnUserRole>
                         <ResultsTable participants={participants}
-                                      addParticipant={(it) => {
-                                          addParticipant(it)
-                                      }}
                                       openParticipant={(it) => {
                                           openParticipant(it)
                                       }}

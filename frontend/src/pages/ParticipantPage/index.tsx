@@ -2,19 +2,29 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
+import {Conditional} from "components/Conditional";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
 
     let {
-        tournamentId, userId
+        tournamentId,
+        participantId,
     } = useParams()
 
-    let userQuery = useQuery({
-        queryKey: ["participantUser", userId],
+    let participantQuery = useQuery({
+        queryKey: ["participant", participantId],
         queryFn: async () => {
-            if (!userId) return null
-            return await userRepository.getUser(userId!!)
+            if (!participantId) return null;
+            return await participantRepository.getParticipant(tournamentId!!, participantId)
+        }
+    })
+
+    let userQuery = useQuery({
+        queryKey: ["participantUser", participantQuery.data],
+        queryFn: async () => {
+            if (!participantId || !participantQuery.isSuccess || !participantQuery.data?.userId) return null
+            return await userRepository.getUser(participantQuery.data?.userId!!)
         },
     })
 
@@ -30,7 +40,7 @@ export default function ParticipantPage() {
         </>
     }
 
-    if (!userId || userQuery.isError) {
+    if (!participantId || participantQuery.isError || userQuery.isError) {
         return <>
             No such user
             <Link to={`/tournament/${tournamentId}`}>
@@ -43,11 +53,12 @@ export default function ParticipantPage() {
 
     return <>
         <div className={"p-3"}>
-            {
-                userQuery.isSuccess ? <>
-                    {userQuery.data?.name}
-                </> : null
-            }
+            <Conditional on={participantQuery.isSuccess}>
+                <h1 className={"text-xl font-bold"}>{participantQuery.data?.name}</h1>
+            </Conditional>
+            <Conditional on={userQuery.isSuccess}>
+                <h2>{userQuery.data?.name}</h2>
+            </Conditional>
             {
                 userQuery.isLoading ? <>Loading user data</> : null
             }
@@ -60,8 +71,8 @@ export default function ParticipantPage() {
             </Link>
             <button className={"p-2 bg-red-200 rounded-md mx-1"}
                     onClick={async () => {
-                        if (window.confirm(`Do you want to delete user ${userId} from tournament ${tournamentId}?`)) {
-                            await participantRepository.deleteParticipant(tournamentId!!, userId!!)
+                        if (window.confirm(`Do you want to delete user ${participantId} from tournament ${tournamentId}?`)) {
+                            await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
                             navigate(`/tournament/${tournamentId}`)
                         }
                     }}

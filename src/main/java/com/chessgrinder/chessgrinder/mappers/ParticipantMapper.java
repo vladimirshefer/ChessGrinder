@@ -10,13 +10,17 @@ import org.springframework.stereotype.*;
 @Component
 @RequiredArgsConstructor
 public class ParticipantMapper {
-    public List<ParticipantDto> toDto(List<ParticipantEntity> participantEntities) {
+    public ParticipantDto toDto(ParticipantEntity participant) {
+        return ParticipantDto.builder()
+                .id(participant.getId().toString())
+                .userId(Optional.ofNullable(participant.getUser()).map(it -> it.getId().toString()).orElse(null))
+                .name(participant.getNickname())
+                .buchholz(participant.getBuchholz())
+                .score(participant.getScore())
+                .build();
+    }
 
-       return participantEntities.stream().map(participant -> ParticipantDto.builder()
-                        .userId(participant.getUser().getId().toString())
-                        .name(participant.getNickname())
-                        .buchholz(participant.getBuchholz())
-                        .score(participant.getScore()).build())
-                .toList();
+    public List<ParticipantDto> toDto(List<ParticipantEntity> participantEntities) {
+       return participantEntities.stream().map(this::toDto).toList();
     }
 }

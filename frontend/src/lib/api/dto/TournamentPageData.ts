@@ -8,8 +8,8 @@ export interface MatchParticipantDto {
 export interface MatchDto {
     id: string
     result: MatchResult | undefined
-    white: MatchParticipantDto
-    black: MatchParticipantDto
+    white: ParticipantDto
+    black: ParticipantDto
 }
 
 export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW"
@@ -20,8 +20,9 @@ export interface RoundDto {
 }
 
 export interface ParticipantDto {
+    id: string
     name: string
-    userId: string
+    userId?: string | null | undefined
     score: number
     buchholz: number
 }

@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 import {TournamentDto} from "lib/api/dto/MainPageData";
-import ConditionalOnUserRole, {ConditionalOnAuthorized} from "components/ConditionalOnUserRole";
+import ConditionalOnUserRole, {ConditionalOnAuthorized} from "components/Conditional";
 import loc from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 

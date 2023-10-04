@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 public class MatchDto {
     private String id;
-    private MemberDto white;
-    private MemberDto black;
+    private ParticipantDto white;
+    private ParticipantDto black;
     private MatchResult result;
 }

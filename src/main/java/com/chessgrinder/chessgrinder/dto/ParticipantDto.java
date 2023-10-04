@@ -2,14 +2,22 @@ package com.chessgrinder.chessgrinder.dto;
 
 import java.math.*;
 
+import jakarta.annotation.Nullable;
 import lombok.*;
 
 @Data
 @Builder
 public class ParticipantDto {
 
+    @Nullable
+    private String id;
+    @Nullable
     private String userId;
+    @NonNull
     private String name; //NICKNAME
-    private BigDecimal score;
-    private BigDecimal buchholz;
+    @NonNull
+    private BigDecimal score = BigDecimal.ZERO;
+    @NonNull
+    private BigDecimal buchholz = BigDecimal.ZERO;
+
 }

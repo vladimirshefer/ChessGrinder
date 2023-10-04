@@ -2,13 +2,27 @@ import {ReactElement, useMemo} from "react";
 import {useAuthData} from "lib/auth/AuthService";
 import {useMode} from "lib/api/repository/apiSettings";
 
+export function Conditional(
+    {
+        on,
+        children,
+    }: {
+        on: boolean,
+        children?: ReactElement | ReactElement[]
+    }
+) {
+    if (on) {
+        return <>{children || null}</>
+    } else return <>{[] as ReactElement []}</>
+}
+
 export default function ConditionalOnUserRole(
     {
         role,
         children,
     }: {
         role: string,
-        children: ReactElement | ReactElement[]
+        children?: ReactElement | ReactElement[]
     }
 ) {
     let authData = useAuthData();
@@ -25,7 +39,7 @@ export function ConditionalOnAuthorized(
     {
         children
     } : {
-        children: ReactElement | ReactElement[]
+        children?: ReactElement | ReactElement[]
     }
 ) {
     let authData = useAuthData();
@@ -44,7 +58,7 @@ export function ConditionalOnMode(
         children
     } : {
         mode: string,
-        children: ReactElement | ReactElement[]
+        children?: ReactElement | ReactElement[]
     }
 ) {
     let [currentMode] = useMode()
@@ -52,18 +66,4 @@ export function ConditionalOnMode(
     return <Conditional on={currentMode === mode}>
         {children}
     </Conditional>
-}
-
-export function Conditional(
-    {
-        on,
-        children,
-    }: {
-        on: boolean,
-        children: ReactElement | ReactElement[]
-    }
-) {
-    if (on) {
-        return <>{children}</>
-    } else return <>{[] as ReactElement []}</>
 }

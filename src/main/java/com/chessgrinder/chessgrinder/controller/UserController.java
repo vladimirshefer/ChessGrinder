@@ -8,6 +8,7 @@ import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.service.UserService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public MemberDto addParticipantToTournament(@PathVariable String userId) throws UserNotFoundException {
+    public MemberDto addParticipantToTournament(@PathVariable @NonNull String userId) throws UserNotFoundException {
         try {
             MemberDto user = userService.getUserByUserId(userId);
             if (user != null) {

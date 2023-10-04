@@ -1,6 +1,6 @@
 import {useQuery} from "@tanstack/react-query";
 import badgeRepository from "lib/api/repository/BadgeRepository";
-import ConditionalOnUserRole, {Conditional} from "components/ConditionalOnUserRole";
+import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useForm} from "react-hook-form";
 
 export default function BadgesPage() {

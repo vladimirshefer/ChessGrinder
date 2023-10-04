@@ -24,11 +24,19 @@ public class ParticipantController {
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{participantId}")
     public void delete(
             @PathVariable UUID tournamentId,
-            @PathVariable UUID userId
+            @PathVariable UUID participantId
     ) {
-        participantService.delete(tournamentId, userId);
+        participantService.delete(participantId);
+    }
+
+    @GetMapping("/{participantId}")
+    public ParticipantDto getParticipant(
+            @PathVariable UUID tournamentId,
+            @PathVariable UUID participantId
+    ) {
+        return participantService.get(participantId);
     }
 }

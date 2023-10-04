@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.entities;
 import java.math.*;
 import java.util.*;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
@@ -24,6 +25,7 @@ public class ParticipantEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Nullable
     private UserEntity user;
 
     @ManyToOne
