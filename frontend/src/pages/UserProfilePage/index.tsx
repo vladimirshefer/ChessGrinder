@@ -8,6 +8,7 @@ import {BadgeDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import loc from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
+import {polynomialHashcodeHex} from "lib/util/Hashcode";
 
 function AssignAchievementPane() {
 
@@ -86,14 +87,19 @@ export default function UserProfilePage() {
         return <>No such user</>
     }
 
-    return <>
-        <h1>
+    return <div className={"grid"}>
+        <h1 className={"text-xl font-bold"}>
             {userProfile.name || userProfile.username || userProfile.id || "Unknown"}
         </h1>
-        <span>
+        <span className={"text-gray-500"}>
             @{userProfile.username}
         </span>
-
+        <div className={"grid place-items-center"}>
+            <img width={"300px"} height={"300px"}
+                 // See https://gravatar.com/site/implement/images/
+                 src={`https://gravatar.com/avatar/${polynomialHashcodeHex(userProfile.id)}?d=robohash&s=300`}
+                 alt={"User avatar"}></img>
+        </div>
         <div>
             Roles:
             {
@@ -132,5 +138,5 @@ export default function UserProfilePage() {
             <AssignAchievementPane/>
         </ConditionalOnUserRole>
 
-    </>
+    </div>
 }
