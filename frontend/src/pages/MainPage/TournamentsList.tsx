@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom";
-import {TournamentDto} from "lib/api/dto/MainPageData";
+import {TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {ConditionalOnAuthorized} from "components/Conditional";
 import loc from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
@@ -17,7 +17,7 @@ export function TournamentsList(
     return <div>
         <h2 className={"text-xl my-2"}>{loc("Tournaments")}</h2>
         <ul className={"grid grid-cols-12"}>
-            <ConditionalOnUserRole role={"ROLE_ADMIN"}>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <li className={"col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 rounded-md text-blue-800 h-[20vh] bg-gray-100 m-2 py-2 flex justify-center content-center"}>
                     <div>
                         <button className={"h-full w-full"}

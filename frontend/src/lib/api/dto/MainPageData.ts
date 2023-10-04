@@ -33,3 +33,7 @@ export interface MainPageData {
     members: MemberDto[]
     tournaments: TournamentDto[]
 }
+
+export enum UserRoles {
+    ADMIN = "ROLE_ADMIN"
+}

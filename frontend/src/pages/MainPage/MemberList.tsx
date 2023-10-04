@@ -1,4 +1,4 @@
-import {MemberDto} from "lib/api/dto/MainPageData";
+import {MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import React, {Fragment} from "react";
 import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
 import {Link} from "react-router-dom";
@@ -18,7 +18,7 @@ export function MemberList(
         <h2 className={"text-xl my-2"}>Members</h2>
         <div className={"w-full grid grid-cols-12"}>
             <div className={"col-span-12"}>
-                <ConditionalOnUserRole role={"ROLE_ADMIN"}>
+                <ConditionalOnUserRole role={UserRoles.ADMIN}>
                     <ToggleableSelectableTextInput
                         values={members.map(it => it.name)}
                         buttonText={"Add guest"}

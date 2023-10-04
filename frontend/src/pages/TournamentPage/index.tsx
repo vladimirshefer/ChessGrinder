@@ -7,7 +7,7 @@ import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api
 import RoundTab from "pages/TournamentPage/RoundTab";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
-import {ListDto, MemberDto} from "lib/api/dto/MainPageData";
+import {ListDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import userRepository from "lib/api/repository/UserRepository";
 import {AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import loc from "strings/loc";
@@ -178,7 +178,7 @@ function TournamentPage() {
                     </button>
                 </Link>
             })}
-            <ConditionalOnUserRole role={"ROLE_ADMIN"}>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <button className={`w-full rounded p-2 bg-gray-100 col-span-2 lg:col-span-1`}
                         onClick={createRound}
                 >+
@@ -191,7 +191,7 @@ function TournamentPage() {
                 ? (
                     <>
                         <h3>Status</h3>
-                        <ConditionalOnUserRole role={"ROLE_ADMIN"}>
+                        <ConditionalOnUserRole role={UserRoles.ADMIN}>
                             <AddParticipant participants={participants} addParticipant={addParticipant}/>
                         </ConditionalOnUserRole>
                         <ResultsTable participants={participants}

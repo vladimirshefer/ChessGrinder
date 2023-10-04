@@ -2,6 +2,7 @@ import {useQuery} from "@tanstack/react-query";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useForm} from "react-hook-form";
+import {UserRoles} from "lib/api/dto/MainPageData";
 
 export default function BadgesPage() {
     const { register, handleSubmit } = useForm();
@@ -39,7 +40,7 @@ export default function BadgesPage() {
                 })
             }
         </div>
-        <ConditionalOnUserRole role={"ROLE_ADMIN"}>
+        <ConditionalOnUserRole role={UserRoles.ADMIN}>
             <form className={"grid p-4"}
                 onSubmit={handleSubmit(createBadge)}
             >

@@ -4,7 +4,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
-import {BadgeDto, MemberDto} from "lib/api/dto/MainPageData";
+import {BadgeDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import loc from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
@@ -128,7 +128,7 @@ export default function UserProfilePage() {
             }
         </div>
 
-        <ConditionalOnUserRole role={"ROLE_ADMIN"}>
+        <ConditionalOnUserRole role={UserRoles.ADMIN}>
             <AssignAchievementPane/>
         </ConditionalOnUserRole>
 
