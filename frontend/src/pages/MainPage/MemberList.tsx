@@ -1,41 +1,35 @@
-import {MemberDto, UserRoles} from "lib/api/dto/MainPageData";
+import {MemberDto} from "lib/api/dto/MainPageData";
 import React, {Fragment} from "react";
-import ToggleableSelectableTextInput from "components/ToggleableSelectableTextInput";
 import {Link} from "react-router-dom";
-import ConditionalOnUserRole from "components/Conditional";
+import {polynomialHashcodeHex} from "lib/util/Hashcode";
 
 export function MemberList(
     {
-        members,
-        createMember,
+        members: users,
     }: {
         members: MemberDto[],
-        createMember: (memberName: string) => void,
     }
 ) {
 
     return <div>
         <h2 className={"text-xl my-2"}>Members</h2>
         <div className={"w-full grid grid-cols-12"}>
-            <div className={"col-span-12"}>
-                <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                    <ToggleableSelectableTextInput
-                        values={members.map(it => it.name)}
-                        buttonText={"Add guest"}
-                        submitValue={createMember}
-                    />
-                </ConditionalOnUserRole>
-            </div>
-            {members.map(member => {
-                return <Fragment key={member.name}>
-                    <div className={"col-span-6"}>
-                        <Link to={`/user/${member.id}`}>
-                            {member.name}
+            {users.map(user => {
+                return <Fragment key={user.name}>
+                    <div className={"col-span-6 flex content-center items-center"}>
+                        <div className={"w-8 imline-block"}>
+                            <img
+                                // See https://gravatar.com/site/implement/images/
+                                src={`https://gravatar.com/avatar/${polynomialHashcodeHex(user.id)}?d=robohash&s=50`}
+                                alt={"User avatar"}/>
+                        </div>
+                        <Link to={`/user/${user.id}`}>
+                            {user.name}
                         </Link>
                     </div>
                     <div className={"col-span-6"}>
                         {
-                            (member.badges || []).map(badge => {
+                            (user.badges || []).map(badge => {
                                 return <span
                                     key={badge.imageUrl}
                                     title={badge.description}

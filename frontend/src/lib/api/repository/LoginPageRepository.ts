@@ -3,6 +3,7 @@ import authService from "lib/auth/AuthService";
 import restApiClient from "lib/api/RestApiClient";
 import userRepository from "lib/api/repository/UserRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
+import localStorageUtil from "lib/util/LocalStorageUtil";
 
 export interface LoginPageRepository {
     login(username: string, password: string): Promise<string>
@@ -15,7 +16,7 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
         let roles = username.toLowerCase().includes("admin") ? [UserRoles.ADMIN] : [];
         let memberDto = (await userRepository.getUsers()).values.find(it => it.id === username);
         if (!memberDto) {
-            await userRepository.postGuest({
+            await localStorageUtil.setObject(`cgd.user.${username}`, {
                 id: username,
                 username: username,
                 name: username,

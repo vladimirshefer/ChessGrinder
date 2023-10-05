@@ -12,7 +12,7 @@ function MainPage() {
 
     let {
         data: {
-            values: members = [] as MemberDto[],
+            values: users = [] as MemberDto[],
         } = {} as ListDto<MemberDto>,
         refetch: refetchUsers
     } = useQuery({
@@ -35,28 +35,16 @@ function MainPage() {
         await refetchTournaments()
     }
 
-    async function createMember(memberName: string) {
-        await userRepository.postGuest({
-            id: memberName,
-            username: memberName,
-            name: memberName,
-            badges: [],
-            roles: []
-        } as MemberDto)
-        await refetchUsers()
-    }
-
     return <>
-        <MemberList
-            members={members!!}
-            createMember={createMember}
-        />
-        <div className={"grid p-2"}>
-            <Link to={"/users"}>
-                <button className={"btn bg-primary w-full"}>
-                    {loc("All users")}
-                </button>
-            </Link>
+        <div className={"p-3"}>
+            <MemberList members={users!!}/>
+            <div className={"grid py-2"}>
+                <Link to={"/users"}>
+                    <button className={"btn bg-primary w-full"}>
+                        {loc("All users")}
+                    </button>
+                </Link>
+            </div>
         </div>
         <TournamentsList tournaments={tournaments} createTournament={createTournament}/>
     </>

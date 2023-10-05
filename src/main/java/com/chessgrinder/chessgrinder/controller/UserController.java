@@ -57,15 +57,4 @@ public class UserController {
         return userService.getUserByUserName(email);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
-    @PostMapping("/guest")
-    public void createGuest(
-            @RequestBody MemberDto user
-    ) {
-        userRepository.save(UserEntity.builder()
-                .name(user.getName())
-                .provider(UserEntity.Provider.GUEST)
-                .build());
-    }
-
 }
