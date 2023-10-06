@@ -20,7 +20,7 @@ export function MemberList(
                         <div className={"w-8 imline-block rounded-full overflow-hidden"}>
                             <img
                                 // See https://gravatar.com/site/implement/images/
-                                src={`https://gravatar.com/avatar/${polynomialHashcodeHex(user.id)}?d=robohash&s=50`}
+                                src={`https://gravatar.com/avatar/${polynomialHashcodeHex(user.username || user.id)}?d=robohash&s=50`}
                                 alt={"User avatar"}/>
                         </div>
                         <Link to={`/user/${user.id}`}>
