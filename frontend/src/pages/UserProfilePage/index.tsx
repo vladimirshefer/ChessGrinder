@@ -96,8 +96,8 @@ export default function UserProfilePage() {
         </span>
         <div className={"grid place-items-center"}>
             <img width={"300px"} height={"300px"}
-                 // See https://gravatar.com/site/implement/images/
-                 src={`https://gravatar.com/avatar/${polynomialHashcodeHex(userProfile.id)}?d=robohash&s=300`}
+                // See https://gravatar.com/site/implement/images/
+                 src={`https://gravatar.com/avatar/${polynomialHashcodeHex(userProfile.username || userProfile.id)}?d=robohash&s=300`}
                  alt={"User avatar"}></img>
         </div>
         <div>
