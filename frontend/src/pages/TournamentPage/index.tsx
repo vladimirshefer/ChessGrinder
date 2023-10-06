@@ -164,22 +164,22 @@ function TournamentPage() {
         <h2 className={"text-lg font-bold mt-4"}>
             Tournament {id}
         </h2>
-        <div className={"grid grid-cols-12 w-full px-2 my-4"}>
-            <Link className={"col-span-3 lg:col-span-1"} to={`/tournament/${id}`}>
+        <div className={"flex flex-wrap justify-start w-full px-2 my-4"}>
+            <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
                 <button
-                    className={`w-full p-2 rounded ${!roundId ? "bg-yellow-300" : "bg-gray-100 hover:bg-yellow-100"}`}
+                    className={`w-full p-2 uppercase ${!roundId ? "bg-black text-white" : "bg-primary hover:bg-gray-300 text-black"}`}
                 >Home
                 </button>
             </Link>
             {roundNumbers.map(rid => {
                 return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
-                    <button className={`w-full rounded p-2 ${rid === roundId ? "bg-blue-300" : "hover:bg-blue-100"}`}>
+                    <button className={`w-full py-2 px-3 ${rid === roundId ? "bg-black text-white" : "hover:bg-gray-300"}`}>
                         {rid}
                     </button>
                 </Link>
             })}
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <button className={`w-full rounded p-2 bg-gray-100 col-span-2 lg:col-span-1`}
+                <button className={`py-2 px-3`}
                         onClick={createRound}
                 >+
                 </button>
