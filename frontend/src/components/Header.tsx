@@ -2,8 +2,8 @@ import {Link} from "react-router-dom";
 import {useAuthData} from "lib/auth/AuthService";
 import React, {useRef, useState} from "react";
 import loc from "strings/loc";
-import {polynomialHashcodeHex} from "lib/util/Hashcode";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
+import Gravatar, {GravatarType} from "components/Gravatar";
 
 function Header() {
     let authData = useAuthData()
@@ -39,17 +39,12 @@ function Header() {
                 {
                     !authData ? (
                             <Link to={"/login"}>
-                                <img
-                                    // See https://gravatar.com/site/implement/images/
-                                    src={`https://www.gravatar.com/avatar/?s=50&r=pg&d=mp`}
-                                    alt={"User avatar"}/>loc("Login")
+                                <Gravatar text={""} type={GravatarType.MysteryPerson} size={50}/>
+                                loc("Login")
                             </Link>
                     ) : (
                         <Link to={"user"}>
-                            <img
-                                // See https://gravatar.com/site/implement/images/
-                                src={`https://gravatar.com/avatar/${polynomialHashcodeHex(authData!!.username)}?d=robohash&s=50`}
-                                alt={"User avatar"}/>
+                            <Gravatar text={authData!!.username} type={GravatarType.Robohash} size={50}/>
                         </Link>
                     )
                 }

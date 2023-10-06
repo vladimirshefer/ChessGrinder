@@ -1,7 +1,7 @@
 import {MemberDto} from "lib/api/dto/MainPageData";
 import React, {Fragment} from "react";
 import {Link} from "react-router-dom";
-import {polynomialHashcodeHex} from "lib/util/Hashcode";
+import Gravatar, {GravatarType} from "../../components/Gravatar";
 
 export function MemberList(
     {
@@ -18,10 +18,7 @@ export function MemberList(
                 return <Fragment key={user.name}>
                     <div className={"col-span-6 flex content-center items-center"}>
                         <div className={"w-8 imline-block rounded-full overflow-hidden"}>
-                            <img
-                                // See https://gravatar.com/site/implement/images/
-                                src={`https://gravatar.com/avatar/${polynomialHashcodeHex(user.username || user.id)}?d=robohash&s=50`}
-                                alt={"User avatar"}/>
+                            <Gravatar text={user.username || user.id} type={GravatarType.Robohash} size={50}/>
                         </div>
                         <Link to={`/user/${user.id}`}>
                             {user.name}

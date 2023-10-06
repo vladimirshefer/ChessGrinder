@@ -8,7 +8,7 @@ import {BadgeDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import loc from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
-import {polynomialHashcodeHex} from "lib/util/Hashcode";
+import Gravatar, {GravatarType} from "components/Gravatar";
 
 function AssignAchievementPane() {
 
@@ -95,10 +95,7 @@ export default function UserProfilePage() {
             @{userProfile.username}
         </span>
         <div className={"grid place-items-center"}>
-            <img width={"300px"} height={"300px"}
-                // See https://gravatar.com/site/implement/images/
-                 src={`https://gravatar.com/avatar/${polynomialHashcodeHex(userProfile.username || userProfile.id)}?d=robohash&s=300`}
-                 alt={"User avatar"}></img>
+            <Gravatar text={userProfile.username || userProfile.id} type={GravatarType.Robohash} size={300}/>
         </div>
         <div>
             Roles:
