@@ -56,9 +56,17 @@ function AddParticipant(
             </Conditional>
             <Conditional on={inputEnabled}>
                 <div className={"w-full grid grid-cols-12 p-1"}>
-                    <div className={"col-span-12 lg:col-span-9"}>
+                    <div className={"col-span-12 lg:col-span-9 py-1"}>
                         <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-none"}
-                               autoFocus list="users" name="user"
+                               autoFocus
+                               name={"nickname"}
+                               onChange={event => setNickName(event.target.value)}
+                               placeholder={loc("Nickname")}
+                        />
+                    </div>
+                    <div className={"col-span-12 lg:col-span-9 text-sm py-1"}>
+                        <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-none"}
+                               list="users" name="user"
                                onChange={event => setSelectedValue(event.target.value)}
                                placeholder={loc("Username")}
                         />
@@ -76,13 +84,6 @@ function AddParticipant(
                             <AiOutlineInfoCircle className={"inline-block mr-1"}/>
                             {loc("Leave empty for anonymous/guest participant")}
                         </span>
-                    </div>
-                    <div className={"col-span-12 lg:col-span-9"}>
-                        <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-none"}
-                               name={"nickname"}
-                               onChange={event => setNickName(event.target.value)}
-                               placeholder={loc("Nickname")}
-                        />
                     </div>
                     <div className={"col-span-12 lg:col-span-3 p-1 px-2 grid grid-cols-12 gap-x-1"}>
                         <button className={"btn-dark w-full col-span-8"}
@@ -173,7 +174,9 @@ function TournamentPage() {
             </Link>
             {roundNumbers.map(rid => {
                 return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
-                    <button className={`w-full py-2 px-3 ${rid === roundId ? "bg-black text-white" : "hover:bg-gray-300"}`}>
+                    <button
+                        className={`w-full py-2 px-3 
+                                    ${rid === roundId ? "bg-black text-white" : "hover:bg-gray-300"}`}>
                         {rid}
                     </button>
                 </Link>
@@ -185,37 +188,33 @@ function TournamentPage() {
                 </button>
             </ConditionalOnUserRole>
         </div>
-
-        {
-            !roundId
-                ? (
-                    <>
-                        <h3>Status</h3>
-                        <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                            <AddParticipant participants={participants} addParticipant={addParticipant}/>
-                        </ConditionalOnUserRole>
-                        <ResultsTable participants={participants}
-                                      openParticipant={(it) => {
-                                          openParticipant(it)
-                                      }}
-                        />
-                    </>
-                )
-                : (
-                    <RoundTab
-                        round={tournamentData?.rounds[roundId - 1]!!}
-                        submitMatchResult={(match, result) => {
-                            submitMatchResult(match, result!!);
-                        }}
-                        submitRoundFinished={() => {
-                            finishRound()
-                        }}
-                        deleteRound={() => deleteRound()}
-                        drawRound={() => drawRound()}
-                        reopenRound={() => reopenRound()}
-                    />
-                )
-        }
+        <>
+            <Conditional on={!roundId}>
+                <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                    <AddParticipant participants={participants} addParticipant={addParticipant}/>
+                </ConditionalOnUserRole>
+                <div className={"p-2"}>{/*Just padding*/}</div>
+                <ResultsTable participants={participants}
+                              openParticipant={(it) => {
+                                  openParticipant(it)
+                              }}
+                />
+            </Conditional>
+            <Conditional on={!!roundId}>
+                <RoundTab
+                    round={tournamentData?.rounds[roundId!! - 1]!!}
+                    submitMatchResult={(match, result) => {
+                        submitMatchResult(match, result!!);
+                    }}
+                    submitRoundFinished={() => {
+                        finishRound()
+                    }}
+                    deleteRound={() => deleteRound()}
+                    drawRound={() => drawRound()}
+                    reopenRound={() => reopenRound()}
+                />
+            </Conditional>
+        </>
     </>
 }
 

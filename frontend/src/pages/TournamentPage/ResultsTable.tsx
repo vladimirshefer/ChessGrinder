@@ -13,10 +13,12 @@ function ResultsTable(
 
     return <>
         <div className={"w-full grid grid-cols-12"}>
-            <span className={"col-span-1"}></span>
-            <span className={"col-span-5"}>Name</span>
-            <span className={"col-span-3"}>PTS</span>
-            <span className={"col-span-3"}>BHZ</span>
+            <div className={"col-span-12 grid grid-cols-12 border-b"}>
+                <span className={"col-span-1 uppercase"}>#</span>
+                <span className={"col-span-5 uppercase"}>Name</span>
+                <span className={"col-span-3 uppercase"}>PTS</span>
+                <span className={"col-span-3 uppercase"}>BHZ</span>
+            </div>
             {
                 participants
                     .sort((a, b) => -(a.score !== b.score ? a.score - b.score : a.buchholz - b.buchholz))
