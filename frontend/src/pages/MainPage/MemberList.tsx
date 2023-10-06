@@ -17,7 +17,7 @@ export function MemberList(
             {users.map(user => {
                 return <Fragment key={user.name}>
                     <div className={"col-span-6 flex content-center items-center"}>
-                        <div className={"w-8 imline-block"}>
+                        <div className={"w-8 imline-block rounded-full overflow-hidden"}>
                             <img
                                 // See https://gravatar.com/site/implement/images/
                                 src={`https://gravatar.com/avatar/${polynomialHashcodeHex(user.id)}?d=robohash&s=50`}
