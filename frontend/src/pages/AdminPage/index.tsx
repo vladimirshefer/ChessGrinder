@@ -30,6 +30,6 @@ export default function AdminPage() {
                     }
                 }}
             >Clear</button>
-        </div>s
+        </div>
     </>
 }
