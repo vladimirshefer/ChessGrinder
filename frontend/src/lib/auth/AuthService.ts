@@ -20,7 +20,7 @@ class AuthService {
     }
 
     getAuthData(): AuthData | undefined {
-        return localStorageUtil.getObject<AuthData>("cgd.auth")
+        return localStorageUtil.getObject<AuthData>("cgd.auth") || undefined
     }
 
     clearAuthData() {
