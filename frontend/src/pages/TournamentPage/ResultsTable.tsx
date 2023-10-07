@@ -1,5 +1,6 @@
 import React from "react";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
+import loc from "strings/loc";
 
 function ResultsTable(
     {
@@ -15,7 +16,7 @@ function ResultsTable(
         <div className={"w-full grid grid-cols-12"}>
             <div className={"col-span-12 grid grid-cols-12 border-b"}>
                 <span className={"col-span-1 uppercase"}>#</span>
-                <span className={"col-span-5 uppercase"}>Name</span>
+                <span className={"col-span-5 uppercase"}>{loc("Name")}</span>
                 <span className={"col-span-3 uppercase"}>PTS</span>
                 <span className={"col-span-3 uppercase"}>BHZ</span>
             </div>

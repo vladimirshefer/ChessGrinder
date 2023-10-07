@@ -5,6 +5,10 @@ let locale_ru: { [key: string]: string } = {
     "Username": "Имя пользователя",
     "Nickname": "Никнейм",
     "Leave empty for anonymous/guest participant": "Оставьте пустым для гостя",
+    "Badges": "Значки",
+    "Admin": "Админ",
+    "Add participant": "Добавить участника",
+    "Name": "Имя",
 }
 
 export default locale_ru
