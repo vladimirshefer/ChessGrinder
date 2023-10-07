@@ -9,7 +9,7 @@ import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {ListDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import userRepository from "lib/api/repository/UserRepository";
-import {AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineClose, AiOutlineHome, AiOutlineInfoCircle} from "react-icons/ai";
 import loc from "strings/loc";
 
 function AddParticipant(
@@ -165,11 +165,12 @@ function TournamentPage() {
         <h2 className={"text-lg font-bold mt-4"}>
             Tournament {id}
         </h2>
-        <div className={"flex flex-wrap justify-start w-full px-2 my-4"}>
+        <div className={"flex flex-wrap justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
                 <button
-                    className={`w-full p-2 uppercase ${!roundId ? "bg-black text-white" : "bg-primary hover:bg-gray-300 text-black"}`}
-                >Home
+                    className={`w-full h-full py-2 px-4 uppercase ${!roundId ? "bg-black text-white" : "bg-primary hover:bg-gray-300 text-black"}`}
+                >
+                    <AiOutlineHome/>
                 </button>
             </Link>
             {roundNumbers.map(rid => {
@@ -215,6 +216,21 @@ function TournamentPage() {
                 />
             </Conditional>
         </>
+        <div className={"p-2"}></div>
+        <div className={"flex gap-1 justify-end p-2"}>
+            <button className={"btn-dark"}
+                onClick={() => alert("Edit not supported yet")}
+            >Edit</button>
+            <button className={"btn-dark"}
+                    onClick={() => alert("Start not supported yet")}
+            >Start</button>
+            <button className={"btn-dark"}
+                    onClick={() => alert("Finish not supported yet")}
+            >Finish</button>
+            <button className={"btn-danger"}
+                    onClick={() => alert("Delete not supported yet")}
+            >Delete</button>
+        </div>
     </>
 }
 
