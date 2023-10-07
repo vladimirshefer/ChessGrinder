@@ -1,5 +1,5 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {ListDto, MemberDto} from "lib/api/dto/MainPageData";
+import {BadgeDto, ListDto, MemberDto, UserBadgeDto} from "lib/api/dto/MainPageData";
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
@@ -21,13 +21,21 @@ class LocalStorageUserRepository implements UserRepository {
             return null
         }
         let user: MemberDto = JSON.parse(userStr);
-        user.badges = localStorageUtil.getAllObjectsByPrefix(`cgd.user__badge.${user.id}.`)
+        user.badges = localStorageUtil.getAllObjectsByPrefix<UserBadgeDto>(`cgd.user__badge.${user.id}.`)
+            .map(it => localStorageUtil.getObject<BadgeDto>(`cgd.badge.${it.badgeId}`)!!)
         return user
     }
 
     async getUsers(): Promise<ListDto<MemberDto>> {
+        let users: MemberDto[] = localStorageUtil.getAllObjectsByPrefix<MemberDto>(`${this.userKeyPrefix}.`)
+            .map(user => {
+                user.badges = localStorageUtil.getAllObjectsByPrefix<UserBadgeDto>(`cgd.user__badge.${user.id}.`)
+                    .map(it => localStorageUtil.getObject<BadgeDto>(`cgd.badge.${it.badgeId}`)!!)
+                return user
+            });
         return {
-            values: localStorageUtil.getAllObjectsByPrefix(`${this.userKeyPrefix}.`)
+            values: users
+
         };
     }
 

@@ -5,6 +5,11 @@ export interface BadgeDto {
     imageUrl: string
 }
 
+export interface UserBadgeDto {
+    userId: string,
+    badgeId: string,
+}
+
 export interface MemberDto {
     id: string
     username: string

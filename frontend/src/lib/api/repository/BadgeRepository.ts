@@ -2,12 +2,12 @@ import {qualifiedService} from "lib/api/repository/apiSettings";
 import {BadgeDto, ListDto} from "lib/api/dto/MainPageData";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import restApiClient from "lib/api/RestApiClient";
-import {randomString} from "../../util/Random";
 
 export interface BadgeRepository {
     getBadges(): Promise<ListDto<BadgeDto>>;
 
     createBadge(badge: BadgeDto): Promise<void>;
+    assignBadge(badgeId: string, userId: string): Promise<void>;
 }
 
 class LocalStorageBadgeRepository implements BadgeRepository {
@@ -18,9 +18,16 @@ class LocalStorageBadgeRepository implements BadgeRepository {
     }
 
     async createBadge(badge: BadgeDto): Promise<void> {
-        let id = randomString(15);
-        localStorageUtil.setObject(`cgd.badge.${id}`, badge);
+        localStorageUtil.setObject(`cgd.badge.${badge.id}`, badge);
     }
+
+    async assignBadge(badgeId: string, userId: string): Promise<void> {
+        localStorageUtil.setObject(`cgd.user__badge.${userId}.${badgeId}`, {
+            userId: userId,
+            badgeId: badgeId,
+        })
+    }
+
 }
 
 class RestApiBadgeRepository implements BadgeRepository {
@@ -30,6 +37,10 @@ class RestApiBadgeRepository implements BadgeRepository {
 
     async createBadge(badge: BadgeDto): Promise<void> {
         return restApiClient.post("/badge", badge);
+    }
+
+    async assignBadge(badgeId: string, userId: string): Promise<void> {
+        return restApiClient.post(`/user/${userId}/badge/${badgeId}`)
     }
 }
 

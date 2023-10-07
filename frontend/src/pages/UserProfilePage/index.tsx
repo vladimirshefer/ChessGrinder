@@ -10,7 +10,13 @@ import loc from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import Gravatar, {GravatarType} from "components/Gravatar";
 
-function AssignAchievementPane() {
+function AssignAchievementPane(
+    {
+       userId
+    }: {
+        userId: string
+    }
+) {
 
     let [selectActive, setSelectActive] = useState(false)
     let badgesQuery = useQuery({
@@ -33,6 +39,11 @@ function AssignAchievementPane() {
                 <p>{selectedBadge?.imageUrl}</p>
                 <p>{selectedBadge?.title}</p>
                 <p>{selectedBadge?.description}</p>
+                <button className={"btn-dark"}
+                        onClick={() => badgeRepository.assignBadge(selectedBadge!!.id, userId)}
+                >
+                    Assign
+                </button>
             </Conditional>
         </div>
         <div className={"bg-cyan-100"}>
@@ -94,26 +105,27 @@ export default function UserProfilePage() {
         <span className={"text-gray-500"}>
             @{userProfile.username}
         </span>
+        <div>
+            {
+                userProfile.roles?.map(role => {
+                    return <span key={role} className={"bg-red-300 rounded-full px-2 text-sm p-1"}>{role}</span>
+                })
+            }
+        </div>
         <div className={"grid place-items-center"}>
             <Gravatar text={userProfile.username || userProfile.id} type={GravatarType.Robohash} size={300}/>
         </div>
         <div>
-            Roles:
-            {
-                userProfile.roles?.map(role => {
-                    return <span key={role}>{role}</span>
-                })
-            }
-        </div>
-        <div>
-            Badges:
+            <div>
+                Badges
+            </div>
             {
                 userProfile.badges.map(badge => {
                     return <span
-                        key={badge.imageUrl}
+                        key={badge.id}
                         title={badge.description}
                         className={"cursor-default"}
-                    >{badge.imageUrl}</span>
+                    >{badge.imageUrl}{badge.title}</span>
                 }) || <span>No achievements</span>
             }
         </div>
@@ -132,7 +144,7 @@ export default function UserProfilePage() {
         </div>
 
         <ConditionalOnUserRole role={UserRoles.ADMIN}>
-            <AssignAchievementPane/>
+            <AssignAchievementPane userId={userProfile.id}/>
         </ConditionalOnUserRole>
 
     </div>
