@@ -61,6 +61,13 @@ export function TournamentsList(
                                     {loc("Participate")}
                                 </button>
                             </ConditionalOnAuthorized>
+                            <ConditionalOnAuthorized authorized={false}>
+                                <Link to={"/login"}>
+                                    <button className={"btn-primary w-full"}>
+                                        {loc("Participate")}
+                                    </button>
+                                </Link>
+                            </ConditionalOnAuthorized>
                         </div>
                     </div>
                 </li>

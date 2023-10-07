@@ -37,14 +37,16 @@ export default function ConditionalOnUserRole(
 
 export function ConditionalOnAuthorized(
     {
-        children
+        children,
+        authorized = true,
     } : {
-        children?: ReactElement | ReactElement[]
+        children?: ReactElement | ReactElement[],
+        authorized?: boolean
     }
 ) {
     let authData = useAuthData();
     let show = useMemo(() => {
-        return !!authData
+        return !!authData == authorized
     }, [authData])
 
     return <Conditional on={show}>
