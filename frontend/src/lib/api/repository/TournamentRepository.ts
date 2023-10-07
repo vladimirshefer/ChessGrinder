@@ -4,6 +4,7 @@ import localStorageUtil from "lib/util/LocalStorageUtil";
 import restApiClient from "lib/api/RestApiClient";
 import {qualifiedServiceProxy} from "./apiSettings";
 import {AuthData} from "lib/auth/AuthService";
+import {compareBy, reverse} from "lib/util/Comparator";
 
 export interface TournamentRepository {
     postTournament: () => Promise<void>
@@ -40,7 +41,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
 
     async getTournaments(): Promise<TournamentListDto> {
         let tournamentsLocal = localStorageUtil.getAllObjectsByPrefix("cgd.tournament.") as TournamentPageData[];
-        let tournaments = tournamentsLocal.map(it => it.tournament);
+        let tournaments = tournamentsLocal.map(it => it.tournament).sort(reverse(compareBy(it => it.date)));
         return {
             tournaments: tournaments
         } as TournamentListDto
