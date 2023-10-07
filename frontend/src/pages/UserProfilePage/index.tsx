@@ -12,7 +12,7 @@ import Gravatar, {GravatarType} from "components/Gravatar";
 
 function AssignAchievementPane(
     {
-       userId
+        userId
     }: {
         userId: string
     }
@@ -50,10 +50,12 @@ function AssignAchievementPane(
             <Conditional on={selectActive && badgesQuery.isSuccess}>
                 {
                     badgesQuery.data?.values?.map(badge => {
-                        return <div onClick={() => {
-                            setSelectedBadge(badge)
-                            setSelectActive(false)
-                        }}>
+                        return <div key={badge.id}
+                                    onClick={() => {
+                                        setSelectedBadge(badge)
+                                        setSelectActive(false)
+                                    }}
+                        >
                             <p>{badge?.imageUrl}</p>
                             <p>{badge?.title}</p>
                             <p>{badge?.description}</p>
