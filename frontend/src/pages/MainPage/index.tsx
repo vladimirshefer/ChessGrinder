@@ -13,8 +13,7 @@ function MainPage() {
     let {
         data: {
             values: users = [] as MemberDto[],
-        } = {} as ListDto<MemberDto>,
-        refetch: refetchUsers
+        } = {} as ListDto<MemberDto>
     } = useQuery({
         queryKey: ["members"],
         queryFn: () => userRepository.getUsers(),
