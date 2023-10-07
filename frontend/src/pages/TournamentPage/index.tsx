@@ -166,9 +166,12 @@ function TournamentPage() {
     }
 
     return <>
-        <h2 className={"text-lg font-bold mt-4"}>
-            Tournament {id}
-        </h2>
+        <div className={"flex mt-4 p-2 items-center content-center "}>
+            <h2 className={"text-lg font-bold"}>
+                Tournament {id}
+            </h2>
+            <small className={"text-gray-500 px-2 "}>{tournamentData?.tournament?.status}</small>
+        </div>
         <div className={"flex flex-wrap justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
                 <button
@@ -220,42 +223,48 @@ function TournamentPage() {
                 />
             </Conditional>
         </>
-        <ConditionalOnUserRole role={UserRoles.ADMIN}>
-            <div className={"p-2"}></div>
-            <div className={"flex gap-1 justify-end p-2"}>
-                <button className={"btn-dark"}
-                        onClick={() => alert("Edit not supported yet")}
-                >Edit
-                </button>
-                <button className={"btn-dark"}
-                        onClick={async () => {
-                            await tournamentRepository.startTournament(tournamentData?.tournament.id!!);
-                            await tournamentQuery.refetch()
-                        }}
-                >Start
-                </button>
-                <button className={"btn-dark"}
-                        onClick={async () => {
-                            await tournamentRepository.finishTournament(tournamentData?.tournament.id!!);
-                            await tournamentQuery.refetch()
-                        }}
-                >Finish
-                </button>
-                <button className={"btn-danger"}
-                        onClick={async () => {
-                            let expectedConfirmation = (tournamentData?.tournament.name || "") + (tournamentData?.tournament.id || "");
-                            let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
-                            if (confirmation !== expectedConfirmation) {
-                                alert("You entered wrong id. Tournament will not be deleted.");
-                                return;
-                            }
-                            await tournamentRepository.deleteTournament(tournamentData?.tournament.id!!);
-                            await navigate("/");
-                        }}
-                >Delete
-                </button>
-            </div>
-        </ConditionalOnUserRole>
+        <Conditional on={!roundId}>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <div className={"p-2"}></div>
+                <div className={"flex gap-1 justify-end p-2"}>
+                    <button className={"btn-dark"}
+                            onClick={() => alert("Edit not supported yet")}
+                    >Edit
+                    </button>
+                    <Conditional on={tournamentQuery.data?.tournament.status !== "ACTIVE"}>
+                        <button className={"btn-dark"}
+                                onClick={async () => {
+                                    await tournamentRepository.startTournament(tournamentData?.tournament.id!!);
+                                    await tournamentQuery.refetch()
+                                }}
+                        > Start
+                        </button>
+                    </Conditional>
+                    <Conditional on={tournamentQuery.data?.tournament.status === "ACTIVE"}>
+                        <button className={"btn-dark"}
+                                onClick={async () => {
+                                    await tournamentRepository.finishTournament(tournamentData?.tournament.id!!);
+                                    await tournamentQuery.refetch()
+                                }}
+                        >Finish
+                        </button>
+                    </Conditional>
+                    <button className={"btn-danger"}
+                            onClick={async () => {
+                                let expectedConfirmation = (tournamentData?.tournament.name || "") + (tournamentData?.tournament.id || "");
+                                let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
+                                if (confirmation !== expectedConfirmation) {
+                                    alert("You entered wrong id. Tournament will not be deleted.");
+                                    return;
+                                }
+                                await tournamentRepository.deleteTournament(tournamentData?.tournament.id!!);
+                                await navigate("/");
+                            }}
+                    >Delete
+                    </button>
+                </div>
+            </ConditionalOnUserRole>
+        </Conditional>
     </>
 }
 
