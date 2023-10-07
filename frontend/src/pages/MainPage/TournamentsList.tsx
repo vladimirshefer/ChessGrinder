@@ -36,10 +36,10 @@ export function TournamentsList(
                                         m-2 flex content-center`}>
                     <div className={"grig grid-cols-12 w-full p-4"}>
                         <div className={"col-span-12 grid justify-items-start"}>
-                            <Link className={"font-bold text-lg"} to={`/tournament/${tournament.id}`}>
+                            <Link className={"font-bold text-lg text-left"} to={`/tournament/${tournament.id}`}>
                                 {tournament.name || tournament.id}
                             </Link>
-                            <small className={"font-bold"}>
+                            <small className={"font-bold text-left"}>
                                 {tournament.date}
                             </small>
                         </div>
