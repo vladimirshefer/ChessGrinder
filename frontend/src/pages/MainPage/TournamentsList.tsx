@@ -73,11 +73,11 @@ function TournamentPane(
             </div>
         </Conditional>
         <Conditional on={isFinished}>
-            <button className={"btn-dark w-full"}
-                    onClick={() => tournamentRepository.participate(tournament.id)}
-            >
-                {loc("More info")}
-            </button>
+            <Link to={`/tournament/${tournament.id}`} className={"w-full"}>
+                <button className={"btn-dark w-full"}>
+                    {loc("More info")}
+                </button>
+            </Link>
         </Conditional>
     </div>;
 }
