@@ -74,7 +74,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
     }
 
     async deleteTournament(tournamentId: string): Promise<void> {
-        let tournament = localStorageUtil.removeObject(`cgd.tournament.${tournamentId}`);
+        localStorageUtil.removeObject(`cgd.tournament.${tournamentId}`);
     }
 
     public static getTodayDate(): string {
