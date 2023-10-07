@@ -32,7 +32,7 @@ function Header() {
     }
 
     return <div>
-        <div className={"w-full flex justify-between content-center items-center bg-blue-200 p-2"}>
+        <div className={"w-full flex justify-between content-center items-center bg-white text-black border-b-2 border-black p-2"}>
             <Link className={"font-bold h-10 flex items-center"} to={"/"}><h1 className={"text-lg"}>Chess Grinder</h1></Link>
             <div className={"flex"}>
 
