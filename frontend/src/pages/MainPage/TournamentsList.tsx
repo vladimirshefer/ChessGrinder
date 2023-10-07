@@ -41,7 +41,7 @@ export function TournamentsList(
                         </small>
                         <div className={"col-span-12 p-2"}>
                             <ConditionalOnAuthorized>
-                                <button
+                                <button className={"btn-dark"}
                                     onClick={() => tournamentRepository.participate(tournament.id)}
                                 >
                                     {loc("Participate")}
