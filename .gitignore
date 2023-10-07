@@ -36,3 +36,4 @@ application-local.properties
 
 ## Production log files
 *.log
+nohup.out
