@@ -47,7 +47,7 @@ export function ConditionalOnAuthorized(
     let authData = useAuthData();
     let show = useMemo(() => {
         return !!authData === authorized
-    }, [authData])
+    }, [authData, authorized])
 
     return <Conditional on={show}>
         {children}
