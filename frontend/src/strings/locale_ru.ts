@@ -9,6 +9,7 @@ let locale_ru: { [key: string]: string } = {
     "Admin": "Админ",
     "Add participant": "Добавить участника",
     "Name": "Имя",
+    "More info": "Подробнее",
 }
 
 export default locale_ru
