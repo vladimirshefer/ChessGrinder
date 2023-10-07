@@ -4,6 +4,7 @@ import React, {useRef, useState} from "react";
 import loc from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import Gravatar, {GravatarType} from "components/Gravatar";
+import {AiOutlineClose, AiOutlineMenu} from "react-icons/ai";
 
 function Header() {
     let authData = useAuthData()
@@ -25,7 +26,7 @@ function Header() {
             <Link to={to}
                   className={"p-2"}
             >
-                <button className={"underline"}>{text}</button>
+                <button className={"uppercase"}>{text}</button>
             </Link>
         </li>
     }
@@ -36,29 +37,29 @@ function Header() {
             <div className={"flex"}>
 
                 <div className={"rounded-full overflow-hidden h-8 w-8 bg-white mx-2 border border-black"}>
-                {
-                    !authData ? (
+                    {
+                        !authData ? (
                             <Link to={"/login"}>
                                 <Gravatar text={""} type={GravatarType.MysteryPerson} size={50}/>
                                 loc("Login")
                             </Link>
-                    ) : (
-                        <Link to={"user"}>
-                            <Gravatar text={authData!!.username} type={GravatarType.Robohash} size={50}/>
-                        </Link>
-                    )
-                }
+                        ) : (
+                            <Link to={"user"}>
+                                <Gravatar text={authData!!.username} type={GravatarType.Robohash} size={50}/>
+                            </Link>
+                        )
+                    }
                 </div>
-                <div className={"relative flex items-center"}>
-                    <button className={"font-bold"}
+                <div className={"relative flex items-center px-1"}>
+                    <button className={"font-bold text-[1.2rem]"}
                             onClick={() => setDropdownOpened(!dropdownOpened)}
                     >
-                        Menu
+                        {dropdownOpened ?<AiOutlineClose/>:<AiOutlineMenu/>}
                     </button>
                 </div>
             </div>
         </div>
-        <ul ref={droprownRef} className={`bg-blue-100 w-full absolute z-25
+        <ul ref={droprownRef} className={`bg-white shadow w-full absolute z-25 py-5
                                     ${dropdownOpened ? "" : "hidden"}`}
             onClick={() => setDropdownOpened(false)}
         >
