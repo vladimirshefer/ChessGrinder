@@ -98,7 +98,7 @@ export function TournamentsList(
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <li className={"col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 " +
                     "bg-gray-200 flex justify-center content-center"}>
-                    <button className={"h-full w-full text-xl text-primary "}
+                    <button className={"h-full w-full text-xl text-primary p-7"}
                             onClick={createTournament}
                     >
                         + {loc("Tournament")}
