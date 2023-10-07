@@ -121,7 +121,7 @@ function TournamentPage() {
 
     let navigate = useNavigate()
     let roundNumbers = tournamentData?.rounds?.map((e, idx) => idx + 1) || [];
-    let participants: ParticipantDto[] = useMemo(() => tournamentQuery.data?.participants || [], [tournamentData])
+    let participants: ParticipantDto[] = tournamentQuery.data?.participants || [];
 
     async function addParticipant(participant: ParticipantDto) {
         await participantRepository.postParticipant(id!!, participant)
@@ -220,27 +220,41 @@ function TournamentPage() {
                 />
             </Conditional>
         </>
-        <div className={"p-2"}></div>
-        <div className={"flex gap-1 justify-end p-2"}>
-            <button className={"btn-dark"}
-                onClick={() => alert("Edit not supported yet")}
-            >Edit</button>
-            <button className={"btn-dark"}
-                    onClick={async () => {
-                        await tournamentRepository.startTournament(tournamentData?.tournament.id!!);
-                        await tournamentQuery.refetch()
-                    }}
-            >Start</button>
-            <button className={"btn-dark"}
-                    onClick={async () => {
-                        await tournamentRepository.finishTournament(tournamentData?.tournament.id!!);
-                        await tournamentQuery.refetch()
-                    }}
-            >Finish</button>
-            <button className={"btn-danger"}
-                    onClick={() => alert("Delete not supported yet")}
-            >Delete</button>
-        </div>
+        <ConditionalOnUserRole role={UserRoles.ADMIN}>
+            <div className={"p-2"}></div>
+            <div className={"flex gap-1 justify-end p-2"}>
+                <button className={"btn-dark"}
+                        onClick={() => alert("Edit not supported yet")}
+                >Edit
+                </button>
+                <button className={"btn-dark"}
+                        onClick={async () => {
+                            await tournamentRepository.startTournament(tournamentData?.tournament.id!!);
+                            await tournamentQuery.refetch()
+                        }}
+                >Start
+                </button>
+                <button className={"btn-dark"}
+                        onClick={async () => {
+                            await tournamentRepository.finishTournament(tournamentData?.tournament.id!!);
+                            await tournamentQuery.refetch()
+                        }}
+                >Finish
+                </button>
+                <button className={"btn-danger"}
+                        onClick={() => {
+                            let expectedConfirmation = (tournamentData?.tournament.name || "") + (tournamentData?.tournament.id || "");
+                            let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
+                            if (confirmation !== expectedConfirmation) {
+                                alert("You entered wrong id. Tournament will not be deleted.");
+                                return;
+                            }
+                            alert("Delete not supported yet")
+                        }}
+                >Delete
+                </button>
+            </div>
+        </ConditionalOnUserRole>
     </>
 }
 
