@@ -11,6 +11,7 @@ import {ListDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import userRepository from "lib/api/repository/UserRepository";
 import {AiOutlineClose, AiOutlineHome, AiOutlineInfoCircle} from "react-icons/ai";
 import loc from "strings/loc";
+import tournamentRepository from "lib/api/repository/TournamentRepository";
 
 function AddParticipant(
     {
@@ -111,17 +112,20 @@ function AddParticipant(
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
-    let {data: tournamentData, refetch, isSuccess: isDataReady} = useQuery({
+    let tournamentQuery = useQuery({
         queryKey: ["tournamentPageData", id],
         queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
     });
+
+    let {data: tournamentData} = tournamentQuery;
+
     let navigate = useNavigate()
     let roundNumbers = tournamentData?.rounds?.map((e, idx) => idx + 1) || [];
-    let participants: ParticipantDto[] = useMemo(() => tournamentData?.participants || [], [tournamentData])
+    let participants: ParticipantDto[] = useMemo(() => tournamentQuery.data?.participants || [], [tournamentData])
 
     async function addParticipant(participant: ParticipantDto) {
         await participantRepository.postParticipant(id!!, participant)
-        await refetch()
+        await tournamentQuery.refetch()
     }
 
     async function openParticipant(participant: ParticipantDto) {
@@ -130,21 +134,21 @@ function TournamentPage() {
 
     async function createRound() {
         await tournamentPageRepository.postRound(id!!)
-        await refetch()
+        await tournamentQuery.refetch()
         navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""))
     }
 
     async function drawRound() {
         await tournamentPageRepository.drawRound(id!!, roundId!!)
-        await refetch()
+        await tournamentQuery.refetch()
     }
 
     async function submitMatchResult(match: MatchDto, result: MatchResult) {
         await tournamentPageRepository.postMatchResult(id!!, roundId!!, match.id, result)
-        await refetch()
+        await tournamentQuery.refetch()
     }
 
-    if (!isDataReady) return <>Loading</>
+    if (!tournamentQuery.isSuccess) return <>Loading</>
 
     async function deleteRound() {
         await tournamentPageRepository.deleteRound(id!!, roundId!!)
@@ -153,12 +157,12 @@ function TournamentPage() {
 
     async function finishRound() {
         await tournamentPageRepository.finishRound(id!!, roundId!!)
-        await refetch()
+        await tournamentQuery.refetch()
     }
 
     async function reopenRound() {
         await tournamentPageRepository.reopenRound(id!!, roundId!!)
-        await refetch()
+        await tournamentQuery.refetch()
     }
 
     return <>
@@ -222,10 +226,16 @@ function TournamentPage() {
                 onClick={() => alert("Edit not supported yet")}
             >Edit</button>
             <button className={"btn-dark"}
-                    onClick={() => alert("Start not supported yet")}
+                    onClick={async () => {
+                        await tournamentRepository.startTournament(tournamentData?.tournament.id!!);
+                        await tournamentQuery.refetch()
+                    }}
             >Start</button>
             <button className={"btn-dark"}
-                    onClick={() => alert("Finish not supported yet")}
+                    onClick={async () => {
+                        await tournamentRepository.finishTournament(tournamentData?.tournament.id!!);
+                        await tournamentQuery.refetch()
+                    }}
             >Finish</button>
             <button className={"btn-danger"}
                     onClick={() => alert("Delete not supported yet")}
