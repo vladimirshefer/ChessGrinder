@@ -9,7 +9,7 @@ import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {ListDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import userRepository from "lib/api/repository/UserRepository";
-import {AiOutlineClose, AiOutlineHome, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineClose, AiOutlineHome, AiOutlineInfoCircle, AiOutlinePlus} from "react-icons/ai";
 import loc from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 
@@ -192,7 +192,7 @@ function TournamentPage() {
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <button className={`py-2 px-3`}
                         onClick={createRound}
-                >+
+                ><AiOutlinePlus/>
                 </button>
             </ConditionalOnUserRole>
         </div>
