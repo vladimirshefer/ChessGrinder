@@ -21,6 +21,10 @@ class LocalStorageUtil {
         localStorage.setItem(key, JSON.stringify(value))
     }
 
+    removeObject(key: string) {
+        localStorage.removeItem(key)
+    }
+
     /**
      * Iterates over localStorage, selecting values,
      * which stored by key, wtarting with specified prefix.

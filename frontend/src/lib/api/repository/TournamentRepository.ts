@@ -11,6 +11,7 @@ export interface TournamentRepository {
     finishTournament: (tournamentId: string) => Promise<void>
     getTournaments: () => Promise<TournamentListDto>
     participate: (tournamentId: string) => Promise<void>
+    deleteTournament: (tournamentId: string) => Promise<void>
 }
 
 class LocalStorageTournamentRepository implements TournamentRepository {
@@ -71,12 +72,16 @@ class LocalStorageTournamentRepository implements TournamentRepository {
         localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
     }
 
+    async deleteTournament(tournamentId: string): Promise<void> {
+        let tournament = localStorageUtil.removeObject(`cgd.tournament.${tournamentId}`);
+    }
+
     public static getTodayDate(): string {
         const date = new Date();
         let day = date.getDate();
         let month = date.getMonth() + 1;
         let year = date.getFullYear();
-        return `${year}-${month}-${day}`
+        return `${("00000" + year).slice(-4)}-${("000" + month).slice(-2)}-${("000" + day).slice(-2)}`
     }
 }
 
@@ -95,6 +100,10 @@ class RestApiTournamentRepository implements TournamentRepository {
 
     async getTournaments(): Promise<TournamentListDto> {
         return await restApiClient.get<TournamentListDto>("/tournament");
+    }
+
+    async deleteTournament(tournamentId: string): Promise<void> {
+        await restApiClient.delete(`/tournament/${tournamentId}`);
     }
 
     async participate(tournamentId: string): Promise<void> {

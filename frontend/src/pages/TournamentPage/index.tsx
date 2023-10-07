@@ -242,14 +242,15 @@ function TournamentPage() {
                 >Finish
                 </button>
                 <button className={"btn-danger"}
-                        onClick={() => {
+                        onClick={async () => {
                             let expectedConfirmation = (tournamentData?.tournament.name || "") + (tournamentData?.tournament.id || "");
                             let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
                             if (confirmation !== expectedConfirmation) {
                                 alert("You entered wrong id. Tournament will not be deleted.");
                                 return;
                             }
-                            alert("Delete not supported yet")
+                            await tournamentRepository.deleteTournament(tournamentData?.tournament.id!!);
+                            await navigate("/");
                         }}
                 >Delete
                 </button>
