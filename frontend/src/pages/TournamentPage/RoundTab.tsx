@@ -27,8 +27,23 @@ export default function RoundTab(
                                }}
             /> : <div>Round is finished</div>
         }
-        <div className={"mt-2 px-2 w-full flex justify-end"}>
-            <button className={"bg-red-200 p-1 rounded-md mx-1 px-1"}
+        <div className={"mt-2 px-2 w-full flex justify-end gap-2"}>
+            <button className={"btn-dark p-1 px-1"}
+                    onClick={() => drawRound()}
+            >Draw
+            </button>
+            {
+                !round.isFinished ?
+                    <button className={"btn-dark p-1"}
+                            onClick={() => submitRoundFinished()}
+                    >Finish
+                    </button> :
+                    <button
+                        className={"btn-dark p-1"}
+                        onClick={() => reopenRound()}
+                    >Reopen</button>
+            }
+            <button className={"btn-danger p-1 px-1"}
                     onClick={() => {
                         if (window.confirm("Delete round?")) {
                             deleteRound();
@@ -36,21 +51,6 @@ export default function RoundTab(
                     }}
             >Delete
             </button>
-            <button className={"bg-orange-200 p-1 rounded-md mx-1 px-1"}
-                    onClick={() => drawRound()}
-            >Draw
-            </button>
-            {
-                !round.isFinished ?
-                    <button className={"bg-blue-200 p-1 rounded-md mx-1"}
-                            onClick={() => submitRoundFinished()}
-                    >Finish
-                    </button> :
-                    <button
-                        className={"bg-blue-200 p-1 rounded-md mx-1"}
-                        onClick={() => reopenRound()}
-                    >Reopen</button>
-            }
         </div>
     </div>
 }
