@@ -11,6 +11,12 @@
   @apply text-center;
 }
 
+.btn-primary {
+  @apply btn;
+  @apply bg-primary;
+  @apply text-black
+}
+
 .btn-dark {
   @apply btn;
   @apply bg-black;

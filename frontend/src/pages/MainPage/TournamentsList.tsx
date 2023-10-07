@@ -3,6 +3,8 @@ import {TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {ConditionalOnAuthorized} from "components/Conditional";
 import loc from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
+import {AiFillClockCircle} from "react-icons/ai";
+import {IoLocationSharp} from "react-icons/io5";
 
 export function TournamentsList(
     {
@@ -30,19 +32,31 @@ export function TournamentsList(
             </ConditionalOnUserRole>
             {tournaments.map(tournament => {
                 return <li key={tournament.id}
-                           className={"col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 rounded-md h-[20vh] bg-gray-100 m-2 py-2 flex justify-center content-center"}>
-                    <div className={"grig grid-cols-12"}>
-                        <Link to={`/tournament/${tournament.id}`}>
-                            {tournament.name || tournament.id}
-                        </Link>
-                        <br/>
-                        <small>
-                            {tournament.date}
-                        </small>
-                        <div className={"col-span-12 p-2"}>
+                           className={`col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 bg-black text-white 
+                                        m-2 flex content-center`}>
+                    <div className={"grig grid-cols-12 w-full p-4"}>
+                        <div className={"col-span-12 grid justify-items-start"}>
+                            <Link className={"font-bold text-lg"} to={`/tournament/${tournament.id}`}>
+                                {tournament.name || tournament.id}
+                            </Link>
+                            <small className={"font-bold"}>
+                                {tournament.date}
+                            </small>
+                        </div>
+                        <div className={"py-3"}>
+                            <span className={"flex items-center"}>
+                                <AiFillClockCircle className={"text-primary mr-3"}/>
+                                20:00
+                            </span>
+                            <span className={"flex items-center"}>
+                                <IoLocationSharp className={"text-primary mr-3"}/>
+                                Seven roads
+                            </span>
+                        </div>
+                        <div className={"col-span-12"}>
                             <ConditionalOnAuthorized>
-                                <button className={"btn-dark"}
-                                    onClick={() => tournamentRepository.participate(tournament.id)}
+                                <button className={"btn-primary w-full"}
+                                        onClick={() => tournamentRepository.participate(tournament.id)}
                                 >
                                     {loc("Participate")}
                                 </button>
