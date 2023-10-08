@@ -1,7 +1,6 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.dto.MemberDto;
-import com.chessgrinder.chessgrinder.entities.RoleEntity;
+import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.BadgeMapper;
@@ -29,12 +28,14 @@ public class UserService {
     private final BadgeRepository badgeRepository;
     private final RoleRepository roleRepository;
 
-    public List<MemberDto> getAllUsers() {
-        var users = userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        List<UserEntity> users = userRepository.findAll();
+
+
         return users.stream().map(userMapper::toDto).collect(Collectors.toList());
     }
 
-    public MemberDto getUserByUserId(String userId) {
+    public UserDto getUserByUserId(String userId) {
 
         UserEntity user = userRepository.findById(UUID.fromString(userId)).orElse(null);
 
@@ -47,7 +48,7 @@ public class UserService {
 
     }
 
-    public MemberDto getUserByUserName(String userName) {
+    public UserDto getUserByUserName(String userName) {
 
         UserEntity user = userRepository.findByUsername(userName);
 

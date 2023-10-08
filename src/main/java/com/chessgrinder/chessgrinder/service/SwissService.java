@@ -1,10 +1,10 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.dto.*;
+import com.chessgrinder.chessgrinder.dto.internals.*;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
 import com.chessgrinder.chessgrinder.repositories.MatchRepository;
 import com.google.common.collect.Lists;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,57 +18,51 @@ import java.util.*;
 public class SwissService {
 
     private final MatchRepository matchRepository;
-    private UUID tournamentId;
+    private String tournamentId;
 
-    public List<MatchEntity> makePairs(List<ParticipantEntity> participantEntities) {
-        if (participantEntities.isEmpty()) return Collections.emptyList();
+    public List<MatchDto> makePairs(List<ParticipantDto> participants) {
 
-        List<MatchEntity> matchEntities = new ArrayList<>();
+        List<MatchEntity> matches = new ArrayList<>();
 
-        tournamentId = participantEntities.get(0).getTournament().getId();
+        if (participants.isEmpty()) return Collections.emptyList();
 
-        List<ParticipantEntity> sortedParticipantEntities = participantEntities.stream()
-                .sorted(Comparator.comparing(ParticipantEntity::getScore).reversed()).toList();
+/*
+        tournamentId = participants.get(0).getTournament().getId();
+*/
 
-        List<ParticipantForPairing> participantForPairingList = new ArrayList<>(sortedParticipantEntities.stream()
-                .map(participant -> {
+        List<ParticipantDto> sortedParticipants = participants.stream()
+                .sorted(Comparator.comparing(ParticipantDto::getScore).reversed()).toList();
+
+        List<ParticipantForPairing> listOfAllPlayers = new ArrayList<>(
+
+                sortedParticipants.stream().map(participant -> {
                     ParticipantForPairing participantForPairing = new ParticipantForPairing();
-                    participantForPairing.setParticipantEntity(participant);
+                    participantForPairing.setParticipant(participant);
                     return participantForPairing;
-                }).toList());
+                }).toList()
 
-        for (ParticipantForPairing participant1 : participantForPairingList) {
+        );
 
-            if (participant1.isBooked) {
+        for (ParticipantForPairing firstCandidateForMatch : listOfAllPlayers) {
+
+            if (firstCandidateForMatch.isBooked()) {
                 continue;
             }
 
-            MatchEntity matchEntity = MatchEntity.builder()
-                    .id(UUID.randomUUID())
-                    .participant1(participant1.getParticipantEntity())
-                    .build();
-
-            participant1.setBooked(true);
-            MatchEntity matchEntityForParticipant = findMatchForParticipant(participantForPairingList, matchEntity);
-            matchEntities.add(matchEntityForParticipant);
-        }
-
-        return matchEntities;
-    }
-
-    public Map<BigDecimal, List<ParticipantEntity>> separateParticipantsByScores (List<ParticipantEntity> participantEntities) {
-        Map<BigDecimal, List<ParticipantEntity>> map = new TreeMap<>(Collections.reverseOrder());
-        for (ParticipantEntity participantEntity : participantEntities) {
-            BigDecimal score = participantEntity.getScore();
-
-            List<ParticipantEntity> participantsWithSameScore = map.getOrDefault(score, new ArrayList<>());
-
-            participantsWithSameScore.add(participantEntity);
-            map.put(score, participantsWithSameScore);
+            firstCandidateForMatch.setBooked(true);
+            ParticipantDto secondCandidateForMatch = findMatchForParticipant(listOfAllPlayers, firstCandidateForMatch);
 
         }
-        return map;
+
+        return null;
     }
+    public ParticipantDto findMatchForParticipant(List<ParticipantForPairing> players, ParticipantForPairing firstCandidateForMatch) {
+        List<ScoreModel> separateParticipantsByScores = separateParticipantsByScores(players);
+        List<ScoreModel> scoreModels = makeEvenValues(separateParticipantsByScores);
+
+        return null;
+    }
+
 
     public static<T> List[] split(List<T> list) {
         if (list.isEmpty()) {
@@ -78,28 +72,62 @@ public class SwissService {
         return new List[] {lists.get(0), lists.get(1)};
     }
 
-    public MatchEntity findMatchForParticipant(List<ParticipantForPairing> players, MatchEntity matchEntity) {
+    public List<ScoreModel> separateParticipantsByScores (List<ParticipantForPairing> participants) {
 
-        ParticipantEntity first = matchEntity.getParticipant1();
-        for (ParticipantForPairing participantForPairing: players) {
+        Map<BigDecimal, List<ParticipantForPairing>> map = new TreeMap<>(Collections.reverseOrder());
+        List<ScoreModel> resultList = new ArrayList<>();
 
-            ParticipantEntity second = participantForPairing.getParticipantEntity();
-            MatchEntity hasMatchWithTwoPlayersBeenInTournamentEntity = matchRepository.findMatchBetweenTwoParticipantsInTournament(tournamentId, first, second);
+        for (ParticipantForPairing participant: participants) {
+            BigDecimal score = participant.getParticipant().getScore();
 
-            if (hasMatchWithTwoPlayersBeenInTournamentEntity == null && !participantForPairing.isBooked()) {
-                matchEntity.setParticipant2(second);
-                participantForPairing.setBooked(true);
-                return matchEntity;
-            }
+            List<ParticipantForPairing> participantsWithSameScore = map.getOrDefault(score, new ArrayList<>());
+
+            participantsWithSameScore.add(participant);
+
+            ScoreModel scoreModel = ScoreModel.builder().score(score).participants(participantsWithSameScore).build();
+            resultList.add(scoreModel);
+
         }
 
-        return matchEntity;
+        return resultList;
     }
+
+    public List<ScoreModel> makeEvenValues(List<ScoreModel> scoreModels) {
+
+        int currentIndex = 0;
+        List<ScoreModel> modelsToRemove = new ArrayList<>();
+
+        while (currentIndex < scoreModels.size()) {
+            ScoreModel currentScoreModel = scoreModels.get(currentIndex);
+
+            if (currentScoreModel.getParticipants().size() % 2 != 0) {
+                // Current ScoreModel has an odd number of participants
+                if (currentIndex < scoreModels.size() - 1) {
+                    // There is a next ScoreModel available
+                    ScoreModel nextScoreModel = scoreModels.get(currentIndex + 1);
+                    ParticipantForPairing firstParticipant = nextScoreModel.getParticipants().get(0);
+                    currentScoreModel.getParticipants().add(firstParticipant);
+                    nextScoreModel.getParticipants().remove(0);
+                } else {
+                    // There is no next ScoreModel, so we cannot fix it
+                    break;
+                }
+            } else {
+                // Current ScoreModel has an even number of participants, no action needed
+                currentIndex++;
+            }
+
+            if (currentScoreModel.getParticipants().isEmpty()) {
+                // Mark the current ScoreModel for removal
+                modelsToRemove.add(currentScoreModel);
+            }
+        }
+        scoreModels.removeAll(modelsToRemove);
+        return scoreModels;
+    }
+
+
+
 }
 
-@Data
-class ParticipantForPairing {
-    ParticipantEntity participantEntity;
-    boolean isBooked = false;
-}
 

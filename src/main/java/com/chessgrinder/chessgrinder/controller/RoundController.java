@@ -53,5 +53,4 @@ public class RoundController {
                             @RequestParam Integer roundNumber) throws RoundNotFoundException {
         roundService.deleteRound(tournamentId, roundNumber);
     }
-
 }

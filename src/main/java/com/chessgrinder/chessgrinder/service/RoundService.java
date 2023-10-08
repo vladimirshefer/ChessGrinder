@@ -2,8 +2,10 @@ package com.chessgrinder.chessgrinder.service;
 
 import java.util.*;
 
+import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.*;
+import com.chessgrinder.chessgrinder.mappers.*;
 import com.chessgrinder.chessgrinder.repositories.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
@@ -19,6 +21,8 @@ public class RoundService {
     private final ParticipantRepository participantRepository;
     private final SwissService swissService;
     private final MatchRepository matchRepository;
+
+    private final ParticipantMapper participantMapper;
 
     public void createRound(UUID tournamentId) {
 
@@ -58,11 +62,13 @@ public class RoundService {
     public void makeMatchUp(UUID tournamentId, Integer roundNumber) {
 
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
+        List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
+
+        List<MatchDto> matchEntities = swissService.makePairs(participantDtos);
+
+
         RoundEntity roundEntity = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
-        List<MatchEntity> matchEntities = swissService.makePairs(participantEntities);
-        matchEntities.forEach(match -> match.setRound(roundEntity));
-        matchRepository.saveAll(matchEntities);
     }
 
     public void markUserAsMissedInTournament(UUID userId, UUID tournamentId) {

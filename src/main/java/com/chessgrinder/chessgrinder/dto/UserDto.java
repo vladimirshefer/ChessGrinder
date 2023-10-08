@@ -6,7 +6,7 @@ import lombok.*;
 
 @Data
 @Builder
-public class MemberDto {
+public class UserDto {
     /**
      * UUID string. Unique across all users.
      */

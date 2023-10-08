@@ -14,14 +14,14 @@ import org.springframework.stereotype.*;
 public class UserMapper {
     private final BadgeRepository badgeRepository;
     private final BadgeMapper badgeMapper;
-    public MemberDto toDto(UserEntity user) {
+    public UserDto toDto(UserEntity user) {
 
         List<BadgeEntity> userBadges = badgeRepository.getAllBadgesByUserId(user.getId());
         if (userBadges == null) {
             userBadges = Collections.emptyList();
         }
 
-        return MemberDto.builder()
+        return UserDto.builder()
                 .id(user.getId().toString())
                 .username(user.getUsername())
                 .badges(badgeMapper.toDto(userBadges))
@@ -30,7 +30,7 @@ public class UserMapper {
                 .build();
     }
 
-    public List<MemberDto> toDto(List<UserEntity> users) {
+    public List<UserDto> toDto(List<UserEntity> users) {
         return users.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

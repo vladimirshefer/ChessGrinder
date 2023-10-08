@@ -10,11 +10,14 @@ import org.springframework.stereotype.*;
 @Component
 @RequiredArgsConstructor
 public class ParticipantMapper {
+
+    private final TournamentMapper tournamentMapper;
     public ParticipantDto toDto(ParticipantEntity participant) {
         return ParticipantDto.builder()
                 .id(participant.getId().toString())
                 .userId(Optional.ofNullable(participant.getUser()).map(it -> it.getId().toString()).orElse(null))
                 .name(participant.getNickname())
+                        .tournament(tournamentMapper.toDto(participant.getTournament()))
                 .buchholz(participant.getBuchholz())
                 .score(participant.getScore())
                 .build();

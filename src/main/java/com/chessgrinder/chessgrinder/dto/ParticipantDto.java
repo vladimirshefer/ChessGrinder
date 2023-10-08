@@ -13,6 +13,7 @@ public class ParticipantDto {
     private String id;
     @Nullable
     private String userId;
+    private TournamentDto tournament;
     @NonNull
     private String name; //NICKNAME
     @NonNull

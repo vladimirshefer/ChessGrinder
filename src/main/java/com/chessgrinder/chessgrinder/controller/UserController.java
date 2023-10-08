@@ -1,13 +1,14 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.dto.ListDto;
-import com.chessgrinder.chessgrinder.dto.MemberDto;
+import java.util.*;
+
+import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
-import com.chessgrinder.chessgrinder.service.UserService;
+import com.chessgrinder.chessgrinder.service.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -23,15 +24,17 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
 
+    private final SwissService swissService;
+
     @GetMapping
-    public ListDto<MemberDto> getUsers() {
-        return ListDto.<MemberDto>builder().values(userService.getAllUsers()).build();
+    public ListDto<UserDto> getUsers() {
+        return ListDto.<UserDto>builder().values(userService.getAllUsers()).build();
     }
 
     @GetMapping("/{userId}")
-    public MemberDto addParticipantToTournament(@PathVariable @NonNull String userId) throws UserNotFoundException {
+    public UserDto addParticipantToTournament(@PathVariable String userId) throws UserNotFoundException {
         try {
-            MemberDto user = userService.getUserByUserId(userId);
+            UserDto user = userService.getUserByUserId(userId);
             if (user != null) {
                 return user;
             }
@@ -43,7 +46,7 @@ public class UserController {
     //TODO test
 
     @GetMapping("/me")
-    public MemberDto me(
+    public UserDto me(
             Authentication authentication
     ) {
         if (authentication == null) {
@@ -55,6 +58,11 @@ public class UserController {
             return null;
         }
         return userService.getUserByUserName(email);
+    }
+
+    @PostMapping("/test")
+    public List<MatchDto> test(@RequestBody List<ParticipantDto> users) {
+        return swissService.makePairs(users);
     }
 
 }
