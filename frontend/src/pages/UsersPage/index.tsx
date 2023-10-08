@@ -1,7 +1,7 @@
 import React, {Fragment} from "react";
-import {Link} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
+import MemberList from "../MainPage/MemberList";
 
 export default function UsersPage() {
 
@@ -12,30 +12,12 @@ export default function UsersPage() {
         },
     })
 
-    return <>
-        Members page
 
-        <ul>
-            {usersQuery?.data?.values?.map(member => {
-                return <li key={member.name}>
-                    <div className={"col-span-6"}>
-                        <Link to={`/user/${member.id}`}>
-                            {member.name}
-                        </Link>
-                    </div>
-                    <div className={"col-span-6"}>
-                        {
-                            (member.badges || []).map(badge => {
-                                return <span
-                                    key={badge.imageUrl}
-                                    title={badge.description}
-                                    className={"cursor-default"}
-                                >{badge.imageUrl}</span>
-                            })
-                        }
-                    </div>
-                </li>
-            })}
-        </ul>
-    </>
+    let users = usersQuery.data?.values;
+    if (!users) {
+        return <>Loading...</>
+    }
+    return <div className={"p-2"}>
+        <MemberList members={users}/>
+    </div>
 }
