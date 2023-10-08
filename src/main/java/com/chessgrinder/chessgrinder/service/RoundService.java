@@ -21,6 +21,7 @@ public class RoundService {
     private final ParticipantRepository participantRepository;
     private final SwissService swissService;
     private final MatchRepository matchRepository;
+    private final MatchMapper matchMapper;
 
     private final ParticipantMapper participantMapper;
 
@@ -64,11 +65,30 @@ public class RoundService {
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
-        List<MatchDto> matchEntities = swissService.makePairs(participantDtos);
+        List<MatchDto> matchesDto = swissService.makePairs(participantDtos);
 
+        RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
-        RoundEntity roundEntity = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
+        List<MatchEntity> matches = new ArrayList<>();
 
+        for (MatchDto matchDto: matchesDto) {
+
+            String whiteUserId = matchDto.getWhite().getUserId();
+            String blackUserId = matchDto.getBlack().getUserId();
+
+            ParticipantEntity whiteParticipant = participantRepository.findByTournamentIdAndUserId(tournamentId, UUID.fromString(whiteUserId));
+            ParticipantEntity blackParticipant = participantRepository.findByTournamentIdAndUserId(tournamentId, UUID.fromString(blackUserId));
+
+            MatchEntity matchEntity = MatchEntity.builder()
+                    .participant1(whiteParticipant)
+                    .participant2(blackParticipant)
+                    .round(round)
+                    .result(matchDto.getResult())
+                    .build();
+            matches.add(matchEntity);
+        }
+
+        matchRepository.saveAll(matches);
     }
 
     public void markUserAsMissedInTournament(UUID userId, UUID tournamentId) {
