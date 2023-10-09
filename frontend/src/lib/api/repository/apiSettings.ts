@@ -41,7 +41,7 @@ export function useMode(): [string, (v: string) => void] {
 }
 
 export let GLOBAL_SETTINGS = {
-    profile: new ListenableProperty<string>(() => localStorage.getItem("cgd.profile") || "local", (value) => {
+    profile: new ListenableProperty<string>(() => localStorage.getItem("cgd.profile") || "production", (value) => {
         !!value ?
             localStorage.setItem("cgd.profile", value)
             : localStorage.removeItem("cgd.profile")
