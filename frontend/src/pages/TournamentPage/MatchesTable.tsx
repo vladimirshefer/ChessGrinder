@@ -12,10 +12,12 @@ function MatchesTable(
         submitMatchResult: (match: MatchDto, result: MatchResult | null) => void,
     }
 ) {
-    return <div className={"grid grid-cols-12"}>
-        <div className={"col-span-4 font-bold"}>White</div>
-        <div className={"col-span-4 font-bold"}>Result</div>
-        <div className={"col-span-4 font-bold"}>Black</div>
+    return <div className={"grid grid-cols-12 p-2"}>
+        <div className={"col-span-12 grid grid-cols-12 border-b border-black"}>
+            <div className={"col-span-4 font-bold"}>White</div>
+            <div className={"col-span-4 font-bold"}>Result</div>
+            <div className={"col-span-4 font-bold"}>Black</div>
+        </div>
         {
             matches.map((match, idx) => {
                 return <Fragment key={idx}>
