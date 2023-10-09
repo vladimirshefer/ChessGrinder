@@ -1,12 +1,14 @@
 import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
 import {Fragment} from "react";
 
-function RunningRoundTable(
+function MatchesTable(
     {
         matches,
-        submitMatchResult
+        roundIsFinished,
+        submitMatchResult,
     }: {
         matches: MatchDto[],
+        roundIsFinished: boolean,
         submitMatchResult: (match: MatchDto, result: MatchResult | null) => void,
     }
 ) {
@@ -20,6 +22,7 @@ function RunningRoundTable(
                     <div className={"col-span-4"}>{match.white.name}</div>
                     <div className={"col-span-4"}>
                         <select defaultValue={match.result || ""}
+                                disabled={roundIsFinished}
                                 onChange={(e) => {
                                     submitMatchResult(match, e.target.value as MatchResult)
                                 }}>
@@ -36,4 +39,4 @@ function RunningRoundTable(
     </div>
 }
 
-export default RunningRoundTable
+export default MatchesTable
