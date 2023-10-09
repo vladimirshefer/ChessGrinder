@@ -1,6 +1,7 @@
 import {MatchDto, MatchResult, RoundDto} from "lib/api/dto/TournamentPageData";
 import MatchesTable from "./MatchesTable";
 import React from "react";
+import {Conditional} from "components/Conditional";
 
 export default function RoundTab(
     {
@@ -22,15 +23,17 @@ export default function RoundTab(
     return <div>
         <MatchesTable matches={round.matches || []}
                       submitMatchResult={(match, result) => {
-                               submitMatchResult(match, result!!);
-                           }}
-                      roundIsFinished = {round.isFinished}
+                          submitMatchResult(match, result!!);
+                      }}
+                      roundIsFinished={round.isFinished}
         />
         <div className={"mt-2 px-2 w-full flex justify-end gap-2"}>
-            <button className={"btn-dark p-1 px-1"}
-                    onClick={() => drawRound()}
-            >Draw
-            </button>
+            <Conditional on={!round.isFinished}>
+                <button className={"btn-dark p-1 px-1"}
+                        onClick={() => drawRound()}
+                >Draw
+                </button>
+            </Conditional>
             {
                 !round.isFinished ?
                     <button className={"btn-dark p-1"}
