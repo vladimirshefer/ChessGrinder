@@ -41,6 +41,12 @@ public class TournamentController {
         return Map.of("tournaments", tournamentService.findTournaments());
     }
 
+    @Secured(RoleEntity.Roles.ADMIN)
+    @DeleteMapping("/{tournamentId}")
+    public void deleteTournament(@PathVariable UUID tournamentId) {
+        tournamentService.deleteTournament(tournamentId);
+    }
+
     @PostMapping("{tournamentId}/action/participate")
     public Object participate(
             @PathVariable UUID tournamentId,

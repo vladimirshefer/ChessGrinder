@@ -66,5 +66,7 @@ public class TournamentService {
         });
     }
 
-
+    public void deleteTournament(UUID tournamentId) {
+        tournamentRepository.deleteById(tournamentId);
+    }
 }
