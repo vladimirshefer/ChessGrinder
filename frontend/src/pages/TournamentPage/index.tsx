@@ -191,12 +191,14 @@ function TournamentPage() {
                     </button>
                 </Link>
             })}
-            <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <button className={`py-2 px-3`}
-                        onClick={createRound}
-                ><AiOutlinePlus/>
-                </button>
-            </ConditionalOnUserRole>
+            <Conditional on={tournament.status !== "FINISHED"}>
+                <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                    <button className={`py-2 px-3`}
+                            onClick={createRound}
+                    ><AiOutlinePlus/>
+                    </button>
+                </ConditionalOnUserRole>
+            </Conditional>
         </div>
         <>
             <Conditional on={!roundId}>
