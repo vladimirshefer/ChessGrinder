@@ -120,7 +120,7 @@ function TournamentPage() {
     let {data: tournamentData} = tournamentQuery;
 
     let navigate = useNavigate()
-    let roundNumbers = tournamentData?.rounds?.map((e, idx) => idx + 1) || [];
+    let roundNumbers = tournamentQuery.data?.rounds?.map((e, idx) => idx + 1) || [];
     let participants: ParticipantDto[] = tournamentQuery.data?.participants || [];
 
     async function addParticipant(participant: ParticipantDto) {
@@ -148,8 +148,6 @@ function TournamentPage() {
         await tournamentQuery.refetch()
     }
 
-    if (!tournamentQuery.isSuccess) return <>Loading</>
-
     async function deleteRound() {
         await tournamentPageRepository.deleteRound(id!!, roundId!!)
         navigate(`/tournament/${id}`)
@@ -165,12 +163,16 @@ function TournamentPage() {
         await tournamentQuery.refetch()
     }
 
+    if (tournamentQuery.isError) return <>Error!</>
+    if (!tournamentQuery.isSuccess) return <>Loading</>
+    let tournament = tournamentQuery.data!!.tournament;
+
     return <>
         <div className={"flex mt-4 p-2 items-center content-center "}>
             <h2 className={"text-lg font-bold"}>
                 Tournament {id}
             </h2>
-            <small className={"text-gray-500 px-2 "}>{tournamentData?.tournament?.status}</small>
+            <small className={"text-gray-500 px-2 "}>{tournament?.status}</small>
         </div>
         <div className={"flex flex-wrap justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
@@ -231,19 +233,19 @@ function TournamentPage() {
                             onClick={() => alert("Edit not supported yet")}
                     >Edit
                     </button>
-                    <Conditional on={tournamentQuery.data?.tournament.status !== "ACTIVE"}>
+                    <Conditional on={tournament.status !== "ACTIVE"}>
                         <button className={"btn-dark"}
                                 onClick={async () => {
-                                    await tournamentRepository.startTournament(tournamentData?.tournament.id!!);
+                                    await tournamentRepository.startTournament(tournament?.id!!);
                                     await tournamentQuery.refetch()
                                 }}
                         > Start
                         </button>
                     </Conditional>
-                    <Conditional on={tournamentQuery.data?.tournament.status === "ACTIVE"}>
+                    <Conditional on={tournament.status === "ACTIVE"}>
                         <button className={"btn-dark"}
                                 onClick={async () => {
-                                    await tournamentRepository.finishTournament(tournamentData?.tournament.id!!);
+                                    await tournamentRepository.finishTournament(tournament?.id!!);
                                     await tournamentQuery.refetch()
                                 }}
                         >Finish
@@ -251,13 +253,13 @@ function TournamentPage() {
                     </Conditional>
                     <button className={"btn-danger"}
                             onClick={async () => {
-                                let expectedConfirmation = (tournamentData?.tournament.name || "") + (tournamentData?.tournament.id || "");
+                                let expectedConfirmation = (tournament?.name || "") + (tournament?.id || "");
                                 let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
                                 if (confirmation !== expectedConfirmation) {
                                     alert("You entered wrong id. Tournament will not be deleted.");
                                     return;
                                 }
-                                await tournamentRepository.deleteTournament(tournamentData?.tournament.id!!);
+                                await tournamentRepository.deleteTournament(tournament?.id!!);
                                 await navigate("/");
                             }}
                     >Delete
