@@ -9,7 +9,6 @@ import lombok.*;
 @Builder
 public class ParticipantDto {
 
-    @Nullable
     private String id;
     @Nullable
     private String userId;

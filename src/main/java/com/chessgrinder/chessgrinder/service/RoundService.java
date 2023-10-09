@@ -7,6 +7,7 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.*;
 import com.chessgrinder.chessgrinder.mappers.*;
 import com.chessgrinder.chessgrinder.repositories.*;
+import jakarta.annotation.Nullable;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import org.springframework.stereotype.*;
@@ -71,13 +72,9 @@ public class RoundService {
 
         List<MatchEntity> matches = new ArrayList<>();
 
-        for (MatchDto matchDto: matchesDto) {
-
-            String whiteUserId = matchDto.getWhite().getUserId();
-            String blackUserId = matchDto.getBlack().getUserId();
-
-            ParticipantEntity whiteParticipant = participantRepository.findByTournamentIdAndUserId(tournamentId, UUID.fromString(whiteUserId));
-            ParticipantEntity blackParticipant = participantRepository.findByTournamentIdAndUserId(tournamentId, UUID.fromString(blackUserId));
+        for (MatchDto matchDto : matchesDto) {
+            ParticipantEntity whiteParticipant = getParticipantEntity(matchDto.getWhite());
+            ParticipantEntity blackParticipant = getParticipantEntity(matchDto.getBlack());
 
             MatchEntity matchEntity = MatchEntity.builder()
                     .participant1(whiteParticipant)
@@ -89,6 +86,12 @@ public class RoundService {
         }
 
         matchRepository.saveAll(matches);
+    }
+
+    @Nullable
+    private ParticipantEntity getParticipantEntity(@Nullable ParticipantDto participantDto) {
+        if (participantDto == null) return null;
+        return participantRepository.findById(UUID.fromString(participantDto.getId())).get();
     }
 
     public void markUserAsMissedInTournament(UUID userId, UUID tournamentId) {

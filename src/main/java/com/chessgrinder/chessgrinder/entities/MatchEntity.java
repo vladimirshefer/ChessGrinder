@@ -1,11 +1,12 @@
 package com.chessgrinder.chessgrinder.entities;
 
-import java.util.*;
-
-import com.chessgrinder.chessgrinder.enums.*;
+import com.chessgrinder.chessgrinder.enums.MatchResult;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.extern.slf4j.*;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -20,6 +21,7 @@ public class MatchEntity {
 
     @Id
     @Column(name = "id")
+    @UuidGenerator
     private UUID id;
 
     @ManyToOne
@@ -27,11 +29,11 @@ public class MatchEntity {
     private RoundEntity round;
 
     @ManyToOne
-    @JoinColumn(name = "player_id_1")
+    @JoinColumn(name = "participant_id_1")
     private ParticipantEntity participant1;
 
     @ManyToOne
-    @JoinColumn(name = "player_id_2")
+    @JoinColumn(name = "participant_id_2")
     private ParticipantEntity participant2;
 
     @Column(name = "result")

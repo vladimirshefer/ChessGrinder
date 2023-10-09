@@ -43,7 +43,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             .flatMap((round: RoundDto) => round.matches);
         allMatches.forEach(match => {
             let whiteId = match.white.id!!;
-            let blackId = match.black.id!!;
+            let blackId = match.black!!.id!!;
             if (match.result === "WHITE_WIN") {
                 this.computeIfAbsent(pointsMap, whiteId, 1, i => i + 1)
                 this.computeIfAbsent(pointsMap, blackId, 0, i => i)
@@ -218,7 +218,9 @@ class ProductionTournamentPageRepository implements TournamentPageRepository {
     }
 
     async postMatchResult(tournamentId: string, roundId: number, matchId: string, result: string): Promise<void> {
-        await restApiClient.post(`/tournament/${tournamentId}/round/${roundId}/match/${matchId}`, {})
+        await restApiClient.post(`/tournament/${tournamentId}/round/${roundId}/match/${matchId}`, {
+            matchResult: result
+        })
     }
 
     async deleteRound(tournamentId: string, roundNumber: number): Promise<void> {

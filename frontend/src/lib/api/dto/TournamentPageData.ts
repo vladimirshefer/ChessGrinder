@@ -7,9 +7,15 @@ export interface MatchParticipantDto {
 
 export interface MatchDto {
     id: string
+    /**
+     * Undefined if match is not played yet
+     */
     result: MatchResult | undefined
     white: ParticipantDto
-    black: ParticipantDto
+    /**
+     * Null if the match is buy
+     */
+    black: ParticipantDto | null
 }
 
 export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW"

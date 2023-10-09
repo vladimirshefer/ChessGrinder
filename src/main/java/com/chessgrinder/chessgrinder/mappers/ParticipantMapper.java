@@ -1,18 +1,22 @@
 package com.chessgrinder.chessgrinder.mappers;
 
-import java.util.*;
+import com.chessgrinder.chessgrinder.dto.ParticipantDto;
+import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.entities.*;
-import lombok.*;
-import org.springframework.stereotype.*;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class ParticipantMapper {
 
     private final TournamentMapper tournamentMapper;
+
     public ParticipantDto toDto(ParticipantEntity participant) {
+        if (participant == null) return null;
+
         return ParticipantDto.builder()
                 .id(participant.getId().toString())
                 .userId(Optional.ofNullable(participant.getUser()).map(it -> it.getId().toString()).orElse(null))
