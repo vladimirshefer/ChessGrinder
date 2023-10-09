@@ -20,7 +20,7 @@ function MatchesTable(
         </div>
         {
             matches.map((match, idx) => {
-                return <Fragment key={idx}>
+                return <div className={"col-span-12 grid grid-cols-12 border-b border-gray"} key={idx}>
                     <div className={"col-span-4"}>{match.white.name}</div>
                     <div className={"col-span-4"}>
                         <select defaultValue={match.result || ""}
@@ -35,7 +35,7 @@ function MatchesTable(
                         </select>
                     </div>
                     <div className={"col-span-4"}>{match.black.name}</div>
-                </Fragment>
+                </div>
             })
         }
     </div>
