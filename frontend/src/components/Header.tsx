@@ -5,8 +5,9 @@ import loc from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {AiOutlineClose, AiOutlineMenu} from "react-icons/ai";
-import {Conditional, ConditionalOnAuthorized} from "./Conditional";
+import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "./Conditional";
 import loginPageRepository from "../lib/api/repository/LoginPageRepository";
+import {UserRoles} from "lib/api/dto/MainPageData";
 
 function Header() {
     let navigate = useNavigate()
@@ -74,7 +75,9 @@ function Header() {
                                     ${dropdownOpened ? "" : "hidden"}`}
             onClick={() => setDropdownOpened(false)}
         >
-            <NavLink to={"/badges"} text={loc("Badges")}/>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <NavLink to={"/badges"} text={loc("Badges")}/>
+            </ConditionalOnUserRole>
             <NavLink to={"/admin"} text={loc("Admin")}/>
             <ConditionalOnAuthorized>
                 <NavLink onClick={() => {
