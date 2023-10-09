@@ -12,6 +12,7 @@ export default function AdminPage() {
                     onChange={(e) => {
                         setMode(e.target.value);
                         authService.setAuthData(null);
+                        window.location.reload();
                     }}
                     name={"Mode"}
             >
