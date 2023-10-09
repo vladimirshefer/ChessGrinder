@@ -1,5 +1,4 @@
 import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
-import {Fragment} from "react";
 
 function MatchesTable(
     {
