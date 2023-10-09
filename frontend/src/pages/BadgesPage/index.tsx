@@ -2,7 +2,7 @@ import {useQuery} from "@tanstack/react-query";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useForm} from "react-hook-form";
-import {UserRoles} from "lib/api/dto/MainPageData";
+import {BadgeDto, UserRoles} from "lib/api/dto/MainPageData";
 import {randomString} from "lib/util/Random";
 import Gravatar, {GravatarType} from "components/Gravatar";
 
@@ -58,6 +58,8 @@ export default function BadgesPage() {
         await badgesQuery.refetch()
     }
 
+    let badges: BadgeDto[] = badgesQuery?.data?.values || []
+
     return <>
         Badges page
         {
@@ -65,9 +67,9 @@ export default function BadgesPage() {
                 <div>No badges</div>
             </Conditional>
         }
-        <div className={"grid grid-cols-12"}>
+        <div className={"grid grid-cols-12 gap-2 p-4"}>
             {
-                badgesQuery.data?.values?.map(badge => {
+                badges.map(badge => {
                     return <div key={badge.id} title={badge.description} className={"col-span-3 grid oveflow-hidden content-start"}>
                         {/*<span className={"text-3xl"}>{badge.imageUrl}</span>*/}
                         <div className={"rounded-full overflow-hidden flex justify-center"}>
