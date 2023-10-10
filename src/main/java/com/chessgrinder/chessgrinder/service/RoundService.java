@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.service;
 
 import java.util.*;
 
+import com.chessgrinder.chessgrinder.chessengine.*;
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.*;
@@ -17,11 +18,11 @@ import org.springframework.stereotype.*;
 @Slf4j
 public class RoundService {
     private final TournamentRepository tournamentRepository;
-
     private final RoundRepository roundRepository;
     private final ParticipantRepository participantRepository;
-    private final SwissService swissService;
+    private final SwissMatchupStrategyImpl swissEngine;
     private final MatchRepository matchRepository;
+
     private final MatchMapper matchMapper;
 
     private final ParticipantMapper participantMapper;
@@ -65,8 +66,10 @@ public class RoundService {
 
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
+        List<MatchEntity> allMatchesInTheTournament = matchRepository.findAllByTournamentId(tournamentId);
+        List<MatchDto> allMatches = matchMapper.toDto(allMatchesInTheTournament);
 
-        List<MatchDto> matchesDto = swissService.makePairs(participantDtos);
+        List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches);
 
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 

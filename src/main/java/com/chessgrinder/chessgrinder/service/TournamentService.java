@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class TournamentService {
-
-    private final SwissService swissService;
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
     private final TournamentMapper tournamentMapper;

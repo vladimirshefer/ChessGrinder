@@ -2,16 +2,13 @@ package com.chessgrinder.chessgrinder.controller;
 
 import java.util.*;
 
+import com.chessgrinder.chessgrinder.chessengine.*;
 import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.entities.RoleEntity;
-import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.service.*;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,7 +21,7 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
 
-    private final SwissService swissService;
+    private final SwissMatchupStrategyImpl swissEngine;
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
@@ -62,7 +59,7 @@ public class UserController {
 
     @PostMapping("/test")
     public List<MatchDto> test(@RequestBody List<ParticipantDto> users) {
-        return swissService.makePairs(users);
+        return swissEngine.matchUp(users, null);
     }
 
 }
