@@ -1,5 +1,5 @@
-import {polynomialHashcodeHex} from "../lib/util/Hashcode";
 import React from "react";
+import {Md5} from "ts-md5";
 
 /**
  * @see https://gravatar.com/site/implement/images/
@@ -28,7 +28,7 @@ export default function Gravatar(
     return <img
         className={className}
         alt={alt}
-        src={`https://gravatar.com/avatar/${polynomialHashcodeHex(text)}?d=${type}${size ? `&s=${size}` : ""}`}
+        src={`https://gravatar.com/avatar/${Md5.hashStr(text)}?d=${type}${size ? `&s=${size}` : ""}`}
     />
 }
 
