@@ -53,7 +53,6 @@ function Header() {
                         !authData ? (
                             <Link to={"/login"}>
                                 <Gravatar text={""} type={GravatarType.MysteryPerson} size={50}/>
-                                loc("Login")
                             </Link>
                         ) : (
                             <Link to={"/user"}>
