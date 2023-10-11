@@ -1,7 +1,9 @@
 import {MemberDto} from "lib/api/dto/MainPageData";
-import React, {Fragment} from "react";
+import React from "react";
 import {Link} from "react-router-dom";
-import Gravatar, {GravatarType} from "../../components/Gravatar";
+import Gravatar, {GravatarType} from "components/Gravatar";
+import {useLoc} from "strings/loc";
+import {AiOutlineTrophy} from "react-icons/ai";
 
 export function MemberList(
     {
@@ -10,32 +12,68 @@ export function MemberList(
         members: MemberDto[],
     }
 ) {
+    let loc = useLoc()
 
     return <div>
-        <h2 className={"text-xl my-2"}>Members</h2>
+        <h2 className={"text-xl my-2 uppercase text-left font-semibold"}>{loc("Members")}</h2>
         <div className={"w-full grid grid-cols-12"}>
             {users.map(user => {
-                return <Fragment key={user.name}>
-                    <div className={"col-span-6 flex content-center items-center"}>
-                        <div className={"w-8 imline-block rounded-full overflow-hidden mr-2"}>
-                            <Gravatar text={user.username || user.id} type={GravatarType.Robohash} size={50}/>
+                return <div key={user.name} className={"col-span-12 flex"}>
+                    <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
+                        <Gravatar
+                            text={user.username || user.id}
+                            type={GravatarType.Robohash}
+                            size={150}
+                            className={"rounded-full"}
+                        />
+                    </div>
+                    <div className={"grid w-full content-left items-left"}>
+                        <div className={"text-left"}>
+                            <Link to={`/user/${user.id}`}>
+                                {user.name}
+                            </Link>
                         </div>
-                        <Link to={`/user/${user.id}`}>
-                            {user.name}
-                        </Link>
+                        <div className={"h-[1em] text-xl flex gap-2 items-start"}>
+                            <div className={"flex items-start h-full gap-2 grow"}>
+                                <Gravatar
+                                    text={user.id+"123"}
+                                    type={GravatarType.Identicon}
+                                    size={150}
+                                    className={"inline rounded-full h-full"}
+                                />
+                                <Gravatar
+                                    text={user.id+"234"}
+                                    type={GravatarType.Identicon}
+                                    size={150}
+                                    className={"inline rounded-full h-full"}
+                                />
+                                <Gravatar
+                                    text={user.id+"345"}
+                                    type={GravatarType.Identicon}
+                                    size={150}
+                                    className={"inline rounded-full h-full"}
+                                />
+                            </div>
+                            <div
+                                className={"h-full leading-4 flex block align-bottom"}
+                            >
+                                <AiOutlineTrophy className={"inline -mt-[1px] leading-4  mr-1 align-bottom"}/>
+                                <span className={""}>356</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className={"col-span-6"}>
-                        {
-                            (user.badges || []).map(badge => {
-                                return <span
-                                    key={badge.imageUrl}
-                                    title={badge.description}
-                                    className={"cursor-default"}
-                                >{badge.imageUrl}</span>
-                            })
-                        }
-                    </div>
-                </Fragment>
+                    {/*<div className={"self-end"}>*/}
+                    {/*    {*/}
+                    {/*        (user.badges || []).map(badge => {*/}
+                    {/*            return <span*/}
+                    {/*                key={badge.imageUrl}*/}
+                    {/*                title={badge.description}*/}
+                    {/*                className={"cursor-default"}*/}
+                    {/*            >{badge.imageUrl}</span>*/}
+                    {/*        })*/}
+                    {/*    }*/}
+                    {/*</div>*/}
+                </div>
             })}
         </div>
     </div>;
