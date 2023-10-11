@@ -17,7 +17,7 @@ export function MemberList(
             {users.map(user => {
                 return <Fragment key={user.name}>
                     <div className={"col-span-6 flex content-center items-center"}>
-                        <div className={"w-8 imline-block rounded-full overflow-hidden"}>
+                        <div className={"w-8 imline-block rounded-full overflow-hidden mr-2"}>
                             <Gravatar text={user.username || user.id} type={GravatarType.Robohash} size={50}/>
                         </div>
                         <Link to={`/user/${user.id}`}>
