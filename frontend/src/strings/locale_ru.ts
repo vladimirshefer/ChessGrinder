@@ -10,6 +10,8 @@ let locale_ru: { [key: string]: string } = {
     "Add participant": "Добавить участника",
     "Name": "Имя",
     "More info": "Подробнее",
+    "Members": "Участники клуба",
+    "Unnamed Tournament": "Турнир без имени",
 }
 
 export default locale_ru
