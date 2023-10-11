@@ -14,6 +14,7 @@ import ParticipantPage from "pages/ParticipantPage";
 import BadgesPage from "pages/BadgesPage";
 import UsersPage from "pages/UsersPage";
 import TournamentEditPage from "./pages/TournamentEditPage";
+import BadgePage from "./pages/BadgePage";
 
 const queryClient = new QueryClient()
 
@@ -67,6 +68,7 @@ function App() {
                                 <Route path="/user/:username" element={<UserProfilePage/>}/>
                                 <Route path="/users" element={<UsersPage/>}/>
                                 <Route path="/badges" element={<BadgesPage/>}/>
+                                <Route path="/badge/:badgeId" element={<BadgePage/>}/>
                             </Routes>
                         </React.StrictMode>
                     </ApplicationRouter>
