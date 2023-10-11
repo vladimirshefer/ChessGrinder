@@ -36,23 +36,21 @@ export function MemberList(
                         <div className={"h-[1em] text-xl flex gap-2 items-start"}>
                             <div className={"flex items-start h-full gap-2 grow"}>
                                 <Gravatar
-                                    text={user.id+"123"}
+                                    text={user.id + "123"}
                                     type={GravatarType.Identicon}
                                     size={150}
                                     className={"inline rounded-full h-full"}
                                 />
-                                <Gravatar
-                                    text={user.id+"234"}
-                                    type={GravatarType.Identicon}
-                                    size={150}
-                                    className={"inline rounded-full h-full"}
-                                />
-                                <Gravatar
-                                    text={user.id+"345"}
-                                    type={GravatarType.Identicon}
-                                    size={150}
-                                    className={"inline rounded-full h-full"}
-                                />
+                                {(user.badges || []).map(badge =>
+                                    <Link to={`/badge/${badge.id}`}>
+                                        <Gravatar
+                                            text={badge.title}
+                                            type={GravatarType.Identicon}
+                                            size={150}
+                                            className={"inline rounded-full h-full"}
+                                        />
+                                    </Link>
+                                )}
                             </div>
                             <div
                                 className={"h-full leading-4 flex block align-bottom"}
@@ -62,17 +60,6 @@ export function MemberList(
                             </div>
                         </div>
                     </div>
-                    {/*<div className={"self-end"}>*/}
-                    {/*    {*/}
-                    {/*        (user.badges || []).map(badge => {*/}
-                    {/*            return <span*/}
-                    {/*                key={badge.imageUrl}*/}
-                    {/*                title={badge.description}*/}
-                    {/*                className={"cursor-default"}*/}
-                    {/*            >{badge.imageUrl}</span>*/}
-                    {/*        })*/}
-                    {/*    }*/}
-                    {/*</div>*/}
                 </div>
             })}
         </div>
