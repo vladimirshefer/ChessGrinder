@@ -19,22 +19,12 @@ function BadgeImage(
 ) {
     return <div style={{width: size, height: size}}
                 className={`rounded-full overflow-hidden grid bg-blue-500`}>
-        <Conditional on={!imageUrl}>
-            <Gravatar text={title} type={GravatarType.Wavatar} size={size}/>
-        </Conditional>
-        <Conditional on={imageUrl.length === 1}>
-            <span
-                style={{
-                    fontSize: Math.round(size * 0.85 - 10),
-                    lineHeight: size + "px",
-                }}
-                className={`w-full h-full font-bold inline-block text-center`}>
-                {imageUrl}
-            </span>
-        </Conditional>
-        <Conditional on={imageUrl?.length > 1}>
-            <Gravatar text={imageUrl} type={GravatarType.Wavatar} size={size}/>
-        </Conditional>
+            <Gravatar
+                text={title}
+                type={GravatarType.Identicon}
+                size={size}
+                className={"rounded-full"}
+            />
     </div>;
 }
 
