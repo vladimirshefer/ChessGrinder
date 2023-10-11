@@ -59,7 +59,7 @@ function TournamentPane(
         <Conditional on={isPlanned || isActive}>
             <div className={"w-full"}>
                 <ConditionalOnAuthorized>
-                    <button className={"btn-primary w-full"}
+                    <button className={"btn-primary w-full uppercase"}
                             onClick={() => tournamentRepository.participate(tournament.id)}
                     >
                         {loc("Participate")}
@@ -67,7 +67,7 @@ function TournamentPane(
                 </ConditionalOnAuthorized>
                 <ConditionalOnAuthorized authorized={false}>
                     <Link to={"/login"} className={"w-full"}>
-                        <button className={"btn-primary w-full"}>
+                        <button className={"btn-primary w-full uppercase"}>
                             {loc("Participate")}
                         </button>
                     </Link>
@@ -75,11 +75,13 @@ function TournamentPane(
             </div>
         </Conditional>
         <Conditional on={isFinished}>
-            <Link to={`/tournament/${tournament.id}`} className={"w-full"}>
-                <button className={"btn-dark w-full"}>
-                    {loc("More info")}
-                </button>
-            </Link>
+            <div>
+                <Link to={`/tournament/${tournament.id}`} className={""}>
+                    <button className={"btn-dark w-full text-sm !px-4"}>
+                        {loc("More info")}
+                    </button>
+                </Link>
+            </div>
         </Conditional>
     </div>;
 }

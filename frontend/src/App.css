@@ -7,7 +7,6 @@
 .btn {
   @apply py-1;
   @apply px-2;
-  @apply uppercase;
   @apply text-center;
 }
 
