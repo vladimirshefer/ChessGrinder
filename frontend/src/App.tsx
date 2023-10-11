@@ -21,13 +21,12 @@ const queryClient = new QueryClient()
 let ApplicationRouter = 1 > 0 /*TODO*/ ? HashRouter : BrowserRouter
 
 type Property<T> = [T, (v: T) => void]
-// set the defaults
+
 export const LanguageContext = React.createContext<Property<string>>(["en", (l: string) => {
 }]);
 
 function App() {
-    const language = useState("ru");
-    const languageSetting = language;
+    const languageContextValue = useState("ru");
 
     useEffect(() => {
         checkAuthData()
@@ -47,7 +46,7 @@ function App() {
     }
 
     return (
-        <LanguageContext.Provider value={languageSetting}>
+        <LanguageContext.Provider value={languageContextValue}>
             <div className='App'>
                 <QueryClientProvider client={queryClient}>
                     <ApplicationRouter>
