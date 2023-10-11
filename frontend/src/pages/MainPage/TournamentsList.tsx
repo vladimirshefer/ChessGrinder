@@ -1,7 +1,7 @@
 import {Link} from "react-router-dom";
 import {TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "components/Conditional";
-import loc from "strings/loc";
+import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import {AiFillClockCircle} from "react-icons/ai";
 import {IoLocationSharp} from "react-icons/io5";
@@ -14,6 +14,8 @@ function TournamentPane(
         tournament: TournamentDto
     }
 ) {
+    let loc = useLoc();
+
     let isPlanned = tournament.status === "PLANNED"
     let isFinished = tournament.status === "FINISHED"
     let isActive = tournament.status === "ACTIVE"
@@ -91,6 +93,7 @@ export function TournamentsList(
         createTournament: () => void
     }
 ) {
+    let loc = useLoc()
 
     return <div>
         <h2 className={"text-xl my-2"}>{loc("Tournaments")}</h2>

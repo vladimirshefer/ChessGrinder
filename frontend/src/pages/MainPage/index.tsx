@@ -5,10 +5,11 @@ import {useQuery} from "@tanstack/react-query";
 import {ListDto, MemberDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import userRepository from "lib/api/repository/UserRepository";
-import loc from "strings/loc";
+import {useLoc} from "strings/loc";
 import {Link} from "react-router-dom";
 
 function MainPage() {
+    let loc = useLoc()
 
     let {
         data: {

@@ -10,7 +10,7 @@ import participantRepository from "lib/api/repository/ParticipantRepository";
 import {ListDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import userRepository from "lib/api/repository/UserRepository";
 import {AiOutlineClose, AiOutlineHome, AiOutlineInfoCircle, AiOutlinePlus} from "react-icons/ai";
-import loc from "strings/loc";
+import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 
 function AddParticipant(
@@ -22,6 +22,7 @@ function AddParticipant(
         addParticipant: (participant: ParticipantDto) => Promise<void>
     }
 ) {
+    let loc = useLoc()
     let [inputEnabled, setInputEnabled] = useState<boolean>(false);
     let [selectedValue, setSelectedValue] = useState<string>("")
     let [nickName, setNickName] = useState("")

@@ -6,7 +6,7 @@ import userRepository from "lib/api/repository/UserRepository";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {BadgeDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
-import loc from "strings/loc";
+import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import Gravatar, {GravatarType} from "components/Gravatar";
 
@@ -17,7 +17,7 @@ function AssignAchievementPane(
         userId: string
     }
 ) {
-
+    let loc = useLoc()
     let [selectActive, setSelectActive] = useState(false)
     let badgesQuery = useQuery({
         queryKey: ["badgesSelect", selectActive],

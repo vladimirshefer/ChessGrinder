@@ -1,6 +1,6 @@
 import React from "react";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
-import loc from "strings/loc";
+import {useLoc} from "strings/loc";
 
 function ResultsTable(
     {
@@ -11,6 +11,7 @@ function ResultsTable(
         openParticipant: (participant: ParticipantDto) => void,
     }
 ) {
+    let loc = useLoc();
 
     return <>
         <div className={"w-full grid grid-cols-12"}>

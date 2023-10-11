@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import 'App.css';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {BrowserRouter, HashRouter, Route, Routes} from "react-router-dom";
@@ -18,7 +18,15 @@ const queryClient = new QueryClient()
 
 let ApplicationRouter = 1 > 0 /*TODO*/ ? HashRouter : BrowserRouter
 
+type Property<T> = [T, (v: T) => void]
+// set the defaults
+export const LanguageContext = React.createContext<Property<string>>(["en", (l: string) => {
+}]);
+
 function App() {
+    const language = useState("ru");
+    const languageSetting = language;
+
     useEffect(() => {
         checkAuthData()
     }, [])
@@ -37,27 +45,30 @@ function App() {
     }
 
     return (
-        <div className='App'>
-            <QueryClientProvider client={queryClient}>
-                <ApplicationRouter>
-                    <React.StrictMode>
-                        <Header/>
-                        <Routes>
-                            <Route path="/" element={<MainPage/>}/>
-                            <Route path="/tournament/:id" element={<TournamentPage/>}/>
-                            <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
-                            <Route path="/tournament/:tournamentId/participant/:participantId" element={<ParticipantPage/>}/>
-                            <Route path="/login" element={<LoginPage/>}/>
-                            <Route path="/admin" element={<AdminPage/>}/>
-                            <Route path="/user" element={<UserProfilePage/>}/>
-                            <Route path="/user/:username" element={<UserProfilePage/>}/>
-                            <Route path="/users" element={<UsersPage/>}/>
-                            <Route path="/badges" element={<BadgesPage/>}/>
-                        </Routes>
-                    </React.StrictMode>
-                </ApplicationRouter>
-            </QueryClientProvider>
-        </div>
+        <LanguageContext.Provider value={languageSetting}>
+            <div className='App'>
+                <QueryClientProvider client={queryClient}>
+                    <ApplicationRouter>
+                        <React.StrictMode>
+                            <Header/>
+                            <Routes>
+                                <Route path="/" element={<MainPage/>}/>
+                                <Route path="/tournament/:id" element={<TournamentPage/>}/>
+                                <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
+                                <Route path="/tournament/:tournamentId/participant/:participantId"
+                                       element={<ParticipantPage/>}/>
+                                <Route path="/login" element={<LoginPage/>}/>
+                                <Route path="/admin" element={<AdminPage/>}/>
+                                <Route path="/user" element={<UserProfilePage/>}/>
+                                <Route path="/user/:username" element={<UserProfilePage/>}/>
+                                <Route path="/users" element={<UsersPage/>}/>
+                                <Route path="/badges" element={<BadgesPage/>}/>
+                            </Routes>
+                        </React.StrictMode>
+                    </ApplicationRouter>
+                </QueryClientProvider>
+            </div>
+        </LanguageContext.Provider>
     );
 }
 

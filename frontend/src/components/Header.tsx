@@ -1,19 +1,22 @@
 import {Link, useNavigate} from "react-router-dom";
 import {useAuthData} from "lib/auth/AuthService";
-import React, {useRef, useState} from "react";
-import loc from "strings/loc";
+import React, {useContext, useRef, useState} from "react";
+import {useLoc} from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {AiOutlineClose, AiOutlineMenu} from "react-icons/ai";
 import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "./Conditional";
 import loginPageRepository from "../lib/api/repository/LoginPageRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
+import {LanguageContext} from "../App";
 
 function Header() {
     let navigate = useNavigate()
     let authData = useAuthData()
     const droprownRef = useRef(null);
     let [dropdownOpened, setDropdownOpened] = useState(false);
+    let [, setLanguage] = useContext(LanguageContext)
+    let loc = useLoc()
 
     useClickOutsideHandler(droprownRef, () => setDropdownOpened(false));
 
@@ -86,6 +89,10 @@ function Header() {
             <ConditionalOnAuthorized authorized={false}>
                 <NavLink onClick={() => navigate("/login")} text={loc("Login")}/>
             </ConditionalOnAuthorized>
+            <li className={"flex gap-2 justify-center p-2"}>
+                <button onClick={() => setLanguage("ru")}>RU</button>
+                <button onClick={() => setLanguage("en")}>EN</button>
+            </li>
         </ul>
     </div>
 }
