@@ -13,6 +13,7 @@ import authService from "lib/auth/AuthService";
 import ParticipantPage from "pages/ParticipantPage";
 import BadgesPage from "pages/BadgesPage";
 import UsersPage from "pages/UsersPage";
+import TournamentEditPage from "./pages/TournamentEditPage";
 
 const queryClient = new QueryClient()
 
@@ -57,6 +58,9 @@ function App() {
                                 <Route path="/tournament/:id/round/:roundId" element={<TournamentPage/>}/>
                                 <Route path="/tournament/:tournamentId/participant/:participantId"
                                        element={<ParticipantPage/>}/>
+                                <Route path="/tournament/:tournamentId/edit"
+                                       element={<TournamentEditPage/>}
+                                />
                                 <Route path="/login" element={<LoginPage/>}/>
                                 <Route path="/admin" element={<AdminPage/>}/>
                                 <Route path="/user" element={<UserProfilePage/>}/>

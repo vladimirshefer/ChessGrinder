@@ -232,10 +232,11 @@ function TournamentPage() {
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <div className={"p-2"}></div>
                 <div className={"flex gap-1 justify-end p-2"}>
-                    <button className={"btn-dark"}
-                            onClick={() => alert("Edit not supported yet")}
-                    >Edit
-                    </button>
+                    <Link to={`/tournament/${tournament.id}/edit`}>
+                        <button className={"btn-dark"}>
+                            Edit
+                        </button>
+                    </Link>
                     <Conditional on={tournament.status !== "ACTIVE"}>
                         <button className={"btn-dark"}
                                 onClick={async () => {
