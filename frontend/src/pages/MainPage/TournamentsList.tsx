@@ -24,7 +24,7 @@ function TournamentPane(
                 ${isPlanned ? "tournament-planned" : isFinished ? "tournament-finished" : "tournament-active"}`}>
         <div className={"grid justify-items-start"}>
             <Link className={"font-bold text-lg text-left"} to={`/tournament/${tournament.id}`}>
-                {tournament.name || tournament.id}
+                {tournament.name || loc("Unnamed Tournament")}
             </Link>
             <small className={"font-bold text-left"}>
                 {tournament.date}
@@ -44,7 +44,7 @@ function TournamentPane(
             </div>
         </Conditional>
         <Conditional on={isFinished}>
-            <div className={"py-3 flex gap-3 uppercase text-left"}>
+            <div className={"py-3 flex gap-5 uppercase text-left"}>
                 <div className={"grid justify-items-start content-start"}>
                     <span className={"text-sm"}>Победитель</span>
                     <span className={"font-bold"}>Александр Болдырев</span>
@@ -98,12 +98,12 @@ export function TournamentsList(
     let loc = useLoc()
 
     return <div>
-        <h2 className={"text-xl my-2"}>{loc("Tournaments")}</h2>
+        <h2 className={"text-xl my-2 text-left px-3 uppercase font-semibold"}>{loc("Tournaments")}</h2>
         <ul className={"grid grid-cols-12 gap-2"}>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <li className={"col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 " +
                     "bg-gray-200 flex justify-center content-center"}>
-                    <button className={"h-full w-full text-xl text-primary p-7"}
+                    <button className={"h-full w-full text-xl text-primary p-3"}
                             onClick={createTournament}
                     >
                         + {loc("Tournament")}
