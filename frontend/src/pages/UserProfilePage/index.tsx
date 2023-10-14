@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {useAuthData} from "lib/auth/AuthService";
 import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
@@ -152,11 +152,17 @@ export default function UserProfilePage() {
             </div>
             {
                 userProfile.badges.map(badge => {
-                    return <span
-                        key={badge.id}
-                        title={badge.description}
-                        className={"cursor-default"}
-                    >{badge.imageUrl}{badge.title}</span>
+                    return <Link to={`/badge/${badge.id}`}>
+                        <div className={"flex gap-2"} title={badge.description}>
+                            <Gravatar
+                                text={badge.title}
+                                type={GravatarType.Identicon}
+                                size={25}
+                                className={"rounded-full"}
+                            />
+                            <span>{badge.title}</span>
+                        </div>
+                    </Link>
                 }) || <span>No achievements</span>
             }
         </div>
