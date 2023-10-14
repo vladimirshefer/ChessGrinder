@@ -12,6 +12,9 @@ export function Conditional(
     }
 ) {
     if (!!on) {
+        if (typeof children === 'function') {
+            return <>{children() || null}</>
+        }
         return <>{children || null}</>
     } else return <>{[] as ReactElement []}</>
 }
