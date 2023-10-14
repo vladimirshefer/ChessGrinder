@@ -43,7 +43,9 @@ export function MemberList(
                                 />
                                 {(user.badges || []).map(badge =>
                                     <Link to={`/badge/${badge.id}`}
-                                          className={"block h-full"}>
+                                          className={"block h-full"}
+                                          key={badge.id}
+                                    >
                                         <Gravatar
                                             text={badge.title}
                                             type={GravatarType.Identicon}
