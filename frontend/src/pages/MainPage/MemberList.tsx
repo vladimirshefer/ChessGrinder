@@ -42,12 +42,13 @@ export function MemberList(
                                     className={"inline rounded-full h-full"}
                                 />
                                 {(user.badges || []).map(badge =>
-                                    <Link to={`/badge/${badge.id}`}>
+                                    <Link to={`/badge/${badge.id}`}
+                                          className={"block h-full"}>
                                         <Gravatar
                                             text={badge.title}
                                             type={GravatarType.Identicon}
                                             size={150}
-                                            className={"inline rounded-full h-full"}
+                                            className={"block rounded-full h-full"}
                                         />
                                     </Link>
                                 )}
