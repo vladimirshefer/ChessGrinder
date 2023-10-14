@@ -12,9 +12,9 @@ import Gravatar, {GravatarType} from "components/Gravatar";
 
 function AssignAchievementPane(
     {
-        userId
+        assignAchievement,
     }: {
-        userId: string
+        assignAchievement: (badge: BadgeDto) => void
     }
 ) {
     let loc = useLoc()
@@ -55,7 +55,7 @@ function AssignAchievementPane(
                     </div>
                 </div>
                 <button className={"btn-dark"}
-                        onClick={() => badgeRepository.assignBadge(selectedBadge!!.id, userId)}
+                        onClick={() => assignAchievement(selectedBadge!!)}
                 >
                     Assign
                 </button>
@@ -114,7 +114,7 @@ export default function UserProfilePage() {
         return !!username && username === authData?.username
     }, [username, authData])
 
-    let {data: userProfile} = useQuery({
+    let {data: userProfile, refetch} = useQuery({
         queryKey: ["profile", username],
         queryFn: () => {
             return username ? userRepository.getUser(username) : Promise.reject<MemberDto>()
@@ -181,8 +181,10 @@ export default function UserProfilePage() {
         </div>
 
         <ConditionalOnUserRole role={UserRoles.ADMIN}>
-            <AssignAchievementPane userId={userProfile.id}/>
+            <AssignAchievementPane assignAchievement={async (badge) => {
+                 await badgeRepository.assignBadge(badge.id, userProfile!!.id);
+                 await refetch()
+            }}/>
         </ConditionalOnUserRole>
-
     </div>
 }
