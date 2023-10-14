@@ -19,6 +19,7 @@ public class ParticipantMapper {
 
         return ParticipantDto.builder()
                 .id(participant.getId().toString())
+                .name(participant.getNickname())
                 .userId(Optional.ofNullable(participant.getUser()).map(it -> it.getId().toString()).orElse(null))
                 .buchholz(participant.getBuchholz())
                 .score(participant.getScore())
