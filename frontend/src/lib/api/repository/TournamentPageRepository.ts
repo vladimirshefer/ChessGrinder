@@ -2,6 +2,7 @@ import {MatchDto, MatchResult, ParticipantDto, RoundDto, TournamentPageData} fro
 import {qualifiedService} from "./apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
+import {requirePresent} from "lib/util/common";
 
 export interface TournamentPageRepository {
     getData(tournamentId: string): Promise<TournamentPageData | null>
@@ -175,10 +176,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     }
 
     async finishRound(tournamentId: string, roundNumber: number): Promise<void> {
-        let tournament = await this.getData(tournamentId)
-        if (!tournament) {
-            throw new Error(`No tournament with id ${tournamentId}`)
-        }
+        let tournament = requirePresent(await this.getData(tournamentId), `No tournament with id ${tournamentId}`)
         if (!tournament.rounds || tournament.rounds.length < roundNumber) {
             throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
         }
@@ -191,10 +189,7 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
     }
 
     async reopenRound(tournamentId: string, roundNumber: number): Promise<void> {
-        let tournament = await this.getData(tournamentId)
-        if (!tournament) {
-            throw new Error(`No tournament with id ${tournamentId}`)
-        }
+        let tournament = requirePresent(await this.getData(tournamentId), `No tournament with id ${tournamentId}`)
         if (!tournament.rounds || tournament.rounds.length < roundNumber) {
             throw new Error(`No round ${roundNumber} in tournament ${tournamentId}`)
         }
