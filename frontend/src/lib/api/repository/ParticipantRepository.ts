@@ -2,6 +2,7 @@ import {ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData
 import {qualifiedService} from "./apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
+import {requirePresent} from "lib/util/common";
 
 export interface ParticipantRepository {
     postParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
@@ -19,16 +20,14 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
     }
 
     async deleteParticipant(tournamentId: string, participantId: string) {
-        let tournament =  localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`) || null;
-        if (!tournament) throw new Error(`No tournament with id ${tournamentId}`)
+        let tournament = requirePresent(localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`), `No tournament with id ${tournamentId}`)
         tournament.participants = tournament.participants || []
         tournament.participants = tournament.participants.filter(it => it.id !== participantId)
         localStorage.setItem(`cgd.tournament.${tournamentId}`, JSON.stringify(tournament))
     }
 
     async getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto> {
-        let tournament =  localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`) || null;
-        if (!tournament) throw new Error(`No tournament with id ${tournamentId}`)
+        let tournament = requirePresent(localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`), `No tournament with id ${tournamentId}`)
         let participant = tournament.participants.find(it => it.id === participantId)
         if (!participant) throw new Error(`No participant with id ${participantId} in tournament ${tournamentId}`)
         return participant
@@ -46,7 +45,6 @@ class RestApiParticipantRepository implements ParticipantRepository {
 
     async getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto> {
         return await restApiClient.get<ParticipantDto>(`/tournament/${tournamentId}/participant/${participantId}`)
-
     }
 }
 
