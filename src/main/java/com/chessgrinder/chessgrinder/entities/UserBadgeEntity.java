@@ -5,6 +5,7 @@ import java.util.*;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.hibernate.annotations.UuidGenerator;
 
 @Getter
 @Setter
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.*;
 public class UserBadgeEntity {
 
     @Id
+    @UuidGenerator
     @Column(name = "id")
     private UUID id;
 

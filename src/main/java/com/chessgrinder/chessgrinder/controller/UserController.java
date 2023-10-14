@@ -4,11 +4,18 @@ import java.util.*;
 
 import com.chessgrinder.chessgrinder.chessengine.*;
 import com.chessgrinder.chessgrinder.dto.*;
+import com.chessgrinder.chessgrinder.entities.BadgeEntity;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
+import com.chessgrinder.chessgrinder.entities.UserBadgeEntity;
+import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
+import com.chessgrinder.chessgrinder.repositories.BadgeRepository;
+import com.chessgrinder.chessgrinder.repositories.UserBadgeRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,6 +27,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final BadgeRepository badgeRepository;
+    private final UserBadgeRepository userBadgeRepository;
 
     private final SwissMatchupStrategyImpl swissEngine;
 
@@ -62,4 +71,15 @@ public class UserController {
         return swissEngine.matchUp(users, null);
     }
 
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PostMapping("/{userId}/badge/{badgeId}")
+    public void assignBadge(
+            @PathVariable UUID userId,
+            @PathVariable UUID badgeId
+    ) {
+        UserEntity user = userRepository.findById(userId).orElseThrow();
+        BadgeEntity badge = badgeRepository.findById(badgeId).orElseThrow();
+        UserBadgeEntity assignment = UserBadgeEntity.builder().badge(badge).user(user).build();
+        userBadgeRepository.save(assignment);
+    }
 }
