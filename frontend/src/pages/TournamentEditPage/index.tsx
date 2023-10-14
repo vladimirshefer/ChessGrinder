@@ -36,33 +36,37 @@ export default function TournamentEditPage() {
 
     return <>
         <h1>Edit tournament</h1>
+        <div>asdf{JSON.stringify(tournament.tournament, null, 2)}</div>
         <form className={"grid"} onSubmit={handleSubmit(saveTournament)}>
             <label htmlFor="tournamentName" className={"text-sm text-gray-800"}>
                 {loc("Tournament Name")}
             </label>
             <input type={"text"} id={"tournamentName"} placeholder={loc("Tournament Name")} {...register("name")}
-                   value={tournament.tournament.name}/>
+                   defaultValue={tournament.tournament.name}/>
 
             <label htmlFor="locationName" className={"text-sm text-gray-800"}>
                 {loc("Location Name")}
             </label>
-            <input type={"text"} id={"locationName"} placeholder={"Location Name"} {...register("locationName")}/>
+            <input type={"text"} id={"locationName"} placeholder={"Location Name"} {...register("locationName")}
+                defaultValue={tournament.tournament.locationUrl}/>
 
-            <label htmlFor="locationLink" className={"text-sm text-gray-800"}>
+            <label htmlFor="locationUrl" className={"text-sm text-gray-800"}>
                 {loc("Location Link")}
-
             </label>
-            <input type={"text"} id={"locationLink"} placeholder={"Location Link"} {...register("locationLink")}/>
+            <input type={"text"} id={"locationUrl"} placeholder={"Location Link"} {...register("locationUrl")}
+                defaultValue={tournament.tournament.locationUrl}/>
 
             <label htmlFor="startDate" className={"text-sm text-gray-800"}>
                 {loc("Start Date")}
             </label>
-            <input type={"date"} id={"startDate"} placeholder={"Start Date"} {...register("startDate")}/>
+            <input type={"date"} id={"startDate"} placeholder={"Start Date"} {...register("startDate")}
+                defaultValue={tournament.tournament.date}/>
 
             <label htmlFor="startTime" className={"text-sm text-gray-800"}>
                 {loc("Start Time")}
             </label>
-            <input type={"time"} id={"startTime"} placeholder={"Start Time"} {...register("startTime")}/>
+            <input type={"time"} id={"startTime"} placeholder={"Start Time"} {...register("startTime")}
+                defaultValue={tournament.tournament.time}/>
 
             <button type={"submit"} className={"btn-dark"}>Save</button>
         </form>

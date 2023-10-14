@@ -28,7 +28,10 @@ export interface TournamentDto {
     id: string
     name: string
     date: string
+    time?: string
     status?: TournamentStatus
+    locationName?: string
+    locationUrl?: string
 }
 
 export interface TournamentListDto {
