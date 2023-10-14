@@ -6,6 +6,10 @@ import tournamentRepository from "lib/api/repository/TournamentRepository";
 import {AiFillClockCircle} from "react-icons/ai";
 import {IoLocationSharp} from "react-icons/io5";
 import "./TournamentsList.css"
+import {useQuery} from "@tanstack/react-query";
+import tournamentPageRepository from "../../lib/api/repository/TournamentPageRepository";
+import {compareBy} from "lib/util/Comparator";
+import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 
 function TournamentPane(
     {
@@ -16,9 +20,43 @@ function TournamentPane(
 ) {
     let loc = useLoc();
 
+    /**
+     * TODO migrate to special endpoint instead of tournamentPage
+     */
+    let winnerQuery = useQuery({
+        queryKey: ["tournamentWinner", tournament.id],
+        queryFn: async () => {
+            let tournamentData = await tournamentPageRepository.getData(tournament.id);
+            let participantsSorted: ParticipantDto[] = tournamentData?.participants
+                ?.sort(compareBy(it => -it.buchholz))
+                ?.sort(compareBy(it => -it.score)) || [];
+            console.log("winner", participantsSorted)
+            if (participantsSorted.length === 0) {
+                return null
+            }
+            return participantsSorted[0]
+        }
+    })
+
     let isPlanned = tournament.status === "PLANNED"
     let isFinished = tournament.status === "FINISHED"
     let isActive = tournament.status === "ACTIVE"
+    let winnerName: string = loc("Loading") + "...";
+    let winnerResult: string = "..."
+    if (winnerQuery.isError) {
+        winnerName = loc("Error") + "!";
+        winnerResult = "?"
+    }
+    else if (winnerQuery.isSuccess) {
+        let data = winnerQuery.data;
+        if (!data) {
+            winnerName = loc("No participants");
+            winnerResult = "?"
+        } else {
+            winnerName = data.name
+            winnerResult = data.score + "";
+        }
+    }
 
     return <div className={`grid justify-items-start w-full p-4 
                 ${isPlanned ? "tournament-planned" : isFinished ? "tournament-finished" : "tournament-active"}`}>
@@ -46,12 +84,12 @@ function TournamentPane(
         <Conditional on={isFinished}>
             <div className={"py-3 flex gap-5 uppercase text-left"}>
                 <div className={"grid justify-items-start content-start"}>
-                    <span className={"text-sm"}>Победитель</span>
-                    <span className={"font-bold"}>Александр Болдырев</span>
+                    <span className={"text-sm"}>{loc("Winner")}</span>
+                    <span className={"font-bold"}>{winnerName}</span>
                 </div>
                 <div className={"grid justify-items-start content-start"}>
-                    <span className={"text-sm"}>Результат</span>
-                    <span className={"font-bold"}>7</span>
+                    <span className={"text-sm"}>{loc("Result")}</span>
+                    <span className={"font-bold"}>{winnerResult}</span>
                 </div>
             </div>
         </Conditional>
