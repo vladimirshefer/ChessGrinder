@@ -35,30 +35,59 @@ function AssignAchievementPane(
             {loc("Assign achievement")}
         </button>
         <div className={"bg-green-100"}>
-            <Conditional on={!!selectedBadge}>
-                <p>{selectedBadge?.imageUrl}</p>
-                <p>{selectedBadge?.title}</p>
-                <p>{selectedBadge?.description}</p>
+            <Conditional on={!!selectedBadge}>{() => <>
+                <div className={"flex gap-2 p-2"}>
+                    <div>
+                        <Gravatar
+                            text={selectedBadge!!.title}
+                            type={GravatarType.Identicon}
+                            size={50}
+                            className={"rounded-full"}
+                        />
+                    </div>
+                    <div className={"grid"}>
+                        <div>
+                            <span>{selectedBadge!!.title || "No title"}</span>
+                        </div>
+                        <div>
+                            <span>{selectedBadge!!.description || "..."}</span>
+                        </div>
+                    </div>
+                </div>
                 <button className={"btn-dark"}
                         onClick={() => badgeRepository.assignBadge(selectedBadge!!.id, userId)}
                 >
                     Assign
                 </button>
-            </Conditional>
+            </>}</Conditional>
         </div>
         <div className={"bg-cyan-100"}>
             <Conditional on={selectActive && badgesQuery.isSuccess}>
                 {
                     badgesQuery.data?.values?.map(badge => {
-                        return <div key={badge.id}
+                        return <div className={"flex gap-2 p-2"}
+                                    key={badge.id}
                                     onClick={() => {
                                         setSelectedBadge(badge)
                                         setSelectActive(false)
                                     }}
                         >
-                            <p>{badge?.imageUrl}</p>
-                            <p>{badge?.title}</p>
-                            <p>{badge?.description}</p>
+                            <div>
+                                <Gravatar
+                                    text={badge!!.title}
+                                    type={GravatarType.Identicon}
+                                    size={50}
+                                    className={"rounded-full"}
+                                />
+                            </div>
+                            <div className={"grid"}>
+                                <div>
+                                    <span>{badge!!.title || "No title"}</span>
+                                </div>
+                                <div>
+                                    <span>{badge!!.description || "..."}</span>
+                                </div>
+                            </div>
                         </div>
                     }) || []
                 }

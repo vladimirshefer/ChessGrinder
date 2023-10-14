@@ -7,11 +7,11 @@ export function Conditional(
         on,
         children,
     }: {
-        on: boolean,
-        children?: ReactElement | ReactElement[]
+        on: boolean | any,
+        children?: ReactElement | ReactElement[] | (() => ReactElement) | (() => ReactElement[])
     }
 ) {
-    if (on) {
+    if (!!on) {
         return <>{children || null}</>
     } else return <>{[] as ReactElement []}</>
 }
