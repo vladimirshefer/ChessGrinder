@@ -26,4 +26,18 @@ public class MatchMapper {
     public List<MatchDto> toDto(List<MatchEntity> matchEntities) {
         return matchEntities.stream().map(this::toDto).toList();
     }
+
+    public List<MatchEntity> toEntity(List<MatchDto> matchesDto) {
+        return matchesDto.stream().map(this::toEntity).toList();
+
+    }
+
+    public MatchEntity toEntity(MatchDto matchDto) {
+
+        return MatchEntity.builder()
+                .participant1(participantMapper.toEntity(matchDto.getWhite()))
+                .participant2(participantMapper.toEntity(matchDto.getBlack()))
+                .result(matchDto.getResult())
+                .build();
+    }
 }
