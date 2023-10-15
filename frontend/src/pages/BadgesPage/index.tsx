@@ -5,6 +5,7 @@ import {useForm} from "react-hook-form";
 import {BadgeDto, UserRoles} from "lib/api/dto/MainPageData";
 import {randomString} from "lib/util/Random";
 import Gravatar, {GravatarType} from "components/Gravatar";
+import {Link} from "react-router-dom";
 
 function BadgeImage(
     {
@@ -60,7 +61,7 @@ export default function BadgesPage() {
         <div className={"grid grid-cols-12 gap-2 p-4"}>
             {
                 badges.map(badge => {
-                    return <div key={badge.id} title={badge.description} className={"col-span-3 grid oveflow-hidden content-start"}>
+                    return <Link to={`/badge/${badge.id}`} key={badge.id} title={badge.description} className={"col-span-3 grid oveflow-hidden content-start"}>
                         {/*<span className={"text-3xl"}>{badge.imageUrl}</span>*/}
                         <div className={"rounded-full overflow-hidden flex justify-center"}>
                             <BadgeImage imageUrl={badge.imageUrl} title={badge.title} size={100}/>
@@ -71,7 +72,7 @@ export default function BadgesPage() {
                                 className={"text-sm text-gray-500 break-words text-ellipsis"}>{badge.description}
                             </span>
                         </div>
-                    </div>
+                    </Link>
                 })
             }
         </div>
