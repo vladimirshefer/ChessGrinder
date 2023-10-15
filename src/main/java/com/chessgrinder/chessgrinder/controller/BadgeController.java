@@ -42,4 +42,11 @@ public class BadgeController {
         return badgeMapper.toDto(badgeRepository.findById(badgeId).orElseThrow());
     }
 
+    @Secured(RoleEntity.Roles.ADMIN)
+    @DeleteMapping("/{badgeId}")
+    public void delete(
+            @PathVariable UUID badgeId
+    ) {
+        badgeRepository.deleteById(badgeId);
+    }
 }

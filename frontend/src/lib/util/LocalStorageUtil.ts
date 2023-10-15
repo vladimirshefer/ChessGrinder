@@ -39,6 +39,16 @@ class LocalStorageUtil {
         }
         return result;
     }
+
+    forEach<T>(keyPrefix: string, action: (id: string, value: T) => void) {
+
+        for (let localStorageKey in localStorage) {
+            if (localStorageKey.startsWith(`${keyPrefix}`)) {
+                let value = JSON.parse(localStorage.getItem(localStorageKey)!!);
+                action(localStorageKey.substring(keyPrefix.length), value)
+            }
+        }
+    }
 }
 
 let localStorageUtil = new LocalStorageUtil();

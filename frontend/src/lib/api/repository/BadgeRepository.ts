@@ -9,6 +9,7 @@ export interface BadgeRepository {
     getBadge(badgeId: string): Promise<BadgeDto>;
     createBadge(badge: BadgeDto): Promise<void>;
     assignBadge(badgeId: string, userId: string): Promise<void>;
+    deleteBadge(badgeId: string): Promise<void>;
 }
 
 class LocalStorageBadgeRepository implements BadgeRepository {
@@ -34,6 +35,15 @@ class LocalStorageBadgeRepository implements BadgeRepository {
         })
     }
 
+    async deleteBadge(badgeId: string): Promise<void> {
+        localStorageUtil.forEach("cgd.user_badge.", (k, v) => {
+            if (k.includes(`.${badgeId}`)) {
+                localStorageUtil.removeObject(`cgd.user_badge.${k}`);
+            }
+        })
+        localStorageUtil.removeObject(`cgd.badge.${badgeId}`)
+    }
+
 }
 
 class RestApiBadgeRepository implements BadgeRepository {
@@ -51,6 +61,10 @@ class RestApiBadgeRepository implements BadgeRepository {
 
     async assignBadge(badgeId: string, userId: string): Promise<void> {
         return restApiClient.post(`/user/${userId}/badge/${badgeId}`)
+    }
+
+    async deleteBadge(badgeId: string): Promise<void> {
+        await restApiClient.delete(`/badge/${badgeId}`)
     }
 }
 

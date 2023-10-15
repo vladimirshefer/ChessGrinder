@@ -1,10 +1,13 @@
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {useQuery} from "@tanstack/react-query";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import badgeRepository from "lib/api/repository/BadgeRepository";
+import ConditionalOnUserRole from "../../components/Conditional";
+import {UserRoles} from "../../lib/api/dto/MainPageData";
 
 export default function BadgePage() {
     let {badgeId} = useParams()
+    let navigate = useNavigate();
 
     let badgeQuery = useQuery({
         queryKey: ["badge", badgeId],
@@ -19,6 +22,13 @@ export default function BadgePage() {
     if (!badgeQuery.isSuccess)  return <>Not successful</>
 
     let badge = badgeQuery.data!!;
+
+    async function deleteBadge() {
+        let confirmation = prompt(`Are you sure you wand to delete badge? Enter name '${badge.title}' to confirm delete.`);
+        if (confirmation !== badge.title) return;
+        await badgeRepository.deleteBadge(badge.id);
+        navigate("/badges")
+    }
 
     return <div className={"p-3"}>
         <div className={"text-left py-3 uppercase font-semibold"}>
@@ -46,6 +56,15 @@ export default function BadgePage() {
                 </div>
             </div>
         </div>
+        <ConditionalOnUserRole role={UserRoles.ADMIN}>
+            <div className={"text-right"}>
+                <button className={"btn-danger"}
+                        onClick={() => deleteBadge()}
+                >
+                    Delete
+                </button>
+            </div>
+        </ConditionalOnUserRole>
         <div className={"text-left py-3 uppercase font-semibold"}>
             <span>Users</span>
         </div>
