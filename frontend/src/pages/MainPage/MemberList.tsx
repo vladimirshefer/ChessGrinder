@@ -35,16 +35,11 @@ export function MemberList(
                         </div>
                         <div className={"h-[1em] text-xl flex gap-2 items-start"}>
                             <div className={"flex items-start h-full gap-2 grow"}>
-                                <Gravatar
-                                    text={user.id + "123"}
-                                    type={GravatarType.Identicon}
-                                    size={150}
-                                    className={"inline rounded-full h-full"}
-                                />
                                 {(user.badges || []).map(badge =>
                                     <Link to={`/badge/${badge.id}`}
                                           className={"block h-full"}
                                           key={badge.id}
+                                          title={`${badge.title}\n\n${badge.description}`}
                                     >
                                         <Gravatar
                                             text={badge.title}
