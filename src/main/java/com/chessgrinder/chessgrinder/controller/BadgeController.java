@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/badge")
 @RequiredArgsConstructor
@@ -26,11 +28,18 @@ public class BadgeController {
     @PostMapping
     public BadgeDto create(@RequestBody BadgeDto badgeDto) {
         return badgeMapper.toDto(badgeRepository.save(BadgeEntity.builder()
-                        .description(badgeDto.getDescription())
-                        .title(badgeDto.getTitle())
-                        .pictureUrl(badgeDto.getImageUrl())
+                .description(badgeDto.getDescription())
+                .title(badgeDto.getTitle())
+                .pictureUrl(badgeDto.getImageUrl())
                 .build()
         ));
+    }
+
+    @GetMapping("/{badgeId}")
+    public BadgeDto getBadge(
+            @PathVariable UUID badgeId
+    ) {
+        return badgeMapper.toDto(badgeRepository.findById(badgeId).orElseThrow());
     }
 
 }
