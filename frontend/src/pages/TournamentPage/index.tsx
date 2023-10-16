@@ -12,6 +12,7 @@ import userRepository from "lib/api/repository/UserRepository";
 import {AiOutlineClose, AiOutlineHome, AiOutlineInfoCircle, AiOutlinePlus} from "react-icons/ai";
 import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
+import {BsFillPencilFill} from "react-icons/bs";
 
 function AddParticipant(
     {
@@ -63,7 +64,7 @@ function AddParticipant(
                                autoFocus
                                name={"nickname"}
                                onChange={event => setNickName(event.target.value)}
-                               placeholder={loc("Nickname")}
+                               placeholder={`${loc("Nickname")}*`.toUpperCase()}
                         />
                     </div>
                     <div className={"col-span-12 lg:col-span-9 text-sm py-1"}>
@@ -87,21 +88,21 @@ function AddParticipant(
                             {loc("Leave empty for anonymous/guest participant")}
                         </span>
                     </div>
-                    <div className={"col-span-12 lg:col-span-3 p-1 px-2 grid grid-cols-12 gap-x-1"}>
-                        <button className={"btn-dark w-full col-span-8"}
+                    <div className={"col-span-12 lg:col-span-3 flex gap-x-1"}>
+                        <button className={"btn-dark uppercase col-span-8 grow"}
                                 onClick={() => {
                                     if (selectedValue || nickName) {
                                         getSubmitValue(selectedValue);
                                     }
                                     setInputEnabled(false)
                                 }}>
-                            Add
+                            {loc("Add participant")}
                         </button>
-                        <button className={"btn-light w-full bg-red-300 col-span-4"}
+                        <button className={"btn-light !px-6"}
                                 onClick={() => {
                                     setInputEnabled(false)
                                 }}>
-                            <span className={"inline-block"}><AiOutlineClose/></span>
+                            <AiOutlineClose className={"block"}/>
                         </button>
                     </div>
                 </div>
@@ -111,6 +112,7 @@ function AddParticipant(
 }
 
 function TournamentPage() {
+    let loc = useLoc()
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
     let tournamentQuery = useQuery({
@@ -233,26 +235,26 @@ function TournamentPage() {
                 <div className={"p-2"}></div>
                 <div className={"flex gap-1 justify-end p-2"}>
                     <Link to={`/tournament/${tournament.id}/edit`}>
-                        <button className={"btn-dark"}>
-                            Edit
+                        <button className={"btn-light h-full"}>
+                            <BsFillPencilFill/>
                         </button>
                     </Link>
                     <Conditional on={tournament.status !== "ACTIVE"}>
-                        <button className={"btn-dark"}
+                        <button className={"btn-dark uppercase"}
                                 onClick={async () => {
                                     await tournamentRepository.startTournament(tournament?.id!!);
                                     await tournamentQuery.refetch()
                                 }}
-                        > Start
+                        > {loc("Start")}
                         </button>
                     </Conditional>
                     <Conditional on={tournament.status === "ACTIVE"}>
-                        <button className={"btn-dark"}
+                        <button className={"btn-dark uppercase"}
                                 onClick={async () => {
                                     await tournamentRepository.finishTournament(tournament?.id!!);
                                     await tournamentQuery.refetch()
                                 }}
-                        >Finish
+                        >{loc("Finish")}
                         </button>
                     </Conditional>
                     <button className={"btn-danger"}
