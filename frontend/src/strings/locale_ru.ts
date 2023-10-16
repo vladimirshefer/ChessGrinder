@@ -13,7 +13,9 @@ let locale_ru: { [key: string]: string } = {
     "Members": "Участники клуба",
     "Unnamed Tournament": "Турнир без имени",
     "Winner": "Победитель",
-    "Result": "Результат",
+    "Result": "Итог",
+    "Black": "Чёрные",
+    "White": "Белые"
 }
 
 export default locale_ru

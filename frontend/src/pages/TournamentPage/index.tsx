@@ -9,10 +9,16 @@ import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {ListDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import userRepository from "lib/api/repository/UserRepository";
-import {AiOutlineClose, AiOutlineHome, AiOutlineInfoCircle, AiOutlinePlus} from "react-icons/ai";
+import {
+    AiOutlineClose,
+    AiOutlineDelete,
+    AiOutlineEdit,
+    AiOutlineHome,
+    AiOutlineInfoCircle,
+    AiOutlinePlus
+} from "react-icons/ai";
 import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
-import {BsFillPencilFill} from "react-icons/bs";
 
 function AddParticipant(
     {
@@ -180,7 +186,7 @@ function TournamentPage() {
         <div className={"flex flex-wrap justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
                 <button
-                    className={`w-full h-full py-2 px-4 uppercase ${!roundId ? "bg-black text-white" : "bg-primary hover:bg-gray-300 text-black"}`}
+                    className={`w-full h-full py-2 px-4 uppercase ${!roundId ? "bg-black text-white" : "bg-anzac-400 hover:bg-gray-300 text-black"}`}
                 >
                     <AiOutlineHome/>
                 </button>
@@ -235,8 +241,8 @@ function TournamentPage() {
                 <div className={"p-2"}></div>
                 <div className={"flex gap-1 justify-end p-2"}>
                     <Link to={`/tournament/${tournament.id}/edit`}>
-                        <button className={"btn-light h-full"}>
-                            <BsFillPencilFill/>
+                        <button className={"btn-light h-full !px-4"}>
+                            <AiOutlineEdit/>
                         </button>
                     </Link>
                     <Conditional on={tournament.status !== "ACTIVE"}>
@@ -257,7 +263,7 @@ function TournamentPage() {
                         >{loc("Finish")}
                         </button>
                     </Conditional>
-                    <button className={"btn-danger"}
+                    <button className={"btn-danger uppercase !px-4"}
                             onClick={async () => {
                                 let expectedConfirmation = (tournament?.name || "") + (tournament?.id || "");
                                 let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
@@ -268,7 +274,8 @@ function TournamentPage() {
                                 await tournamentRepository.deleteTournament(tournament?.id!!);
                                 await navigate("/");
                             }}
-                    >Delete
+                    >
+                        <AiOutlineDelete/>
                     </button>
                 </div>
             </ConditionalOnUserRole>

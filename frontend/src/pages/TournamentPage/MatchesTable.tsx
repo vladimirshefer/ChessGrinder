@@ -2,6 +2,7 @@ import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
 import {useAuthData} from "lib/auth/AuthService";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {Conditional} from "components/Conditional";
+import {useLoc} from "strings/loc";
 
 function MatchesTable(
     {
@@ -14,22 +15,25 @@ function MatchesTable(
         submitMatchResult: (match: MatchDto, result: MatchResult | null) => void,
     }
 ) {
+    let loc = useLoc()
     let authData = useAuthData();
     let canEditResults = !roundIsFinished && (authData?.roles?.includes(UserRoles.ADMIN) || false);
 
     return <div className={"grid grid-cols-12 p-2"}>
-        <div className={"col-span-12 grid grid-cols-12 border-b border-black"}>
-            <div className={"col-span-4 font-bold"}>White</div>
-            <div className={"col-span-4 font-bold"}>Result</div>
-            <div className={"col-span-4 font-bold"}>Black</div>
+        <div className={"col-span-12 grid grid-cols-12 border-b border-black justify-items-start"}>
+            <div className={"col-span-4 font-semibold uppercase"}>{loc("White")}</div>
+            <div className={"col-span-4 font-semibold uppercase justify-self-center"}>{loc("Result")}</div>
+            <div className={"col-span-4 font-semibold uppercase"}>{loc("Black")}</div>
         </div>
         {
             matches.map((match, idx) => {
-                return <div className={"col-span-12 grid grid-cols-12 border-b border-gray"} key={idx}>
-                    <div className={"col-span-4"}>{match.white?.name || "<BUY>"}</div>
-                    <div className={"col-span-4"}>
+                return <div className={"col-span-12 grid grid-cols-12 border-b border-gray text-left"} key={idx}>
+                    <div className={"col-span-4 text-xs p-3"}>
+                        <span>{match.white?.name || "-"}</span>
+                    </div>
+                    <div className={"col-span-4 text-xl overflow-hidden"}>
                         <Conditional on={canEditResults}>
-                            <select defaultValue={match.result || ""}
+                            <select defaultValue={match.result || "—"}
                                     onChange={(e) => {
                                         submitMatchResult(match, e.target.value as MatchResult)
                                     }}>
@@ -41,10 +45,12 @@ function MatchesTable(
                             </select>
                         </Conditional>
                         <Conditional on={!canEditResults}>
-                            <span>{match.result || ""}</span>
+                            <span>{match.result || "—"}</span>
                         </Conditional>
                     </div>
-                    <div className={"col-span-4"}>{match.black?.name || "<BUY>"}</div>
+                    <div className={"col-span-4 text-xs p-3"}>
+                        <span>{match.black?.name || "—"}</span>
+                    </div>
                 </div>
             })
         }
