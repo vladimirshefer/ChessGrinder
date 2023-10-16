@@ -4,6 +4,8 @@ import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.dto.internals.*;
 import com.chessgrinder.chessgrinder.enums.*;
 import com.google.common.collect.Lists;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +22,9 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
     /**
      * "Main" method for swiss service. Takes list of all participants and return list of all matches.
      *
-     * @param participants
-     * @param allMatchesInTheTournament
-     * @return
+     * @param participants the participants to be paired for new round.
+     * @param allMatchesInTheTournament All submitted match results in the whole tournament.
+     * @return The list of matches to be played in new round.
      */
     public List<MatchDto> matchUp(List<ParticipantDto> participants, List<MatchDto> allMatchesInTheTournament) {
 
@@ -36,13 +38,11 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
                 .sorted(Comparator.comparing(ParticipantDto::getScore).reversed()).toList();
 
         List<ParticipantForPairing> listOfAllPlayers = new ArrayList<>(
-
                 sortedParticipants.stream().map(participant -> {
                     ParticipantForPairing participantForPairing = new ParticipantForPairing();
                     participantForPairing.setParticipant(participant);
                     return participantForPairing;
                 }).toList()
-
         );
 
         for (ParticipantForPairing firstCandidateForMatch : listOfAllPlayers) {
@@ -95,7 +95,7 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
                 .filter(player -> !userIdsToExclude.contains(player.getParticipant().getId()))
                 .collect(Collectors.toList());
 
-        List<ScoreModel> separateParticipantsByScores = sortParticipantsByScores(filteredPlayers, allMatchesInTheTournament);
+        List<ScoreModel> separateParticipantsByScores = sortParticipantsByScores(filteredPlayers);
 
         ScoreModel scoreModelWithClosestScore = findScoreModelWithClosestScore(separateParticipantsByScores, firstCandidateForMatch);
 
@@ -175,28 +175,17 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
      * @param second player
      * @return MatchDto
      */
-    public MatchDto createMatchBetweenTwoParticipants(ParticipantForPairing first, ParticipantForPairing second) {
-
+    public MatchDto createMatchBetweenTwoParticipants(ParticipantForPairing first, @Nullable ParticipantForPairing second) {
         MatchDto match;
 
         if (second == null) {
-
-            return MatchDto.builder()
-                    .black(first.getParticipant())
-                    .result(MatchResult.BUY)
-                    .build();
+            return buy(first);
         }
 
         if (first.getTimesPlayedWhiteInTournament() <= second.getTimesPlayedWhiteInTournament()) {
-            match = MatchDto.builder()
-                    .white(first.getParticipant())
-                    .black(second.getParticipant())
-                    .build();
+            match = matchOf(first, second);
         } else {
-            match = MatchDto.builder()
-                    .white(second.getParticipant())
-                    .black(first.getParticipant())
-                    .build();
+            match = matchOf(second, first);
         }
 
         first.setBooked(true);
@@ -212,14 +201,12 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
      * @return List<ScoreModel>
      */
     public static List<ScoreModel> sortParticipantsByScores(
-            List<ParticipantForPairing> participants,
-            List<MatchDto> allMatchesInTheTournament) {
+            List<ParticipantForPairing> participants
+    ) {
 
-        // Filter participants who have not booked.
+        // Filter participants who have not been booked.
         List<ParticipantForPairing> notBookedParticipants = participants.stream()
                 .filter(player -> !player.isBooked()).toList();
-
-
 
 
         // Group participants by their scores.
@@ -243,6 +230,20 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
         scoreModels.sort((a, b) -> b.getScore().compareTo(a.getScore()));
 
         return scoreModels;
+    }
+
+    private static MatchDto matchOf(ParticipantForPairing first, @Nonnull ParticipantForPairing second) {
+        return MatchDto.builder()
+                .white(first.getParticipant())
+                .black(second.getParticipant())
+                .build();
+    }
+
+    private static MatchDto buy(ParticipantForPairing participant) {
+        return MatchDto.builder()
+                .black(participant.getParticipant())
+                .result(MatchResult.BUY)
+                .build();
     }
 }
 
