@@ -11,14 +11,14 @@ export interface MatchDto {
      * Undefined if match is not played yet
      */
     result: MatchResult | undefined
-    white: ParticipantDto
+    white: ParticipantDto | null
     /**
      * Null if the match is buy
      */
     black: ParticipantDto | null
 }
 
-export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW"
+export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW" | "BUY"
 
 export interface RoundDto {
     isFinished: boolean
