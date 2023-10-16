@@ -26,7 +26,7 @@ function MatchesTable(
         {
             matches.map((match, idx) => {
                 return <div className={"col-span-12 grid grid-cols-12 border-b border-gray"} key={idx}>
-                    <div className={"col-span-4"}>{match.white.name}</div>
+                    <div className={"col-span-4"}>{match.white?.name || "<BUY>"}</div>
                     <div className={"col-span-4"}>
                         <Conditional on={canEditResults}>
                             <select defaultValue={match.result || ""}
@@ -37,6 +37,7 @@ function MatchesTable(
                                 <option value={"WHITE_WIN"}>White won</option>
                                 <option value={"BLACK_WIN"}>Black won</option>
                                 <option value={"DRAW"}>Draw</option>
+                                <option value={"BUY"}>Buy</option>
                             </select>
                         </Conditional>
                         <Conditional on={!canEditResults}>

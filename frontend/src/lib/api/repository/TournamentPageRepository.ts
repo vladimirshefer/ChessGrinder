@@ -43,26 +43,30 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
             .filter(round => round.isFinished)
             .flatMap((round: RoundDto) => round.matches);
         allMatches.forEach(match => {
-            let whiteId = match.white.id!!;
-            let blackId = match.black!!.id!!;
+            let whiteId = match.white?.id;
+            let blackId = match.black?.id;
             if (match.result === "WHITE_WIN") {
-                this.computeIfAbsent(pointsMap, whiteId, 1, i => i + 1)
-                this.computeIfAbsent(pointsMap, blackId, 0, i => i)
+                whiteId && this.computeIfAbsent(pointsMap, whiteId, 1, i => i + 1)
+                blackId && this.computeIfAbsent(pointsMap, blackId, 0, i => i)
             } else
             if (match.result === "BLACK_WIN") {
-                this.computeIfAbsent(pointsMap, blackId, 1, i => i + 1)
-                this.computeIfAbsent(pointsMap, whiteId, 0, i => i)
+                blackId && this.computeIfAbsent(pointsMap, blackId, 1, i => i + 1)
+                whiteId && this.computeIfAbsent(pointsMap, whiteId, 0, i => i)
             } else
             if (match.result === "DRAW") {
-                this.computeIfAbsent(pointsMap, whiteId, 0.5, i => i + 0.5)
-                this.computeIfAbsent(pointsMap, blackId, 0.5, i => i + 0.5)
+                whiteId && this.computeIfAbsent(pointsMap, whiteId, 0.5, i => i + 0.5)
+                blackId && this.computeIfAbsent(pointsMap, blackId, 0.5, i => i + 0.5)
+            } else
+            if (match.result === "BUY") {
+                whiteId && this.computeIfAbsent(pointsMap, whiteId, 1, i => i + 1)
+                blackId && this.computeIfAbsent(pointsMap, blackId, 1, i => i + 1)
             } else {
-                this.computeIfAbsent(pointsMap, whiteId, 0, i => i)
-                this.computeIfAbsent(pointsMap, blackId, 0, i => i)
+                whiteId && this.computeIfAbsent(pointsMap, whiteId, 0, i => i)
+                blackId && this.computeIfAbsent(pointsMap, blackId, 0, i => i)
             }
 
-            this.computeIfAbsent(enemiesMap, whiteId, new Set<string>([blackId]), enemyPoints => enemyPoints.add(blackId))
-            this.computeIfAbsent(enemiesMap, blackId, new Set<string>([whiteId]), enemyPoints => enemyPoints.add(whiteId))
+            whiteId && blackId && this.computeIfAbsent(enemiesMap, whiteId, new Set<string>([blackId]), enemyPoints => enemyPoints.add(blackId!!))
+            whiteId && blackId && this.computeIfAbsent(enemiesMap, blackId, new Set<string>([whiteId]), enemyPoints => enemyPoints.add(whiteId!!))
         })
         enemiesMap.forEach((enemyIds, userId) => {
             buchholzListMap.set(userId, Array.from(enemyIds).map(enemyId => {
