@@ -94,9 +94,11 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
 
         List<ScoreModel> separateParticipantsByScores = sortParticipantsByScores(filteredPlayers, allMatchesInTheTournament);
 
-
-
         ScoreModel scoreModelWithClosestScore = findScoreModelWithClosestScore(separateParticipantsByScores, firstCandidateForMatch);
+
+        if (scoreModelWithClosestScore == null) {
+            return null;
+        }
 
         List<ParticipantForPairing> participants = scoreModelWithClosestScore.getParticipants();
         var split = split(participants);
@@ -177,7 +179,7 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
         if (second == null) {
 
             return MatchDto.builder()
-                    .white(first.getParticipant())
+                    .black(first.getParticipant())
                     .result(MatchResult.BUY)
                     .build();
         }

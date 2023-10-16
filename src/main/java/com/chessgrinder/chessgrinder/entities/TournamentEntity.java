@@ -5,8 +5,10 @@ import java.util.*;
 
 import com.chessgrinder.chessgrinder.enums.*;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.hibernate.annotations.*;
 
 @Getter
 @Setter
@@ -21,6 +23,7 @@ public class TournamentEntity {
 
     @Id
     @Column(name = "id")
+    @UuidGenerator
     private UUID id;
 
     @Column(name = "date")

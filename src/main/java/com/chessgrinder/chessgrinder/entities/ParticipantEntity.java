@@ -5,8 +5,10 @@ import java.util.*;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.hibernate.annotations.*;
 
 @Getter
 @Setter
@@ -21,6 +23,7 @@ public class ParticipantEntity {
 
     @Id
     @Column(name = "id")
+    @UuidGenerator
     private UUID id;
 
     @ManyToOne

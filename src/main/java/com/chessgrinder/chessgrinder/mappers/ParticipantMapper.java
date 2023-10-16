@@ -33,11 +33,16 @@ public class ParticipantMapper {
 
     public ParticipantEntity toEntity(ParticipantDto participantDto) {
 
+        if (participantDto == null) return null;
+
         UserEntity user = null;
+
         if (participantDto.getUserId() != null) {
             user = userRepository.findById(UUID.fromString(participantDto.getUserId())).orElse(null);
         }
+
         return ParticipantEntity.builder()
+                .id(UUID.fromString(participantDto.getId()))
                 .user(user)
                 .buchholz(participantDto.getBuchholz())
                 .score(participantDto.getScore())

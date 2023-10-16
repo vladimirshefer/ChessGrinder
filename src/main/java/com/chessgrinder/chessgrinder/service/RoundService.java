@@ -64,6 +64,7 @@ public class RoundService {
 
     public void makeMatchUp(UUID tournamentId, Integer roundNumber) {
 
+        RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
@@ -73,6 +74,21 @@ public class RoundService {
         List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches);
 
         List<MatchEntity> matches = matchMapper.toEntity(matchesDto);
+
+        for (MatchEntity match: matches) {
+            match.setRound(round);
+
+            if (match.getParticipant1() != null) {
+                participantRepository.save(match.getParticipant1());
+            }
+            if (match.getParticipant1() != null) {
+                participantRepository.save(match.getParticipant2());
+            }
+
+
+            match.setParticipant1(match.getParticipant1());
+            match.setParticipant2(match.getParticipant2());
+        }
 
         matchRepository.saveAll(matches);
     }

@@ -34,6 +34,8 @@ public class MatchMapper {
 
     public MatchEntity toEntity(MatchDto matchDto) {
 
+        if (matchDto == null) return null;
+
         return MatchEntity.builder()
                 .participant1(participantMapper.toEntity(matchDto.getWhite()))
                 .participant2(participantMapper.toEntity(matchDto.getBlack()))

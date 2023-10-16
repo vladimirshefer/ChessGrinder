@@ -3,8 +3,11 @@ package com.chessgrinder.chessgrinder.entities;
 import java.util.*;
 
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.extern.slf4j.*;
+import org.hibernate.annotations.*;
 
 @Getter
 @Setter
@@ -19,6 +22,7 @@ public class RoundEntity {
 
     @Id
     @Column(name = "id")
+    @UuidGenerator
     private UUID id;
 
     @Column(name = "number")
