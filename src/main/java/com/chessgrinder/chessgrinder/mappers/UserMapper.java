@@ -35,6 +35,4 @@ public class UserMapper {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
-
-
 }

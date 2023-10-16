@@ -72,22 +72,27 @@ public class RoundService {
         List<MatchDto> allMatches = matchMapper.toDto(allMatchesInTheTournament);
 
         List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches);
+        List<MatchEntity> matches = new ArrayList<>();
 
-        List<MatchEntity> matches = matchMapper.toEntity(matchesDto);
+        for (MatchDto matchDto: matchesDto) {
 
-        for (MatchEntity match: matches) {
-            match.setRound(round);
+            ParticipantEntity participant1 = null;
+            ParticipantEntity participant2 = null;
 
-            if (match.getParticipant1() != null) {
-                participantRepository.save(match.getParticipant1());
+            if (matchDto.getWhite() != null) {
+                participant1 = participantRepository.findById(UUID.fromString(matchDto.getWhite().getId())).orElse(null);
             }
-            if (match.getParticipant1() != null) {
-                participantRepository.save(match.getParticipant2());
+            if (matchDto.getBlack() != null) {
+                participant2 = participantRepository.findById(UUID.fromString(matchDto.getBlack().getId())).orElse(null);
             }
 
-
-            match.setParticipant1(match.getParticipant1());
-            match.setParticipant2(match.getParticipant2());
+            matches.add(
+                    MatchEntity.builder()
+                            .round(round)
+                            .participant1(participant1)
+                            .participant2(participant2)
+                            .result(matchDto.getResult())
+                            .build());
         }
 
         matchRepository.saveAll(matches);

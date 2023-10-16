@@ -74,7 +74,10 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
             List<MatchDto> allMatchesInTheTournament
     ) {
 
+
         Set<String> userIdsToExclude = allMatchesInTheTournament.stream()
+                .filter(matchDto -> matchDto.getWhite() == null)
+                .filter(matchDto -> matchDto.getBlack() == null)
                 .filter(matchDto -> matchDto.getWhite().getId().equals(firstCandidateForMatch.getParticipant().getId())
                         || matchDto.getBlack().getId().equals(firstCandidateForMatch.getParticipant().getId()))
                 .map(matchDto -> {

@@ -12,7 +12,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ParticipantMapper {
 
-    private final TournamentMapper tournamentMapper;
+    private final TournamentRepository tournamentRepository;
     private final UserRepository userRepository;
 
     public ParticipantDto toDto(ParticipantEntity participant) {
@@ -29,28 +29,5 @@ public class ParticipantMapper {
 
     public List<ParticipantDto> toDto(List<ParticipantEntity> participantEntities) {
        return participantEntities.stream().map(this::toDto).toList();
-    }
-
-    public ParticipantEntity toEntity(ParticipantDto participantDto) {
-
-        if (participantDto == null) return null;
-
-        UserEntity user = null;
-
-        if (participantDto.getUserId() != null) {
-            user = userRepository.findById(UUID.fromString(participantDto.getUserId())).orElse(null);
-        }
-
-        return ParticipantEntity.builder()
-                .id(UUID.fromString(participantDto.getId()))
-                .user(user)
-                .buchholz(participantDto.getBuchholz())
-                .score(participantDto.getScore())
-                .nickname(participantDto.getName())
-                .build();
-    }
-
-    public List<ParticipantEntity> toEntity(List<ParticipantDto> participantsDto) {
-        return participantsDto.stream().map(this::toEntity).toList();
     }
 }
