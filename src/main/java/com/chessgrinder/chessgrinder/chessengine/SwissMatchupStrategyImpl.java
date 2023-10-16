@@ -38,15 +38,10 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
                 .sorted(Comparator.comparing(ParticipantDto::getScore).reversed()).toList();
 
         List<ParticipantForPairing> listOfAllPlayers = new ArrayList<>(
-                sortedParticipants.stream().map(participant -> {
-                    ParticipantForPairing participantForPairing = new ParticipantForPairing();
-                    participantForPairing.setParticipant(participant);
-                    return participantForPairing;
-                }).toList()
+                sortedParticipants.stream().map(ParticipantForPairing::of).toList()
         );
 
         for (ParticipantForPairing firstCandidateForMatch : listOfAllPlayers) {
-
             if (firstCandidateForMatch.isBooked()) {
                 continue;
             }
