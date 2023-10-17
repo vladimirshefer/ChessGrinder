@@ -3,12 +3,16 @@ import {useAuthData} from "lib/auth/AuthService";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
+import {useState} from "react";
+import {HiSelector} from "react-icons/hi";
 
 function MatchResultSelector(
     canSetResult: boolean,
     result: MatchResult | undefined,
     setResult: (selectedResult: MatchResult | null) => void,
 ) {
+    let [selectOpened, setSelectOpened] = useState(false)
+
     function getResultStr(result: MatchResult | undefined): string {
         switch (result) {
             case "WHITE_WIN":
@@ -18,25 +22,49 @@ function MatchResultSelector(
             case "DRAW":
                 return "½ - ½"
             case "BUY":
-                return "1"
+                return "BUY"
             default:
-                return "—"
+                return "?"
         }
+    }
+
+    function ResultSelectItem(
+        {
+            result,
+            onClick,
+        }: {
+            result: string,
+            onClick: () => void,
+        }
+    ) {
+        return <li className={"p-2 border border-gray-300 cursor-pointer"} onClick={onClick}>
+            {result}
+        </li>;
     }
 
     return <>
         <Conditional on={canSetResult}>
-            <select defaultValue={result || ""}
-                    onChange={(e) => {
-                        let selectedResult = e.target.value as MatchResult || null;
-                        setResult(selectedResult);
-                    }}>
-                <option value={""}>Unknown</option>
-                <option value={"WHITE_WIN"}>White won</option>
-                <option value={"BLACK_WIN"}>Black won</option>
-                <option value={"DRAW"}>Draw</option>
-                <option value={"BUY"}>Buy</option>
-            </select>
+            <div className={"relative h-full"}>
+                <div className={"grid h-full"}>
+                    <button className={"flex gap-1 place-content-center place-items-center p-1 font-semibold"}
+                            onClick={() => setSelectOpened(!selectOpened)}
+                    >
+                        <span>{getResultStr(result)}</span>
+                        <span><HiSelector/></span>
+                    </button>
+                </div>
+                <Conditional on={selectOpened}>
+                    <ul className={"absolute t-[100%] bg-white z-50 w-full font-semibold"}
+                        onClick={() => setSelectOpened(false)}
+                    >
+                        <ResultSelectItem result={"1 - 0"} onClick={() => setResult("WHITE_WIN")}/>
+                        <ResultSelectItem result={"0 - 1"} onClick={() => setResult("BLACK_WIN")}/>
+                        <ResultSelectItem result={"½ - ½"} onClick={() => setResult("DRAW")}/>
+                        <ResultSelectItem result={"?"} onClick={() => setResult(null)}/>
+                        <ResultSelectItem result={"BUY"} onClick={() => setResult("BUY")}/>
+                    </ul>
+                </Conditional>
+            </div>
         </Conditional>
         <Conditional on={!canSetResult}>
             <span className={"font-semibold"}>{getResultStr(result)}</span>
@@ -55,7 +83,7 @@ function MatchRow(
         <div className={"col-span-4 text-xs p-3"}>
             <span>{match.white?.name || "-"}</span>
         </div>
-        <div className={"col-span-4 text-xl text-center overflow-hidden"}>
+        <div className={"col-span-4 text-xl text-center"}>
             {MatchResultSelector(canEditResults, match.result, setResult)}
         </div>
         <div className={"col-span-4 text-xs p-3"}>
