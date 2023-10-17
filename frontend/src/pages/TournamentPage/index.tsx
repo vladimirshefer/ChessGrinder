@@ -180,7 +180,7 @@ function TournamentPage() {
     return <>
         <div className={"flex mt-4 p-2 items-top content-center"}>
             <h2 className={"text-lg font-semibold text-left grow"}>
-                Tournament {tournament.name || tournament.id}
+                {tournament.name || loc(`Unnamed Tournament`)}
             </h2>
             <div className={"px-2"}>
                 <div>
@@ -273,7 +273,7 @@ function TournamentPage() {
                     </Link>
                     <button className={"btn-danger uppercase !px-4"}
                             onClick={async () => {
-                                let expectedConfirmation = (tournament?.name || "") + (tournament?.id || "");
+                                let expectedConfirmation = (tournament?.name || tournament?.id || "");
                                 let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
                                 if (confirmation !== expectedConfirmation) {
                                     alert("You entered wrong id. Tournament will not be deleted.");
