@@ -60,7 +60,7 @@ export default function TournamentEditPage() {
                    defaultValue={tournament.tournament.name}/>
             <input type={"text"} id={"locationName"} placeholder={"Location Name"} {...register("locationName")}
                    className={"border-b"}
-                   defaultValue={tournament.tournament.locationUrl}/>
+                   defaultValue={tournament.tournament.locationName}/>
             <input type={"text"} id={"locationUrl"} placeholder={"Location Link"} {...register("locationUrl")}
                    className={"border-b"}
                    defaultValue={tournament.tournament.locationUrl}/>
