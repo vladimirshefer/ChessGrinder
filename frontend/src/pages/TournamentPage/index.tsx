@@ -178,7 +178,7 @@ function TournamentPage() {
 
     return <>
         <div className={"flex mt-4 p-2 items-center content-center "}>
-            <h2 className={"text-lg font-bold"}>
+            <h2 className={"text-lg font-semibold text-left"}>
                 Tournament {id}
             </h2>
             <small className={"text-gray-500 px-2 "}>{tournament?.status}</small>
