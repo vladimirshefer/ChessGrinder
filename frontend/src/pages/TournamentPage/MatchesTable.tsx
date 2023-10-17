@@ -4,8 +4,8 @@ import {UserRoles} from "lib/api/dto/MainPageData";
 import {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import {useRef, useState} from "react";
-import {HiSelector} from "react-icons/hi";
 import {useClickOutsideHandler} from "../../lib/util/ClickOutside";
+import {IoMdArrowDropdown} from "react-icons/io";
 
 function MatchResultSelector(
     {
@@ -34,7 +34,7 @@ function MatchResultSelector(
             case "BUY":
                 return "BUY"
             default:
-                return "?"
+                return "? - ?"
         }
     }
 
@@ -47,7 +47,7 @@ function MatchResultSelector(
             onClick: () => void,
         }
     ) {
-        return <li className={"p-2 border border-gray-300 cursor-pointer"} onClick={onClick}>
+        return <li className={"p-2 cursor-pointer text-lg border-gray-200 border"} onClick={onClick}>
             {result}
         </li>;
     }
@@ -60,17 +60,17 @@ function MatchResultSelector(
                             onClick={() => setSelectOpened(!selectOpened)}
                     >
                         <span>{getResultStr(result)}</span>
-                        <span><HiSelector/></span>
+                        <span><IoMdArrowDropdown/></span>
                     </button>
                 </div>
                 <Conditional on={selectOpened}>
-                    <ul className={"absolute t-[100%] bg-white z-50 w-full font-semibold"}
+                    <ul className={"absolute t-[100%] z-50 w-full font-semibold bg-white shadow-lg"}
                         onClick={() => setSelectOpened(false)}
                     >
                         <ResultSelectItem result={"1 - 0"} onClick={() => setResult("WHITE_WIN")}/>
                         <ResultSelectItem result={"0 - 1"} onClick={() => setResult("BLACK_WIN")}/>
                         <ResultSelectItem result={"½ - ½"} onClick={() => setResult("DRAW")}/>
-                        <ResultSelectItem result={"?"} onClick={() => setResult(null)}/>
+                        <ResultSelectItem result={"? - ?"} onClick={() => setResult(null)}/>
                         <ResultSelectItem result={"BUY"} onClick={() => setResult("BUY")}/>
                     </ul>
                 </Conditional>
@@ -89,14 +89,16 @@ function MatchRow(
     setResult: (selectedResult: MatchResult | null) => void
 ) {
     return <div className={"col-span-12 grid grid-cols-12 text-left"} key={idx}>
-        <div className={`col-span-4 text-xs p-3 font-semibold
+        <div className={`grid col-span-4 text-xs p-3 
                         ${match.result === "WHITE_WIN" ? "bg-anzac-400" : ""} 
                         ${match.result === "BLACK_WIN" ? "bg-gray-200" : ""}
                         ${match.result === "BUY" ? "bg-anzac-400" : ""} 
                         ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        ${!match.result ? "bg-gray-50" : ""} 
                         `}
         >
-            <span>{match.white?.name || "-"}</span>
+            <span className={"font-semibold"}>{match.white?.name || "-"}</span>
+            <span className={""}>{match.white?.userId && "Alexander Boldyrev"}</span>
         </div>
         <div className={"col-span-4 text-xl text-center"}>
             <MatchResultSelector canSetResult={canEditResults} result={match.result} setResult={setResult}/>
@@ -105,7 +107,9 @@ function MatchRow(
                         ${match.result === "BLACK_WIN" ? "bg-anzac-400" : ""} 
                         ${match.result === "WHITE_WIN" ? "bg-gray-200" : ""}
                         ${match.result === "BUY" ? "bg-anzac-400" : ""} 
-                        ${match.result === "DRAW" ? "bg-anzac-200" : ""} `}
+                        ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        ${!match.result ? "bg-gray-50" : ""} 
+                        `}
         >
             <span>{match.black?.name || "—"}</span>
         </div>

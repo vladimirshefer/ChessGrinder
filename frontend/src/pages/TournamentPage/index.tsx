@@ -177,11 +177,18 @@ function TournamentPage() {
     let tournament = tournamentQuery.data!!.tournament;
 
     return <>
-        <div className={"flex mt-4 p-2 items-center content-center "}>
-            <h2 className={"text-lg font-semibold text-left"}>
-                Tournament {id}
+        <div className={"flex mt-4 p-2 items-top content-center "}>
+            <h2 className={"text-lg font-semibold text-left grow"}>
+                Tournament {tournament.name || tournament.id}
             </h2>
-            <small className={"text-gray-500 px-2 "}>{tournament?.status}</small>
+            <div className={"px-2"}>
+                <div>
+                    <small className={"font-semibold text-gray-500"}>{tournament?.status}</small>
+                </div>
+                <div>
+                    <span className={"font-semibold"}>{tournament?.date && "01.08.23"}</span>
+                </div>
+            </div>
         </div>
         <div className={"flex flex-wrap justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
@@ -240,22 +247,17 @@ function TournamentPage() {
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <div className={"p-2"}></div>
                 <div className={"flex gap-1 justify-end p-2"}>
-                    <Link to={`/tournament/${tournament.id}/edit`}>
-                        <button className={"btn-light h-full !px-4"}>
-                            <AiOutlineEdit/>
-                        </button>
-                    </Link>
                     <Conditional on={tournament.status !== "ACTIVE"}>
-                        <button className={"btn-dark uppercase"}
+                        <button className={"btn-primary uppercase !px-4"}
                                 onClick={async () => {
                                     await tournamentRepository.startTournament(tournament?.id!!);
                                     await tournamentQuery.refetch()
                                 }}
-                        > {loc("Start")}
+                        >{loc("Start")}
                         </button>
                     </Conditional>
                     <Conditional on={tournament.status === "ACTIVE"}>
-                        <button className={"btn-dark uppercase"}
+                        <button className={"btn-primary uppercase"}
                                 onClick={async () => {
                                     await tournamentRepository.finishTournament(tournament?.id!!);
                                     await tournamentQuery.refetch()
@@ -263,6 +265,11 @@ function TournamentPage() {
                         >{loc("Finish")}
                         </button>
                     </Conditional>
+                    <Link to={`/tournament/${tournament.id}/edit`}>
+                        <button className={"btn-light h-full !px-4"}>
+                            <AiOutlineEdit/>
+                        </button>
+                    </Link>
                     <button className={"btn-danger uppercase !px-4"}
                             onClick={async () => {
                                 let expectedConfirmation = (tournament?.name || "") + (tournament?.id || "");
