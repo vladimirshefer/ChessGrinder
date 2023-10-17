@@ -3,15 +3,25 @@ import {useAuthData} from "lib/auth/AuthService";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {HiSelector} from "react-icons/hi";
+import {useClickOutsideHandler} from "../../lib/util/ClickOutside";
 
 function MatchResultSelector(
-    canSetResult: boolean,
-    result: MatchResult | undefined,
-    setResult: (selectedResult: MatchResult | null) => void,
+    {
+        canSetResult,
+        result,
+        setResult,
+    }: {
+        canSetResult: boolean,
+        result: MatchResult | undefined,
+        setResult: (selectedResult: MatchResult | null) => void,
+    }
 ) {
     let [selectOpened, setSelectOpened] = useState(false)
+    let selectRef = useRef(null)
+    useClickOutsideHandler(selectRef, () => setSelectOpened(false));
+
 
     function getResultStr(result: MatchResult | undefined): string {
         switch (result) {
@@ -44,7 +54,7 @@ function MatchResultSelector(
 
     return <>
         <Conditional on={canSetResult}>
-            <div className={"relative h-full"}>
+            <div ref={selectRef} className={"relative h-full"}>
                 <div className={"grid h-full"}>
                     <button className={"flex gap-1 place-content-center place-items-center p-1 font-semibold"}
                             onClick={() => setSelectOpened(!selectOpened)}
@@ -78,15 +88,25 @@ function MatchRow(
     canEditResults: boolean,
     setResult: (selectedResult: MatchResult | null) => void
 ) {
-
-    return <div className={"col-span-12 grid grid-cols-12 border-b border-gray text-left"} key={idx}>
-        <div className={"col-span-4 text-xs p-3"}>
+    return <div className={"col-span-12 grid grid-cols-12 text-left"} key={idx}>
+        <div className={`col-span-4 text-xs p-3 font-semibold
+                        ${match.result === "WHITE_WIN" ? "bg-anzac-400" : ""} 
+                        ${match.result === "BLACK_WIN" ? "bg-gray-200" : ""}
+                        ${match.result === "BUY" ? "bg-anzac-400" : ""} 
+                        ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        `}
+        >
             <span>{match.white?.name || "-"}</span>
         </div>
         <div className={"col-span-4 text-xl text-center"}>
-            {MatchResultSelector(canEditResults, match.result, setResult)}
+            <MatchResultSelector canSetResult={canEditResults} result={match.result} setResult={setResult}/>
         </div>
-        <div className={"col-span-4 text-xs p-3"}>
+        <div className={`col-span-4 text-xs p-3 font-semibold
+                        ${match.result === "BLACK_WIN" ? "bg-anzac-400" : ""} 
+                        ${match.result === "WHITE_WIN" ? "bg-gray-200" : ""}
+                        ${match.result === "BUY" ? "bg-anzac-400" : ""} 
+                        ${match.result === "DRAW" ? "bg-anzac-200" : ""} `}
+        >
             <span>{match.black?.name || "—"}</span>
         </div>
     </div>;
@@ -107,7 +127,7 @@ function MatchesTable(
     let authData = useAuthData();
     let canEditResults = !roundIsFinished && (authData?.roles?.includes(UserRoles.ADMIN) || false);
 
-    return <div className={"grid grid-cols-12 p-2"}>
+    return <div className={"grid grid-cols-12 p-2 gap-y-2"}>
         <div className={"col-span-12 grid grid-cols-12 border-b border-black justify-items-start"}>
             <div className={"col-span-4 font-semibold uppercase"}>{loc("White")}</div>
             <div className={"col-span-4 font-semibold uppercase justify-self-center"}>{loc("Result")}</div>
