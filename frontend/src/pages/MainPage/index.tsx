@@ -25,7 +25,6 @@ function MainPage() {
         data: {
             tournaments = [] as TournamentDto[],
         } = {} as TournamentListDto,
-        refetch: refetchTournaments
     } = useQuery({
         queryKey: ["tournaments"],
         queryFn: () => tournamentRepository.getTournaments()
