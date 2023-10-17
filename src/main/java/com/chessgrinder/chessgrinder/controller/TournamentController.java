@@ -25,8 +25,8 @@ public class TournamentController {
 
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping
-    public void createTournament() {
-        tournamentService.createTournament(LocalDateTime.now());
+    public TournamentDto createTournament() {
+        return tournamentService.createTournament(LocalDateTime.now());
     }
 
     @Secured(RoleEntity.Roles.ADMIN)

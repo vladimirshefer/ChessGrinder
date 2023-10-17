@@ -8,7 +8,7 @@ import {compareBy, reverse} from "lib/util/Comparator";
 import {requirePresent} from "lib/util/common";
 
 export interface TournamentRepository {
-    postTournament: () => Promise<void>
+    postTournament: () => Promise<TournamentDto>
     startTournament: (tournamentId: string) => Promise<void>
     finishTournament: (tournamentId: string) => Promise<void>
     getTournaments: () => Promise<TournamentListDto>
@@ -26,12 +26,12 @@ class LocalStorageTournamentRepository implements TournamentRepository {
             rounds: [],
             tournament: {
                 id: id,
-                name: id,
                 date: LocalStorageTournamentRepository.getTodayDate(),
                 status: "PLANNED",
             } as TournamentDto
         } as TournamentPageData;
         localStorageUtil.setObject(`cgd.tournament.${id}`, tournament)
+        return tournament.tournament
     }
 
     async finishTournament(tournamentId: string): Promise<void> {
@@ -96,7 +96,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
 
 class RestApiTournamentRepository implements TournamentRepository {
     async postTournament() {
-        await restApiClient.post("/tournament");
+        return await restApiClient.post<TournamentDto>("/tournament");
     }
 
     async finishTournament(tournamentId: string): Promise<void> {

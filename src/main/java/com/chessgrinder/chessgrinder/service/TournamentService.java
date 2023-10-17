@@ -28,11 +28,8 @@ public class TournamentService {
     }
 
     @Transactional
-    public void createTournament(LocalDateTime date) {
-
-
+    public TournamentDto createTournament(LocalDateTime date) {
         TournamentEntity tournamentEntity = TournamentEntity.builder()
-                .id(UUID.randomUUID())
                 .date(date)
                 .status(TournamentStatus.PLANNED)
                 .build();
@@ -40,7 +37,6 @@ public class TournamentService {
         tournamentEntity = tournamentRepository.save(tournamentEntity);
 
         RoundEntity firstRoundEntity = RoundEntity.builder()
-                .id(UUID.randomUUID())
                 .tournament(tournamentEntity)
                 .matches(List.of())
                 .number(1)
@@ -48,6 +44,7 @@ public class TournamentService {
                 .build();
 
         roundRepository.save(firstRoundEntity);
+        return tournamentMapper.toDto(tournamentEntity);
     }
 
     public void startTournament(UUID tournamentId) {

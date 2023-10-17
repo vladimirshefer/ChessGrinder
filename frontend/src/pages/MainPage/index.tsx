@@ -6,10 +6,11 @@ import {ListDto, MemberDto, TournamentDto, TournamentListDto} from "lib/api/dto/
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import userRepository from "lib/api/repository/UserRepository";
 import {useLoc} from "strings/loc";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 function MainPage() {
     let loc = useLoc()
+    let navigate = useNavigate()
 
     let {
         data: {
@@ -31,8 +32,8 @@ function MainPage() {
     })
 
     async function createTournament() {
-        await tournamentRepository.postTournament()
-        await refetchTournaments()
+        let tournament = await tournamentRepository.postTournament();
+        await navigate(`/tournament/${tournament.id}/edit`)
     }
 
     return <>
