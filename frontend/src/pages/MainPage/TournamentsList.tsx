@@ -11,6 +11,7 @@ import tournamentPageRepository from "../../lib/api/repository/TournamentPageRep
 import {compareBy} from "lib/util/Comparator";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import dayjs from "dayjs";
+import {BsFillRecordFill} from "react-icons/bs";
 
 function TournamentPane(
     {
@@ -47,8 +48,7 @@ function TournamentPane(
     if (winnerQuery.isError) {
         winnerName = loc("Error") + "!";
         winnerResult = "?"
-    }
-    else if (winnerQuery.isSuccess) {
+    } else if (winnerQuery.isSuccess) {
         let data = winnerQuery.data;
         if (!data) {
             winnerName = loc("No participants");
@@ -62,8 +62,11 @@ function TournamentPane(
     return <div className={`grid justify-items-start w-full p-4 
                 ${isPlanned ? "tournament-planned" : isFinished ? "tournament-finished" : "tournament-active"}`}>
         <div className={"grid justify-items-start"}>
-            <Link className={"font-bold text-lg text-left"} to={`/tournament/${tournament.id}`}>
-                {tournament.name || loc("Unnamed Tournament")}
+            <Link className={"flex gap-2 font-semibold text-lg text-left items-center"} to={`/tournament/${tournament.id}`}>
+                <span className={"grow"}>{tournament.name || loc("Unnamed Tournament")}</span>
+                {tournament.status === "ACTIVE" &&
+                    <span className={"text-red-500"}><BsFillRecordFill/></span>
+                }
             </Link>
             <small className={"font-bold text-left"}>
                 {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
