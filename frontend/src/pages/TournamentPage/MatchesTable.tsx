@@ -98,7 +98,9 @@ function MatchRow(
                         `}
         >
             <span className={"font-semibold"}>{match.white?.name || "-"}</span>
-            <span className={""}>{match.white?.userId && "Alexander Boldyrev"}</span>
+            {match.white?.userFullName &&
+                <span>{match.white?.userFullName}</span>
+            }
         </div>
         <div className={"col-span-4 text-xl text-center"}>
             <MatchResultSelector canSetResult={canEditResults} result={match.result} setResult={setResult}/>

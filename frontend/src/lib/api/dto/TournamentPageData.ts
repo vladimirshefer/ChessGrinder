@@ -29,6 +29,7 @@ export interface ParticipantDto {
     id: string
     name: string
     userId?: string | null | undefined
+    userFullName?: string | null | undefined
     score: number
     buchholz: number
 }

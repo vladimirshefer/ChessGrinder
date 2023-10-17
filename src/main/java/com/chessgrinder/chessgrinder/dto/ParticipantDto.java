@@ -1,9 +1,11 @@
 package com.chessgrinder.chessgrinder.dto;
 
-import java.math.*;
-
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -14,13 +16,20 @@ public class ParticipantDto {
     @Nullable
     private String userId;
 
-    @NonNull
+    /**
+     * Null if userId is null.
+     * But could be null even if userId is not null.
+     */
+    @Nullable
+    String userFullName;
+
+    @Nonnull
     private String name; //NICKNAME
 
-    @NonNull
+    @Nonnull
     private BigDecimal score = BigDecimal.ZERO;
 
-    @NonNull
+    @Nonnull
     private BigDecimal buchholz = BigDecimal.ZERO;
 
 }
