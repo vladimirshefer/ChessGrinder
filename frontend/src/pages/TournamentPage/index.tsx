@@ -19,6 +19,7 @@ import {
 } from "react-icons/ai";
 import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
+import dayjs from "dayjs";
 
 function AddParticipant(
     {
@@ -177,7 +178,7 @@ function TournamentPage() {
     let tournament = tournamentQuery.data!!.tournament;
 
     return <>
-        <div className={"flex mt-4 p-2 items-top content-center "}>
+        <div className={"flex mt-4 p-2 items-top content-center"}>
             <h2 className={"text-lg font-semibold text-left grow"}>
                 Tournament {tournament.name || tournament.id}
             </h2>
@@ -186,7 +187,7 @@ function TournamentPage() {
                     <small className={"font-semibold text-gray-500"}>{tournament?.status}</small>
                 </div>
                 <div>
-                    <span className={"font-semibold"}>{tournament?.date && "01.08.23"}</span>
+                    <span className={"font-semibold"}>{tournament?.date && dayjs(tournament.date).format("DD.MM.YY")}</span>
                 </div>
             </div>
         </div>
@@ -201,7 +202,7 @@ function TournamentPage() {
             {roundNumbers.map(rid => {
                 return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
                     <button
-                        className={`w-full py-2 px-3 
+                        className={`w-full py-2 px-5 
                                     ${rid === roundId ? "bg-black text-white" : "hover:bg-gray-300"}`}>
                         {rid}
                     </button>

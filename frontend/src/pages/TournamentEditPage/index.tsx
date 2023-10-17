@@ -1,11 +1,17 @@
-import {useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {useForm} from "react-hook-form";
 import {useLoc} from "strings/loc";
+import {requirePresent} from "lib/util/common";
+import dayjs from "dayjs";
+import {TournamentPageData} from "../../lib/api/dto/TournamentPageData";
+import tournamentRepository from "../../lib/api/repository/TournamentRepository";
+import {DEFAULT_DATETIME_FORMAT} from "../../lib/api/dto/MainPageData";
 
 export default function TournamentEditPage() {
     let loc = useLoc()
+    let navigate = useNavigate();
     let {tournamentId} = useParams();
     let tournamentQuery = useQuery({
         queryKey: ["tournament", tournamentId],
@@ -16,8 +22,17 @@ export default function TournamentEditPage() {
 
     const {register, handleSubmit} = useForm();
 
-    function saveTournament(data: any) {
-        alert("Tournament edit is not supported yet")
+    async function saveTournament(data: { [key: string]: string}) {
+        let tournamentPageData = requirePresent(tournamentQuery.data, "Tournament not loaded");
+        let tournament = tournamentPageData.tournament
+        tournament.name = data.name
+        tournament.locationUrl = data.locationUrl
+        tournament.locationName = data.locationName
+        let startTime: string = data.startTime || "20:00";
+        let startDate: string = data.startDate || "2023-10-11"
+        tournament.date = dayjs(startDate + "T" + startTime, DEFAULT_DATETIME_FORMAT).format(DEFAULT_DATETIME_FORMAT)
+        await tournamentRepository.updateTournament(tournament);
+        navigate(`/tournament/${tournamentId}`)
     }
 
     if (!tournamentId) {
@@ -32,43 +47,40 @@ export default function TournamentEditPage() {
         return <>Loading</>
     }
 
-    let tournament = tournamentQuery.data!!
+    let tournament: TournamentPageData = {...tournamentQuery.data!!} as TournamentPageData
+    let tournamentStartDate = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("YYYY-MM-DD")
+    let tournamentStartTime = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")
 
     return <>
-        <h1>Edit tournament</h1>
-        <div>asdf{JSON.stringify(tournament.tournament, null, 2)}</div>
-        <form className={"grid"} onSubmit={handleSubmit(saveTournament)}>
-            <label htmlFor="tournamentName" className={"text-sm text-gray-800"}>
-                {loc("Tournament Name")}
-            </label>
-            <input type={"text"} id={"tournamentName"} placeholder={loc("Tournament Name")} {...register("name")}
+        <h1 className={"text-left text-lg uppercase font-semibold p-2"}>Edit tournament</h1>
+        <form className={"grid gap-2 p-2 text-left"} onSubmit={handleSubmit(saveTournament)}>
+            <input type={"text"} id={"tournamentName"}
+                   placeholder={loc("Tournament Name").toUpperCase()} {...register("name")}
+                   className={"border-b"}
                    defaultValue={tournament.tournament.name}/>
-
-            <label htmlFor="locationName" className={"text-sm text-gray-800"}>
-                {loc("Location Name")}
-            </label>
             <input type={"text"} id={"locationName"} placeholder={"Location Name"} {...register("locationName")}
-                defaultValue={tournament.tournament.locationUrl}/>
-
-            <label htmlFor="locationUrl" className={"text-sm text-gray-800"}>
-                {loc("Location Link")}
-            </label>
+                   className={"border-b"}
+                   defaultValue={tournament.tournament.locationUrl}/>
             <input type={"text"} id={"locationUrl"} placeholder={"Location Link"} {...register("locationUrl")}
-                defaultValue={tournament.tournament.locationUrl}/>
-
-            <label htmlFor="startDate" className={"text-sm text-gray-800"}>
-                {loc("Start Date")}
-            </label>
+                   className={"border-b"}
+                   defaultValue={tournament.tournament.locationUrl}/>
             <input type={"date"} id={"startDate"} placeholder={"Start Date"} {...register("startDate")}
-                defaultValue={tournament.tournament.date}/>
-
-            <label htmlFor="startTime" className={"text-sm text-gray-800"}>
-                {loc("Start Time")}
-            </label>
+                   className={"border-b"}
+                   defaultValue={tournamentStartDate}/>
             <input type={"time"} id={"startTime"} placeholder={"Start Time"} {...register("startTime")}
-                defaultValue={tournament.tournament.time}/>
+                   className={"border-b"}
+                   defaultValue={tournamentStartTime}/>
 
-            <button type={"submit"} className={"btn-dark"}>Save</button>
+            <div className={"flex gap-2 justify-end"}>
+                <button type={"submit"} className={"btn-primary uppercase font-semibold"}>
+                    {loc("Save")}
+                </button>
+                <Link to={`/tournament/${tournamentId}`}>
+                    <button className={"btn-light uppercase font-semibold"}>
+                        {loc("Cancel")}
+                    </button>
+                </Link>
+            </div>
         </form>
     </>
 }

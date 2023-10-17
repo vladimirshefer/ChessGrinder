@@ -14,17 +14,15 @@ public class TournamentMapper {
     public TournamentDto toDto(TournamentEntity tournamentEntity) {
         return TournamentDto.builder()
                 .id(tournamentEntity.getId().toString())
+                .name(tournamentEntity.getName())
+                .locationName(tournamentEntity.getLocationName())
+                .locationUrl(tournamentEntity.getLocationUrl())
                 .date(tournamentEntity.getDate())
                 .status(tournamentEntity.getStatus())
                 .build();
     }
 
     public List<TournamentDto> toDto(List<TournamentEntity> tournamentEntities) {
-        return tournamentEntities.stream().map(tournament -> TournamentDto.builder()
-                .id(tournament.getId().toString())
-                .date(tournament.getDate())
-                .status(tournament.getStatus())
-                .build())
-            .toList();
+        return tournamentEntities.stream().map(this::toDto).toList();
     }
 }

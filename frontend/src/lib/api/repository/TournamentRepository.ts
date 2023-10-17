@@ -5,6 +5,7 @@ import restApiClient from "lib/api/RestApiClient";
 import {qualifiedServiceProxy} from "./apiSettings";
 import {AuthData} from "lib/auth/AuthService";
 import {compareBy, reverse} from "lib/util/Comparator";
+import {requirePresent} from "lib/util/common";
 
 export interface TournamentRepository {
     postTournament: () => Promise<void>
@@ -13,6 +14,7 @@ export interface TournamentRepository {
     getTournaments: () => Promise<TournamentListDto>
     participate: (tournamentId: string) => Promise<void>
     deleteTournament: (tournamentId: string) => Promise<void>
+    updateTournament:(tournament: TournamentDto) => Promise<void>
 }
 
 class LocalStorageTournamentRepository implements TournamentRepository {
@@ -55,12 +57,12 @@ class LocalStorageTournamentRepository implements TournamentRepository {
     }
 
     async participate(tournamentId: string): Promise<void> {
-        let tournament = localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`);
-        if (!tournament) throw new Error(`No such tournament with id ${tournamentId}`)
+        let tournament = requirePresent(localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`), `No such tournament with id ${tournamentId}`);
         let participants = tournament.participants;
-        let authData = localStorageUtil.getObject<AuthData>("cgd.auth");
-        if (!authData || !authData?.username) throw new Error("Not logged in");
-        if (!!participants.find(p => p.userId === authData?.username)) {
+        let authData = requirePresent(localStorageUtil.getObject<AuthData>("cgd.auth"), "Not logged in");
+        let username = authData?.username;
+        if (!authData || !username) throw new Error("Not logged in");
+        if (!!participants.find(p => p.userId === username)) {
             throw new Error("You are already participating")
         }
         participants.push({
@@ -83,6 +85,12 @@ class LocalStorageTournamentRepository implements TournamentRepository {
         let month = date.getMonth() + 1;
         let year = date.getFullYear();
         return `${("00000" + year).slice(-4)}-${("000" + month).slice(-2)}-${("000" + day).slice(-2)}`
+    }
+
+    async updateTournament(tournament: TournamentDto): Promise<void> {
+        let tournamentData = requirePresent(localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournament.id}`), `No such tournament with id ${tournament.id}`);
+        tournamentData.tournament = tournament
+        localStorageUtil.setObject(`cgd.tournament.${tournament.id}`, tournamentData)
     }
 }
 
@@ -109,6 +117,10 @@ class RestApiTournamentRepository implements TournamentRepository {
 
     async participate(tournamentId: string): Promise<void> {
         await restApiClient.post(`/tournament/${tournamentId}/action/participate`)
+    }
+
+    async updateTournament(tournament: TournamentDto): Promise<void> {
+        await restApiClient.put(`/tournament/${tournament.id}`, tournament)
     }
 }
 

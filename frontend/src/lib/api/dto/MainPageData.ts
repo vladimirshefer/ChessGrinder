@@ -24,11 +24,12 @@ export interface ListDto<T extends any> {
 
 export type TournamentStatus = "FINISHED" | "ACTIVE" | "PLANNED"
 
+export let DEFAULT_DATETIME_FORMAT = "YYYY-MM-DDTHH:mm"
+
 export interface TournamentDto {
     id: string
     name: string
     date: string
-    time?: string
     status?: TournamentStatus
     locationName?: string
     locationUrl?: string

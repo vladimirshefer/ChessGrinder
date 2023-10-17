@@ -15,7 +15,9 @@ let locale_ru: { [key: string]: string } = {
     "Winner": "Победитель",
     "Result": "Итог",
     "Black": "Чёрные",
-    "White": "Белые"
+    "White": "Белые",
+    "Save": "Сохранить",
+    "Cancel": "Отменa",
 }
 
 export default locale_ru

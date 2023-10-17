@@ -1,5 +1,5 @@
 import {Link} from "react-router-dom";
-import {TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
+import {DEFAULT_DATETIME_FORMAT, TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
@@ -10,6 +10,7 @@ import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "../../lib/api/repository/TournamentPageRepository";
 import {compareBy} from "lib/util/Comparator";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
+import dayjs from "dayjs";
 
 function TournamentPane(
     {
@@ -65,20 +66,20 @@ function TournamentPane(
                 {tournament.name || loc("Unnamed Tournament")}
             </Link>
             <small className={"font-bold text-left"}>
-                {tournament.date}
+                {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
             </small>
         </div>
         <div className={"p-1"}></div>
         <Conditional on={isPlanned || isActive}>
             <div className={"py-3"}>
-                            <span className={"flex items-center"}>
-                                <AiFillClockCircle className={"text-primary mr-3"}/>
-                                20:00
-                            </span>
                 <span className={"flex items-center"}>
-                                <IoLocationSharp className={"text-primary mr-3"}/>
-                                Seven roads
-                            </span>
+                    <AiFillClockCircle className={"text-primary mr-3"}/>
+                    {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
+                </span>
+                <span className={"flex items-center"}>
+                    <IoLocationSharp className={"text-primary mr-3"}/>
+                    {tournament.locationName || "Seven roads"}
+                </span>
             </div>
         </Conditional>
         <Conditional on={isFinished}>
@@ -140,7 +141,7 @@ export function TournamentsList(
         <ul className={"grid grid-cols-12 gap-2"}>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <li className={"col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 " +
-                    "bg-gray-200 flex justify-center content-center" }>
+                    "bg-gray-200 flex justify-center content-center"}>
                     <button className={"h-full w-full text-xl text-anzac-600 p-3"}
                             onClick={createTournament}
                     >

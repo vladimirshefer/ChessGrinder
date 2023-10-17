@@ -4,6 +4,7 @@ import java.time.*;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.enums.*;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -25,6 +26,18 @@ public class TournamentEntity {
     @Column(name = "id")
     @UuidGenerator
     private UUID id;
+
+    @Nullable
+    @Column(name = "name")
+    private String name;
+
+    @Nullable
+    @Column(name = "location_name")
+    private String locationName;
+
+    @Nullable
+    @Column(name = "location_url")
+    private String locationUrl;
 
     @Column(name = "date")
     private LocalDateTime date;

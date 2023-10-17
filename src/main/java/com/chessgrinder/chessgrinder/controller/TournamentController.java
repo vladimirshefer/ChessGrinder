@@ -1,10 +1,14 @@
 package com.chessgrinder.chessgrinder.controller;
 
+import com.chessgrinder.chessgrinder.dto.TournamentDto;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
+import com.chessgrinder.chessgrinder.entities.TournamentEntity;
+import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.service.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -17,6 +21,7 @@ import java.util.UUID;
 public class TournamentController {
 
     private final TournamentService tournamentService;
+    private final TournamentRepository tournamentRepository;
 
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping
@@ -39,6 +44,21 @@ public class TournamentController {
     @GetMapping
     public Object getTournaments() {
         return Map.of("tournaments", tournamentService.findTournaments());
+    }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PutMapping("/{tournamentId}")
+    public void updateTournament(
+            @PathVariable UUID tournamentId,
+            @RequestBody TournamentDto tournamentDto
+    ) {
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
+        tournament.setName(tournamentDto.getName());
+        tournament.setDate(tournamentDto.getDate());
+        tournament.setLocationName(tournamentDto.getLocationName());
+        tournament.setLocationUrl(tournament.getLocationUrl());
+        tournamentRepository.save(tournament);
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
