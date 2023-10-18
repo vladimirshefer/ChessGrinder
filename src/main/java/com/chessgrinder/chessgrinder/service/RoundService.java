@@ -196,14 +196,18 @@ public class RoundService {
 
         RoundEntity roundEntity = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
-        if (roundEntity != null) {
-            roundRepository.delete(roundEntity);
-            List<RoundEntity> allRoundsWithGreaterRoundNumber = roundRepository.findAllRoundsWithGreaterRoundNumber(tournamentId, roundNumber);
-            allRoundsWithGreaterRoundNumber.forEach(round -> round.setNumber(round.getNumber() - 1));
-            roundRepository.saveAll(allRoundsWithGreaterRoundNumber);
-        } else {
+        if (roundEntity == null) {
             log.error("There is no round with number: " + roundNumber + " in the tournament with id: " + tournamentId);
             throw new RoundNotFoundException();
+        }
+        roundRepository.delete(roundEntity);
+        List<RoundEntity> allRoundsWithGreaterRoundNumber = roundRepository.findAllRoundsWithGreaterRoundNumber(tournamentId, roundNumber);
+        allRoundsWithGreaterRoundNumber.forEach(round -> round.setNumber(round.getNumber() - 1));
+        roundRepository.saveAll(allRoundsWithGreaterRoundNumber);
+        try {
+            updateResults(tournamentId);
+        } catch (Exception e) {
+            log.error("Could not update results", e);
         }
     }
 
