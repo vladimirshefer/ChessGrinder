@@ -50,7 +50,7 @@ public class RoundController {
     @Secured(RoleEntity.Roles.ADMIN)
     @DeleteMapping("/{roundNumber}")
     public void deleteRound(@PathVariable UUID tournamentId,
-                            @RequestParam Integer roundNumber) throws RoundNotFoundException {
+                            @PathVariable Integer roundNumber) throws RoundNotFoundException {
         roundService.deleteRound(tournamentId, roundNumber);
     }
 }

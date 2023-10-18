@@ -66,10 +66,8 @@ public class RoundService {
 
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
-        if (round.isDrawed()) {
-            List<MatchEntity> alreadyExistedMatches = matchRepository.findMatchEntitiesByRoundId(round.getId());
-            matchRepository.deleteAll(alreadyExistedMatches);
-        }
+        List<MatchEntity> alreadyExistedMatches = matchRepository.findMatchEntitiesByRoundId(round.getId());
+        matchRepository.deleteAll(alreadyExistedMatches);
 
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
@@ -102,9 +100,6 @@ public class RoundService {
         }
 
         matchRepository.saveAll(matches);
-
-        round.setDrawed(true);
-        roundRepository.save(round);
     }
 
     @Nullable
@@ -125,6 +120,9 @@ public class RoundService {
 
         if (roundEntity != null) {
             roundRepository.delete(roundEntity);
+            List<RoundEntity> allRoundsWithGreaterRoundNumber = roundRepository.findAllRoundsWithGreaterRoundNumber(tournamentId, roundNumber);
+            allRoundsWithGreaterRoundNumber.forEach(round -> round.setNumber(round.getNumber() - 1));
+            roundRepository.saveAll(allRoundsWithGreaterRoundNumber);
         } else {
             log.error("There is no round with number: " + roundNumber + " in the tournament with id: " + tournamentId);
             throw new RoundNotFoundException();

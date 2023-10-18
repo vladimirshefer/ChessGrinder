@@ -21,4 +21,7 @@ public interface RoundRepository extends PagingAndSortingRepository<RoundEntity,
     @Query("SELECT r FROM RoundEntity r WHERE r.tournament.id = :tournamentId and r.number = :roundNumber")
     RoundEntity findByTournamentIdAndNumber(UUID tournamentId, Integer roundNumber);
 
+    @Query("SELECT r FROM RoundEntity r WHERE r.tournament.id = :tournamentId and r.number > :roundNumber")
+    List<RoundEntity> findAllRoundsWithGreaterRoundNumber(UUID tournamentId, Integer roundNumber);
+
 }

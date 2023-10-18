@@ -41,7 +41,6 @@ public class TournamentService {
                 .matches(List.of())
                 .number(1)
                 .isFinished(false)
-                .isDrawed(false)
                 .build();
 
         roundRepository.save(firstRoundEntity);
