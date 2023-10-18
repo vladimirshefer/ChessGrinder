@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.chessgrinder.chessgrinder.dto.pages.*;
 import com.chessgrinder.chessgrinder.entities.*;
@@ -30,7 +31,11 @@ public class TournamentPageService {
         return TournamentPageDto.builder()
                 .tournament(tournamentMapper.toDto(tournamentEntity))
                 .participants(participantMapper.toDto(tournamentParticipantEntities))
-                .rounds(roundMapper.toDto(tournamentRoundEntities))
+                .rounds(roundMapper.toDto(tournamentRoundEntities
+                        .stream()
+                        .sorted(Comparator.comparing(RoundEntity::getNumber))
+                        .collect(Collectors.toList()))
+                )
                 .build();
     }
 

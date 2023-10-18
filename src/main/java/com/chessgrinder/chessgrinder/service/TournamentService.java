@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,7 +25,13 @@ public class TournamentService {
     private final TournamentMapper tournamentMapper;
 
     public List<TournamentDto> findTournaments() {
-        return tournamentRepository.findAll().stream().map(tournamentMapper::toDto).collect(Collectors.toList());
+        return tournamentRepository.findAll().stream()
+                .sorted(
+                        Comparator.comparing(TournamentEntity::getDate).reversed()
+                                .thenComparing(TournamentEntity::getId)
+                )
+                .map(tournamentMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
