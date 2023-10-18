@@ -8,6 +8,8 @@ import com.chessgrinder.chessgrinder.entities.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 
+import static java.util.Comparator.*;
+
 @Component
 @RequiredArgsConstructor
 public class RoundMapper {
@@ -21,20 +23,18 @@ public class RoundMapper {
                         .number(round.getNumber())
                         .matches(matchMapper.toDto(round.getMatches()
                                 .stream().sorted(
-                                        Comparator.nullsLast(Comparator
-                                                        .<MatchEntity, String>comparing(
-                                                                it -> Optional.ofNullable(it)
-                                                                        .map(MatchEntity::getParticipant1)
-                                                                        .map(ParticipantEntity::getNickname)
-                                                                        .orElse(null)
-                                                        ))
-                                                .thenComparing(Comparator.nullsLast(Comparator
-                                                        .comparing(
-                                                                it -> Optional.ofNullable(it)
-                                                                        .map(MatchEntity::getParticipant2)
-                                                                        .map(ParticipantEntity::getNickname)
-                                                                        .orElse(null)
-                                                        ))
+                                        Comparator.<MatchEntity, String>comparing(
+                                                        it -> Optional.ofNullable(it)
+                                                                .map(MatchEntity::getParticipant1)
+                                                                .map(ParticipantEntity::getNickname)
+                                                                .orElse(null),
+                                                        nullsLast(naturalOrder()))
+                                                .thenComparing(
+                                                        it -> Optional.ofNullable(it)
+                                                                .map(MatchEntity::getParticipant2)
+                                                                .map(ParticipantEntity::getNickname)
+                                                                .orElse(null),
+                                                        nullsLast(naturalOrder())
                                                 )
                                 )
                                 .collect(Collectors.toList())
