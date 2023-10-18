@@ -65,6 +65,12 @@ public class RoundService {
     public void makeMatchUp(UUID tournamentId, Integer roundNumber) {
 
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
+
+        if (round.isDrawed()) {
+            List<MatchEntity> alreadyExistedMatches = matchRepository.findMatchEntitiesByRoundId(round.getId());
+            matchRepository.deleteAll(alreadyExistedMatches);
+        }
+
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
@@ -96,6 +102,9 @@ public class RoundService {
         }
 
         matchRepository.saveAll(matches);
+
+        round.setDrawed(true);
+        roundRepository.save(round);
     }
 
     @Nullable

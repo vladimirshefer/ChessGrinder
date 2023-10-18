@@ -38,4 +38,7 @@ public class RoundEntity {
 
     @Column(name = "is_finished")
     private boolean isFinished;
+
+    @Column(name = "is_drawed")
+    private boolean isDrawed = false;
 }

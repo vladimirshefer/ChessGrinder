@@ -19,4 +19,6 @@ public interface MatchRepository extends PagingAndSortingRepository<MatchEntity,
     @Query("SELECT m FROM MatchEntity m WHERE (m.round.tournament.id = :tournamentId AND m.participant1 = :participant1 AND m.participant2 = :participant2) OR (m.round.tournament.id = :tournamentId AND m.participant1 = :participant2 AND m.participant2 = :participant1) ")
     MatchEntity findMatchBetweenTwoParticipantsInTournament(UUID tournamentId, ParticipantEntity participant1, ParticipantEntity participant2);
 
+    List<MatchEntity> findMatchEntitiesByRoundId(UUID roundId);
+
 }
