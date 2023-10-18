@@ -7,7 +7,7 @@ let apiPathPrefix = "/api"
 let restAxios = axios
     .create({
         baseURL: GLOBAL_SETTINGS.restApiHost,
-        timeout: 1000,
+        // timeout: 1000,
         // headers: {'X-Custom-Header': 'foobar'}
     })
 
