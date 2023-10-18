@@ -9,6 +9,10 @@ import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import Gravatar, {GravatarType} from "components/Gravatar";
+import {AiOutlineTrophy} from "react-icons/ai";
+import {BiSolidChess} from "react-icons/bi";
+import {BsPencilFill} from "react-icons/bs";
+import {FiLogOut} from "react-icons/fi";
 
 function AssignAchievementPane(
     {
@@ -28,7 +32,7 @@ function AssignAchievementPane(
 
     let [selectedBadge, setSelectedBadge] = useState<BadgeDto>()
 
-    return <div>
+    return <div className={"pt-3"}>
         <button className={"btn bg-gray-200"}
                 onClick={() => setSelectActive(!selectActive)}
         >
@@ -99,6 +103,7 @@ function AssignAchievementPane(
 export default function UserProfilePage() {
     let {username} = useParams()
     let navigate = useNavigate()
+    let loc = useLoc()
     let authData = useAuthData()
 
     useEffect(() => {
@@ -129,22 +134,42 @@ export default function UserProfilePage() {
         return <>No such user</>
     }
 
-    return <div className={"grid"}>
-        <h1 className={"text-xl font-bold"}>
-            {userProfile.name || userProfile.username || userProfile.id || "Unknown"}
-        </h1>
-        <span className={"text-gray-500"}>
-            @{userProfile.username}
-        </span>
-        <div>
-            {
-                userProfile.roles?.map(role => {
-                    return <span key={role} className={"bg-red-300 rounded-full px-2 text-sm p-1"}>{role}</span>
-                })
-            }
+    return <div className={"grid p-4"}>
+        <div className={"flex gap-1 items-center"}>
+            <span className={"text-left uppercase grow"}>
+                {userProfile.roles?.includes(UserRoles.ADMIN) ? loc("Administrator") : loc("User")}
+            </span>
+            <Conditional on={isMyProfile}>
+                <button className={"p-2"} title={"Edit profile"}><BsPencilFill/></button>
+                <button className={"p-2"} title={"Logout"}
+                        onClick={logout}><FiLogOut/></button>
+            </Conditional>
         </div>
-        <div className={"grid place-items-center"}>
-            <Gravatar text={userProfile.username || userProfile.id} type={GravatarType.Robohash} size={300}/>
+        <div className={"p-2"}/>
+        <div className={"flex gap-2"}>
+            <div>
+                <Gravatar text={userProfile.username || userProfile.id} type={GravatarType.Robohash} size={100}
+                          className={"rounded-full"}/>
+            </div>
+            <div className={"grid text-left"}>
+                <h1 className={"font-semibold uppercase truncate"}
+                    title={userProfile.name || userProfile.username || userProfile.id || "Unknown"}>
+                    {userProfile.name || userProfile.username || userProfile.id || "Unknown"}
+                </h1>
+                <span className={"text-sm text-gray-500"}>
+                     {userProfile.username}
+                </span>
+                <div className={"flex font-semibold gap-4 items-center"}>
+                    <div className={"flex gap-1 items-center"}>
+                        <AiOutlineTrophy/>
+                        <span>356</span>
+                    </div>
+                    <div className={"flex gap-1 items-center"}>
+                        <BiSolidChess/>
+                        <span>97</span>
+                    </div>
+                </div>
+            </div>
         </div>
         <div>
             <div>
@@ -152,7 +177,7 @@ export default function UserProfilePage() {
             </div>
             {
                 userProfile.badges.map(badge => {
-                    return <Link to={`/badge/${badge.id}`}>
+                    return <Link to={`/badge/${badge.id}`} key={badge.id}>
                         <div className={"flex gap-2"} title={badge.description}>
                             <Gravatar
                                 text={badge.title}
@@ -166,24 +191,10 @@ export default function UserProfilePage() {
                 }) || <span>No achievements</span>
             }
         </div>
-
-        <div>
-            {
-                isMyProfile ? (
-                    <div className={"p-5"}>
-                        <button className={"bg-blue-200 rounded-full px-5 py-1"}
-                                onClick={() => logout()}>
-                            Logout
-                        </button>
-                    </div>
-                ) : null
-            }
-        </div>
-
         <ConditionalOnUserRole role={UserRoles.ADMIN}>
             <AssignAchievementPane assignAchievement={async (badge) => {
-                 await badgeRepository.assignBadge(badge.id, userProfile!!.id);
-                 await refetch()
+                await badgeRepository.assignBadge(badge.id, userProfile!!.id);
+                await refetch()
             }}/>
         </ConditionalOnUserRole>
     </div>
