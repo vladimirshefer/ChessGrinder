@@ -1,17 +1,27 @@
 package com.chessgrinder.chessgrinder.service;
 
-import java.util.*;
-
-import com.chessgrinder.chessgrinder.chessengine.*;
-import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.entities.*;
-import com.chessgrinder.chessgrinder.exceptions.*;
-import com.chessgrinder.chessgrinder.mappers.*;
-import com.chessgrinder.chessgrinder.repositories.*;
+import com.chessgrinder.chessgrinder.chessengine.SwissMatchupStrategyImpl;
+import com.chessgrinder.chessgrinder.dto.MatchDto;
+import com.chessgrinder.chessgrinder.dto.ParticipantDto;
+import com.chessgrinder.chessgrinder.entities.MatchEntity;
+import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
+import com.chessgrinder.chessgrinder.entities.RoundEntity;
+import com.chessgrinder.chessgrinder.entities.TournamentEntity;
+import com.chessgrinder.chessgrinder.enums.MatchResult;
+import com.chessgrinder.chessgrinder.exceptions.RoundNotFoundException;
+import com.chessgrinder.chessgrinder.mappers.MatchMapper;
+import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
+import com.chessgrinder.chessgrinder.repositories.MatchRepository;
+import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
+import com.chessgrinder.chessgrinder.repositories.RoundRepository;
+import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import jakarta.annotation.Nullable;
-import lombok.*;
-import lombok.extern.slf4j.*;
-import org.springframework.stereotype.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -48,17 +58,29 @@ public class RoundService {
 
     public void finishRound(UUID tournamentId, Integer roundNumber) {
         RoundEntity roundEntity = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
-        if (roundEntity != null) {
-            roundEntity.setFinished(true);
-            roundRepository.save(roundEntity);
+        if (roundEntity == null) {
+            return;
+        }
+        roundEntity.setFinished(true);
+        roundRepository.save(roundEntity);
+        try {
+            updateResults(tournamentId);
+        } catch (Exception e) {
+            log.error("Could not update results", e);
         }
     }
 
     public void reopenRound(UUID tournamentId, Integer roundNumber) {
         RoundEntity roundEntity = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
-        if (roundEntity != null) {
-            roundEntity.setFinished(false);
-            roundRepository.save(roundEntity);
+        if (roundEntity == null) {
+            return;
+        }
+        roundEntity.setFinished(false);
+        roundRepository.save(roundEntity);
+        try {
+            updateResults(tournamentId);
+        } catch (Exception e) {
+            log.error("Could not update results", e);
         }
     }
 
@@ -78,7 +100,7 @@ public class RoundService {
         List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches);
         List<MatchEntity> matches = new ArrayList<>();
 
-        for (MatchDto matchDto: matchesDto) {
+        for (MatchDto matchDto : matchesDto) {
 
             ParticipantEntity participant1 = null;
             ParticipantEntity participant2 = null;
@@ -100,6 +122,62 @@ public class RoundService {
         }
 
         matchRepository.saveAll(matches);
+    }
+
+    public void updateResults(UUID tournamentId) {
+        List<MatchEntity> matches = matchRepository.findFinishedByTournamentId(tournamentId);
+        Map<String, Double> pointsMap = new HashMap<>();
+        Map<String, Set<String>> enemiesMap = new HashMap<>();
+        Map<String, Double> buchholzMap = new HashMap<>();
+        for (MatchEntity match : matches) {
+            String white = match.getParticipant1() != null ? match.getParticipant1().getNickname() : null;
+            String black = match.getParticipant2() != null ? match.getParticipant2().getNickname() : null;
+            @Nullable MatchResult result = match.getResult();
+            if (result == null) {
+                addResult(pointsMap, enemiesMap, white, black, 0);
+                addResult(pointsMap, enemiesMap, black, white, 0);
+            } else switch (result) {
+                case WHITE_WIN -> {
+                    addResult(pointsMap, enemiesMap, white, black, 1);
+                    addResult(pointsMap, enemiesMap, black, white, 0);
+                }
+                case BLACK_WIN -> {
+                    addResult(pointsMap, enemiesMap, black, white, 1);
+                    addResult(pointsMap, enemiesMap, white, black, 0);
+                }
+                case DRAW -> {
+                    addResult(pointsMap, enemiesMap, white, black, 0.5);
+                    addResult(pointsMap, enemiesMap, black, white, 0.5);
+                }
+                case BUY -> {
+                    addResult(pointsMap, enemiesMap, white, black, 1);
+                    addResult(pointsMap, enemiesMap, black, white, 1);
+                }
+            }
+        }
+        enemiesMap.forEach((player, enemiesSet) -> {
+            buchholzMap.putIfAbsent(player, 0d);
+            for (String enemy : enemiesSet) {
+                buchholzMap.computeIfPresent(enemy, (__, b) -> b + pointsMap.get(enemy));
+            }
+        });
+        List<ParticipantEntity> participants = participantRepository.findByTournamentId(tournamentId);
+        for (ParticipantEntity participant : participants) {
+            participant.setScore(BigDecimal.valueOf(pointsMap.getOrDefault(participant.getNickname(), 0d)));
+            participant.setBuchholz(BigDecimal.valueOf(buchholzMap.getOrDefault(participant.getNickname(), 0d)));
+        }
+        participantRepository.saveAll(participants);
+    }
+
+    private void addResult(Map<String, Double> points, Map<String, Set<String>> enemies, String player, String enemy, double pointsToAdd) {
+        if (player != null) {
+            points.putIfAbsent(player, 0d);
+            points.computeIfPresent(player, (__, p) -> p + pointsToAdd);
+            enemies.putIfAbsent(player, new HashSet<>());
+            if (enemy != null) {
+                enemies.get(player).add(enemy);
+            }
+        }
     }
 
     @Nullable
@@ -128,4 +206,5 @@ public class RoundService {
             throw new RoundNotFoundException();
         }
     }
+
 }

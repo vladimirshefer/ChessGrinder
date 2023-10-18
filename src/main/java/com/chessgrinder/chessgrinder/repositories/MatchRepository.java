@@ -21,4 +21,7 @@ public interface MatchRepository extends PagingAndSortingRepository<MatchEntity,
 
     List<MatchEntity> findMatchEntitiesByRoundId(UUID roundId);
 
+    @Query("SELECT m from MatchEntity m WHERE m.round.tournament.id = :tournamentId and m.round.isFinished=true")
+    List<MatchEntity> findFinishedByTournamentId(UUID tournamentId);
+
 }
