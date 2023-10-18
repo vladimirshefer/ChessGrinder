@@ -191,10 +191,10 @@ function TournamentPage() {
                 </div>
             </div>
         </div>
-        <div className={"flex flex-wrap justify-start place-items-stretch w-full px-2 my-4"}>
+        <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
                 <button
-                    className={`w-full h-full py-2 px-4 uppercase ${!roundId ? "bg-black text-white" : "bg-anzac-400 hover:bg-gray-300 text-black"}`}
+                    className={`w-full h-full py-1 px-3 border border-black uppercase ${!roundId ? "bg-anzac-400 text-white" : "hover:bg-gray-300 text-black"}`}
                 >
                     <AiOutlineHome/>
                 </button>
@@ -202,15 +202,15 @@ function TournamentPage() {
             {roundNumbers.map(rid => {
                 return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
                     <button
-                        className={`w-full py-2 px-5 
-                                    ${rid === roundId ? "bg-black text-white" : "hover:bg-gray-300"}`}>
+                        className={`w-full py-1 px-3  border border-black
+                                    ${rid === roundId ? "bg-primary text-white" : "hover:bg-gray-300"}`}>
                         {rid}
                     </button>
                 </Link>
             })}
             <Conditional on={tournament.status !== "FINISHED"}>
                 <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                    <button className={`py-2 px-3`}
+                    <button className={`py-1 px-3`}
                             onClick={createRound}
                     ><AiOutlinePlus/>
                     </button>
