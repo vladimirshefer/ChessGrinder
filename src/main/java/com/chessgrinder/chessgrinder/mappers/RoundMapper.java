@@ -17,15 +17,30 @@ public class RoundMapper {
     public List<RoundDto> toDto(List<RoundEntity> roundEntities) {
 
         return roundEntities.stream().map(round -> RoundDto.builder()
-                .isFinished(round.isFinished())
-                .number(round.getNumber())
-                .matches(matchMapper.toDto(round.getMatches()
-                        .stream().sorted(Comparator.<MatchEntity, String>comparing(it -> it.getParticipant1().getNickname())
-                                        .thenComparing(it -> it.getParticipant2().getNickname()))
+                        .isFinished(round.isFinished())
+                        .number(round.getNumber())
+                        .matches(matchMapper.toDto(round.getMatches()
+                                .stream().sorted(
+                                        Comparator.nullsLast(Comparator
+                                                        .<MatchEntity, String>comparing(
+                                                                it -> Optional.ofNullable(it)
+                                                                        .map(MatchEntity::getParticipant1)
+                                                                        .map(ParticipantEntity::getNickname)
+                                                                        .orElse(null)
+                                                        ))
+                                                .thenComparing(Comparator.nullsLast(Comparator
+                                                        .comparing(
+                                                                it -> Optional.ofNullable(it)
+                                                                        .map(MatchEntity::getParticipant2)
+                                                                        .map(ParticipantEntity::getNickname)
+                                                                        .orElse(null)
+                                                        ))
+                                                )
+                                )
                                 .collect(Collectors.toList())
                         ))
-                .build())
-            .toList();
+                        .build())
+                .toList();
     }
 
     public RoundDto toDto(RoundEntity roundEntity) {
