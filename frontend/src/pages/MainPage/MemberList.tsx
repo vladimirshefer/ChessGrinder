@@ -29,7 +29,7 @@ export function MemberList(
                     </div>
                     <div className={"grid w-full content-left items-left"}>
                         <div className={"text-left"}>
-                            <Link to={`/user/${user.id}`}>
+                            <Link to={`/user/${user.username}`}>
                                 {user.name}
                             </Link>
                         </div>
