@@ -14,6 +14,7 @@ import {BiSolidChess} from "react-icons/bi";
 import {BsPencilFill} from "react-icons/bs";
 import {FiLogOut} from "react-icons/fi";
 import useSearchParam from "lib/react/hooks/useSearchParam";
+import DropdownSelect from "components/DropdownSelect";
 
 function AssignAchievementPane(
     {
@@ -23,9 +24,8 @@ function AssignAchievementPane(
     }
 ) {
     let loc = useLoc()
-    let [selectActive, setSelectActive] = useState(false)
     let badgesQuery = useQuery({
-        queryKey: ["badgesSelect", selectActive],
+        queryKey: ["badgesSelect"],
         queryFn: async () => {
             return await badgeRepository.getBadges();
         },
@@ -33,66 +33,46 @@ function AssignAchievementPane(
 
     let [selectedBadge, setSelectedBadge] = useState<BadgeDto>()
 
-    return <div className={"max-w-full"}>
-        <button className={"btn bg-gray-200"} onClick={() => {
-            setSelectActive(!selectActive);
-            setSelectedBadge(undefined)
-        }}>
-            {loc("Assign achievement")}
-        </button>
-        <div className={""}>
-            <Conditional on={!!selectedBadge}>{() => <>
-                <div className={"flex gap-2 p-2 text-left bg-gray-100"}>
-                    <div className={"min-w-[50px]"}>
-                        <Gravatar
-                            text={selectedBadge!!.title}
-                            type={GravatarType.Identicon}
-                            size={50}
-                            className={"rounded-full"}
-                        />
-                    </div>
-                    <div className={"grid "}>
-                        <span>{selectedBadge!!.title || "No title"}</span>
-                        <span
-                            className={"text-sm text-gray-600 line-clamp-3"}>{selectedBadge!!.description || "..."}</span>
+    return <div className={"max-w-full bg-inherit"}>
+        <div className={"flex gap-2 items-center text-left"}>
+            <h3 className={"uppercase"}>{loc("Assign achievement")}</h3>
+        </div>
+        <DropdownSelect<BadgeDto>
+            values={badgesQuery.data?.values || []}
+            className={"border-b bg-inherit"}
+            onSelect={badge => setSelectedBadge(badge)}
+            keyExtractor={badge => badge.id}
+            matchesSearch={(searchQuery, badge) =>
+                badge.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                badge.description.toLowerCase().includes(searchQuery.toLowerCase())
+            }
+            emptyPresenter={() =>
+                <div className={"bg-inherit text-left py-2"}>Select...</div>
+            }
+            presenter={badge =>
+                <div className={"flex gap-2 p-2 bg-inherit"} title={badge.description}>
+                    <Gravatar
+                        text={badge.title}
+                        type={GravatarType.Identicon}
+                        size={50}
+                        className={"rounded-full min-w-[50px] max-h-[50px]"}
+                    />
+                    <div className={"text-left bg-inherit"}>
+                        <span className={"uppercase font-semibold"}>{badge.title}</span>
+                        <span className={"text-sm text-gray-600 line-clamp-2"}
+                              title={badge.description}>{badge.description}</span>
                     </div>
                 </div>
-                <button className={"btn-dark"}
+            }
+        />
+        <div>
+            <Conditional on={!!selectedBadge}>
+                <button className={"btn-dark w-full"}
                         onClick={() => assignAchievement(selectedBadge!!)}
-                >
-                    Assign
+                >Assign
                 </button>
-            </>}</Conditional>
+            </Conditional>
         </div>
-        <Conditional on={selectActive && badgesQuery.isSuccess}>
-            <div className={"border"}>
-                {
-                    badgesQuery.data?.values?.map(badge => {
-                        return <div className={"flex gap-2 p-2 bg-gray-100 m-1"}
-                                    key={badge.id}
-                                    onClick={() => {
-                                        setSelectedBadge(badge)
-                                        setSelectActive(false)
-                                    }}
-                        >
-                            <div className={"min-w-[50px]"}>
-                                <Gravatar
-                                    text={badge!!.title}
-                                    type={GravatarType.Identicon}
-                                    size={50}
-                                    className={"rounded-full"}
-                                />
-                            </div>
-                            <div className={"grid text-left"}>
-                                <span className={"uppercase"}>{badge!!.title || "No title"}</span>
-                                <span
-                                    className={"text-sm text-gray-600 line-clamp-3"}>{badge!!.description || "..."}</span>
-                            </div>
-                        </div>
-                    }) || []
-                }
-            </div>
-        </Conditional>
     </div>;
 }
 
@@ -239,10 +219,12 @@ export default function UserProfilePage() {
         </Conditional>
         <Conditional on={activeTab === "admin"}>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <AssignAchievementPane assignAchievement={async (badge) => {
-                    await badgeRepository.assignBadge(badge.id, userProfile!!.id);
-                    await refetch()
-                }}/>
+                <div className={"bg-white p-2"}>
+                    <AssignAchievementPane assignAchievement={async (badge) => {
+                        await badgeRepository.assignBadge(badge.id, userProfile!!.id);
+                        await refetch()
+                    }}/>
+                </div>
             </ConditionalOnUserRole>
         </Conditional>
     </div>
