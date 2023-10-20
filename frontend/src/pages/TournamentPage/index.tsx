@@ -9,17 +9,11 @@ import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {ListDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
 import userRepository from "lib/api/repository/UserRepository";
-import {
-    AiOutlineClose,
-    AiOutlineDelete,
-    AiOutlineEdit,
-    AiOutlineHome,
-    AiOutlineInfoCircle,
-    AiOutlinePlus
-} from "react-icons/ai";
+import {AiOutlineClose, AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
 import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
+import DropdownSelect from "../../components/DropdownSelect";
 
 function AddParticipant(
     {
@@ -74,26 +68,23 @@ function AddParticipant(
                                placeholder={`${loc("Nickname")}*`.toUpperCase()}
                         />
                     </div>
-                    <div className={"col-span-12 lg:col-span-9 text-sm py-1"}>
-                        <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-none"}
-                               list="users" name="user"
-                               onChange={event => setSelectedValue(event.target.value)}
-                               placeholder={loc("Username")}
+                    <div className={"col-span-12 grid text-left p-2"}>
+                        <DropdownSelect<MemberDto>
+                            values={users}
+                            onSelect={user => setSelectedValue(user?.id || "")}
+                            keyExtractor={user => user.id}
+                            matchesSearch={(searchQuery, user) =>
+                                user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                user.name.toLowerCase().includes(searchQuery.toLowerCase())
+                            }
+                            emptyPresenter={() => <div><span className={"text-sm text-gray-600"}>Guest participant. Click to select User...</span></div>}
+                            presenter={user => <div>
+                                <div className={"grid text-left bg-white border"}>
+                                    <span className={"text-sm"}>{user.name}</span>
+                                    <span className={"text-xs text-gray-500"}>{user.username}</span>
+                                </div>
+                            </div>}
                         />
-                        <datalist id="users">
-                            {users ? users.map(user =>
-                                <option
-                                    key={user.id}
-                                    value={user.id}>
-                                    {user.name}
-                                </option>
-                            ) : []}
-                        </datalist>
-                        <span className={"text-left text-sm w-full block text-gray-500 px-2"}
-                        >
-                            <AiOutlineInfoCircle className={"inline-block mr-1"}/>
-                            {loc("Leave empty for anonymous/guest participant")}
-                        </span>
                     </div>
                     <div className={"col-span-12 lg:col-span-3 flex gap-x-1"}>
                         <button className={"btn-dark uppercase col-span-8 grow"}
