@@ -169,22 +169,50 @@ export default function UserProfilePage() {
             </div>
         </div>
         <div className={"p-3"}></div>
-        <div className={"flex justify-between border-b-2 border-gray-400"}>
+        <div className={"flex justify-between border-b-2 border-gray-400 mb-3"}>
             <button
                 className={`uppercase font-semibold px-2 py-1 ${activeTab === "history" ? "text-primary" : " "}`}
-                onClick={() => setActiveTab("history")}>History
+                onClick={() => setActiveTab("history")}>{loc("History")}
             </button>
             <button
                 className={`uppercase font-semibold px-2 py-1 ${activeTab === "achievements" ? "text-primary" : " "}`}
-                onClick={() => setActiveTab("achievements")}>Achievements
+                onClick={() => setActiveTab("achievements")}>{loc("Achievements")}
             </button>
             <button
                 className={`uppercase font-semibold px-2 py-1 ${activeTab === "admin" ? "text-primary" : " "}`}
-                onClick={() => setActiveTab("admin")}>Admin
+                onClick={() => setActiveTab("admin")}>{loc("Admin")}
             </button>
         </div>
         <Conditional on={activeTab === "history" || !activeTab}>
-            <>No history</>
+            <div className={"text-sm"}>
+                <div className="flex text-left">
+                    <h2 className={"uppercase grow"}>{loc("Tournaments")}</h2>
+                    <span>97</span>
+                </div>
+                <div className="p-1"></div>
+                <div className={"grid grid-cols-12 text-left font-semibold border-b-2"}>
+                    <span className={"col-span-8"}>{loc("Tournament")}</span>
+                    <span className={"col-span-2"}>{loc("Place")}</span>
+                    <span className={"col-span-2"}>{loc("Points")}</span>
+                </div>
+                <div className="grid grid-cols-12">
+                    <div className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
+                        <span className={"col-span-8"}>My mystery tournament</span>
+                        <span className={"col-span-2"}>1</span>
+                        <span className={"col-span-2"}>6</span>
+                    </div>
+                    <div className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
+                        <span className={"col-span-8"}>Tournament Stas Karas</span>
+                        <span className={"col-span-2"}>4</span>
+                        <span className={"col-span-2"}>3</span>
+                    </div>
+                    <div className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
+                        <span className={"col-span-8"}>Gorgeous tournament</span>
+                        <span className={"col-span-2"}>2</span>
+                        <span className={"col-span-2"}>5</span>
+                    </div>
+                </div>
+            </div>
         </Conditional>
         <Conditional on={activeTab === "achievements"}>
             <div className={"grid gap-2 py-2"}>
@@ -200,7 +228,8 @@ export default function UserProfilePage() {
                                 />
                                 <div className={"text-left"}>
                                     <span className={"uppercase font-semibold"}>{badge.title}</span>
-                                    <span className={"text-sm text-gray-600 line-clamp-2"} title={badge.description}>{badge.description}</span>
+                                    <span className={"text-sm text-gray-600 line-clamp-2"}
+                                          title={badge.description}>{badge.description}</span>
                                 </div>
                             </div>
                         </Link>

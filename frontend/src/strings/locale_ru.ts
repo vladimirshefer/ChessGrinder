@@ -18,6 +18,10 @@ let locale_ru: { [key: string]: string } = {
     "White": "Белые",
     "Save": "Сохранить",
     "Cancel": "Отменa",
+    "Place": "Место",
+    "Points": "Очки",
+    "History": "История",
+    "Achievements": "Достижения",
 }
 
 export default locale_ru
