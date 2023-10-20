@@ -84,10 +84,20 @@ function TournamentPane(
                     <AiFillClockCircle className={"text-primary mr-3"}/>
                     {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
                 </span>
-                <span className={"flex items-center text-left"}>
-                    <IoLocationSharp className={"text-primary mr-3"}/>
-                    {tournament.locationName || "Seven roads"}
-                </span>
+                <Conditional on={!!tournament.locationName}>
+                    {tournament.locationUrl ?
+                        <Link to={tournament.locationUrl} target={"_blank"} className={"flex items-center text-left"}>
+                            <IoLocationSharp className={"text-primary mr-3"}/>
+                            {tournament.locationName || "Seven roads"}
+                            <FiArrowUpRight className={"ml-1"}/>
+                        </Link>
+                        :
+                        <span className={"flex items-center text-left"}>
+                            <IoLocationSharp className={"text-primary mr-3"}/>
+                            {tournament.locationName || "Seven roads"}
+                        </span>
+                    }
+                </Conditional>
             </div>
         </Conditional>
         <Conditional on={isFinished}>
