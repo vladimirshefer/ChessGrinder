@@ -33,16 +33,17 @@ function AssignAchievementPane(
 
     let [selectedBadge, setSelectedBadge] = useState<BadgeDto>()
 
-    return <div className={"pt-3"}>
-        <button className={"btn bg-gray-200"}
-                onClick={() => setSelectActive(!selectActive)}
-        >
+    return <div className={"max-w-full"}>
+        <button className={"btn bg-gray-200"} onClick={() => {
+            setSelectActive(!selectActive);
+            setSelectedBadge(undefined)
+        }}>
             {loc("Assign achievement")}
         </button>
-        <div className={"bg-green-100"}>
+        <div className={""}>
             <Conditional on={!!selectedBadge}>{() => <>
-                <div className={"flex gap-2 p-2"}>
-                    <div>
+                <div className={"flex gap-2 p-2 text-left bg-gray-100"}>
+                    <div className={"min-w-[50px]"}>
                         <Gravatar
                             text={selectedBadge!!.title}
                             type={GravatarType.Identicon}
@@ -50,13 +51,10 @@ function AssignAchievementPane(
                             className={"rounded-full"}
                         />
                     </div>
-                    <div className={"grid"}>
-                        <div>
-                            <span>{selectedBadge!!.title || "No title"}</span>
-                        </div>
-                        <div>
-                            <span>{selectedBadge!!.description || "..."}</span>
-                        </div>
+                    <div className={"grid "}>
+                        <span>{selectedBadge!!.title || "No title"}</span>
+                        <span
+                            className={"text-sm text-gray-600 line-clamp-3"}>{selectedBadge!!.description || "..."}</span>
                     </div>
                 </div>
                 <button className={"btn-dark"}
@@ -66,18 +64,18 @@ function AssignAchievementPane(
                 </button>
             </>}</Conditional>
         </div>
-        <div className={"bg-cyan-100"}>
-            <Conditional on={selectActive && badgesQuery.isSuccess}>
+        <Conditional on={selectActive && badgesQuery.isSuccess}>
+            <div className={"border"}>
                 {
                     badgesQuery.data?.values?.map(badge => {
-                        return <div className={"flex gap-2 p-2"}
+                        return <div className={"flex gap-2 p-2 bg-gray-100 m-1"}
                                     key={badge.id}
                                     onClick={() => {
                                         setSelectedBadge(badge)
                                         setSelectActive(false)
                                     }}
                         >
-                            <div>
+                            <div className={"min-w-[50px]"}>
                                 <Gravatar
                                     text={badge!!.title}
                                     type={GravatarType.Identicon}
@@ -85,19 +83,16 @@ function AssignAchievementPane(
                                     className={"rounded-full"}
                                 />
                             </div>
-                            <div className={"grid"}>
-                                <div>
-                                    <span>{badge!!.title || "No title"}</span>
-                                </div>
-                                <div>
-                                    <span>{badge!!.description || "..."}</span>
-                                </div>
+                            <div className={"grid text-left"}>
+                                <span className={"uppercase"}>{badge!!.title || "No title"}</span>
+                                <span
+                                    className={"text-sm text-gray-600 line-clamp-3"}>{badge!!.description || "..."}</span>
                             </div>
                         </div>
                     }) || []
                 }
-            </Conditional>
-        </div>
+            </div>
+        </Conditional>
     </div>;
 }
 
@@ -175,9 +170,18 @@ export default function UserProfilePage() {
         </div>
         <div className={"p-3"}></div>
         <div className={"flex justify-between border-b-2 border-gray-400"}>
-            <button className={`uppercase font-semibold px-2 py-1 ${activeTab==="history"? "text-primary" : " "}`} onClick={() => setActiveTab("history")}>History</button>
-            <button className={`uppercase font-semibold px-2 py-1 ${activeTab==="achievements"? "text-primary" : " "}`} onClick={() => setActiveTab("achievements")}>Achievements</button>
-            <button className={`uppercase font-semibold px-2 py-1 ${activeTab==="admin"? "text-primary" : " "}`} onClick={() => setActiveTab("admin")}>Admin</button>
+            <button
+                className={`uppercase font-semibold px-2 py-1 ${activeTab === "history" ? "text-primary" : " "}`}
+                    onClick={() => setActiveTab("history")}>History
+            </button>
+            <button
+                className={`uppercase font-semibold px-2 py-1 ${activeTab === "achievements" ? "text-primary" : " "}`}
+                onClick={() => setActiveTab("achievements")}>Achievements
+            </button>
+            <button
+                className={`uppercase font-semibold px-2 py-1 ${activeTab === "admin" ? "text-primary" : " "}`}
+                    onClick={() => setActiveTab("admin")}>Admin
+            </button>
         </div>
         <Conditional on={activeTab === "history" || !activeTab}>
             <>No history</>
