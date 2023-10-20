@@ -13,7 +13,6 @@ export default function DropdownSelect<T>(
         onSelect,
         keyExtractor,
         emptyPresenter = () => <button>Select</button>,
-        search = true,
         matchesSearch = () => true,
     }: {
         values: T[],
@@ -22,7 +21,6 @@ export default function DropdownSelect<T>(
         onSelect: (value: T | undefined) => void,
         keyExtractor: (value: T) => any,
         emptyPresenter?: () => ReactElement,
-        search?: boolean
         matchesSearch?: (searchQuery: string, value: T) => boolean,
     }
 ) {
@@ -41,35 +39,38 @@ export default function DropdownSelect<T>(
         [values, searchQuery, matchesSearch]
     );
 
-    return <div ref={dropdownRef} className={className + " relative"}>
-        <div className={"flex gap-2 items-stretch"}
-        >
-            <div className={"flex gap-2 items-center grow"}
+    return <div ref={dropdownRef} className={className + " relative bg-inherit"}>
+        <div className={"flex gap-2 items-stretch bg-inherit"}>
+            <div className={"flex gap-2 items-center grow bg-inherit"}
                  onClick={() => setDropdownActive(!dropdownActive)}>
-                <div className={"grow"}>
+                <div className={"grow bg-inherit"}>
                     {selectedValue ?
                         presenter(selectedValue)
                         :
                         emptyPresenter()
                     }
                 </div>
-
+                {!selectedValue &&
+                    <button>
+                        <AiFillCaretDown/>
+                    </button>
+                }
             </div>
-            {selectedValue ?
+            {selectedValue &&
                 <button className={"px-3"}
                         onClick={() => {
                             setSelectedValue(undefined);
                             setSearchQuery("")
                             setDropdownActive(false)
+                            onSelect(undefined);
                         }}
-                ><BsTrash/></button>
-            :
-            <span><AiFillCaretDown/></span>
+                ><BsTrash/>
+                </button>
             }
         </div>
         {dropdownActive &&
-            <div className={"grid absolute t-[100%] w-full shadow"}>
-                <div className={"flex bg-white"}>
+            <div className={"grid absolute t-[100%] w-full shadow bg-inherit"}>
+                <div className={"flex bg-inherit"}>
                     <button className={"px-2"}><AiOutlineSearch/></button>
                     <input type={"text"}
                            placeholder={loc("Search")}
@@ -89,6 +90,7 @@ export default function DropdownSelect<T>(
                     filteredValues.map(value =>
                         <div
                             key={keyExtractor(value)}
+                            className={"bg-inherit"}
                             onClick={() => {
                                 setSelectedValue(value);
                                 setDropdownActive(false)

@@ -68,7 +68,7 @@ function AddParticipant(
                                placeholder={`${loc("Nickname")}*`.toUpperCase()}
                         />
                     </div>
-                    <div className={"col-span-12 grid text-left py-2"}>
+                    <div className={"col-span-12 grid text-left py-2 bg-white"}>
                         <DropdownSelect<MemberDto>
                             className={"border-b-2 border-blue-300 w-full"}
                             values={users}
