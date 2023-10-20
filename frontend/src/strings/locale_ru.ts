@@ -22,6 +22,7 @@ let locale_ru: { [key: string]: string } = {
     "Points": "Очки",
     "History": "История",
     "Achievements": "Достижения",
+    "Search": "Поиск",
 }
 
 export default locale_ru

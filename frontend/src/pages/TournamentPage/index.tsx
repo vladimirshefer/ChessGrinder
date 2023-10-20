@@ -60,7 +60,7 @@ function AddParticipant(
             </Conditional>
             <Conditional on={inputEnabled}>
                 <div className={"w-full grid grid-cols-12 p-1"}>
-                    <div className={"col-span-12 lg:col-span-9 py-1"}>
+                    <div className={"col-span-12 py-1"}>
                         <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-none"}
                                autoFocus
                                name={"nickname"}
@@ -68,8 +68,9 @@ function AddParticipant(
                                placeholder={`${loc("Nickname")}*`.toUpperCase()}
                         />
                     </div>
-                    <div className={"col-span-12 grid text-left p-2"}>
+                    <div className={"col-span-12 grid text-left py-2"}>
                         <DropdownSelect<MemberDto>
+                            className={"border-b-2 border-blue-300 w-full"}
                             values={users}
                             onSelect={user => setSelectedValue(user?.id || "")}
                             keyExtractor={user => user.id}
@@ -77,16 +78,20 @@ function AddParticipant(
                                 user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                 user.name.toLowerCase().includes(searchQuery.toLowerCase())
                             }
-                            emptyPresenter={() => <div><span className={"text-sm text-gray-600"}>Guest participant. Click to select User...</span></div>}
+                            emptyPresenter={() => <div>
+                                <span className={"text-sm text-gray-500 p-1"}>
+                                    {loc("Guest")}
+                                </span>
+                            </div>}
                             presenter={user => <div>
-                                <div className={"grid text-left bg-white border"}>
+                                <div className={"grid text-left bg-white p-2"}>
                                     <span className={"text-sm"}>{user.name}</span>
                                     <span className={"text-xs text-gray-500"}>{user.username}</span>
                                 </div>
                             </div>}
                         />
                     </div>
-                    <div className={"col-span-12 lg:col-span-3 flex gap-x-1"}>
+                    <div className={"col-span-12 flex gap-x-1"}>
                         <button className={"btn-dark uppercase col-span-8 grow"}
                                 onClick={() => {
                                     if (selectedValue || nickName) {
