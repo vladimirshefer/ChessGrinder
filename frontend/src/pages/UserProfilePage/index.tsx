@@ -1,4 +1,4 @@
-import {Link, useNavigate, useParams, useSearchParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {useAuthData} from "lib/auth/AuthService";
 import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
