@@ -37,11 +37,11 @@ export default function BadgePage() {
             </span>
         </div>
         <div className={"flex gap-3"}>
-            <div className={""}>
+            <div className={"min-w-[100px]"}>
                 <Gravatar
                     text={badge.title}
                     type={GravatarType.Identicon}
-                    size={150}
+                    size={100}
                     className={"rounded-full"}
                 />
             </div>
@@ -50,7 +50,7 @@ export default function BadgePage() {
                     <h1 className={"text-xl font-semibold"}>
                         {badge.title}
                     </h1>
-                    <span>
+                    <span className={"text-sm text-gray-500"}>
                         {badge.description}
                     </span>
                 </div>
