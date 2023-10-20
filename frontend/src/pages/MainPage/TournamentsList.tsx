@@ -12,6 +12,7 @@ import {compareBy} from "lib/util/Comparator";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import dayjs from "dayjs";
 import {BsFillRecordFill} from "react-icons/bs";
+import {FiArrowUpRight} from "react-icons/fi";
 
 function TournamentPane(
     {
@@ -62,8 +63,12 @@ function TournamentPane(
     return <div className={`grid justify-items-start w-full p-4 
                 ${isPlanned ? "tournament-planned" : isFinished ? "tournament-finished" : "tournament-active"}`}>
         <div className={"grid justify-items-start"}>
-            <Link className={"flex gap-2 font-semibold text-lg text-left items-center"} to={`/tournament/${tournament.id}`}>
-                <span className={"grow"}>{tournament.name || loc("Unnamed Tournament")}</span>
+            <Link className={"flex gap-2 hover:underline font-semibold text-lg text-left items-center"}
+                  to={`/tournament/${tournament.id}`}
+            >
+                <span className={"grow"}>{tournament.name || loc("Unnamed Tournament")}
+                    <FiArrowUpRight className={"inline-block ml-1 -mt-[1px]"}/>
+                </span>
                 {tournament.status === "ACTIVE" &&
                     <span className={"text-red-500"}><BsFillRecordFill/></span>
                 }
@@ -79,7 +84,7 @@ function TournamentPane(
                     <AiFillClockCircle className={"text-primary mr-3"}/>
                     {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
                 </span>
-                <span className={"flex items-center"}>
+                <span className={"flex items-center text-left"}>
                     <IoLocationSharp className={"text-primary mr-3"}/>
                     {tournament.locationName || "Seven roads"}
                 </span>
