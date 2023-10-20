@@ -172,7 +172,7 @@ export default function UserProfilePage() {
         <div className={"flex justify-between border-b-2 border-gray-400"}>
             <button
                 className={`uppercase font-semibold px-2 py-1 ${activeTab === "history" ? "text-primary" : " "}`}
-                    onClick={() => setActiveTab("history")}>History
+                onClick={() => setActiveTab("history")}>History
             </button>
             <button
                 className={`uppercase font-semibold px-2 py-1 ${activeTab === "achievements" ? "text-primary" : " "}`}
@@ -180,14 +180,14 @@ export default function UserProfilePage() {
             </button>
             <button
                 className={`uppercase font-semibold px-2 py-1 ${activeTab === "admin" ? "text-primary" : " "}`}
-                    onClick={() => setActiveTab("admin")}>Admin
+                onClick={() => setActiveTab("admin")}>Admin
             </button>
         </div>
         <Conditional on={activeTab === "history" || !activeTab}>
             <>No history</>
         </Conditional>
         <Conditional on={activeTab === "achievements"}>
-            <div>
+            <div className={"grid gap-2 py-2"}>
                 {
                     userProfile.badges.map(badge => {
                         return <Link to={`/badge/${badge.id}`} key={badge.id}>
@@ -195,10 +195,13 @@ export default function UserProfilePage() {
                                 <Gravatar
                                     text={badge.title}
                                     type={GravatarType.Identicon}
-                                    size={25}
-                                    className={"rounded-full"}
+                                    size={50}
+                                    className={"rounded-full min-w-[50px] max-h-[50px]"}
                                 />
-                                <span>{badge.title}</span>
+                                <div className={"text-left"}>
+                                    <span className={"uppercase font-semibold"}>{badge.title}</span>
+                                    <span className={"text-sm text-gray-600 line-clamp-2"} title={badge.description}>{badge.description}</span>
+                                </div>
                             </div>
                         </Link>
                     }) || <span>No achievements</span>
