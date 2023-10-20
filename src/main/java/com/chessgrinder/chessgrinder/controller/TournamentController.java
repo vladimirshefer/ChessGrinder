@@ -57,7 +57,7 @@ public class TournamentController {
         tournament.setName(tournamentDto.getName());
         tournament.setDate(tournamentDto.getDate());
         tournament.setLocationName(tournamentDto.getLocationName());
-        tournament.setLocationUrl(tournament.getLocationUrl());
+        tournament.setLocationUrl(tournamentDto.getLocationUrl());
         tournamentRepository.save(tournament);
     }
 
