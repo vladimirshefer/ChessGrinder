@@ -1,4 +1,4 @@
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {useAuthData} from "lib/auth/AuthService";
 import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
@@ -13,6 +13,7 @@ import {AiOutlineTrophy} from "react-icons/ai";
 import {BiSolidChess} from "react-icons/bi";
 import {BsPencilFill} from "react-icons/bs";
 import {FiLogOut} from "react-icons/fi";
+import useSearchParam from "lib/react/hooks/useSearchParam";
 
 function AssignAchievementPane(
     {
@@ -105,6 +106,7 @@ export default function UserProfilePage() {
     let navigate = useNavigate()
     let loc = useLoc()
     let authData = useAuthData()
+    let [activeTab, setActiveTab] = useSearchParam("tab")
 
     useEffect(() => {
         if (!username) {
@@ -171,31 +173,41 @@ export default function UserProfilePage() {
                 </div>
             </div>
         </div>
-        <div>
-            <div>
-                Badges
-            </div>
-            {
-                userProfile.badges.map(badge => {
-                    return <Link to={`/badge/${badge.id}`} key={badge.id}>
-                        <div className={"flex gap-2"} title={badge.description}>
-                            <Gravatar
-                                text={badge.title}
-                                type={GravatarType.Identicon}
-                                size={25}
-                                className={"rounded-full"}
-                            />
-                            <span>{badge.title}</span>
-                        </div>
-                    </Link>
-                }) || <span>No achievements</span>
-            }
+        <div className={"p-3"}></div>
+        <div className={"flex justify-between border-b-2 border-gray-400"}>
+            <button className={`uppercase font-semibold px-2 py-1 ${activeTab==="history"? "text-primary" : " "}`} onClick={() => setActiveTab("history")}>History</button>
+            <button className={`uppercase font-semibold px-2 py-1 ${activeTab==="achievements"? "text-primary" : " "}`} onClick={() => setActiveTab("achievements")}>Achievements</button>
+            <button className={`uppercase font-semibold px-2 py-1 ${activeTab==="admin"? "text-primary" : " "}`} onClick={() => setActiveTab("admin")}>Admin</button>
         </div>
-        <ConditionalOnUserRole role={UserRoles.ADMIN}>
-            <AssignAchievementPane assignAchievement={async (badge) => {
-                await badgeRepository.assignBadge(badge.id, userProfile!!.id);
-                await refetch()
-            }}/>
-        </ConditionalOnUserRole>
+        <Conditional on={activeTab === "history" || !activeTab}>
+            <>No history</>
+        </Conditional>
+        <Conditional on={activeTab === "achievements"}>
+            <div>
+                {
+                    userProfile.badges.map(badge => {
+                        return <Link to={`/badge/${badge.id}`} key={badge.id}>
+                            <div className={"flex gap-2"} title={badge.description}>
+                                <Gravatar
+                                    text={badge.title}
+                                    type={GravatarType.Identicon}
+                                    size={25}
+                                    className={"rounded-full"}
+                                />
+                                <span>{badge.title}</span>
+                            </div>
+                        </Link>
+                    }) || <span>No achievements</span>
+                }
+            </div>
+        </Conditional>
+        <Conditional on={activeTab === "admin"}>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <AssignAchievementPane assignAchievement={async (badge) => {
+                    await badgeRepository.assignBadge(badge.id, userProfile!!.id);
+                    await refetch()
+                }}/>
+            </ConditionalOnUserRole>
+        </Conditional>
     </div>
 }
