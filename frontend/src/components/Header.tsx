@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "react-router-dom";
-import {useAuthData} from "lib/auth/AuthService";
+import {useUser} from "lib/auth/AuthService";
 import React, {useContext, useRef, useState} from "react";
 import {useLoc} from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
@@ -8,11 +8,11 @@ import {AiOutlineClose, AiOutlineMenu} from "react-icons/ai";
 import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "./Conditional";
 import loginPageRepository from "../lib/api/repository/LoginPageRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
-import {LanguageContext} from "../App";
+import {LanguageContext} from "App";
 
 function Header() {
     let navigate = useNavigate()
-    let authData = useAuthData()
+    let user = useUser()
     const droprownRef = useRef(null);
     let [dropdownOpened, setDropdownOpened] = useState(false);
     let [, setLanguage] = useContext(LanguageContext)
@@ -53,13 +53,13 @@ function Header() {
 
                 <div className={"rounded-full overflow-hidden h-8 w-8 bg-white mx-2 border border-black"}>
                     {
-                        !authData ? (
+                        !user ? (
                             <Link to={"/login"}>
                                 <Gravatar text={""} type={GravatarType.MysteryPerson} size={50}/>
                             </Link>
                         ) : (
                             <Link to={"/user"}>
-                                <Gravatar text={authData!!.username} type={GravatarType.Robohash} size={50}/>
+                                <Gravatar text={user.username} type={GravatarType.Robohash} size={50}/>
                             </Link>
                         )
                     }
