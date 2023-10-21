@@ -117,7 +117,7 @@ export default function UserProfilePage() {
                 {userProfile.roles?.includes(UserRoles.ADMIN) ? loc("Administrator") : loc("User")}
             </span>
             <Conditional on={isMyProfile}>
-                <button className={"p-2"} title={"Edit profile"}><BsPencilFill/></button>
+                <Link to={"/user/me/edit"} className={"p-2"} title={"Edit profile"}><BsPencilFill/></Link>
                 <button className={"p-2"} title={"Logout"}
                         onClick={logout}><FiLogOut/></button>
             </Conditional>
