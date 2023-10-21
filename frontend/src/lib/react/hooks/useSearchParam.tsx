@@ -1,9 +1,9 @@
 import {useSearchParams} from "react-router-dom";
 
-export default function useSearchParam(name: string): [string | null, (value: string) => void] {
+export default function useSearchParam(name: string, defaultValue: string | null = null): [string | null, (value: string) => void] {
     let [searchParams, setSearchParams] = useSearchParams()
     return [
-        searchParams.get(name),
+        searchParams.get(name) || defaultValue,
         (value: string) => {
             let newSearchParams: any = {...searchParams};
             if (!value) {
@@ -11,7 +11,7 @@ export default function useSearchParam(name: string): [string | null, (value: st
             } else {
                 newSearchParams[name] = value;
             }
-            setSearchParams(newSearchParams)
+            setSearchParams(newSearchParams, {replace: true})
         }
     ]
 }

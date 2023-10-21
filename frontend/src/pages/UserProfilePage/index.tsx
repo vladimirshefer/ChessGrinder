@@ -81,7 +81,7 @@ export default function UserProfilePage() {
     let navigate = useNavigate()
     let loc = useLoc()
     let authData = useAuthData()
-    let [activeTab, setActiveTab] = useSearchParam("tab")
+    let [activeTab, setActiveTab] = useSearchParam("tab", "history")
 
     useEffect(() => {
         if (!username) {
@@ -163,7 +163,7 @@ export default function UserProfilePage() {
                 onClick={() => setActiveTab("admin")}>{loc("Admin")}
             </button>
         </div>
-        <Conditional on={activeTab === "history" || !activeTab}>
+        <Conditional on={activeTab === "history"}>
             <div className={"text-sm"}>
                 <div className="flex text-left">
                     <h2 className={"uppercase grow"}>{loc("Tournaments")}</h2>
