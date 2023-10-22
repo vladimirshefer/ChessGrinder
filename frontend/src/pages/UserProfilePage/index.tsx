@@ -103,6 +103,15 @@ export default function UserProfilePage() {
         },
     })
 
+    let historyQuery = useQuery({
+        queryKey: ["history", userProfile, activeTab],
+        queryFn: async () => {
+            if (!userProfile) return null;
+            return userRepository.getHistory(userProfile.username)
+        },
+        enabled: activeTab === "history"
+    })
+
     async function logout() {
         await loginPageRepository.logout()
     }
@@ -143,7 +152,7 @@ export default function UserProfilePage() {
                     </div>
                     <div className={"flex gap-1 items-center"}>
                         <BiSolidChess/>
-                        <span>97</span>
+                        <span>{historyQuery.data?.count || "?"}</span>
                     </div>
                 </div>
             </div>
@@ -165,32 +174,30 @@ export default function UserProfilePage() {
         </div>
         <Conditional on={activeTab === "history"}>
             <div className={"text-sm"}>
-                <div className="flex text-left">
-                    <h2 className={"uppercase grow"}>{loc("Tournaments")}</h2>
-                    <span>97</span>
-                </div>
+                {/*<div className="flex text-left">*/}
+                {/*    <h2 className={"uppercase grow"}>{loc("Tournaments")}</h2>*/}
+                {/*    <span>{historyQuery.data?.count || ""}</span>*/}
+                {/*</div>*/}
                 <div className="p-1"></div>
                 <div className={"grid grid-cols-12 text-left font-semibold border-b-2"}>
-                    <span className={"col-span-8"}>{loc("Tournament")}</span>
+                    <span className={"col-span-8"}>{loc("Tournaments")  + (historyQuery?.isSuccess ? ` (${historyQuery.data?.count})` : "")}</span>
                     <span className={"col-span-2"}>{loc("Place")}</span>
                     <span className={"col-span-2"}>{loc("Points")}</span>
                 </div>
-                <div className="grid grid-cols-12">
-                    <div className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
-                        <span className={"col-span-8"}>My mystery tournament</span>
-                        <span className={"col-span-2"}>1</span>
-                        <span className={"col-span-2"}>6</span>
-                    </div>
-                    <div className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
-                        <span className={"col-span-8"}>Tournament Stas Karas</span>
-                        <span className={"col-span-2"}>4</span>
-                        <span className={"col-span-2"}>3</span>
-                    </div>
-                    <div className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
-                        <span className={"col-span-8"}>Gorgeous tournament</span>
-                        <span className={"col-span-2"}>2</span>
-                        <span className={"col-span-2"}>5</span>
-                    </div>
+                <div>
+                    {historyQuery.isSuccess ? (
+                        <div className="grid grid-cols-12">
+                            {historyQuery.data?.values?.map(row =>
+                                <div key={row.tournament.id} className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
+                                    <Link to={`/tournament/${row.tournament.id}`} className={"col-span-8"}>{row.tournament.name || row.tournament.id}</Link>
+                                    <span className={"col-span-2"}>{row.place}</span>
+                                    <span className={"col-span-2"}>{row.points}</span>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <>Loading history...</>
+                    )}
                 </div>
             </div>
         </Conditional>

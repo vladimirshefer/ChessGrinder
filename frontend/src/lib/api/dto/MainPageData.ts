@@ -19,6 +19,7 @@ export interface MemberDto {
 }
 
 export interface ListDto<T extends any> {
+    count?: number
     values: T[]
 }
 
@@ -46,4 +47,10 @@ export interface MainPageData {
 
 export enum UserRoles {
     ADMIN = "ROLE_ADMIN"
+}
+
+export interface UserHistoryRecordDto {
+    tournament: TournamentDto
+    place: number
+    points: number
 }

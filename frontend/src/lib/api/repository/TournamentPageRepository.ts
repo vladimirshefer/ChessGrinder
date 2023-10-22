@@ -29,6 +29,8 @@ class LocalStorageTournamentPageRepository implements TournamentPageRepository {
                 participant.score = pointsMap.get(participant.id!!) || 0
                 participant.buchholz = buchholzMap.get(participant.id!!) || 0
             })
+            // Save recalculated values back.
+            localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
             return tournament
         }
         return tournament || null

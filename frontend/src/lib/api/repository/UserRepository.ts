@@ -1,8 +1,9 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {BadgeDto, ListDto, MemberDto, UserBadgeDto} from "lib/api/dto/MainPageData";
+import {BadgeDto, ListDto, MemberDto, UserBadgeDto, UserHistoryRecordDto} from "lib/api/dto/MainPageData";
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
+import {ParticipantDto, TournamentPageData} from "../dto/TournamentPageData";
 
 export interface UserRepository {
     getUser(username: string): Promise<MemberDto | null>
@@ -10,6 +11,8 @@ export interface UserRepository {
     getUsers(): Promise<ListDto<MemberDto>>
 
     getMe(): Promise<MemberDto | null>
+
+    getHistory(username: string): Promise<ListDto<UserHistoryRecordDto>>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -47,6 +50,39 @@ class LocalStorageUserRepository implements UserRepository {
         return null;
     }
 
+    async getHistory(username: string): Promise<ListDto<UserHistoryRecordDto>> {
+        let tournaments = localStorageUtil.getAllObjectsByPrefix<TournamentPageData>("cgd.tournament.");
+        let result = tournaments
+            .map(tournament => {
+                let matchingParticipants: ParticipantDto[] = tournament.participants
+                    .filter(participant => !!participant.userId)
+                    .map(participant => {
+                        let user = localStorageUtil.getObject<MemberDto>(`cgd.user.${participant.userId!!}`);
+                        return [participant, user] as [ParticipantDto, MemberDto | null];
+                    })
+                    .filter(([, user]) => !!user)
+                    .filter(([, user]) => {
+                        return user!!.username === username || user!!.id === username;
+                    })
+                    .map(([participant]) => participant);
+                let participant = matchingParticipants?.[0];
+                return [tournament, participant] as [TournamentPageData, ParticipantDto | undefined];
+            })
+            .filter(([, participant]) => !!participant)
+            .map(([tournament, participant]) => {
+                let participantDtos = tournament.participants
+                    .sort((a, b) => -(a.score !== b.score ? a.score - b.score : a.buchholz - b.buchholz))
+                return {
+                    tournament: tournament.tournament,
+                    points: participant!!.score,
+                    place: participantDtos.indexOf(participant!!) + 1,
+                } as UserHistoryRecordDto
+            });
+        return {
+            count: result.length,
+            values: result,
+        };
+    }
 }
 
 class RestApiUserRepository implements UserRepository {
@@ -60,6 +96,10 @@ class RestApiUserRepository implements UserRepository {
 
     async getMe(): Promise<MemberDto | null> {
         return restApiClient.get(`/user/me`);
+    }
+
+    async getHistory(username: string): Promise<ListDto<UserHistoryRecordDto>> {
+        return restApiClient.get(`/user/${username}/history`);
     }
 }
 

@@ -3,6 +3,7 @@ import {qualifiedService} from "./apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import {requirePresent} from "lib/util/common";
+import {MemberDto} from "lib/api/dto/MainPageData";
 
 export interface ParticipantRepository {
     postParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
@@ -16,6 +17,8 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
         if (!tournament) throw new Error(`No tournament with id ${tournamentId}`)
         tournament.participants = tournament.participants || []
         tournament.participants.push(participant)
+        let user = localStorageUtil.getObject<MemberDto>(`cgd.user.${participant.userId}`);
+        participant.userFullName = user?.name
         localStorage.setItem(`cgd.tournament.${tournamentId}`, JSON.stringify(tournament))
     }
 
