@@ -228,7 +228,8 @@ export default function UserProfilePage() {
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <div className={"bg-white p-2"}>
                     <AssignAchievementPane assignAchievement={async (badge) => {
-                        await badgeRepository.assignBadge(badge.id, userProfile!!.id);
+                        await badgeRepository.assignBadge(badge.id, userProfile!!.id)
+                            .catch(() => alert("Could not assign badge!"));
                         await refetch()
                     }}/>
                 </div>
