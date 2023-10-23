@@ -1,5 +1,5 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {useAuthData} from "lib/auth/AuthService";
+import {useAuthenticatedUser} from "lib/auth/AuthService";
 import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
@@ -80,21 +80,21 @@ export default function UserProfilePage() {
     let {username} = useParams()
     let navigate = useNavigate()
     let loc = useLoc()
-    let authData = useAuthData()
+    let authenticatedUser = useAuthenticatedUser()
     let [activeTab, setActiveTab] = useSearchParam("tab", "history")
 
     useEffect(() => {
         if (!username) {
-            let currentUserName = authData?.username;
+            let currentUserName = authenticatedUser?.username;
             if (currentUserName) {
                 navigate(`/user/${currentUserName}`)
             }
         }
-    }, [username, authData, navigate])
+    }, [username, authenticatedUser, navigate])
 
     let isMyProfile = useMemo(() => {
-        return !!username && username === authData?.username
-    }, [username, authData])
+        return !!username && username === authenticatedUser?.username
+    }, [username, authenticatedUser])
 
     let {data: userProfile, refetch} = useQuery({
         queryKey: ["profile", username],
