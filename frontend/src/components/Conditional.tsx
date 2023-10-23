@@ -1,5 +1,5 @@
 import {ReactElement, useMemo} from "react";
-import {useAuthData} from "lib/auth/AuthService";
+import {useAuthenticatedUser} from "lib/auth/AuthService";
 import {useMode} from "lib/api/repository/apiSettings";
 
 export function Conditional(
@@ -28,10 +28,10 @@ export default function ConditionalOnUserRole(
         children?: ReactElement | ReactElement[]
     }
 ) {
-    let authData = useAuthData();
+    let authenticatedUser = useAuthenticatedUser();
     let show = useMemo(() => {
-        return authData?.roles?.includes(role) || false
-    }, [authData, role])
+        return authenticatedUser?.roles?.includes(role) || false
+    }, [authenticatedUser, role])
 
     return <Conditional on={show}>
         {children}
@@ -47,10 +47,10 @@ export function ConditionalOnAuthorized(
         authorized?: boolean
     }
 ) {
-    let authData = useAuthData();
+    let authenticatedUser = useAuthenticatedUser();
     let show = useMemo(() => {
-        return !!authData === authorized
-    }, [authData, authorized])
+        return !!authenticatedUser === authorized
+    }, [authenticatedUser, authorized])
 
     return <Conditional on={show}>
         {children}
