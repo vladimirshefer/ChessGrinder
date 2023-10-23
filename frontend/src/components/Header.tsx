@@ -5,10 +5,10 @@ import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {AiOutlineClose, AiOutlineMenu} from "react-icons/ai";
 import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "./Conditional";
-import loginPageRepository from "../lib/api/repository/LoginPageRepository";
+import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
-import {LanguageContext} from "App";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
+import {LanguageContext} from "contexts/LanguageContext";
 
 function Header() {
     let navigate = useNavigate()
