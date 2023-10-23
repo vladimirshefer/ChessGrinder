@@ -1,7 +1,5 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {useContext, useEffect, useState} from "react";
-import {MemberDto} from "lib/api/dto/MainPageData";
-import {UserContext} from "App";
+import {useEffect, useState} from "react";
 
 export interface AuthData {
     username: string
@@ -56,7 +54,3 @@ export function useAuthData(): AuthData | undefined {
     return authData
 }
 
-export function useAuthenticatedUser(): MemberDto | null {
-    let [user]: [(MemberDto | null), ((v: (MemberDto | null)) => void)] = useContext(UserContext)
-    return user
-}

@@ -1,5 +1,4 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {useAuthenticatedUser} from "lib/auth/AuthService";
 import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
@@ -15,6 +14,7 @@ import {BsPencilFill} from "react-icons/bs";
 import {FiLogOut} from "react-icons/fi";
 import useSearchParam from "lib/react/hooks/useSearchParam";
 import DropdownSelect from "components/DropdownSelect";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 function AssignAchievementPane(
     {

@@ -1,5 +1,4 @@
 import {Link, useNavigate} from "react-router-dom";
-import {useAuthenticatedUser} from "lib/auth/AuthService";
 import React, {useContext, useRef, useState} from "react";
 import {useLoc} from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
@@ -9,6 +8,7 @@ import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "./Con
 import loginPageRepository from "../lib/api/repository/LoginPageRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {LanguageContext} from "App";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 function Header() {
     let navigate = useNavigate()

@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
-import {useAuthenticatedUser} from "lib/auth/AuthService";
 import {useNavigate} from "react-router-dom";
 import {ConditionalOnMode} from "components/Conditional";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 export default function LoginPage() {
     let [username, setUsername] = useState("");

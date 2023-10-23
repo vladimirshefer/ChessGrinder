@@ -1,6 +1,6 @@
 import {ReactElement, useMemo} from "react";
-import {useAuthenticatedUser} from "lib/auth/AuthService";
 import {useMode} from "lib/api/repository/apiSettings";
+import {useAuthenticatedUser} from "../contexts/AuthenticatedUserContext";
 
 export function Conditional(
     {

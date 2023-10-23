@@ -17,17 +17,15 @@ import TournamentEditPage from "pages/TournamentEditPage";
 import BadgePage from "pages/BadgePage";
 import UserProfileEditPage from "pages/UserProfileEditPage";
 import {MemberDto} from "lib/api/dto/MainPageData";
+import {Property} from "lib/util/misc";
+import {AuthenticatedUserContext} from "./contexts/AuthenticatedUserContext";
 
 const queryClient = new QueryClient()
 
 let ApplicationRouter = 1 > 0 /*TODO*/ ? HashRouter : BrowserRouter
 
-type Property<T> = [T, (v: T) => void]
-
 export const LanguageContext = React.createContext<Property<string>>(["en", (l: string) => {
 }]);
-export const UserContext = React.createContext<Property<MemberDto | null>>([null, () => {
-}])
 
 function App() {
     const languageContextValue = useState("ru");
@@ -55,7 +53,7 @@ function App() {
 
     return (
         <LanguageContext.Provider value={languageContextValue}>
-            <UserContext.Provider value={[user, (it) => setUser(it)]}>
+            <AuthenticatedUserContext.Provider value={[user, setUser]}>
                 <div className='App'>
                     <QueryClientProvider client={queryClient}>
                         <ApplicationRouter>
@@ -83,7 +81,7 @@ function App() {
                         </ApplicationRouter>
                     </QueryClientProvider>
                 </div>
-            </UserContext.Provider>
+            </AuthenticatedUserContext.Provider>
         </LanguageContext.Provider>
     );
 }

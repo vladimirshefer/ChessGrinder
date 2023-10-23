@@ -1,5 +1,5 @@
 import {useMode} from "lib/api/repository/apiSettings";
-import authService from "lib/auth/AuthService";
+import loginPageRepository from "lib/api/repository/LoginPageRepository";
 
 export default function AdminPage() {
     let [mode, setMode] = useMode()
@@ -10,8 +10,8 @@ export default function AdminPage() {
             <span>Mode</span>
             <select defaultValue={mode}
                     onChange={(e) => {
+                        loginPageRepository.logout();
                         setMode(e.target.value);
-                        authService.setAuthData(null);
                         window.location.reload();
                     }}
                     name={"Mode"}

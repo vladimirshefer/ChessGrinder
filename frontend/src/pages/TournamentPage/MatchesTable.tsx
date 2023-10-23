@@ -1,11 +1,11 @@
 import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
-import {useAuthenticatedUser} from "lib/auth/AuthService";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import {useRef, useState} from "react";
-import {useClickOutsideHandler} from "../../lib/util/ClickOutside";
+import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {IoMdArrowDropdown} from "react-icons/io";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 function MatchResultSelector(
     {

@@ -1,8 +1,8 @@
-import {useAuthenticatedUser} from "lib/auth/AuthService";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import React, {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {useLoc} from "../../strings/loc";
+import {useLoc} from "strings/loc";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 export default function UserProfileEditPage() {
     let authenticatedUser = useAuthenticatedUser();
