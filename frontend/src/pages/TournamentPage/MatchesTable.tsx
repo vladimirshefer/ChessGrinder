@@ -1,5 +1,5 @@
 import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
-import {useAuthData} from "lib/auth/AuthService";
+import {useAuthenticatedUser} from "lib/auth/AuthService";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
@@ -130,8 +130,8 @@ function MatchesTable(
     }
 ) {
     let loc = useLoc()
-    let authData = useAuthData();
-    let canEditResults = !roundIsFinished && (authData?.roles?.includes(UserRoles.ADMIN) || false);
+    let authenticatedUser = useAuthenticatedUser();
+    let canEditResults = !roundIsFinished && (authenticatedUser?.roles?.includes(UserRoles.ADMIN) || false);
 
     return <div className={"grid grid-cols-12 p-2 gap-y-2"}>
         <div className={"col-span-12 grid grid-cols-12 border-b border-black justify-items-start"}>
