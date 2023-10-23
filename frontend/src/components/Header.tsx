@@ -1,5 +1,5 @@
 import {Link, useNavigate} from "react-router-dom";
-import {useUser} from "lib/auth/AuthService";
+import {useAuthenticatedUser} from "lib/auth/AuthService";
 import React, {useContext, useRef, useState} from "react";
 import {useLoc} from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
@@ -12,7 +12,7 @@ import {LanguageContext} from "App";
 
 function Header() {
     let navigate = useNavigate()
-    let user = useUser()
+    let authenticatedUser = useAuthenticatedUser()
     const droprownRef = useRef(null);
     let [dropdownOpened, setDropdownOpened] = useState(false);
     let [, setLanguage] = useContext(LanguageContext)
@@ -53,13 +53,13 @@ function Header() {
 
                 <div className={"rounded-full overflow-hidden h-8 w-8 bg-white mx-2 border border-black"}>
                     {
-                        !user ? (
+                        !authenticatedUser ? (
                             <Link to={"/login"}>
                                 <Gravatar text={""} type={GravatarType.MysteryPerson} size={50}/>
                             </Link>
                         ) : (
                             <Link to={"/user"}>
-                                <Gravatar text={user.username} type={GravatarType.Robohash} size={50}/>
+                                <Gravatar text={authenticatedUser.username} type={GravatarType.Robohash} size={50}/>
                             </Link>
                         )
                     }

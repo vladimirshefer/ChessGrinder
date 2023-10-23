@@ -1,21 +1,21 @@
-import {useUser} from "lib/auth/AuthService";
+import {useAuthenticatedUser} from "lib/auth/AuthService";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import React, {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {useLoc} from "../../strings/loc";
 
 export default function UserProfileEditPage() {
-    let user = useUser();
+    let authenticatedUser = useAuthenticatedUser();
     let navigate = useNavigate()
     let loc = useLoc()
 
     useEffect(() => {
-        if (!user) {
+        if (!authenticatedUser) {
             navigate("/login")
         }
-    }, [user, navigate]);
+    }, [authenticatedUser, navigate]);
 
-    if (!user) {
+    if (!authenticatedUser) {
         return <>You are not logged in</>
     }
 
@@ -25,18 +25,18 @@ export default function UserProfileEditPage() {
         </div>
         <div className={"grid gap-2"}>
             <div>
-                <Gravatar text={user.username || user.id} type={GravatarType.Robohash} size={100}
+                <Gravatar text={authenticatedUser.username || authenticatedUser.id} type={GravatarType.Robohash} size={100}
                           className={"rounded-full"}/>
             </div>
 
             <div className={"grid grow text-left gap-2"}>
                 <input type={"text"} className={"font-semibold uppercase truncate border-b-2"}
-                       defaultValue={user.name || user.username || user.id || "Unknown"}
+                       defaultValue={authenticatedUser.name || authenticatedUser.username || authenticatedUser.id || "Unknown"}
                        title={loc("Full name")}
                        placeholder={loc("Full name")}
                 />
                 <input type={"text"} className={"text-sm text-gray-500 border-b-2"}
-                       defaultValue={user.username}
+                       defaultValue={authenticatedUser.username}
                        title={loc("Username")}
                        placeholder={loc("Username")}
                 />

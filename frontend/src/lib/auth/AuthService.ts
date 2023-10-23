@@ -56,7 +56,7 @@ export function useAuthData(): AuthData | undefined {
     return authData
 }
 
-export function useUser(): MemberDto | null {
+export function useAuthenticatedUser(): MemberDto | null {
     let [user]: [(MemberDto | null), ((v: (MemberDto | null)) => void)] = useContext(UserContext)
     return user
 }

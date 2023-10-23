@@ -1,20 +1,20 @@
 import {useEffect, useState} from "react";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
-import {useAuthData} from "lib/auth/AuthService";
+import {useAuthenticatedUser} from "lib/auth/AuthService";
 import {useNavigate} from "react-router-dom";
-import {ConditionalOnMode} from "../../components/Conditional";
+import {ConditionalOnMode} from "components/Conditional";
 
 export default function LoginPage() {
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
     let navigate = useNavigate()
-    let authData = useAuthData()
+    let authenticatedUser = useAuthenticatedUser()
 
     useEffect(() => {
-        if (!!authData) {
+        if (!!authenticatedUser) {
             navigate("/user")
         }
-    }, [authData, navigate])
+    }, [authenticatedUser, navigate])
 
     async function login(username: string, password: string) {
         await loginPageRepository.login(username, password)
