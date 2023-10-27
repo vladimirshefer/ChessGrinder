@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.dto.internals;
 import java.math.*;
 import java.util.*;
 
+import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import lombok.*;
 
 @Data
@@ -10,5 +11,5 @@ import lombok.*;
 public class ScoreModel {
 
     BigDecimal score;
-    List<ParticipantForPairing> participants;
+    List<ParticipantDto> participants;
 }

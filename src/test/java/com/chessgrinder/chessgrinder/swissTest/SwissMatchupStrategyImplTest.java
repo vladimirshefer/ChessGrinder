@@ -1,16 +1,21 @@
 package com.chessgrinder.chessgrinder.swissTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.chessgrinder.chessgrinder.chessengine.SwissMatchupStrategyImpl;
+import com.chessgrinder.chessgrinder.dto.MatchDto;
+import com.chessgrinder.chessgrinder.dto.ParticipantDto;
+import com.chessgrinder.chessgrinder.enums.MatchResult;
+import jakarta.annotation.Nullable;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.*;
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.List;
 
-import com.chessgrinder.chessgrinder.chessengine.*;
-import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.enums.*;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.*;
-import org.mockito.junit.jupiter.*;
+import static com.chessgrinder.chessgrinder.chessengine.SwissMatchupStrategyImpl.split;
+import static java.util.Collections.emptyList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -20,79 +25,64 @@ public class SwissMatchupStrategyImplTest {
 
     @Test
     public void testSplit() {
-
-        List<Integer> inputList = Arrays.asList(1, 2, 3, 4, 5);
-        List<Integer>[] result = swissEngine.split(inputList);
-
-        assertEquals(2, result.length);
-
-        List<Integer> firstSublist = result[0];
-
-        assertEquals(3, firstSublist.size());
-        assertEquals(Arrays.asList(1, 2, 3), firstSublist);
-
-        List<Integer> secondSublist = result[1];
-
-        assertEquals(2, secondSublist.size());
-        assertEquals(Arrays.asList(4, 5), secondSublist);
+        assertEquals(List.of(), split(List.of()));
+        assertEquals(List.of(List.of(1)), split(List.of(1)));
+        assertEquals(List.of(List.of(1), List.of(2)), split(List.of(1, 2)));
+        assertEquals(List.of(List.of(1, 2, 3), List.of(4, 5)), split(List.of(1, 2, 3, 4, 5)));
     }
 
     @Test
     public void test_4players() {
 
-        ParticipantDto participant1 = createParticipant(10, 6, "user1","id1");
-        ParticipantDto participant2 = createParticipant(8, 6, "user2", "id2");
-        ParticipantDto participant3 = createParticipant(6, 6, "user3", "id3");
-        ParticipantDto participant4 = createParticipant(4, 6, "user4", "id4");
+        ParticipantDto participant1 = createParticipant("user1", 10, 6);
+        ParticipantDto participant2 = createParticipant("user2", 8, 6);
+        ParticipantDto participant3 = createParticipant("user3", 6, 6);
+        ParticipantDto participant4 = createParticipant("user4", 4, 6);
 
-        List<ParticipantDto> participants = List.of(participant1, participant2, participant3 ,participant4);
+        List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4);
 
-        List<MatchDto> matches = swissEngine.matchUp(participants, null);
-        MatchDto firstMatch = matches.get(0);
-        MatchDto secondMatch = matches.get(1);
+        List<MatchDto> matches = swissEngine.matchUp(participants, emptyList());
 
         assertEquals(2, matches.size());
 
-        assertEquals(firstMatch.getWhite(), participant1);
-        assertEquals(firstMatch.getBlack(), participant2);
+        assertEquals(participant1, matches.get(0).getWhite());
+        assertEquals(participant2, matches.get(0).getBlack());
 
-        assertEquals(secondMatch.getWhite(), participant3);
-        assertEquals(secondMatch.getBlack(), participant4);
+        assertEquals(participant3, matches.get(1).getWhite());
+        assertEquals(participant4, matches.get(1).getBlack());
 
     }
 
     @Test
     public void test_5players_with_buy() {
+        ParticipantDto participant1 = createParticipant("user1", 10, 6);
+        ParticipantDto participant2 = createParticipant("user2", 8, 6);
+        ParticipantDto participant3 = createParticipant("user3", 6, 6);
+        ParticipantDto participant4 = createParticipant("user4", 4, 6);
+        ParticipantDto participant5 = createParticipant("user5", 4, 6);
 
-        ParticipantDto participant1 = createParticipant(10, 6, "user1","id1");
-        ParticipantDto participant2 = createParticipant(8, 6, "user2", "id2");
-        ParticipantDto participant3 = createParticipant(6, 6, "user3", "id3");
-        ParticipantDto participant4 = createParticipant(4, 6, "user4", "id4");
-        ParticipantDto participant5 = createParticipant(4, 6, "user5", "id5");
+        List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4, participant5);
 
-        List<ParticipantDto> participants = List.of(participant1, participant2, participant3 ,participant4, participant5);
-
-        List<MatchDto> matches = swissEngine.matchUp(participants, null);
+        List<MatchDto> matches = swissEngine.matchUp(participants, emptyList());
         MatchDto firstMatch = matches.get(0);
         MatchDto secondMatch = matches.get(1);
         MatchDto buy = matches.get(2);
 
         assertEquals(3, matches.size());
 
-        assertEquals(firstMatch.getWhite(), participant1);
-        assertEquals(firstMatch.getBlack(), participant2);
+        assertEquals(participant1, firstMatch.getWhite());
+        assertEquals(participant2, firstMatch.getBlack());
 
-        assertEquals(secondMatch.getWhite(), participant3);
-        assertEquals(secondMatch.getBlack(), participant4);
+        assertEquals(participant3, secondMatch.getWhite());
+        assertEquals(participant4, secondMatch.getBlack());
 
-        assertEquals(buy.getWhite(), participant5);
-        assertNull(buy.getBlack());
-        assertEquals(buy.getResult(), MatchResult.BUY);
+        assertEquals(participant5, buy.getBlack());
+        assertNull(buy.getWhite());
+        assertEquals(MatchResult.BUY, buy.getResult());
     }
 
     @Test
     public void test_ZeroParticipants() {
-
         List<ParticipantDto> participants = List.of();
         List<MatchDto> matches = swissEngine.matchUp(participants, null);
 
@@ -101,46 +91,42 @@ public class SwissMatchupStrategyImplTest {
 
     @Test
     public void test_NoRepeatableMatches() {
-
-        ParticipantDto participant1 = createParticipant(10, 6, "user1","id1");
-        ParticipantDto participant2 = createParticipant(8, 6, "user2", "id2");
-        ParticipantDto participant3 = createParticipant(8, 6, "user3", "id3");
-        ParticipantDto participant4 = createParticipant(8, 6, "user4", "id4");
+        ParticipantDto participant1 = createParticipant("user1", 10, 6);
+        ParticipantDto participant2 = createParticipant("user2", 8, 6);
+        ParticipantDto participant3 = createParticipant("user3", 8, 6);
+        ParticipantDto participant4 = createParticipant("user4", 8, 6);
 
         MatchDto match = createMatch(participant1, participant3, MatchResult.WHITE_WIN);
-        List<MatchDto> allMatchesInTheTournament = List.of(match);
+        List<MatchDto> matchHistory = List.of(match);
         List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4);
 
-
-        List<MatchDto> matches = swissEngine.matchUp(participants, allMatchesInTheTournament);
-
+        List<MatchDto> matches = swissEngine.matchUp(participants, matchHistory);
 
         MatchDto firstMatch = matches.get(0);
         MatchDto secondMatch = matches.get(1);
 
         assertEquals(2, matches.size());
 
-        assertEquals(firstMatch.getWhite(), participant1);
-        assertEquals(firstMatch.getBlack(), participant4);
+        assertEquals(participant4, firstMatch.getWhite());
+        assertEquals(participant1, firstMatch.getBlack());
 
-        assertEquals(secondMatch.getWhite(), participant2);
-        assertEquals(secondMatch.getBlack(), participant3);
-
+        assertEquals(participant2, secondMatch.getWhite());
+        assertEquals(participant3, secondMatch.getBlack());
     }
 
 
 
 
-    private ParticipantDto createParticipant(int val, int buchholz, String name, String id) {
+    private ParticipantDto createParticipant(String name, int score, int buchholz) {
         return ParticipantDto.builder()
-                .id(id)
+                .id(name)
                 .name(name)
-                .score(BigDecimal.valueOf(val))
+                .score(BigDecimal.valueOf(score))
                 .buchholz(BigDecimal.valueOf(buchholz))
                 .build();
     }
 
-    private MatchDto createMatch(ParticipantDto white, ParticipantDto black, MatchResult result) {
+    private MatchDto createMatch(ParticipantDto white, ParticipantDto black, @Nullable MatchResult result) {
         return MatchDto.builder()
                 .white(white)
                 .black(black)
