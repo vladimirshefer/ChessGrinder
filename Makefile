@@ -17,7 +17,7 @@ prod_js_build: ## Build frontend application
 	cd frontend && npm ci && npm run build
 
 prod_js_run: ## Run frontend application
-	cd frontend && nohup serve -s build &
+	cd frontend && nohup serve -s build -p 3000 &
 
 prod_js_redeploy: prod_js_build prod_js_stop prod_js_run ## Kill current frontend app, build new version and run
 
@@ -43,7 +43,7 @@ dev_js_build: ## Build frontend application
 	cd frontend && npm ci && npm run build
 
 dev_js_run: ## Run frontend application
-	cd frontend && nohup serve -s build &
+	cd frontend && nohup serve -s build -p 3001 &
 
 dev_js_redeploy: dev_js_build dev_js_stop dev_js_run ## Kill current frontend app, build new version and run
 
