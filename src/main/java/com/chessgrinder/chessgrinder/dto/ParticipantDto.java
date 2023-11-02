@@ -8,7 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class ParticipantDto {
 
     private String id;

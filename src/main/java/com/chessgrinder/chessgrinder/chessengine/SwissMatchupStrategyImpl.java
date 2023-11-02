@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.chessengine;
 
-import com.chessgrinder.chessgrinder.dto.internals.ScoreModel;
+import com.chessgrinder.chessgrinder.dto.internal.ScoreModel;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
@@ -10,7 +10,6 @@ import jakarta.annotation.Nullable;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -30,7 +29,7 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
      * @param matchHistory All submitted match results in the whole tournament.
      * @return The list of matches to be played in new round.
      */
-    public List<MatchDto> matchUp(List<ParticipantDto> participants, List<MatchDto> matchHistory) {
+    public List<MatchDto> matchUp(List<ParticipantDto> participants, List<MatchDto> matchHistory, boolean recalculateResults) {
 
         List<MatchDto> matches = new ArrayList<>();
 
@@ -38,7 +37,15 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
             return Collections.emptyList();
         }
 
-        SwissCalculator swissCalculator = new SwissCalculator(participants, matchHistory);
+        List<ParticipantDto> participantsWithCalculatedResults;
+        if (recalculateResults) {
+            TournamentResultsCalculator tournamentResultsCalculator = new TournamentResultsCalculator(participants, matchHistory);
+            participantsWithCalculatedResults = tournamentResultsCalculator.getResult();
+        } else {
+            participantsWithCalculatedResults = participants;
+        }
+
+        SwissCalculator swissCalculator = new SwissCalculator(participantsWithCalculatedResults, matchHistory);
 
         // Book last player for buy
         {
@@ -71,26 +78,25 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
     /**
      * Returns secondCandidateForMatch. Finds the closest score gap and selects first player from the second half of group.
      *
-     * @param players                all participants in the tournament
-     * @param firstCandidateForMatch first candidate for match.
+     * @param players      all participants in the tournament
+     * @param participant  first candidate for match.
      * @param matchHistory
      * @return
      */
     @Nullable
     public ParticipantDto findPairForParticipant(
             List<ParticipantDto> players,
-            ParticipantDto firstCandidateForMatch,
+            ParticipantDto participant,
             List<MatchDto> matchHistory,
             SwissCalculator swissCalculator
     ) {
 
         Set<String> userIdsToExclude = matchHistory.stream()
-                .filter(matchDto -> matchDto.getWhite() == null)
-                .filter(matchDto -> matchDto.getBlack() == null)
-                .filter(matchDto -> matchDto.getWhite().getId().equals(firstCandidateForMatch.getId())
-                        || matchDto.getBlack().getId().equals(firstCandidateForMatch.getId()))
+                .filter(matchDto -> matchDto.getWhite() != null)
+                .filter(matchDto -> matchDto.getBlack() != null)
+                .filter(matchDto -> SwissCalculator.participated(participant, matchDto))
                 .map(matchDto -> {
-                    if (matchDto.getWhite().getId().equals(firstCandidateForMatch.getId())) {
+                    if (participant.getId().equals(matchDto.getWhite().getId())) {
                         return matchDto.getBlack().getId();
                     } else {
                         return matchDto.getWhite().getId();
@@ -98,15 +104,17 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
                 })
                 .collect(Collectors.toSet());
 
-        userIdsToExclude.add(firstCandidateForMatch.getId());
+        userIdsToExclude.add(participant.getId());
 
         List<ParticipantDto> filteredPlayers = players.stream()
                 .filter(player -> !userIdsToExclude.contains(player.getId()))
                 .collect(Collectors.toList());
 
+        if (filteredPlayers.isEmpty()) filteredPlayers = players.stream().filter(it -> it.getId() != participant.getId()).collect(Collectors.toList());
+
         List<ScoreModel> separateParticipantsByScores = splitIntoChunks(filteredPlayers, swissCalculator);
 
-        ScoreModel scoreModelWithClosestScore = findScoreModelWithClosestScore(separateParticipantsByScores, firstCandidateForMatch);
+        ScoreModel scoreModelWithClosestScore = findScoreModelWithClosestScore(separateParticipantsByScores, participant);
 
         if (scoreModelWithClosestScore == null) {
             return null;
@@ -253,7 +261,7 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
 
     private static MatchDto buy(ParticipantDto participant) {
         return MatchDto.builder()
-                .black(participant)
+                .white(participant)
                 .result(MatchResult.BUY)
                 .build();
     }

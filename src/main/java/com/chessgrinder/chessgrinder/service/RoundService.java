@@ -97,7 +97,7 @@ public class RoundService {
         List<MatchEntity> allMatchesInTheTournament = matchRepository.findAllByTournamentId(tournamentId);
         List<MatchDto> allMatches = matchMapper.toDto(allMatchesInTheTournament);
 
-        List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches);
+        List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches, false);
         List<MatchEntity> matches = new ArrayList<>();
 
         for (MatchDto matchDto : matchesDto) {
@@ -130,8 +130,8 @@ public class RoundService {
         Map<String, Set<String>> enemiesMap = new HashMap<>();
         Map<String, Double> buchholzMap = new HashMap<>();
         for (MatchEntity match : matches) {
-            String white = match.getParticipant1() != null ? match.getParticipant1().getNickname() : null;
-            String black = match.getParticipant2() != null ? match.getParticipant2().getNickname() : null;
+            String white = match.getParticipant1() != null ? match.getParticipant1().getId().toString() : null;
+            String black = match.getParticipant2() != null ? match.getParticipant2().getId().toString() : null;
             @Nullable MatchResult result = match.getResult();
             if (result == null) {
                 addResult(pointsMap, enemiesMap, white, black, 0);
@@ -158,18 +158,18 @@ public class RoundService {
         enemiesMap.forEach((player, enemiesSet) -> {
             buchholzMap.putIfAbsent(player, 0d);
             for (String enemy : enemiesSet) {
-                buchholzMap.computeIfPresent(enemy, (__, b) -> b + pointsMap.get(enemy));
+                buchholzMap.computeIfPresent(player, (__, b) -> b + pointsMap.get(enemy));
             }
         });
         List<ParticipantEntity> participants = participantRepository.findByTournamentId(tournamentId);
         for (ParticipantEntity participant : participants) {
-            participant.setScore(BigDecimal.valueOf(pointsMap.getOrDefault(participant.getNickname(), 0d)));
-            participant.setBuchholz(BigDecimal.valueOf(buchholzMap.getOrDefault(participant.getNickname(), 0d)));
+            participant.setScore(BigDecimal.valueOf(pointsMap.getOrDefault(participant.getId().toString(), 0d)));
+            participant.setBuchholz(BigDecimal.valueOf(buchholzMap.getOrDefault(participant.getId().toString(), 0d)));
         }
         participantRepository.saveAll(participants);
     }
 
-    private void addResult(Map<String, Double> points, Map<String, Set<String>> enemies, String player, String enemy, double pointsToAdd) {
+    private void addResult(Map<String, Double> points, Map<String, Set<String>> enemies, @Nullable String player, @Nullable String enemy, double pointsToAdd) {
         if (player != null) {
             points.putIfAbsent(player, 0d);
             points.computeIfPresent(player, (__, p) -> p + pointsToAdd);

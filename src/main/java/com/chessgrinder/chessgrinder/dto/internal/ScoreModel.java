@@ -1,4 +1,4 @@
-package com.chessgrinder.chessgrinder.dto.internals;
+package com.chessgrinder.chessgrinder.dto.internal;
 
 import java.math.*;
 import java.util.*;

@@ -8,7 +8,9 @@ import lombok.*;
 @Builder
 public class MatchDto {
     private String id;
+    @Nullable
     private ParticipantDto white;
+    @Nullable
     private ParticipantDto black;
     @Nullable
     private MatchResult result;
