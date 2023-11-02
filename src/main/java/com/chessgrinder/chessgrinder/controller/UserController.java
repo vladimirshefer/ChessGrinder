@@ -49,7 +49,6 @@ public class UserController {
         }
         return userService.getUserByUserName(userId);
     }
-    //TODO test
 
     @GetMapping("/me")
     public UserDto me(
@@ -64,11 +63,6 @@ public class UserController {
             return null;
         }
         return userService.getUserByUserName(email);
-    }
-
-    @PostMapping("/test")
-    public List<MatchDto> test(@RequestBody List<ParticipantDto> users) {
-        return swissEngine.matchUp(users, null);
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
