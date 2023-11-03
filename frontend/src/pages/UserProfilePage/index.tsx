@@ -191,7 +191,7 @@ export default function UserProfilePage() {
                                 <div key={row.tournament.id} className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
                                     <Link to={`/tournament/${row.tournament.id}`} className={"col-span-8"}>{row.tournament.name || row.tournament.id}</Link>
                                     <span className={"col-span-2"}>{row.place}</span>
-                                    <span className={"col-span-2"}>{row.points}</span>
+                                    <span className={"col-span-2"}>{row.participant.score}</span>
                                 </div>
                             )}
                         </div>

@@ -16,4 +16,7 @@ public interface ParticipantRepository extends PagingAndSortingRepository<Partic
     @Query("SELECT p FROM ParticipantEntity p WHERE p.tournament.id = :tournamentId AND p.user.id = :userId")
     ParticipantEntity findByTournamentIdAndUserId(UUID tournamentId, UUID userId);
 
+    @Query("SELECT p from ParticipantEntity p WHERE p.user.id = :userId")
+    List<ParticipantEntity> findAllByUserId(UUID userId);
+
 }

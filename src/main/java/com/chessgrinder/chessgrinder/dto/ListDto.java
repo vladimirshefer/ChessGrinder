@@ -9,4 +9,8 @@ import java.util.List;
 @Builder
 public final class ListDto<T> {
     private List<T> values;
+
+    public Integer getCount(){
+        return values.size();
+    }
 }

@@ -74,7 +74,7 @@ class LocalStorageUserRepository implements UserRepository {
                     .sort((a, b) => -(a.score !== b.score ? a.score - b.score : a.buchholz - b.buchholz))
                 return {
                     tournament: tournament.tournament,
-                    points: participant!!.score,
+                    participant: participant,
                     place: participantDtos.indexOf(participant!!) + 1,
                 } as UserHistoryRecordDto
             });

@@ -1,3 +1,5 @@
+import {ParticipantDto} from "./TournamentPageData";
+
 export interface BadgeDto {
     id: string
     title: string
@@ -51,6 +53,6 @@ export enum UserRoles {
 
 export interface UserHistoryRecordDto {
     tournament: TournamentDto
+    participant: ParticipantDto
     place: number
-    points: number
 }
