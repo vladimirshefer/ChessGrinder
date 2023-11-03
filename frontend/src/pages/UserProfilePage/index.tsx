@@ -167,10 +167,12 @@ export default function UserProfilePage() {
                 className={`uppercase font-semibold px-2 py-1 ${activeTab === "achievements" ? "text-primary" : " "}`}
                 onClick={() => setActiveTab("achievements")}>{loc("Achievements")}
             </button>
-            <button
-                className={`uppercase font-semibold px-2 py-1 ${activeTab === "admin" ? "text-primary" : " "}`}
-                onClick={() => setActiveTab("admin")}>{loc("Admin")}
-            </button>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <button
+                    className={`uppercase font-semibold px-2 py-1 ${activeTab === "admin" ? "text-primary" : " "}`}
+                    onClick={() => setActiveTab("admin")}>{loc("Admin")}
+                </button>
+            </ConditionalOnUserRole>
         </div>
         <Conditional on={activeTab === "history"}>
             <div className={"text-sm"}>
@@ -180,7 +182,8 @@ export default function UserProfilePage() {
                 {/*</div>*/}
                 <div className="p-1"></div>
                 <div className={"grid grid-cols-12 text-left font-semibold border-b-2"}>
-                    <span className={"col-span-8"}>{loc("Tournaments")  + (historyQuery?.isSuccess ? ` (${historyQuery.data?.count})` : "")}</span>
+                    <span
+                        className={"col-span-8"}>{loc("Tournaments") + (historyQuery?.isSuccess ? ` (${historyQuery.data?.count})` : "")}</span>
                     <span className={"col-span-2"}>{loc("Place")}</span>
                     <span className={"col-span-2"}>{loc("Points")}</span>
                 </div>
@@ -188,8 +191,10 @@ export default function UserProfilePage() {
                     {historyQuery.isSuccess ? (
                         <div className="grid grid-cols-12">
                             {historyQuery.data?.values?.map(row =>
-                                <div key={row.tournament.id} className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
-                                    <Link to={`/tournament/${row.tournament.id}`} className={"col-span-8"}>{row.tournament.name || row.tournament.id}</Link>
+                                <div key={row.tournament.id}
+                                     className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
+                                    <Link to={`/tournament/${row.tournament.id}`}
+                                          className={"col-span-8"}>{row.tournament.name || row.tournament.id}</Link>
                                     <span className={"col-span-2"}>{row.place}</span>
                                     <span className={"col-span-2"}>{row.participant.score}</span>
                                 </div>
