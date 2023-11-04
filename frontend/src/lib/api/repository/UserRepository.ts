@@ -1,16 +1,16 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {BadgeDto, ListDto, MemberDto, UserBadgeDto, UserHistoryRecordDto} from "lib/api/dto/MainPageData";
+import {BadgeDto, ListDto, UserDto, UserBadgeDto, UserHistoryRecordDto} from "lib/api/dto/MainPageData";
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
 import {ParticipantDto, TournamentPageData} from "../dto/TournamentPageData";
 
 export interface UserRepository {
-    getUser(username: string): Promise<MemberDto | null>
+    getUser(username: string): Promise<UserDto | null>
 
-    getUsers(): Promise<ListDto<MemberDto>>
+    getUsers(): Promise<ListDto<UserDto>>
 
-    getMe(): Promise<MemberDto | null>
+    getMe(): Promise<UserDto | null>
 
     getHistory(username: string): Promise<ListDto<UserHistoryRecordDto>>
 }
@@ -18,19 +18,19 @@ export interface UserRepository {
 class LocalStorageUserRepository implements UserRepository {
     private userKeyPrefix = "cgd.user";
 
-    async getUser(username: string): Promise<MemberDto | null> {
+    async getUser(username: string): Promise<UserDto | null> {
         let userStr = localStorage.getItem(`${this.userKeyPrefix}.${username}`)
         if (!userStr) {
             return null
         }
-        let user: MemberDto = JSON.parse(userStr);
+        let user: UserDto = JSON.parse(userStr);
         user.badges = localStorageUtil.getAllObjectsByPrefix<UserBadgeDto>(`cgd.user__badge.${user.id}.`)
             .map(it => localStorageUtil.getObject<BadgeDto>(`cgd.badge.${it.badgeId}`)!!)
         return user
     }
 
-    async getUsers(): Promise<ListDto<MemberDto>> {
-        let users: MemberDto[] = localStorageUtil.getAllObjectsByPrefix<MemberDto>(`${this.userKeyPrefix}.`)
+    async getUsers(): Promise<ListDto<UserDto>> {
+        let users: UserDto[] = localStorageUtil.getAllObjectsByPrefix<UserDto>(`${this.userKeyPrefix}.`)
             .map(user => {
                 user.badges = localStorageUtil.getAllObjectsByPrefix<UserBadgeDto>(`cgd.user__badge.${user.id}.`)
                     .map(it => localStorageUtil.getObject<BadgeDto>(`cgd.badge.${it.badgeId}`)!!)
@@ -38,11 +38,10 @@ class LocalStorageUserRepository implements UserRepository {
             });
         return {
             values: users
-
         };
     }
 
-    async getMe(): Promise<MemberDto | null> {
+    async getMe(): Promise<UserDto | null> {
         let username = authService.getAuthData()?.username;
         if (username) {
             return await this.getUser(username)
@@ -57,8 +56,8 @@ class LocalStorageUserRepository implements UserRepository {
                 let matchingParticipants: ParticipantDto[] = tournament.participants
                     .filter(participant => !!participant.userId)
                     .map(participant => {
-                        let user = localStorageUtil.getObject<MemberDto>(`cgd.user.${participant.userId!!}`);
-                        return [participant, user] as [ParticipantDto, MemberDto | null];
+                        let user = localStorageUtil.getObject<UserDto>(`cgd.user.${participant.userId!!}`);
+                        return [participant, user] as [ParticipantDto, UserDto | null];
                     })
                     .filter(([, user]) => !!user)
                     .filter(([, user]) => {
@@ -86,15 +85,15 @@ class LocalStorageUserRepository implements UserRepository {
 }
 
 class RestApiUserRepository implements UserRepository {
-    async getUser(username: string): Promise<MemberDto | null> {
+    async getUser(username: string): Promise<UserDto | null> {
         return restApiClient.get(`/user/${username}`);
     }
 
-    async getUsers(): Promise<ListDto<MemberDto>> {
+    async getUsers(): Promise<ListDto<UserDto>> {
         return restApiClient.get(`/user`);
     }
 
-    async getMe(): Promise<MemberDto | null> {
+    async getMe(): Promise<UserDto | null> {
         return restApiClient.get(`/user/me`);
     }
 

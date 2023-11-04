@@ -3,7 +3,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
-import {BadgeDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
+import {BadgeDto, UserDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
@@ -99,7 +99,7 @@ export default function UserProfilePage() {
     let {data: userProfile, refetch} = useQuery({
         queryKey: ["profile", username],
         queryFn: () => {
-            return username ? userRepository.getUser(username) : Promise.reject<MemberDto>()
+            return username ? userRepository.getUser(username) : Promise.reject<UserDto>()
         },
     })
 
@@ -148,7 +148,7 @@ export default function UserProfilePage() {
                 <div className={"flex font-semibold gap-4 items-center"}>
                     <div className={"flex gap-1 items-center"}>
                         <AiOutlineTrophy/>
-                        <span>356</span>
+                        <span>{userProfile.reputation || 0}</span>
                     </div>
                     <div className={"flex gap-1 items-center"}>
                         <BiSolidChess/>

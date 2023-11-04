@@ -2,7 +2,7 @@ import React from "react";
 import {MemberList} from "./MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
-import {ListDto, MemberDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
+import {ListDto, UserDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import userRepository from "lib/api/repository/UserRepository";
 import {useLoc} from "strings/loc";
@@ -14,8 +14,8 @@ function MainPage() {
 
     let {
         data: {
-            values: users = [] as MemberDto[],
-        } = {} as ListDto<MemberDto>
+            values: users = [] as UserDto[],
+        } = {} as ListDto<UserDto>
     } = useQuery({
         queryKey: ["members"],
         queryFn: () => userRepository.getUsers(),

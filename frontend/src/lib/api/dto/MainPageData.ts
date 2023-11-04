@@ -12,12 +12,13 @@ export interface UserBadgeDto {
     badgeId: string,
 }
 
-export interface MemberDto {
+export interface UserDto {
     id: string
     username: string
     name: string
     badges: BadgeDto[]
     roles?: string[]
+    reputation?: number
 }
 
 export interface ListDto<T extends any> {
@@ -43,7 +44,7 @@ export interface TournamentListDto {
 }
 
 export interface MainPageData {
-    members: MemberDto[]
+    members: UserDto[]
     tournaments: TournamentDto[]
 }
 

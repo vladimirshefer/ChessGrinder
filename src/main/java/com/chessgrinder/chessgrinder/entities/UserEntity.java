@@ -49,11 +49,15 @@ public class UserEntity {
 
     @ManyToMany
     @Fetch(FetchMode.JOIN)
+    @ToString.Exclude
     @JoinTable(
             name = "users_roles_table",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Collection<RoleEntity> roles;
+    private List<RoleEntity> roles;
+
+    @Column(name = "reputation")
+    private int reputation = 0;
 
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB

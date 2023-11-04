@@ -7,7 +7,7 @@ import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api
 import RoundTab from "pages/TournamentPage/RoundTab";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
-import {ListDto, MemberDto, UserRoles} from "lib/api/dto/MainPageData";
+import {ListDto, UserDto, UserRoles} from "lib/api/dto/MainPageData";
 import userRepository from "lib/api/repository/UserRepository";
 import {AiOutlineClose, AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
 import {useLoc} from "strings/loc";
@@ -31,8 +31,8 @@ function AddParticipant(
 
     let {
         data: {
-            values: users = [] as MemberDto[]
-        } = {} as ListDto<MemberDto>
+            values: users = [] as UserDto[]
+        } = {} as ListDto<UserDto>
     } = useQuery({
         queryKey: ["users"],
         queryFn: async () => await userRepository.getUsers(),
@@ -69,7 +69,7 @@ function AddParticipant(
                         />
                     </div>
                     <div className={"col-span-12 grid text-left py-2 bg-white"}>
-                        <DropdownSelect<MemberDto>
+                        <DropdownSelect<UserDto>
                             className={"border-b-2 border-blue-300 w-full"}
                             values={users}
                             onSelect={user => setSelectedValue(user?.id || "")}

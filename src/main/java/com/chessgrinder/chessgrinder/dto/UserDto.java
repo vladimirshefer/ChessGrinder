@@ -27,4 +27,6 @@ public class UserDto {
     private List<BadgeDto> badges;
 
     private List<String> roles;
+
+    private int reputation;
 }

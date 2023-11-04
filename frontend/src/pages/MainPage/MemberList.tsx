@@ -1,4 +1,4 @@
-import {MemberDto} from "lib/api/dto/MainPageData";
+import {UserDto} from "lib/api/dto/MainPageData";
 import React from "react";
 import {Link} from "react-router-dom";
 import Gravatar, {GravatarType} from "components/Gravatar";
@@ -9,7 +9,7 @@ export function MemberList(
     {
         members: users,
     }: {
-        members: MemberDto[],
+        members: UserDto[],
     }
 ) {
     let loc = useLoc()
@@ -54,7 +54,7 @@ export function MemberList(
                                 className={"h-full leading-4 flex block align-bottom"}
                             >
                                 <AiOutlineTrophy className={"inline -mt-[1px] leading-4  mr-1 align-bottom"}/>
-                                <span className={""}>356</span>
+                                <span className={""}>{user.reputation || 0}</span>
                             </div>
                         </div>
                     </div>
