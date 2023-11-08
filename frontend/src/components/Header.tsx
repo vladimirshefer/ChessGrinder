@@ -80,7 +80,9 @@ function Header() {
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <NavLink to={"/badges"} text={loc("Badges")}/>
             </ConditionalOnUserRole>
-            <NavLink to={"/admin"} text={loc("Admin")}/>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <NavLink to={"/admin"} text={loc("Admin")}/>
+            </ConditionalOnUserRole>
             <ConditionalOnAuthorized>
                 <NavLink onClick={() => {
                     loginPageRepository.logout()
