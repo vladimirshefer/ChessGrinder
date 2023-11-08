@@ -2,7 +2,8 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
-import {Conditional} from "components/Conditional";
+import ConditionalOnUserRole, {Conditional} from "components/Conditional";
+import {UserRoles} from "lib/api/dto/MainPageData";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
@@ -51,7 +52,7 @@ export default function ParticipantPage() {
         </>
     }
 
-    return <>
+    return <div className={"p-3"}>
         <div className={"p-3"}>
             <Conditional on={participantQuery.isSuccess}>
                 <h1 className={"text-xl font-bold"}>{participantQuery.data?.name}</h1>
@@ -63,23 +64,29 @@ export default function ParticipantPage() {
                 userQuery.isLoading ? <>Loading user data</> : null
             }
         </div>
-        <div>
+
+        <div></div>
+
+        <div className={"flex gap-2 justify-end"}>
             <Link to={`/tournament/${tournamentId}`}>
-                <button className={"p-2 bg-gray-200 rounded-md mx-1"}>
+                <button className={"btn-light"}>
                     Back
                 </button>
             </Link>
-            <button className={"p-2 bg-red-200 rounded-md mx-1"}
-                    onClick={async () => {
-                        if (window.confirm(`Do you want to delete user ${participantId} from tournament ${tournamentId}?`)) {
-                            await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
-                            navigate(`/tournament/${tournamentId}`)
-                        }
-                    }}
-            >Delete
-            </button>
-            <button  className={"p-2 bg-gray-200 rounded-md mx-1"}
-            >Missing (TODO)</button>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <button className={"btn-danger"}
+                        onClick={async () => {
+                            if (window.confirm(`Do you want to delete user ${participantId} from tournament ${tournamentId}?`)) {
+                                await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
+                                navigate(`/tournament/${tournamentId}`)
+                            }
+                        }}
+                >Delete
+                </button>
+                <button className={"btn-unsupported"}
+                >Missing
+                </button>
+            </ConditionalOnUserRole>
         </div>
-    </>
+    </div>
 }
