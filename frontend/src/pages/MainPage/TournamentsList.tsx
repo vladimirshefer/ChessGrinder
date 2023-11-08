@@ -40,6 +40,7 @@ function TournamentPane(
             return participantsSorted[0]
         }
     })
+    let participateButtonSupported = false
 
     let isPlanned = tournament.status === "PLANNED"
     let isFinished = tournament.status === "FINISHED"
@@ -113,7 +114,7 @@ function TournamentPane(
             </div>
         </Conditional>
         <div className={"p-1"}></div>
-        <Conditional on={isPlanned || isActive}>
+        <Conditional on={participateButtonSupported && (isPlanned || isActive)}>
             <div className={"w-full"}>
                 <ConditionalOnAuthorized>
                     <button className={"btn-primary w-full uppercase"}
