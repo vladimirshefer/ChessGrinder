@@ -30,6 +30,13 @@
 
 .btn-light {
   @apply btn;
-  @apply bg-gray-300;
+  @apply bg-gray-200;
   @apply text-black;
+}
+
+.btn-unsupported {
+  @apply btn;
+  @apply text-gray-600;
+  @apply line-through;
+  @apply border;
 }
