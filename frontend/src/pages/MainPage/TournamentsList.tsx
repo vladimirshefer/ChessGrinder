@@ -33,7 +33,6 @@ function TournamentPane(
             let participantsSorted: ParticipantDto[] = tournamentData?.participants
                 ?.sort(compareBy(it => -it.buchholz))
                 ?.sort(compareBy(it => -it.score)) || [];
-            console.log("winner", participantsSorted)
             if (participantsSorted.length === 0) {
                 return null
             }

@@ -91,11 +91,10 @@ function AssignReputationPane(
         userId: string,
     }) {
     let loc = useLoc()
-    const {register, handleSubmit, watch} = useForm();
+    const {register, handleSubmit} = useForm();
 
     async function saveTournament(data: { [key: string]: any }) {
         let amount = data["amount"];
-        alert(JSON.stringify(data));
         if (isNaN(amount)) {
             let message = `Amount should be a number, but was '${amount}'`;
             alert(message)
