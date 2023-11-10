@@ -40,3 +40,7 @@
   @apply line-through;
   @apply border;
 }
+
+.input-text {
+  @apply border-b;
+}
