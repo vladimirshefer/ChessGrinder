@@ -1,5 +1,12 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {BadgeDto, ListDto, UserDto, UserBadgeDto, UserHistoryRecordDto} from "lib/api/dto/MainPageData";
+import {
+    BadgeDto,
+    ListDto,
+    UserDto,
+    UserBadgeDto,
+    UserHistoryRecordDto,
+    UserReputationHistoryRecordDto
+} from "lib/api/dto/MainPageData";
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
@@ -13,6 +20,8 @@ export interface UserRepository {
     getMe(): Promise<UserDto | null>
 
     getHistory(username: string): Promise<ListDto<UserHistoryRecordDto>>
+
+    assignReputation(data: UserReputationHistoryRecordDto): Promise<void>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -82,6 +91,10 @@ class LocalStorageUserRepository implements UserRepository {
             values: result,
         };
     }
+
+    async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {
+        alert("Unsupported");
+    }
 }
 
 class RestApiUserRepository implements UserRepository {
@@ -99,6 +112,10 @@ class RestApiUserRepository implements UserRepository {
 
     async getHistory(username: string): Promise<ListDto<UserHistoryRecordDto>> {
         return restApiClient.get(`/user/${username}/history`);
+    }
+
+    async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {
+        return restApiClient.post(`/user/${data.userId}/reputation`, data);
     }
 }
 

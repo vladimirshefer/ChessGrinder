@@ -3,7 +3,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
-import {BadgeDto, UserDto, UserRoles} from "lib/api/dto/MainPageData";
+import {BadgeDto, UserDto, UserReputationHistoryRecordDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
@@ -15,12 +15,14 @@ import {FiLogOut} from "react-icons/fi";
 import useSearchParam from "lib/react/hooks/useSearchParam";
 import DropdownSelect from "components/DropdownSelect";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
+import {useForm} from "react-hook-form";
+import {propagate} from "lib/util/misc";
 
 function AssignAchievementPane(
     {
         assignAchievement,
     }: {
-        assignAchievement: (badge: BadgeDto) => void
+        assignAchievement: (badge: BadgeDto) => Promise<void>
     }
 ) {
     let loc = useLoc()
@@ -68,11 +70,62 @@ function AssignAchievementPane(
         <div>
             <Conditional on={!!selectedBadge}>
                 <button className={"btn-dark w-full"}
-                        onClick={() => assignAchievement(selectedBadge!!)}
+                        onClick={async () => {
+                            await assignAchievement(selectedBadge!!)
+                                .then(() => alert("Badge assigned"))
+                                .catch(() => alert("Could not assign badge!"))
+                        }}
                 >Assign
                 </button>
             </Conditional>
         </div>
+    </div>;
+}
+
+function AssignReputationPane(
+    {
+        assignReputation,
+        userId,
+    }: {
+        assignReputation: (r: UserReputationHistoryRecordDto) => void,
+        userId: string,
+    }) {
+    let loc = useLoc()
+    const {register, handleSubmit, watch} = useForm();
+
+    async function saveTournament(data: { [key: string]: any }) {
+        let amount = data["amount"];
+        alert(JSON.stringify(data));
+        if (isNaN(amount)) {
+            let message = `Amount should be a number, but was '${amount}'`;
+            alert(message)
+            throw new Error(message);
+        }
+        let comment = data["comment"];
+        if (typeof comment !== "string") {
+            let message = `Comment should be a non-empty string, but was '${comment}'`;
+            alert(message)
+            throw new Error(message);
+        }
+        assignReputation({
+            amount: amount,
+            comment: comment,
+            userId: userId,
+        })
+    }
+
+    return <div>
+        <form className={"grid gap-1"} onSubmit={handleSubmit(saveTournament)}>
+            <div className={"flex gap-2 items-center text-left"}>
+                <h3 className={"uppercase"}>{loc("Add reputation")}</h3>
+            </div>
+            <input type={"number"} placeholder={"Reputation amount"} {...register("amount")}/>
+            <input type={"text"} placeholder={"Comment"} {...register("comment")}/>
+            <button className={"btn-light uppercase"}
+                    type={"submit"}
+            >Submit
+            </button>
+        </form>
     </div>;
 }
 
@@ -231,11 +284,16 @@ export default function UserProfilePage() {
         </Conditional>
         <Conditional on={activeTab === "admin"}>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <div className={"bg-white p-2"}>
+                <div className={"bg-white p-2 grid gap-4"}>
                     <AssignAchievementPane assignAchievement={async (badge) => {
                         await badgeRepository.assignBadge(badge.id, userProfile!!.id)
-                            .catch(() => alert("Could not assign badge!"));
+                            .catch(propagate(() => alert("Could not assign badge!")));
                         await refetch()
+                    }}/>
+                    <AssignReputationPane userId={userProfile.id} assignReputation={async (data) => {
+                        await userRepository.assignReputation(data)
+                            .catch(propagate(() => alert("Could not assign reputation")));
+                        await refetch();
                     }}/>
                 </div>
             </ConditionalOnUserRole>

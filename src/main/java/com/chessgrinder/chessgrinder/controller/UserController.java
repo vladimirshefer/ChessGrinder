@@ -3,26 +3,23 @@ package com.chessgrinder.chessgrinder.controller;
 import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.UserDto;
 import com.chessgrinder.chessgrinder.dto.UserHistoryRecordDto;
+import com.chessgrinder.chessgrinder.dto.UserReputationHistoryRecordDto;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
-import com.chessgrinder.chessgrinder.repositories.BadgeRepository;
-import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
-import com.chessgrinder.chessgrinder.repositories.UserBadgeRepository;
-import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.service.UserService;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +34,7 @@ public class UserController {
     private final TournamentMapper tournamentMapper;
     private final ParticipantRepository participantRepository;
     private final ParticipantMapper participantMapper;
+    private final UserReputationHistoryRepository userReputationHistoryRepository;
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
@@ -117,4 +115,21 @@ public class UserController {
         UserBadgeEntity assignment = UserBadgeEntity.builder().badge(badge).user(user).build();
         userBadgeRepository.save(assignment);
     }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PostMapping("/{userId}/reputation")
+    @Transactional
+    public void assignReputation(
+            @PathVariable UUID userId,
+            @RequestBody UserReputationHistoryRecordDto data
+    ) {
+        UserEntity user = userRepository.findById(userId).orElseThrow();
+        userReputationHistoryRepository.save(UserReputationHistoryEntity.builder()
+                .amount(data.getAmount())
+                .comment(data.getComment())
+                .user(user)
+                .build());
+        userRepository.addReputation(userId, data.getAmount());
+    }
+
 }

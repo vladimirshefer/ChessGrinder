@@ -57,3 +57,9 @@ export interface UserHistoryRecordDto {
     participant: ParticipantDto
     place: number
 }
+
+export interface UserReputationHistoryRecordDto{
+    userId: string
+    amount: number
+    comment: string
+}

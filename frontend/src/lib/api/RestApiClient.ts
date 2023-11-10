@@ -19,7 +19,7 @@ restAxios.interceptors
         if (!error?.response || error.response.status === 401) {
             authService.clearAuthData();
         }
-        return error;
+        throw error;
     });
 
 class RestApiClient {
