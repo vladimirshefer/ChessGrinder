@@ -9,6 +9,7 @@ export interface ParticipantRepository {
     postParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
     deleteParticipant(tournamentId: string, participantId: string): Promise<void>
     getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto>
+    updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
 }
 
 class LocalStorageParticipantRepository implements ParticipantRepository {
@@ -35,6 +36,10 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
         if (!participant) throw new Error(`No participant with id ${participantId} in tournament ${tournamentId}`)
         return participant
     }
+
+    async updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void> {
+        throw new Error("Not supported: Update participant")
+    }
 }
 
 class RestApiParticipantRepository implements ParticipantRepository {
@@ -48,6 +53,10 @@ class RestApiParticipantRepository implements ParticipantRepository {
 
     async getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto> {
         return await restApiClient.get<ParticipantDto>(`/tournament/${tournamentId}/participant/${participantId}`)
+    }
+
+    async updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void> {
+        throw await restApiClient.put(`/tournament/${tournamentId}/participant/${participant.id}`, participant)
     }
 }
 

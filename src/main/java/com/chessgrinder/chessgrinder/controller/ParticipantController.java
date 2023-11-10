@@ -3,7 +3,9 @@ package com.chessgrinder.chessgrinder.controller;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.dto.*;
+import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
+import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.service.*;
 import lombok.*;
 import org.springframework.security.access.annotation.Secured;
@@ -15,11 +17,14 @@ import org.springframework.web.bind.annotation.*;
 public class ParticipantController {
 
     private final ParticipantService participantService;
+    private final ParticipantRepository participantRepository;
 
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping
-    public void addParticipantToTournament(@PathVariable UUID tournamentId,
-                                           @RequestBody ParticipantDto participantDto) {
+    public void addParticipantToTournament(
+            @PathVariable UUID tournamentId,
+            @RequestBody ParticipantDto participantDto
+    ) {
         participantService.addParticipantToTheTournament(tournamentId, participantDto);
     }
 
@@ -38,5 +43,16 @@ public class ParticipantController {
             @PathVariable UUID participantId
     ) {
         return participantService.get(participantId);
+    }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PutMapping("/{participantId}")
+    public void update(
+            @PathVariable UUID participantId,
+            @RequestBody ParticipantDto participantDto
+    ) {
+        ParticipantEntity participant = participantRepository.findById(participantId).orElseThrow();
+        participant.setNickname(participantDto.getName());
+        participantRepository.save(participant);
     }
 }
