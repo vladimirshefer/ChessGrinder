@@ -20,7 +20,8 @@ export function AuthenticatedUserContextProvider({children}: { children: any }) 
     }, [])
 
     async function checkAuthData() {
-        let me = await userRepository.getMe();
+        let me = await userRepository.getMe()
+            .catch(() => null);
         if (!me) {
             authService.setAuthData(null);
             setUser(null);
