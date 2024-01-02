@@ -150,7 +150,7 @@ public class SwissMatchupStrategyImplTest {
                 .show(System.out::println);
     }
 
-    private static MockSwissTournamentRunner runTournament(SwissMatchupStrategyImpl swissEngine, String... participants) {
+    public static MockSwissTournamentRunner runTournament(MatchupStrategy swissEngine, String... participants) {
         return new MockSwissTournamentRunner(swissEngine, participants);
     }
 

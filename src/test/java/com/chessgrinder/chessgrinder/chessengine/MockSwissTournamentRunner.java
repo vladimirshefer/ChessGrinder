@@ -6,7 +6,6 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import jakarta.annotation.Nullable;
 import org.opentest4j.AssertionFailedError;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -14,11 +13,11 @@ import java.util.stream.Collectors;
 class MockSwissTournamentRunner {
     private static final double NO_VALUE = -1000;
 
-    private final SwissMatchupStrategyImpl swissEngine;
+    private final MatchupStrategy swissEngine;
     private List<ParticipantDto> participants;
     private final List<List<MatchDto>> rounds = new ArrayList<>();
 
-    public MockSwissTournamentRunner(SwissMatchupStrategyImpl swissEngine, String... participants) {
+    public MockSwissTournamentRunner(MatchupStrategy swissEngine, String... participants) {
         this.swissEngine = swissEngine;
         this.participants = Arrays.asList(participants).stream().map(it -> it != null ? SwissMatchupStrategyImplTest.participant(it, 0, 0) : null).toList();
     }
