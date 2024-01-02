@@ -11,6 +11,7 @@ let locale_ru: { [key: string]: string } = {
     "Name": "Имя",
     "More info": "Подробнее",
     "Members": "Участники клуба",
+    "All users": "Показать всех",
     "Unnamed Tournament": "Турнир без имени",
     "Winner": "Победитель",
     "Result": "Итог",
