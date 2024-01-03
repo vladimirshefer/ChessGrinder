@@ -1,7 +1,10 @@
 package com.chessgrinder.chessgrinder.trf.line;
 
 import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto;
+import jakarta.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
@@ -24,6 +27,27 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
                 .points(parseFloat(pointsPart))
                 .rank(parseInteger(rankPart))
                 .build();
+
+        List<PlayerTrfLineDto.Match> matches = new ArrayList<>();
+        int nextRoundPosition = 91;
+        while (line.trim().length() >= nextRoundPosition + 8) {
+            try {
+                String matchPart = line.substring(nextRoundPosition, nextRoundPosition + 10);
+                //noinspection DataFlowIssue
+                matches.add(
+                        PlayerTrfLineDto.Match.builder()
+                                .opponentPlayerId(parseInteger(matchPart.substring(0, 4), 0))
+                                .color(matchPart.substring(5, 6).charAt(0))
+                                .result(matchPart.substring(7, 8).charAt(0))
+                                .build()
+                );
+            } catch (IndexOutOfBoundsException e) {
+            }
+            nextRoundPosition += 10;
+        }
+
+        result.setMatches(matches);
+
         return result;
     }
 
@@ -41,6 +65,12 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
         trfConsumer.accept(toFixedLengthLeft("", 29, ' ')); // TODO insert federation, FIDE number, birthday
         trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(line.getPoints()), 4, ' '));
         trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(line.getRank()), 4, ' '));
+        trfConsumer.accept("  ");
+
+        for (PlayerTrfLineDto.Match match : line.getMatches()) {
+            trfConsumer.accept(toFixedLengthRight(match.getOpponentPlayerId() != 0 ? match.getOpponentPlayerId() : "0000", 4, ' '));
+            trfConsumer.accept(" " + match.getColor() + " " + match.getResult() + "  ");
+        }
     }
 
     public static String toFixedLengthRight(Object original, int targetLength, char gapChar) {
@@ -63,11 +93,20 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
     }
 
     public static Integer parseInteger(String str) {
+        return parseInteger(str, null);
+    }
+
+    @Nullable
+    private static Integer parseInteger(String str, @Nullable Integer defaultValue) {
         String trim = str.trim();
         if (trim.isEmpty()) {
-            return null;
+            return defaultValue;
         }
-        return Integer.parseInt(trim);
+        try {
+            return Integer.parseInt(trim);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     public static Float parseFloat(String str) {

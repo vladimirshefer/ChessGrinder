@@ -3,6 +3,8 @@ package com.chessgrinder.chessgrinder.trf.dto;
 import jakarta.annotation.Nullable;
 import lombok.*;
 
+import java.util.List;
+
 /**
  * <pre>
  * Remark 1 Each line shall have a "CR" (carriage return) as last character.
@@ -39,7 +41,6 @@ import lombok.*;
  * @see com.chessgrinder.chessgrinder.trf.line.PlayerTrfLineParser
  */
 @Data
-@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -65,4 +66,133 @@ public class PlayerTrfLineDto {
 
     private Integer rank;
 
+    private List<Match> matches;
+
+    /**
+     * <pre>
+     *
+     *For each round:
+     *
+     * Position   Description Contents                                         R P
+     * 92 - 95    Player or forfeit id                                         ■ ■
+     *            in round 1
+     *            "____"  Startingrank-Number of the scheduled opponent
+     *                    (up to 4 digits)
+     *            "0000"  If the player had a bye (either half-point bye,
+     *                    full-point bye or odd-number bye)
+     *                    or was not paired (absent, retired, not
+     *                    nominated by team)
+     *            "    "  (four blanks) equivalent to 0000
+     *
+     * 97         Scheduled color or forfeit in round                          ■ ■
+     *            "w"/"b" Scheduled color against the scheduled opponent
+     *            "-"     (minus) If the player had a bye or was not paired
+     *            " "     (blank) equivalent to -
+     *
+     * 99         Result of round 1                                            ■ ■
+     *            The scheduled game was not played
+     *            "-" Forfeit loss
+     *            "+" Forfeit win
+     *            The scheduled game lasted less than one move
+     *            "W" Win Not rated
+     *            "D" Draw Not rated
+     *            "L" Loss Not rated
+     *            Regular game
+     *            "1" Win
+     *            "=" Draw
+     *            "0" Loss
+     *            Bye
+     *            "H" Half-point-bye Not rated
+     *            "F" Full-point-bye Not rated
+     *            "U" Pairing-allocated bye At most once for round - Not rated
+     *                (U for player unpaired by the system)
+     *            "Z" Zero-point-bye Known absence from round - Not rated
+     *            " " (blank) equivalent to Z
+     *            Note: Letter codes are case-insensitive
+     *            (i.e. w,d,l,h,f,u,z can be used)
+     *
+     * Next rounds are the same:
+     * Round 2 (analog to round 1)
+     * 102 - 105  Id        ■ ■
+     * 107        Color     ■ ■
+     * 109        Result    ■ ■
+     * Round 3 (analog to round 1)
+     * 112 - 115  Id        ■ ■
+     * 117        Color     ■ ■
+     * 119        Result    ■ ■
+     * And so on...
+     * </pre>
+     */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Match {
+        private int opponentPlayerId;
+        private char color;
+        private char result;
+    }
+
+    public static enum MatchResult {
+        /**
+         * The scheduled game was not played
+         */
+        FORFEIT_LOSS("-"),
+        /**
+         * The scheduled game was not played
+         */
+        FORFEIT_WIN("+"),
+        /**
+         * The scheduled game lasted less than one move
+         * Not rated
+         */
+        QUICK_WIN("W"),
+        /**
+         * The scheduled game lasted less than one move
+         * Not rated
+         */
+        QUICK_DRAW("D"),
+        /**
+         * The scheduled game lasted less than one move
+         * Not rated
+         */
+        QUICK_LOSS("L"),
+        /**
+         * Regular game
+         */
+        WIN("1"),
+        /**
+         * Regular game
+         */
+        DRAW("="),
+        /**
+         * Regular game
+         */
+        LOSS("0"),
+        /**
+         * Not rated
+         */
+        HALF_POINT_BYE("H"),
+        /**
+         * Not rated
+         */
+        FULL_POINT_BYE("F"),
+        /**
+         * At most once for round - Not rated
+         */
+        PAIRING_ALLOCATED_BYE("U"),
+        /**
+         * Known absence from round - Not rated
+         */
+        ZERO_POINT_BYE("Z"),
+        ;
+
+        MatchResult(String code) {
+            this.code = code;
+        }
+
+        @Getter
+        private String code;
+
+    }
 }
