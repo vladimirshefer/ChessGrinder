@@ -194,5 +194,9 @@ public class PlayerTrfLineDto {
         @Getter
         private String code;
 
+        public char getCharCode(){
+            return code.charAt(0);
+        };
+
     }
 }
