@@ -131,23 +131,6 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
         return collect;
     }
 
-    public static void printPlayer(Consumer<String> trfCollector, int playerId) {
-        trfCollector.accept("001 ");
-        trfCollector.accept(toFixedLengthString(playerId, 4, ' '));
-        String fullName = "Firstname" + toFixedLengthString(playerId, 4, '0') + " Lastname" + toFixedLengthString(playerId, 4, '0');
-        trfCollector.accept(toFixedLengthString(fullName, 34, ' '));
-        trfCollector.accept("2000");
-
-    }
-
-    public static String toFixedLengthString(Object original, int targetLength, char gapChar) {
-        StringBuilder sb = new StringBuilder(original.toString());
-        while (sb.length() < targetLength) {
-            sb.append(gapChar);
-        }
-        return sb.toString();
-    }
-
     private static <T> List<T> concatLists(List<T> a, List<T> b) {
         ArrayList<T> result = new ArrayList<>(a);
         result.addAll(b);
