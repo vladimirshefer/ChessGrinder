@@ -35,9 +35,10 @@ function MainPage() {
         await navigate(`/tournament/${tournament.id}/edit`)
     }
 
+    const maxUsers: number = 10;
     return <>
         <div className={"p-3"}>
-            <MemberList members={users!!}/>
+            <MemberList members={users.slice(0, maxUsers)}/>
             <div className={"grid py-2"}>
                 <Link to={"/users"}>
                     <button className={"btn bg-primary w-full"}>

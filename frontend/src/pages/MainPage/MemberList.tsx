@@ -50,9 +50,7 @@ export function MemberList(
                                     </Link>
                                 )}
                             </div>
-                            <div
-                                className={"h-full leading-4 flex block align-bottom"}
-                            >
+                            <div className={"h-full leading-4 flex block align-bottom"}>
                                 <AiOutlineTrophy className={"inline -mt-[1px] leading-4  mr-1 align-bottom"}/>
                                 <span className={""}>{user.reputation || 0}</span>
                             </div>
