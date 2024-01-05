@@ -31,18 +31,15 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
         List<PlayerTrfLineDto.Match> matches = new ArrayList<>();
         int nextRoundPosition = 91;
         while (line.trim().length() >= nextRoundPosition + 8) {
-            try {
-                String matchPart = line.substring(nextRoundPosition, nextRoundPosition + 10);
-                //noinspection DataFlowIssue
-                matches.add(
-                        PlayerTrfLineDto.Match.builder()
-                                .opponentPlayerId(parseInteger(matchPart.substring(0, 4), 0))
-                                .color(matchPart.substring(5, 6).charAt(0))
-                                .result(matchPart.substring(7, 8).charAt(0))
-                                .build()
-                );
-            } catch (IndexOutOfBoundsException e) {
-            }
+            String matchPart = line.substring(nextRoundPosition, nextRoundPosition + 8);
+            //noinspection DataFlowIssue
+            matches.add(
+                    PlayerTrfLineDto.Match.builder()
+                            .opponentPlayerId(parseInteger(matchPart.substring(0, 4), 0))
+                            .color(matchPart.substring(5, 6).charAt(0))
+                            .result(matchPart.substring(7, 8).charAt(0))
+                            .build()
+            );
             nextRoundPosition += 10;
         }
 

@@ -133,7 +133,7 @@ public class PlayerTrfLineDto {
         private char result;
     }
 
-    public static enum MatchResult {
+    public static enum TrfMatchResult {
         /**
          * The scheduled game was not played
          */
@@ -187,7 +187,7 @@ public class PlayerTrfLineDto {
         ZERO_POINT_BYE("Z"),
         ;
 
-        MatchResult(String code) {
+        TrfMatchResult(String code) {
             this.code = code;
         }
 

@@ -4,6 +4,7 @@ import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto;
+import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto.TrfMatchResult;
 import com.chessgrinder.chessgrinder.trf.line.PlayerTrfLineParser;
 import javafo.api.JaVaFoApi;
 
@@ -13,10 +14,18 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class JavafoMatchupStrategyImpl implements MatchupStrategy {
+    /**
+     * JaVaFo is no thread-safe library, therefore to avoid concurrency problems,
+     * the requests to JaVaFo are synchronized on this monitor.
+     */
+    private static final Object JAVAFO_MONITOR = new Object();
+
     private final PlayerTrfLineParser playerTrfLineParser = new PlayerTrfLineParser();
 
     @Override
     public List<MatchDto> matchUp(List<ParticipantDto> participants, List<MatchDto> matchHistory, boolean recalculateResults) {
+        if (participants.isEmpty()) return Collections.emptyList();
+
         HashMap<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(matchHistory);
         for (ParticipantDto participant : participants) {
             participantsMatches.putIfAbsent(participant, new ArrayList<>());
@@ -26,20 +35,21 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
                 .map(ParticipantDto::getId).toList();
 
         StringBuilder stringBuilder = new StringBuilder();
+        // XXR - number of rounds. required for pairing.
         stringBuilder.append("XXR 1000");
         stringBuilder.append("\n");
         Consumer<String> trfCollector = (it) -> stringBuilder.append(it);
 
         participantsMatches.forEach((participant, matches) -> {
-            PlayerTrfLineDto playerTrfLineDto = getPlayerTrfLineDto(participant, matches, playerIds);
+            PlayerTrfLineDto playerTrfLineDto = toTrfDto(participant, matches, playerIds);
             playerTrfLineParser.tryWrite(trfCollector, playerTrfLineDto);
             trfCollector.accept("\n");
         });
 
-//        System.out.println(stringBuilder);
-
-        String pairingsFileContent = JaVaFoApi.exec(1000, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
-//        System.out.println(pairingsFileContent);
+        String pairingsFileContent;
+        synchronized (JAVAFO_MONITOR) {
+            pairingsFileContent = JaVaFoApi.exec(1000, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
+        }
 
         List<MatchDto> result = Arrays.stream(pairingsFileContent.split("\n"))
                 .skip(1)
@@ -71,7 +81,7 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
                 .get();
     }
 
-    private static PlayerTrfLineDto getPlayerTrfLineDto(
+    private static PlayerTrfLineDto toTrfDto(
             ParticipantDto participant,
             List<MatchDto> matches,
             List<String> playerIds
@@ -102,12 +112,12 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
     }
 
     public static char getResultChar(boolean isWhite, MatchResult result) {
-        if (result.equals(MatchResult.DRAW)) return PlayerTrfLineDto.MatchResult.DRAW.getCharCode();
-        if (result.equals(MatchResult.BUY)) return PlayerTrfLineDto.MatchResult.FULL_POINT_BYE.getCharCode();
-        if (isWhite && result.equals(MatchResult.WHITE_WIN)) return PlayerTrfLineDto.MatchResult.WIN.getCharCode();
-        if (isWhite && result.equals(MatchResult.BLACK_WIN)) return PlayerTrfLineDto.MatchResult.LOSS.getCharCode();
-        if (!isWhite && result.equals(MatchResult.BLACK_WIN)) return PlayerTrfLineDto.MatchResult.WIN.getCharCode();
-        if (!isWhite && result.equals(MatchResult.WHITE_WIN)) return PlayerTrfLineDto.MatchResult.LOSS.getCharCode();
+        if (result.equals(MatchResult.DRAW)) return TrfMatchResult.DRAW.getCharCode();
+        if (result.equals(MatchResult.BUY)) return TrfMatchResult.FULL_POINT_BYE.getCharCode();
+        if (isWhite && result.equals(MatchResult.WHITE_WIN)) return TrfMatchResult.WIN.getCharCode();
+        if (isWhite && result.equals(MatchResult.BLACK_WIN)) return TrfMatchResult.LOSS.getCharCode();
+        if (!isWhite && result.equals(MatchResult.BLACK_WIN)) return TrfMatchResult.WIN.getCharCode();
+        if (!isWhite && result.equals(MatchResult.WHITE_WIN)) return TrfMatchResult.LOSS.getCharCode();
         throw new IllegalStateException("Could not decide the match result");
     }
 

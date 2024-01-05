@@ -52,6 +52,9 @@ class MockSwissTournamentRunner {
             matchingMatches.put(expectedResult, actualMatch);
             actualMatch.setResult(expectedResult.getResult());
         }
+        if (expectedResults.size() != actualMatches.size()) {
+            throw new AssertionError("Different pairings size");
+        }
 
         rounds.add(actualMatches);
 
@@ -182,6 +185,14 @@ class MockSwissTournamentRunner {
             return matches;
         }
 
+        /**
+         * Asserts that this round should have these players to be paired and
+         * if they are paired sets the result for the next pairing.
+         * @param user1 player which should be paired as white
+         * @param user2 player which should be paired as black
+         * @param matchResult if pairing exists, this is the result for next round pairing.
+         * @return self
+         */
         public MockRoundBuilder match(ParticipantDto user1, ParticipantDto user2, MatchResult matchResult) {
             matches.add(SwissMatchupStrategyImplTest.createMatch(
                     user1,
