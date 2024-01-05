@@ -7,12 +7,13 @@ import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto;
 import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto.TrfMatchResult;
 import com.chessgrinder.chessgrinder.trf.line.PlayerTrfLineParser;
 import javafo.api.JaVaFoApi;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
+@Component
 public class JavafoMatchupStrategyImpl implements MatchupStrategy {
     /**
      * JaVaFo is no thread-safe library, therefore to avoid concurrency problems,
@@ -26,7 +27,7 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
     public List<MatchDto> matchUp(List<ParticipantDto> participants, List<MatchDto> matchHistory, boolean recalculateResults) {
         if (participants.isEmpty()) return Collections.emptyList();
 
-        HashMap<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(matchHistory);
+        Map<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(matchHistory);
         for (ParticipantDto participant : participants) {
             participantsMatches.putIfAbsent(participant, new ArrayList<>());
         }
@@ -48,7 +49,11 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
 
         String pairingsFileContent;
         synchronized (JAVAFO_MONITOR) {
-            pairingsFileContent = JaVaFoApi.exec(1000, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
+            try {
+                pairingsFileContent = JaVaFoApi.exec(1000, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
+            } catch (Exception e) {
+                throw new RuntimeException("Could not do pairing via javafo. \n" + stringBuilder, e);
+            }
         }
 
         List<MatchDto> result = Arrays.stream(pairingsFileContent.split("\n"))
@@ -121,24 +126,17 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
         throw new IllegalStateException("Could not decide the match result");
     }
 
-    private static HashMap<ParticipantDto, List<MatchDto>> getParticipantsMatches(List<MatchDto> matchHistory) {
-        Map<ParticipantDto, List<MatchDto>> collectForWhites = matchHistory.stream()
-                .filter(it -> it.getWhite() != null)
-                .collect(Collectors.toMap(
-                        MatchDto::getWhite,
-                        Arrays::asList,
-                        (a, b) -> concatLists(a, b)
-                ));
-        Map<ParticipantDto, List<MatchDto>> collectForBlacks = matchHistory.stream()
-                .filter(it -> it.getBlack() != null)
-                .collect(Collectors.toMap(
-                        MatchDto::getBlack,
-                        Arrays::asList,
-                        (a, b) -> concatLists(a, b)
-                ));
-        HashMap<ParticipantDto, List<MatchDto>> collect = new HashMap<>(collectForWhites);
-        collect.putAll(collectForBlacks);
-        return collect;
+    private static Map<ParticipantDto, List<MatchDto>> getParticipantsMatches(List<MatchDto> matchHistory) {
+        Map<ParticipantDto, List<MatchDto>> collectForWhites = new HashMap<>();
+        for (MatchDto matchDto : matchHistory) {
+            if (matchDto.getWhite() != null) {
+                collectForWhites.merge(matchDto.getWhite(), Arrays.asList(matchDto), (a, b) -> concatLists(a, b));
+            }
+            if (matchDto.getBlack() != null) {
+                collectForWhites.merge(matchDto.getBlack(), Arrays.asList(matchDto), (a, b) -> concatLists(a, b));
+            }
+        }
+        return collectForWhites;
     }
 
     private static <T> List<T> concatLists(List<T> a, List<T> b) {
