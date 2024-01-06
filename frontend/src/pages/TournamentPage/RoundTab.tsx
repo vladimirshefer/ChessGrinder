@@ -3,6 +3,7 @@ import MatchesTable from "./MatchesTable";
 import React from "react";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {UserRoles} from "lib/api/dto/MainPageData";
+import {useLoc} from "strings/loc";
 
 export default function RoundTab(
     {
@@ -21,6 +22,7 @@ export default function RoundTab(
         drawRound: () => void,
     }
 ) {
+    let loc = useLoc();
     return <div>
         <MatchesTable matches={round.matches || []}
                       submitMatchResult={(match, result) => {
@@ -40,12 +42,12 @@ export default function RoundTab(
                     !round.isFinished ?
                         <button className={"btn-dark p-1"}
                                 onClick={() => submitRoundFinished()}
-                        >Finish
+                        >{loc("Finish")}
                         </button> :
                         <button
                             className={"btn-dark p-1"}
                             onClick={() => reopenRound()}
-                        >Reopen</button>
+                        >{loc("Reopen")}</button>
                 }
                 <button className={"btn-danger p-1 px-1"}
                         onClick={() => {
@@ -53,7 +55,7 @@ export default function RoundTab(
                                 deleteRound();
                             }
                         }}
-                >Delete
+                >{loc("Delete")}
                 </button>
             </div>
         </ConditionalOnUserRole>

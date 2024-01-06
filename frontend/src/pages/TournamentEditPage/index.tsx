@@ -52,16 +52,16 @@ export default function TournamentEditPage() {
     let tournamentStartTime = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")
 
     return <>
-        <h1 className={"text-left text-lg uppercase font-semibold p-2"}>Edit tournament</h1>
+        <h1 className={"text-left text-lg uppercase font-semibold p-2"}>{loc("Edit tournament")}</h1>
         <form className={"grid gap-2 p-2 text-left"} onSubmit={handleSubmit(saveTournament)}>
             <input type={"text"} id={"tournamentName"}
                    placeholder={loc("Tournament Name").toUpperCase()} {...register("name")}
                    className={"border-b"}
                    defaultValue={tournament.tournament.name}/>
-            <input type={"text"} id={"locationName"} placeholder={"Location Name"} {...register("locationName")}
+            <input type={"text"} id={"locationName"} placeholder={loc("Location Name")} {...register("locationName")}
                    className={"border-b"}
                    defaultValue={tournament.tournament.locationName}/>
-            <input type={"text"} id={"locationUrl"} placeholder={"Location Link"} {...register("locationUrl")}
+            <input type={"text"} id={"locationUrl"} placeholder={loc("Location Link")} {...register("locationUrl")}
                    className={"border-b"}
                    defaultValue={tournament.tournament.locationUrl}/>
             <input type={"date"} id={"startDate"} placeholder={"Start Date"} {...register("startDate")}
