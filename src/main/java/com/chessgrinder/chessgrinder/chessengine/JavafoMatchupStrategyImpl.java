@@ -22,6 +22,7 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
     private static final Object JAVAFO_MONITOR = new Object();
 
     private final PlayerTrfLineParser playerTrfLineParser = new PlayerTrfLineParser();
+    private static final int DEFAULT_RATING = 1000;
 
     @Override
     public List<MatchDto> matchUp(List<ParticipantDto> participants, List<MatchDto> matchHistory, boolean recalculateResults) {
@@ -95,7 +96,7 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
         PlayerTrfLineDto playerTrfLineDto = PlayerTrfLineDto.builder()
                 .startingRank(playerId)
                 .name(participant.getUserFullName() != null ? participant.getUserFullName() : participant.getName())
-                .rating(1000)
+                .rating(DEFAULT_RATING)
                 .points(participant.getScore().floatValue())
                 .matches(matches.stream()
                         .map(match -> {
