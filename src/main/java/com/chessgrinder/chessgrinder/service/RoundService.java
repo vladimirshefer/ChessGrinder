@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.chessengine.SwissMatchupStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.MatchupStrategy;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
@@ -19,6 +19,7 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -30,7 +31,7 @@ public class RoundService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
     private final ParticipantRepository participantRepository;
-    private final SwissMatchupStrategyImpl swissEngine;
+    private final MatchupStrategy swissEngine;
     private final MatchRepository matchRepository;
 
     private final MatchMapper matchMapper;
@@ -84,6 +85,7 @@ public class RoundService {
         }
     }
 
+    @Transactional
     public void makeMatchUp(UUID tournamentId, Integer roundNumber) {
 
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
@@ -94,7 +96,9 @@ public class RoundService {
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
-        List<MatchEntity> allMatchesInTheTournament = matchRepository.findAllByTournamentId(tournamentId);
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId).get();
+        // To successfully pair players, the matches should be sorted by round.
+        List<MatchEntity> allMatchesInTheTournament = tournament.getRounds().stream().flatMap(it -> it.getMatches().stream()).toList();
         List<MatchDto> allMatches = matchMapper.toDto(allMatchesInTheTournament);
 
         List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches, false);

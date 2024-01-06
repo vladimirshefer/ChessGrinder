@@ -1,25 +1,20 @@
 package com.chessgrinder.chessgrinder.chessengine;
 
-import com.chessgrinder.chessgrinder.dto.internal.ScoreModel;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
+import com.chessgrinder.chessgrinder.dto.internal.ScoreModel;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.google.common.collect.Lists;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 @RequiredArgsConstructor
-@Getter
-@Data
 public class SwissMatchupStrategyImpl implements MatchupStrategy {
 
     /**
