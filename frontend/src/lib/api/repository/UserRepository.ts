@@ -11,6 +11,7 @@ import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
 import {ParticipantDto, TournamentPageData} from "../dto/TournamentPageData";
+import {requirePresent} from "lib/util/common";
 
 export interface UserRepository {
     getUser(username: string): Promise<UserDto | null>
@@ -22,6 +23,8 @@ export interface UserRepository {
     getHistory(username: string): Promise<ListDto<UserHistoryRecordDto>>
 
     assignReputation(data: UserReputationHistoryRecordDto): Promise<void>
+
+    updateUser(user: UserDto): Promise<void>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -95,6 +98,13 @@ class LocalStorageUserRepository implements UserRepository {
     async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {
         alert("Unsupported");
     }
+
+    async updateUser(user: UserDto): Promise<void> {
+        let userData = requirePresent(localStorageUtil.getObject<UserDto>(`cgd.user.${user.id}`),
+            `No such user with id ${user.id}`);
+//         userData.user = user;
+        localStorageUtil.setObject(`cgd.user.${user.id}`, user);
+    }
 }
 
 class RestApiUserRepository implements UserRepository {
@@ -116,6 +126,10 @@ class RestApiUserRepository implements UserRepository {
 
     async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {
         return restApiClient.post(`/user/${data.userId}/reputation`, data);
+    }
+
+    async updateUser(user: UserDto): Promise<void> {
+        return restApiClient.put(`/user/${user.username}`, user);
     }
 }
 
