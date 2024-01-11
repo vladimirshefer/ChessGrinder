@@ -30,10 +30,10 @@ dev_java_stop: ## Stop currently running java application
 	kill $$(lsof -ti:8081) >/dev/null 2>/dev/null || echo "Not running"
 
 dev_java_run: ## Run java application
-	cd lib && bash install.sh
 	nohup java -jar -Dspring.profiles.active=development ./target/ChessGrinder-*.jar >> java.log &
 
 dev_java_build: ## Build (compile and package java application)
+	cd lib && bash install.sh
 	mvn clean install -DskipTests
 
 dev_java_redeploy: dev_java_build dev_java_stop dev_java_run ## Kill current java app, build new version and run
