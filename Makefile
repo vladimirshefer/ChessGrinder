@@ -6,6 +6,7 @@ prod_java_run: ## Run java application
 	nohup java -jar -Dspring.profiles.active=production ./target/ChessGrinder-*.jar >> java.log &
 
 prod_java_build: ## Build (compile and package java application)
+	cd lib && bash install.sh
 	mvn clean install -DskipTests
 
 prod_java_redeploy: prod_java_build prod_java_stop prod_java_run ## Kill current java app, build new version and run
@@ -29,6 +30,7 @@ dev_java_stop: ## Stop currently running java application
 	kill $$(lsof -ti:8081) >/dev/null 2>/dev/null || echo "Not running"
 
 dev_java_run: ## Run java application
+	cd lib && bash install.sh
 	nohup java -jar -Dspring.profiles.active=development ./target/ChessGrinder-*.jar >> java.log &
 
 dev_java_build: ## Build (compile and package java application)
