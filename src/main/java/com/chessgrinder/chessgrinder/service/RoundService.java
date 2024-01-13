@@ -97,7 +97,12 @@ public class RoundService {
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
         TournamentEntity tournament = tournamentRepository.findById(tournamentId).get();
-        List<List<MatchEntity>> allMatchesInTheTournament = tournament.getRounds().stream().map(RoundEntity::getMatches).toList();
+
+        List<List<MatchEntity>> allMatchesInTheTournament = tournament.getRounds().stream()
+                .filter(RoundEntity::isFinished)
+                .map(RoundEntity::getMatches)
+                .toList();
+
         List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
 
         List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches, false);
