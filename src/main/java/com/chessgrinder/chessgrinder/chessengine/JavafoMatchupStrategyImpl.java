@@ -25,13 +25,10 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
     private static final int DEFAULT_RATING = 1000;
 
     @Override
-    public List<MatchDto> matchUp(List<ParticipantDto> participants, List<MatchDto> matchHistory, boolean recalculateResults) {
+    public List<MatchDto> matchUp(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, boolean recalculateResults) {
         if (participants.isEmpty()) return Collections.emptyList();
 
-        Map<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(matchHistory);
-        for (ParticipantDto participant : participants) {
-            participantsMatches.putIfAbsent(participant, new ArrayList<>());
-        }
+        Map<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(participants, matchHistory);
         List<String> playerIds = participantsMatches.keySet().stream()
                 .sorted(Comparator.comparing(ParticipantDto::getName))
                 .map(ParticipantDto::getId).toList();
@@ -100,6 +97,13 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
                 .points(participant.getScore().floatValue())
                 .matches(matches.stream()
                         .map(match -> {
+                            if (match == null) {
+                                return PlayerTrfLineDto.Match.builder()
+                                        .opponentPlayerId(0)
+                                        .result(TrfMatchResult.ZERO_POINT_BYE.getCharCode())
+                                        .color('-')
+                                        .build();
+                            }
                             boolean isWhite = match.getWhite().getId().equals(participant.getId());
                             ParticipantDto opponent = isWhite
                                     ? match.getBlack() : match.getWhite();
@@ -127,22 +131,21 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
         throw new IllegalStateException("Could not decide the match result");
     }
 
-    private static Map<ParticipantDto, List<MatchDto>> getParticipantsMatches(List<MatchDto> matchHistory) {
+    private static Map<ParticipantDto, List<MatchDto>> getParticipantsMatches(
+            List<ParticipantDto> participants,
+            List<List<MatchDto>> matchHistory
+    ) {
         Map<ParticipantDto, List<MatchDto>> collectForWhites = new HashMap<>();
-        for (MatchDto matchDto : matchHistory) {
-            if (matchDto.getWhite() != null) {
-                collectForWhites.merge(matchDto.getWhite(), Arrays.asList(matchDto), (a, b) -> concatLists(a, b));
-            }
-            if (matchDto.getBlack() != null) {
-                collectForWhites.merge(matchDto.getBlack(), Arrays.asList(matchDto), (a, b) -> concatLists(a, b));
+        for (ParticipantDto participant : participants) {
+            collectForWhites.putIfAbsent(participant, new ArrayList<>());
+            for (List<MatchDto> matchDtos : matchHistory) {
+                MatchDto matchForRound = matchDtos.stream().filter(it ->
+                        it.getWhite() != null && it.getWhite().getId().equals(participant.getId()) ||
+                                it.getBlack() != null && it.getBlack().getId().equals(participant.getId())
+                ).findAny().orElse(null);
+                collectForWhites.get(participant).add(matchForRound);
             }
         }
         return collectForWhites;
-    }
-
-    private static <T> List<T> concatLists(List<T> a, List<T> b) {
-        ArrayList<T> result = new ArrayList<>(a);
-        result.addAll(b);
-        return result;
     }
 }

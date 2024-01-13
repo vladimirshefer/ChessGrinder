@@ -6,7 +6,11 @@ import com.chessgrinder.chessgrinder.dto.*;
 
 public interface MatchupStrategy {
 
-    List<MatchDto> matchUp(List<ParticipantDto> participantIds, List<MatchDto> matchHistory, boolean recalculateResults);
+    List<MatchDto> matchUp(
+            List<ParticipantDto> participantIds,
+            List<List<MatchDto>> matchHistory,
+            boolean recalculateResults
+    );
 }
 
 

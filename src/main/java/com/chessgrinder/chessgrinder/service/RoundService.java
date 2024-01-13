@@ -97,9 +97,8 @@ public class RoundService {
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
         TournamentEntity tournament = tournamentRepository.findById(tournamentId).get();
-        // To successfully pair players, the matches should be sorted by round.
-        List<MatchEntity> allMatchesInTheTournament = tournament.getRounds().stream().flatMap(it -> it.getMatches().stream()).toList();
-        List<MatchDto> allMatches = matchMapper.toDto(allMatchesInTheTournament);
+        List<List<MatchEntity>> allMatchesInTheTournament = tournament.getRounds().stream().map(RoundEntity::getMatches).toList();
+        List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
 
         List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches, false);
         List<MatchEntity> matches = new ArrayList<>();

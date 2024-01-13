@@ -21,10 +21,11 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
      * "Main" method for swiss service. Takes list of all participants and return list of all matches.
      *
      * @param participants the participants to be paired for new round.
-     * @param matchHistory All submitted match results in the whole tournament.
+     * @param matchHistory1 All submitted match results in the whole tournament.
      * @return The list of matches to be played in new round.
      */
-    public List<MatchDto> matchUp(List<ParticipantDto> participants, List<MatchDto> matchHistory, boolean recalculateResults) {
+    public List<MatchDto> matchUp(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory1, boolean recalculateResults) {
+        List<MatchDto> matchHistory = matchHistory1.stream().flatMap(Collection::stream).toList();
 
         List<MatchDto> matches = new ArrayList<>();
 

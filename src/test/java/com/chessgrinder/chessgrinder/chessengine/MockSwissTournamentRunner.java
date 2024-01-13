@@ -26,7 +26,7 @@ class MockSwissTournamentRunner {
         int newRoundNumber = rounds.size();
         List<MatchDto> actualMatches = swissEngine.matchUp(
                 participants,
-                rounds.stream().flatMap(Collection::stream).collect(Collectors.toList()),
+                rounds,
                 true
         );
         MockRoundBuilder mockRoundBuilder = new MockRoundBuilder();
