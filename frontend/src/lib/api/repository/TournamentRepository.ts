@@ -12,7 +12,7 @@ export interface TournamentRepository {
     startTournament: (tournamentId: string) => Promise<void>
     finishTournament: (tournamentId: string) => Promise<void>
     getTournaments: () => Promise<TournamentListDto>
-    participate: (tournamentId: string) => Promise<void>
+    participate: (tournamentId: string, nickname: string) => Promise<void>
     deleteTournament: (tournamentId: string) => Promise<void>
     updateTournament:(tournament: TournamentDto) => Promise<void>
 }
@@ -56,7 +56,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
         localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
     }
 
-    async participate(tournamentId: string): Promise<void> {
+    async participate(tournamentId: string, nickname: string): Promise<void> {
         let tournament = requirePresent(localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`), `No such tournament with id ${tournamentId}`);
         let participants = tournament.participants;
         let authData = requirePresent(localStorageUtil.getObject<AuthData>("cgd.auth"), "Not logged in");
@@ -68,7 +68,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
         participants.push({
             id: authData.username,
             userId: authData.username,
-            name: authData.username,
+            name: nickname || authData.username,
             buchholz: 0,
             score: 0,
         })
@@ -115,8 +115,8 @@ class RestApiTournamentRepository implements TournamentRepository {
         await restApiClient.delete(`/tournament/${tournamentId}`);
     }
 
-    async participate(tournamentId: string): Promise<void> {
-        await restApiClient.post(`/tournament/${tournamentId}/action/participate`)
+    async participate(tournamentId: string, nickname: string): Promise<void> {
+        await restApiClient.post(`/tournament/${tournamentId}/action/participate?nickname=${nickname}`)
     }
 
     async updateTournament(tournament: TournamentDto): Promise<void> {
