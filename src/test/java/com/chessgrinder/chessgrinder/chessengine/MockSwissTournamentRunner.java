@@ -19,7 +19,7 @@ class MockSwissTournamentRunner {
 
     public MockSwissTournamentRunner(MatchupStrategy swissEngine, String... participants) {
         this.swissEngine = swissEngine;
-        this.participants = Arrays.asList(participants).stream().map(it -> it != null ? SwissMatchupStrategyImplTest.participant(it, 0, 0) : null).toList();
+        this.participants = new ArrayList<>(Arrays.stream(participants).map(it -> it != null ? SwissMatchupStrategyImplTest.participant(it, 0, 0) : null).toList());
     }
 
     public MockSwissTournamentRunner thenRound(Consumer<MockRoundBuilder> round) {
@@ -53,7 +53,7 @@ class MockSwissTournamentRunner {
             actualMatch.setResult(expectedResult.getResult());
         }
         if (expectedResults.size() != actualMatches.size()) {
-            throw new AssertionError("Different pairings size");
+            throw new AssertionError("Different pairings size " + expectedResults.size() + " " + actualMatches.size());
         }
 
         rounds.add(actualMatches);
@@ -162,6 +162,11 @@ class MockSwissTournamentRunner {
         for (MatchDto matchDto : round) {
             printer.accept(asStringWithResults(matchDto));
         }
+        return this;
+    }
+
+    public MockSwissTournamentRunner newParticipant(String name) {
+        participants.add(SwissMatchupStrategyImplTest.participant(name, 0, 0));
         return this;
     }
 
