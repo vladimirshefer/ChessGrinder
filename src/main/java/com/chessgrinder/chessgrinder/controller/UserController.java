@@ -4,6 +4,7 @@ import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.UserDto;
 import com.chessgrinder.chessgrinder.dto.UserHistoryRecordDto;
 import com.chessgrinder.chessgrinder.dto.UserReputationHistoryRecordDto;
+import com.chessgrinder.chessgrinder.dto.UserDto;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
@@ -130,6 +131,15 @@ public class UserController {
                 .user(user)
                 .build());
         userRepository.addReputation(userId, data.getAmount());
+    }
+
+    @PutMapping("/{userIdOrUsername}")
+    @Transactional // хз что это
+    public void updateUser(
+            @PathVariable String userIdOrUsername,
+            @RequestBody UserDto user
+    ) {
+        System.out.println("test test!!!");
     }
 
 }

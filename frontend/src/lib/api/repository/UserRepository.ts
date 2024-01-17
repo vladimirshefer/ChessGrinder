@@ -10,6 +10,7 @@ import {
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
+import {AuthData} from "lib/auth/AuthService";
 import {ParticipantDto, TournamentPageData} from "../dto/TournamentPageData";
 import {requirePresent} from "lib/util/common";
 
@@ -100,10 +101,14 @@ class LocalStorageUserRepository implements UserRepository {
     }
 
     async updateUser(user: UserDto): Promise<void> {
-        let userData = requirePresent(localStorageUtil.getObject<UserDto>(`cgd.user.${user.id}`),
-            `No such user with id ${user.id}`);
+        let authData = requirePresent(localStorageUtil.getObject<AuthData>("cgd.auth"), "Not logged in");
+        let username = authData.username;
+//         console.log("gay sex " + username);
+//         let userData = requirePresent(localStorageUtil.getObject<UserDto>(`cgd.user.${user.id}`), //???
+//             `No such user with id ${user.id}`);
+        user.username = username; //Должен быть еще fullname (в DTO просто name)
 //         userData.user = user;
-        localStorageUtil.setObject(`cgd.user.${user.id}`, user);
+        localStorageUtil.setObject(`cgd.user.${user.id}`, user); //???
     }
 }
 

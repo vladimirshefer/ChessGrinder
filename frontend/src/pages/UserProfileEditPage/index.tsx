@@ -19,35 +19,40 @@ export default function UserProfileEditPage() {
         }
     }, [authenticatedUser, navigate]);
 
-
-    const currentUserName = authenticatedUser?.username;
+//     const currentUserName : string = authenticatedUser.username;
+    const currentUserName: string = authenticatedUser ? authenticatedUser.username : '';
 
     let userQuery = useQuery({
-                queryKey: ["username", currentUserName],
-                queryFn: async () => {
-//                 console.log(authenticatedUser?.name + "@@@"); // это - никнейм
-//                 console.log(currentUserName + "!!!!"); //Это именно почта!
-                    //Из репозитория возвращается именно user!
-                    return await userRepository.getUser(currentUserName!!);
-                    //TODO вопрос Владимиру: почему надо ставить !! в конце, иначе выдает ошибку?
-                },
-            })
+        queryKey: ["username", currentUserName],
+        queryFn: async () => {
+//          console.log(authenticatedUser?.name + "@@@"); // это - никнейм
+//          console.log(currentUserName + "!!!!"); //Это именно почта!
+            return await userRepository.getUser(currentUserName);
+            //Возвращает тип UserDto
+            //TODO вопрос Владимиру: почему надо ставить !! в конце, иначе выдает ошибку?
+        },
+    })
 
-            const {handleSubmit} = useForm();
-            //TODO отрефакторить
-            if (!authenticatedUser) {
-                    return <>You are not logged in</>
-                }
+    const {register, handleSubmit} = useForm();
+    if (!authenticatedUser) {
+        return <>You are not logged in</>
+    }
 
     async function saveUserData(data: { [key: string]: string}) {
+        console.log(data + data["nickname"] + data["username"] + currentUserName + "1234");
         let userPageData = requirePresent(userQuery.data, "User not loaded");
-        userPageData.username = data.username;
+//         userPageData.username = data.username;
+        userPageData.username = currentUserName;
         userPageData.name = data.name;
-        //Password?!
 
+        console.log(currentUserName  + "currentUserName");
+        console.log(data.fullName  + "data.fullName"); //undefined
+        console.log(data.id  + "567"); //undefined
+        //Password?!
 //         let user = userPageData.user;
         //мб это надо сначала спарсить из data?
-//         await userRepository.updateUser(userPageData); //Пока что выдает ошибку 405
+        await userRepository.updateUser(userPageData);
+        //TODO посмотреть, как сделано в async function changeNickname
     //TODO
     //Сначала с фронта (из формочки) надо получить экземпляр измененного пользователя,
     //затем данные надо спарсить и засунуть их в репозиторий
@@ -63,17 +68,19 @@ export default function UserProfileEditPage() {
                 <Gravatar text={authenticatedUser.username || authenticatedUser.id} type={GravatarType.Robohash} size={100}
                           className={"rounded-full"}/>
             </div>
-
+                {/*TODO нужны ли здесь id?*/}
             <div className={"grid grow text-left gap-2"}>
-                <input type={"text"} className={"font-semibold uppercase truncate border-b-2"}
+                <input type={"text"} id={"fullName"} className={"font-semibold uppercase truncate border-b-2"}
                        defaultValue={authenticatedUser.name || authenticatedUser.username || authenticatedUser.id || "Unknown"}
                        title={loc("Full name")}
                        placeholder={loc("Full name")}
+                       {...register("fullName")}
                 />
-                <input type={"text"} className={"text-sm text-gray-500 border-b-2"}
+                <input type={"text"} id={"userName"} className={"text-sm text-gray-500 border-b-2"}
                        defaultValue={authenticatedUser.username}
                        title={loc("Username")}
                        placeholder={loc("Username")}
+                       {...register("userName")}
                 />
                 <div className="p-2"></div>
                 <h3 className={"text-sm uppercase font-semibold"}>{loc("Change password")}</h3>
