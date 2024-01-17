@@ -101,13 +101,14 @@ class LocalStorageUserRepository implements UserRepository {
     }
 
     async updateUser(user: UserDto): Promise<void> {
-        let authData = requirePresent(localStorageUtil.getObject<AuthData>("cgd.auth"), "Not logged in");
-        let username = authData.username;
+//         let authData = requirePresent(localStorageUtil.getObject<AuthData>("cgd.auth"), "Not logged in");
+//         let username = authData.username;
 //         console.log("gay sex " + username);
 //         let userData = requirePresent(localStorageUtil.getObject<UserDto>(`cgd.user.${user.id}`), //???
 //             `No such user with id ${user.id}`);
-        user.username = username; //Должен быть еще fullname (в DTO просто name)
+//         user.username = username; //Должен быть еще fullname (в DTO просто name)
 //         userData.user = user;
+        //TODO посмотреть, корректен ли user, если да, запихать в хранилище
         localStorageUtil.setObject(`cgd.user.${user.id}`, user); //???
     }
 }
@@ -134,7 +135,7 @@ class RestApiUserRepository implements UserRepository {
     }
 
     async updateUser(user: UserDto): Promise<void> {
-        return restApiClient.put(`/user/${user.username}`, user);
+        return restApiClient.patch(`/user/${user.username}`, user);
     }
 }
 

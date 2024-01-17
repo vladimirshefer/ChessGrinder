@@ -4,7 +4,6 @@ import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.UserDto;
 import com.chessgrinder.chessgrinder.dto.UserHistoryRecordDto;
 import com.chessgrinder.chessgrinder.dto.UserReputationHistoryRecordDto;
-import com.chessgrinder.chessgrinder.dto.UserDto;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
@@ -133,13 +132,19 @@ public class UserController {
         userRepository.addReputation(userId, data.getAmount());
     }
 
-    @PutMapping("/{userIdOrUsername}")
-    @Transactional // хз что это
+    @PatchMapping("/{oldUserName}")
     public void updateUser(
-            @PathVariable String userIdOrUsername,
+            @PathVariable String oldUserName,
             @RequestBody UserDto user
     ) {
-        System.out.println("test test!!!");
+        UserEntity userEntity = userRepository.findByUsername(oldUserName);
+        if (userEntity == null)
+            throw new UserNotFoundException("No user with username " + oldUserName);
+        userEntity.setName(user.getName());
+        userRepository.save(userEntity);
+        //Как мне узнать, нужный ли пользователь сгенерировал запрос? Сравнить ID
+        //CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
+//        ParticipantEntity participant = participantRepository.findById(participantId).orElseThrow();
     }
 
 }

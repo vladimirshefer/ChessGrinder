@@ -48,6 +48,18 @@ class RestApiClient {
         return axiosResponse.data as T;
     }
 
+    async patch<T>(
+        path: string,
+        body: any = undefined,
+        pathPrefix: string = apiPathPrefix
+    ) {
+        let axiosResponse = await restAxios.patch(
+            apiPathPrefix + path,
+            body
+        );
+        return axiosResponse.data as T;
+    }
+
     async get<T>(
         path: string,
         pathPrefix: string = apiPathPrefix
