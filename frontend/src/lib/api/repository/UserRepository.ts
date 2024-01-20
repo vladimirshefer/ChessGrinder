@@ -25,7 +25,7 @@ export interface UserRepository {
 
     assignReputation(data: UserReputationHistoryRecordDto): Promise<void>
 
-    updateUser(user: UserDto): Promise<void>
+    updateUser(username: string, user: UserDto): Promise<void>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -100,16 +100,8 @@ class LocalStorageUserRepository implements UserRepository {
         alert("Unsupported");
     }
 
-    async updateUser(user: UserDto): Promise<void> {
-//         let authData = requirePresent(localStorageUtil.getObject<AuthData>("cgd.auth"), "Not logged in");
-//         let username = authData.username;
-//         console.log("gay sex " + username);
-//         let userData = requirePresent(localStorageUtil.getObject<UserDto>(`cgd.user.${user.id}`), //???
-//             `No such user with id ${user.id}`);
-//         user.username = username; //Должен быть еще fullname (в DTO просто name)
-//         userData.user = user;
-        //TODO посмотреть, корректен ли user, если да, запихать в хранилище
-        localStorageUtil.setObject(`cgd.user.${user.id}`, user); //???
+    async updateUser(username: string, user: UserDto): Promise<void> {
+        alert("Unsupported");
     }
 }
 
@@ -134,8 +126,8 @@ class RestApiUserRepository implements UserRepository {
         return restApiClient.post(`/user/${data.userId}/reputation`, data);
     }
 
-    async updateUser(user: UserDto): Promise<void> {
-        return restApiClient.patch(`/user/${user.username}`, user);
+    async updateUser(username: string, user: UserDto): Promise<void> {
+        return restApiClient.patch(`/user/${username}`, user);
     }
 }
 

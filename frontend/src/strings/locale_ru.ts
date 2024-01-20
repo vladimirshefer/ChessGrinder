@@ -41,6 +41,7 @@ let locale_ru: { [key: string]: string } = {
     "History": "История",
     "Achievements": "Достижения",
     "Search": "Поиск",
+    "Can't update user's name": "Не удалось изменить имя пользователя"
 }
 
 export default locale_ru

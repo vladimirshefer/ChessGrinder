@@ -25,17 +25,21 @@ export default function UserProfileEditPage() {
         return <>You are not logged in</>
     }
 
-    //TODO почему-то после сохранения данных в БД если не перезагрузить страницу, то в полях высвечиваются
-    //старые данные authenticatedUser
     //data - данные из html-формы
     async function saveUserData(data: { [key: string]: string}) {
         let userPageData = {
-            name : data.fullName || authenticatedUser?.name,
-            username : data.userName
-            //TODO перечислить все поля и для них написать ... || authenticatedUser.field
+            name : data.fullName
         } as UserDto;
-        await userRepository.updateUser(userPageData);
-        navigate(`/user/${currentUserName}`);
+        try {
+            await userRepository.updateUser(currentUserName, userPageData);
+            navigate(`/user/${currentUserName}`);
+            if (authenticatedUser) { //Обновление данных пользователя в хранилище
+                authenticatedUser.name = data.fullName;
+            }
+        }
+        catch(e) {
+            alert(loc("Can't update user's name"));
+        }
     }
 
     return <div className={"p-3"}>
