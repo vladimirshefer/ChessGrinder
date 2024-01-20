@@ -10,9 +10,7 @@ import {
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
-import {AuthData} from "lib/auth/AuthService";
 import {ParticipantDto, TournamentPageData} from "../dto/TournamentPageData";
-import {requirePresent} from "lib/util/common";
 
 export interface UserRepository {
     getUser(username: string): Promise<UserDto | null>
