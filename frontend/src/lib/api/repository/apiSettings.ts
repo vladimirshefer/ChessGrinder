@@ -36,6 +36,11 @@ export function useProperty<T>(mode: ListenableProperty<T>): [T, (value: T) => v
     return [authData, mode.set]
 }
 
+/**
+ * MODE or PROFILE is the frontend application mode.
+ * production - is using RestApi to  store data.
+ * local - is using localStorage to store data.
+ */
 export function useMode(): [string, (v: string) => void] {
     return useProperty(GLOBAL_SETTINGS.profile)
 }
