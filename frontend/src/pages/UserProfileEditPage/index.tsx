@@ -32,9 +32,10 @@ export default function UserProfileEditPage() {
         } as UserDto;
         try {
             await userRepository.updateUser(currentUserName, userPageData);
+            //Если метод выше не вызовет исключение, он пойдет дальше
             navigate(`/user/${currentUserName}`);
             if (authenticatedUser) { //Обновление данных пользователя в хранилище
-                authenticatedUser.name = data.fullName;
+                window.location.reload();
             }
         }
         catch(e) {

@@ -139,11 +139,14 @@ public class UserController {
             @RequestBody UserDto jsonObject,
             Authentication authentication
     ) {
-        if (authentication == null)
+        if (authentication == null) {
             throw new ResponseStatusException(401, "Not logged in", null);
+        }
         final CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
         final UserEntity authUser = principal.getUser();
-        if (authUser == null) return;
+        if (authUser == null) {
+            return;
+        }
 
         UserEntity userEntity = userRepository.findByUsername(userName);
         if (userEntity == null) {
