@@ -3,10 +3,7 @@ package com.chessgrinder.chessgrinder.service;
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
-import com.chessgrinder.chessgrinder.mappers.BadgeMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
-import com.chessgrinder.chessgrinder.repositories.BadgeRepository;
-import com.chessgrinder.chessgrinder.repositories.RoleRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +21,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final BadgeMapper badgeMapper;
-    private final BadgeRepository badgeRepository;
-    private final RoleRepository roleRepository;
 
     public List<UserDto> getAllUsers() {
         List<UserEntity> users = userRepository.findAll();
-
 
         return users.stream().map(userMapper::toDto).collect(Collectors.toList());
     }
