@@ -31,6 +31,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Slf4j
 public class WebSecurityConfig {
 
+    private static final String HOME_PATH = "/";
+
     public static final String HOME_PAGE = "/";
 
     public static final String OAUTH2_STATE_SEPARATOR = ",";
@@ -90,8 +92,8 @@ public class WebSecurityConfig {
                                     response.sendRedirect(redirectTo);
                                 })
                                 .failureHandler((request, response, exception) -> {
-                                    log.warn("Could not login user vis oauth2", exception);
-                                    response.sendRedirect(HOME_PAGE);
+                                    log.warn("Could not login user via oauth2", exception);
+                                    response.sendRedirect(HOME_PATH);
                                 })
                 )
                 .cors(it -> it.disable())

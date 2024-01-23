@@ -17,6 +17,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
     List<UserEntity> findAll();
 
     UserEntity findByUsername(String userName);
+    UserEntity findByEmail(String email);
 
     @Modifying
     @Query("UPDATE UserEntity u SET u.reputation = u.reputation + :amount WHERE u.id = :userId")
