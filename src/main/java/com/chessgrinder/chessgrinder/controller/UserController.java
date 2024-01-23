@@ -6,7 +6,6 @@ import com.chessgrinder.chessgrinder.dto.UserHistoryRecordDto;
 import com.chessgrinder.chessgrinder.dto.UserReputationHistoryRecordDto;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
-import com.chessgrinder.chessgrinder.exceptions.FullNameAlreadyTakenException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
@@ -147,15 +146,14 @@ public class UserController {
         if (authUser == null) return;
 
         UserEntity userEntity = userRepository.findByUsername(userName);
-        if (userEntity == null)
+        if (userEntity == null) {
             throw new UsernameNotFoundException("No user with username " + userName);
-        if (!authUser.getId().equals(userEntity.getId()))
+        }
+        if (!authUser.getId().equals(userEntity.getId())) {
             throw new ResponseStatusException(403, "Not allowed to change other's name", null);
+        }
 
         final String newUserFullName = jsonObject.getName();
-        if (userRepository.existsByName(newUserFullName))
-            throw new FullNameAlreadyTakenException(String.format("Full name \"%s\" already taken", newUserFullName));
-
         userEntity.setName(newUserFullName);
         userRepository.save(userEntity);
     }

@@ -16,8 +16,6 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
 
     UserEntity findByUsername(String userName);
 
-    boolean existsByName(String fullName);
-
     @Modifying
     @Query("UPDATE UserEntity u SET u.reputation = u.reputation + :amount WHERE u.id = :userId")
     void addReputation(UUID userId, Integer amount);
