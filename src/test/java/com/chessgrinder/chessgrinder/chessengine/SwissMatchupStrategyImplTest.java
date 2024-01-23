@@ -83,7 +83,7 @@ public class SwissMatchupStrategyImplTest {
     @Test
     public void test_ZeroParticipants() {
         List<ParticipantDto> participants = List.of();
-        List<MatchDto> matches = swissEngine.matchUp(participants, null, false);
+        List<MatchDto> matches = swissEngine.matchUp(participants, emptyList(), false);
 
         assertEquals(0, matches.size());
     }
@@ -96,7 +96,7 @@ public class SwissMatchupStrategyImplTest {
         ParticipantDto participant4 = createParticipant("user4", 8, 6);
 
         MatchDto match = createMatch(participant1, participant3, MatchResult.WHITE_WIN);
-        List<MatchDto> matchHistory = List.of(match);
+        List<List<MatchDto>> matchHistory = List.of(List.of(match));
         List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4);
 
         List<MatchDto> matches = swissEngine.matchUp(participants, matchHistory, false);
@@ -150,7 +150,7 @@ public class SwissMatchupStrategyImplTest {
                 .show(System.out::println);
     }
 
-    private static MockSwissTournamentRunner runTournament(SwissMatchupStrategyImpl swissEngine, String... participants) {
+    public static MockSwissTournamentRunner runTournament(MatchupStrategy swissEngine, String... participants) {
         return new MockSwissTournamentRunner(swissEngine, participants);
     }
 

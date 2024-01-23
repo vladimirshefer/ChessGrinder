@@ -1,16 +1,23 @@
 package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
+import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
+import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.enums.TournamentStatus;
+import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.service.TournamentService;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +29,8 @@ public class TournamentController {
 
     private final TournamentService tournamentService;
     private final TournamentRepository tournamentRepository;
+    private final UserRepository userRepository;
+    private final ParticipantRepository participantRepository;
 
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping
@@ -69,9 +78,34 @@ public class TournamentController {
 
     @PostMapping("{tournamentId}/action/participate")
     public Object participate(
-            @PathVariable UUID tournamentId,
-            Principal principal
+            @PathVariable
+            UUID tournamentId,
+            @RequestParam(required = false)
+            @Nullable
+            String nickname,
+            Authentication authentication
     ) {
-        return principal.getName();
+        if (!authentication.isAuthenticated()) {
+            throw new ResponseStatusException(401, "", null);
+        }
+
+        UserEntity user = userRepository.findByUsername(authentication.getName());
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
+
+        if (!tournament.getStatus().equals(TournamentStatus.PLANNED)) {
+            throw new ResponseStatusException(400, "Tournament already started. Ask administrator for help.", null);
+        }
+
+        ParticipantEntity participant = ParticipantEntity.builder()
+                .tournament(tournament)
+                .user(user)
+                .nickname(nickname)
+                .score(BigDecimal.ZERO)
+                .buchholz(BigDecimal.ZERO)
+                .build();
+
+        participantRepository.save(participant);
+
+        return authentication.getName();
     }
 }

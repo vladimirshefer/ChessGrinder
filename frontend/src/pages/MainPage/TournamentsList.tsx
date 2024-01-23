@@ -39,7 +39,7 @@ function TournamentPane(
             return participantsSorted[0]
         }
     })
-    let participateButtonSupported = false
+    let participateButtonSupported = true // TODO @vshefer delete
 
     let isPlanned = tournament.status === "PLANNED"
     let isFinished = tournament.status === "FINISHED"
@@ -113,11 +113,18 @@ function TournamentPane(
             </div>
         </Conditional>
         <div className={"p-1"}></div>
-        <Conditional on={participateButtonSupported && (isPlanned || isActive)}>
+        <Conditional on={participateButtonSupported && (isPlanned)}>
             <div className={"w-full"}>
                 <ConditionalOnAuthorized>
                     <button className={"btn-primary w-full uppercase"}
-                            onClick={() => tournamentRepository.participate(tournament.id)}
+                            onClick={async () => {
+                                let nickname = prompt("Please enter your nickname");
+                                if (!nickname) {
+                                    alert("Nickname is not provided. Registration is cancelled.")
+                                } else {
+                                    await tournamentRepository.participate(tournament.id, nickname)
+                                }
+                            }}
                     >
                         {loc("Participate")}
                     </button>

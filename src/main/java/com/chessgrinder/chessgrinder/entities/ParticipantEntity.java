@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.entities;
 import java.math.*;
 import java.util.*;
 
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -35,12 +36,15 @@ public class ParticipantEntity {
     @JoinColumn(name = "tournament_id")
     private TournamentEntity tournament;
 
+    @Nonnull
     @Column(name = "nickname")
     private String nickname;
 
+    @Nonnull
     @Column(name = "score")
     private BigDecimal score;
 
+    @Nonnull
     @Column(name = "buchholz")
     private BigDecimal buchholz;
 
