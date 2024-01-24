@@ -1,15 +1,16 @@
 import React, {useContext, useEffect, useState} from "react";
 import {UserDto} from "lib/api/dto/MainPageData";
-import {Property} from "lib/util/misc";
 import userRepository from "../lib/api/repository/UserRepository";
 import authService, {AuthData} from "../lib/auth/AuthService";
 
-export const AuthenticatedUserContext = React.createContext<Property<UserDto | null>>([null, () => {
-}])
+export const AuthenticatedUserContext = React.createContext<
+    [(UserDto | null), (v: (UserDto | null)) => void, () => void]
+>([null, () => {}, () => {}])
 
-export function useAuthenticatedUser(): UserDto | null {
-    let [user]: [(UserDto | null), ((v: (UserDto | null)) => void)] = useContext(AuthenticatedUserContext)
-    return user
+export function useAuthenticatedUser(): [UserDto | null, () => void] {
+    let [user, ,refresh]: [(UserDto | null), (v: (UserDto | null)) => void, () => void]
+        = useContext(AuthenticatedUserContext)
+    return [user, refresh]
 }
 
 export function AuthenticatedUserContextProvider({children}: { children: any }) {
@@ -36,7 +37,7 @@ export function AuthenticatedUserContextProvider({children}: { children: any }) 
         }
     }
 
-    return <AuthenticatedUserContext.Provider value={[user, setUser]}>
+    return <AuthenticatedUserContext.Provider value={[user, setUser, checkAuthData]}>
         {children}
     </AuthenticatedUserContext.Provider>
 

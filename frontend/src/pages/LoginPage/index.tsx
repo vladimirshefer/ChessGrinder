@@ -8,7 +8,7 @@ export default function LoginPage() {
     let [username, setUsername] = useState("");
     let [password, setPassword] = useState("");
     let navigate = useNavigate()
-    let authenticatedUser = useAuthenticatedUser()
+    let [authenticatedUser] = useAuthenticatedUser()
 
     useEffect(() => {
         if (!!authenticatedUser) {

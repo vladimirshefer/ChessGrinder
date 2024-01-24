@@ -12,7 +12,7 @@ import {LanguageContext} from "contexts/LanguageContext";
 
 function Header() {
     let navigate = useNavigate()
-    let authenticatedUser = useAuthenticatedUser()
+    let [authenticatedUser] = useAuthenticatedUser()
     const droprownRef = useRef(null);
     let [dropdownOpened, setDropdownOpened] = useState(false);
     let [, setLanguage] = useContext(LanguageContext)

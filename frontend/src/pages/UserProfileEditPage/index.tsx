@@ -8,7 +8,7 @@ import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {UserDto} from "lib/api/dto/MainPageData";
 
 export default function UserProfileEditPage() {
-    let authenticatedUser = useAuthenticatedUser();
+    let [authenticatedUser, refresh] = useAuthenticatedUser();
     let navigate = useNavigate()
     let loc = useLoc()
 
@@ -32,10 +32,10 @@ export default function UserProfileEditPage() {
         } as UserDto;
         try {
             await userRepository.updateUser(currentUserName, userPageData);
-            //Если метод выше не вызовет исключение, он пойдет дальше
+            //If method above won't throw exception, program will go further
             navigate(`/user/${currentUserName}`);
-            if (authenticatedUser) { //Обновление данных пользователя в хранилище
-                window.location.reload();
+            if (authenticatedUser) {
+                refresh();
             }
         }
         catch(e) {
