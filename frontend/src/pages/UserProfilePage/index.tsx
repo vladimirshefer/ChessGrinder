@@ -132,7 +132,7 @@ export default function UserProfilePage() {
     let {username} = useParams()
     let navigate = useNavigate()
     let loc = useLoc()
-    let authenticatedUser = useAuthenticatedUser()
+    let [authenticatedUser] = useAuthenticatedUser()
     let [activeTab, setActiveTab] = useSearchParam("tab", "history")
 
     useEffect(() => {

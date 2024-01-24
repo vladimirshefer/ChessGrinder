@@ -130,7 +130,7 @@ function MatchesTable(
     }
 ) {
     let loc = useLoc()
-    let authenticatedUser = useAuthenticatedUser();
+    let [authenticatedUser] = useAuthenticatedUser();
     let canEditResults = !roundIsFinished && (authenticatedUser?.roles?.includes(UserRoles.ADMIN) || false);
 
     return <div className={"grid grid-cols-12 p-2 gap-y-2"}>
