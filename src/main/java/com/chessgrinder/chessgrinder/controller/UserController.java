@@ -9,13 +9,13 @@ import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
+import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.service.UserService;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -136,28 +136,14 @@ public class UserController {
     @PatchMapping("/{userName}")
     public void updateUser(
             @PathVariable String userName,
-            @RequestBody UserDto jsonObject,
-            Authentication authentication
+            @RequestBody UserDto userDto,
+            @AuthenticatedUser UserEntity authenticatedUser
     ) {
-        if (authentication == null) {
-            throw new ResponseStatusException(401, "Not logged in", null);
-        }
-        final CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
-        final UserEntity authUser = principal.getUser();
-        if (authUser == null) {
-            return;
-        }
-
-        UserEntity userEntity = userRepository.findByUsername(userName);
-        if (userEntity == null) {
-            throw new UsernameNotFoundException("No user with username " + userName);
-        }
-        if (!authUser.getId().equals(userEntity.getId())) {
+        if (!userName.equals(authenticatedUser.getUsername())) {
             throw new ResponseStatusException(403, "Not allowed to change other's name", null);
         }
 
-        final String newUserFullName = jsonObject.getName();
-        userEntity.setName(newUserFullName);
-        userRepository.save(userEntity);
+        authenticatedUser.setName(userDto.getName());
+        userRepository.save(authenticatedUser);
     }
 }
