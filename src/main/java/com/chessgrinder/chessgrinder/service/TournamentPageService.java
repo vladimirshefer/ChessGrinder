@@ -66,32 +66,42 @@ public class TournamentPageService {
 
     public ParticipantDto findWinnerBetweenTwoParticipants(ParticipantDto first, ParticipantDto second, List<RoundDto> roundsDto) {
         for (RoundDto round : roundsDto) {
-            if (round.getMatches() != null) {
-                for (MatchDto match : round.getMatches()) {
-                    if (match.getWhite() != null && match.getBlack() != null) {
-                        if (match.getWhite().equals(first) && match.getBlack().equals(second)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getWhite();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getBlack();
-                            }
-                        } else if (match.getWhite().equals(second) && match.getBlack().equals(first)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getWhite();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getBlack();
-                            }
-                        }
-                    }
+            if (round.getMatches() == null) {
+                continue;
+            }
+
+            for (MatchDto match : round.getMatches()) {
+                if (match.getWhite() == null || match.getBlack() == null) {
+                    continue;
                 }
+
+                if (isMatchBetweenParticipants(match, first, second)) {
+                    return determineWinner(match);
+                }
+
             }
         }
+
         return null;
     }
 
+    private boolean isMatchBetweenParticipants(MatchDto match, ParticipantDto first, ParticipantDto second) {
+        ParticipantDto wh = match.getWhite();
+        ParticipantDto bl = match.getBlack();
 
+        return wh.equals(first) && bl.equals(second) || wh.equals(second) && bl.equals(first);
+    }
 
+    private ParticipantDto determineWinner(MatchDto match) {
+        if (match.getResult() == MatchResult.WHITE_WIN) {
+            return match.getWhite();
+        }
 
+        if (match.getResult() == MatchResult.BLACK_WIN) {
+            return match.getBlack();
+        }
 
+        return null;
+    }
 
 }
