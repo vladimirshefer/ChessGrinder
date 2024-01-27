@@ -8,14 +8,13 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
+import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
-import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.service.UserService;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,6 +35,7 @@ public class UserController {
     private final ParticipantRepository participantRepository;
     private final ParticipantMapper participantMapper;
     private final UserReputationHistoryRepository userReputationHistoryRepository;
+    private final UserMapper userMapper;
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
@@ -55,19 +55,12 @@ public class UserController {
         return userService.getUserByUserName(userId);
     }
 
+    @Transactional
     @GetMapping("/me")
     public UserDto me(
-            Authentication authentication
+            @AuthenticatedUser UserEntity authenticatedUser
     ) {
-        if (authentication == null) {
-            throw new ResponseStatusException(401, "Not logged in", null);
-        }
-        CustomOAuth2User principal = (CustomOAuth2User) authentication.getPrincipal();
-        String email = principal.getEmail();
-        if (email == null) {
-            return null;
-        }
-        return userService.getUserByUserName(email);
+        return userMapper.toDto(authenticatedUser);
     }
 
     @GetMapping("/{userIdOrUsername}/history")
@@ -86,7 +79,6 @@ public class UserController {
                 )
                 .toList();
         return ListDto.<UserHistoryRecordDto>builder().values(history).build();
-
     }
 
     @Nonnull
