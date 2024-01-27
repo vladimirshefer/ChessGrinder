@@ -72,8 +72,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
         if (username == null) {
             return null;
         }
-        UserEntity userByEmail = userRepository.findByUsername(username);
-        return userByEmail != null ? userByEmail : userRepository.findByUsername(username);
+        return userRepository.findByUsername(username);
     }
 
     @Nullable
