@@ -48,9 +48,9 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
             throw new IllegalArgumentException("Token auth could not resolve parameter " + parameter);
         }
 
-        var accessToken = getAuthenticatedUser();
+        var authenticatedUser = getAuthenticatedUser();
 
-        if (accessToken == null) {
+        if (authenticatedUser == null) {
             var annotation = parameter.getParameterAnnotation(AuthenticatedUser.class);
             if (annotation == null) {
                 throw new IllegalArgumentException("Parameter has no @AuthenticatedUser annotation. Parameter: " + parameter);
@@ -64,7 +64,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
             return null;
         }
 
-        return accessToken;
+        return authenticatedUser;
     }
 
     private UserEntity getAuthenticatedUser() {
