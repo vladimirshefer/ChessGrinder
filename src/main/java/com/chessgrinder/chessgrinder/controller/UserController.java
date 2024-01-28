@@ -1,9 +1,6 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.dto.ListDto;
-import com.chessgrinder.chessgrinder.dto.UserDto;
-import com.chessgrinder.chessgrinder.dto.UserHistoryRecordDto;
-import com.chessgrinder.chessgrinder.dto.UserReputationHistoryRecordDto;
+import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
@@ -15,6 +12,7 @@ import com.chessgrinder.chessgrinder.service.UserService;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,6 +34,7 @@ public class UserController {
     private final ParticipantMapper participantMapper;
     private final UserReputationHistoryRepository userReputationHistoryRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
@@ -137,5 +136,30 @@ public class UserController {
 
         authenticatedUser.setName(userDto.getName());
         userRepository.save(authenticatedUser);
+    }
+
+    @PostMapping("/signUp")
+    public void sighUp(
+            @RequestBody UserSignUpRequest signUpRequest,
+            @AuthenticatedUser(required = false) UserEntity authenticatedUser
+    ) {
+        if (signUpRequest == null || signUpRequest.getUsername() == null || signUpRequest.getUsername().isBlank()) {
+            throw new ResponseStatusException(400, "Invalid username", null);
+        }
+        boolean userNameAlreadyExists = userRepository.findByUsername(signUpRequest.getUsername()) != null;
+        if (authenticatedUser != null || userNameAlreadyExists) {
+            throw new ResponseStatusException(400, "Already registered", null);
+        }
+
+        String password = signUpRequest.getPassword();
+        if (password == null || password.isBlank() || password.length() < 4) {
+            throw new ResponseStatusException(400, "Invalid password. Min 4 chars.", null);
+        }
+
+        userRepository.save(UserEntity.builder()
+                .username(signUpRequest.getUsername())
+                .password(passwordEncoder.encode(password))
+                .build()
+        );
     }
 }

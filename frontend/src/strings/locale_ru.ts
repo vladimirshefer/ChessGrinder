@@ -3,10 +3,13 @@ let locale_ru: { [key: string]: string } = {
     "Tournament": "Турнир",
     "Tournaments": "Турниры",
     "Username": "Имя пользователя",
+    "Password": "Пароль",
+    "Password confirm": "Подтвердите пароль",
     "Nickname": "Никнейм",
     "Leave empty for anonymous/guest participant": "Оставьте пустым для гостя",
     "Badges": "Значки",
     "Admin": "Админ",
+    "Administrator": "Администратор",
     "Add participant": "Добавить участника",
     "Name": "Имя",
     "More info": "Подробнее",
@@ -41,6 +44,8 @@ let locale_ru: { [key: string]: string } = {
     "History": "История",
     "Achievements": "Достижения",
     "Search": "Поиск",
+    "Log in": "Войти",
+    "Register": "Зарегистрироваться",
     "Can't update user's name": "Не удалось изменить имя пользователя"
 }
 
