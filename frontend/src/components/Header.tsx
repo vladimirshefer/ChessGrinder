@@ -12,7 +12,7 @@ import {LanguageContext} from "contexts/LanguageContext";
 
 function Header() {
     let navigate = useNavigate()
-    let [authenticatedUser] = useAuthenticatedUser()
+    let [authenticatedUser, authenticatedUserReload] = useAuthenticatedUser()
     const droprownRef = useRef(null);
     let [dropdownOpened, setDropdownOpened] = useState(false);
     let [, setLanguage] = useContext(LanguageContext)
@@ -84,8 +84,9 @@ function Header() {
                 <NavLink to={"/admin"} text={loc("Admin")}/>
             </ConditionalOnUserRole>
             <ConditionalOnAuthorized>
-                <NavLink onClick={() => {
-                    loginPageRepository.logout()
+                <NavLink onClick={async () => {
+                    await loginPageRepository.signOut()
+                    authenticatedUserReload()
                 }} text={loc("Logout")}/>
             </ConditionalOnAuthorized>
             <ConditionalOnAuthorized authorized={false}>

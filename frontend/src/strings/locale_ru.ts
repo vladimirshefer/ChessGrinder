@@ -44,9 +44,10 @@ let locale_ru: { [key: string]: string } = {
     "History": "История",
     "Achievements": "Достижения",
     "Search": "Поиск",
-    "Log in": "Войти",
-    "Register": "Зарегистрироваться",
-    "Can't update user's name": "Не удалось изменить имя пользователя"
+    "Sign in": "Войти",
+    "Sign up": "Зарегистрироваться",
+    "Sign out": "Выйти",
+    "Can't update user's name": "Не удалось изменить имя пользователя",
 }
 
 export default locale_ru

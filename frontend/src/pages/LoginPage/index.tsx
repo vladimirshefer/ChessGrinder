@@ -1,20 +1,21 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {useNavigate} from "react-router-dom";
 import {Conditional, ConditionalOnMode} from "components/Conditional";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {useMode} from "lib/api/repository/apiSettings";
 import {useLoc} from "strings/loc";
+import {useForm} from "react-hook-form";
+import {UserSignUpRequest} from "lib/api/dto";
 
 
 export default function LoginPage() {
-    let [username, setUsername] = useState("");
-    let [password, setPassword] = useState("");
-    let [passwordConfirm, setPasswordConfirm] = useState("");
     let navigate = useNavigate()
     let [authenticatedUser, authenticatedUserRefresh] = useAuthenticatedUser()
     let loc = useLoc();
-    let [mode, setMode] = useMode();
+    let [mode, ] = useMode();
+    let signInForm = useForm()
+    let signUpForm = useForm()
 
     let ENABLE_LOGIN_USERNAME_PASSWORD = mode === "local" || true
     let ENABLE_REGISTRATION_USERNAME_PASSWORD = mode === "local" || true
@@ -25,14 +26,35 @@ export default function LoginPage() {
         }
     }, [authenticatedUser, navigate])
 
-    async function login(username: string, password: string) {
-        await loginPageRepository.login(username, password)
+    async function signIn(username: string, password: string) {
+        await loginPageRepository.signIn(username, password)
         await authenticatedUserRefresh()
     }
 
-    async function register(username: string, password: string) {
-        await loginPageRepository.register(username, password)
+    async function signUp(data: UserSignUpRequest) {
+        await loginPageRepository.signUp(data)
         await authenticatedUserRefresh()
+    }
+
+    async function handleSignInSubmit(data: any) {
+        await signIn(data["username"], data["password"])
+    }
+
+    async function handleSignUpSubmit(data: any) {
+        if (data["password"] !== data["passwordConfirm"]) {
+            alert("Password mismatch")
+            return;
+        }
+
+        let userSignupRequest = {
+            username: data["username"],
+            password: data["password"],
+            fullName: data["fullName"],
+            email: data["email"],
+        } as UserSignUpRequest;
+        await signUp(
+            userSignupRequest
+        )
     }
 
     return <div className={"grid p-2 gap-5 text-left"}>
@@ -49,48 +71,44 @@ export default function LoginPage() {
         </div>
 
         <Conditional on={ENABLE_LOGIN_USERNAME_PASSWORD}>
-            <div className={"grid gap-1"}>
-                <h3 className={"font-semibold uppercase"}>{loc("Log in")}</h3>
+            <form className={"grid gap-1"} onSubmit={signInForm.handleSubmit(handleSignInSubmit)}>
+                <h3 className={"font-semibold uppercase"}>{loc("Sign in")}</h3>
                 <input className={"border-b-2 outline-none"} placeholder={loc("Username")}
-                       onChange={(e) => setUsername(e.target.value)}
+                       {...signInForm.register("username")}
                 />
                 <input className={"border-b-2 outline-none"} placeholder={loc("Password")}
                        type={"password"}
-                       onChange={(e) => setPassword(e.target.value)}
+                       {...signInForm.register("password")}
                 />
-                <button className={"btn-primary uppercase"}
-                        onClick={() => login(username, password)}
-                >
-                    {loc("Log in")}
+                <button className={"btn-primary uppercase"} type={"submit"}>
+                    {loc("Sign in")}
                 </button>
-            </div>
+            </form>
         </Conditional>
         <Conditional on={ENABLE_REGISTRATION_USERNAME_PASSWORD}>
-            <div className={"grid gap-1"}>
-                <h3 className={"font-semibold uppercase"}>{loc("Register")}</h3>
+            <form className={"grid gap-1"} onSubmit={signUpForm.handleSubmit(handleSignUpSubmit)}>
+                <h3 className={"font-semibold uppercase"}>{loc("Sign up")}</h3>
+                <input className={"border-b-2 outline-none"} placeholder={loc("Full name")}
+                       {...signUpForm.register("fullName")}
+                />
+                <input className={"border-b-2 outline-none"} placeholder={loc("Email")}
+                       {...signUpForm.register("email")}
+                />
                 <input className={"border-b-2 outline-none"} placeholder={loc("Username")}
-                       onChange={(e) => setUsername(e.target.value)}
+                       {...signUpForm.register("username")}
                 />
                 <input className={"border-b-2 outline-none"} placeholder={loc("Password")}
+                       {...signUpForm.register("password")}
                        type={"password"}
-                       onChange={(e) => setPassword(e.target.value)}
                 />
                 <input className={"border-b-2 outline-none"} placeholder={loc("Password confirm")}
                        type={"password"}
-                       onChange={(e) => setPasswordConfirm(e.target.value)}
+                       {...signUpForm.register("password")}
                 />
-                <button className={"btn-primary uppercase"}
-                        onClick={() => {
-                            if (password !== passwordConfirm) {
-                                alert("Password mismatch") }
-                            else {
-                                register(username, password)
-                            }
-                }}
-                >
-                    {loc("Register")}
+                <button type={"submit"} className={"btn-primary uppercase"}>
+                    {loc("Sign up")}
                 </button>
-            </div>
+            </form>
         </Conditional>
     </div>
 }

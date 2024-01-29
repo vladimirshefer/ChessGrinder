@@ -4,17 +4,18 @@ import restApiClient from "lib/api/RestApiClient";
 import userRepository from "lib/api/repository/UserRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import localStorageUtil from "lib/util/LocalStorageUtil";
+import {UserSignUpRequest} from "../dto";
 
 export interface LoginPageRepository {
-    login(username: string, password: string): Promise<string>
+    signIn(username: string, password: string): Promise<string>
 
-    logout(): Promise<void>
+    signOut(): Promise<void>
 
-    register(username: string, password: string): Promise<void>
+    signUp(data: UserSignUpRequest): Promise<void>
 }
 
 class LocalStorageLoginPageRepository implements LoginPageRepository {
-    async login(username: string, password: string): Promise<string> {
+    async signIn(username: string, password: string): Promise<string> {
         let roles = username.toLowerCase().includes("admin") ? [UserRoles.ADMIN] : [];
         let memberDto = (await userRepository.getUsers()).values.find(it => it.id === username);
         if (!memberDto) {
@@ -35,33 +36,29 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
         return username
     }
 
-    async logout(): Promise<void> {
+    async signOut(): Promise<void> {
         authService.clearAuthData()
         window.location.reload()
     }
 
-    async register(username: string, password: string): Promise<void> {
+    async signUp(data: UserSignUpRequest): Promise<void> {
         return Promise.reject();
     }
 }
 
 class RestApiLoginPageRepository implements LoginPageRepository {
-    async login(username: string, password: string): Promise<string> {
+    async signIn(username: string, password: string): Promise<string> {
         await restApiClient.post("/login", `username=${username}&password=${password}`) // toto urlencode parameters
         return username;
     }
 
-    async logout(): Promise<void> {
+    async signOut(): Promise<void> {
         await restApiClient.get("/logout");
-        window.location.reload();
     }
 
 
-    async register(username: string, password: string): Promise<void> {
-        await restApiClient.post("/user/signUp", {
-            username: username,
-            password: password
-        })
+    async signUp(data: UserSignUpRequest): Promise<void> {
+        await restApiClient.post("/user/signUp", data)
     }
 }
 
