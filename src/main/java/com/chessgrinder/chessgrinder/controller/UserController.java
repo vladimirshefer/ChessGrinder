@@ -11,6 +11,7 @@ import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.
 import com.chessgrinder.chessgrinder.service.UserService;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,9 @@ public class UserController {
     private final UserReputationHistoryRepository userReputationHistoryRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${chessgrinder.feature.auth.signupWithPasswordEnabled:true}")
+    private boolean isSignupWithPasswordEnabled;
 
     private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
 
@@ -145,6 +149,10 @@ public class UserController {
             @RequestBody UserSignUpRequest signUpRequest,
             @AuthenticatedUser(required = false) UserEntity authenticatedUser
     ) {
+        if (!isSignupWithPasswordEnabled) {
+            throw new ResponseStatusException(400, "Sign Up with password is disabled.", null);
+        }
+
         if (signUpRequest == null || signUpRequest.getUsername() == null || signUpRequest.getUsername().isBlank()) {
             throw new ResponseStatusException(400, "Invalid username", null);
         }
