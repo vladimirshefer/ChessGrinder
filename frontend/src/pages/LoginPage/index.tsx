@@ -35,6 +35,7 @@ export default function LoginPage() {
 
     async function signUp(data: UserSignUpRequest) {
         await loginPageRepository.signUp(data)
+            .catch(it => alert(it?.response?.data?.message || it?.message || "SignUp failed"))
         await authenticatedUserRefresh()
     }
 

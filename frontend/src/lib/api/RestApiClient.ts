@@ -29,11 +29,16 @@ class RestApiClient {
         body: any = undefined,
         pathPrefix: string = apiPathPrefix
     ) {
-        let axiosResponse = await restAxios.post(
-            apiPathPrefix + path,
-            body
-        );
-        return axiosResponse.data as T;
+        try {
+            let axiosResponse = await restAxios.post(
+                apiPathPrefix + path,
+                body
+            );
+            return axiosResponse.data as T;
+        } catch (e: any) {
+            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            throw e;
+        }
     }
 
     async put<T>(
@@ -41,11 +46,16 @@ class RestApiClient {
         body: any = undefined,
         pathPrefix: string = apiPathPrefix
     ) {
-        let axiosResponse = await restAxios.put(
-            apiPathPrefix + path,
-            body
-        );
-        return axiosResponse.data as T;
+        try {
+            let axiosResponse = await restAxios.put(
+                apiPathPrefix + path,
+                body
+            );
+            return axiosResponse.data as T;
+        } catch (e: any) {
+            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            throw e;
+        }
     }
 
     async patch<T>(
@@ -53,31 +63,46 @@ class RestApiClient {
         body: any = undefined,
         pathPrefix: string = apiPathPrefix
     ) {
-        let axiosResponse = await restAxios.patch(
-            apiPathPrefix + path,
-            body
-        );
-        return axiosResponse.data as T;
+        try {
+            let axiosResponse = await restAxios.patch(
+                apiPathPrefix + path,
+                body
+            );
+            return axiosResponse.data as T;
+        } catch (e: any) {
+            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            throw e;
+        }
     }
 
     async get<T>(
         path: string,
         pathPrefix: string = apiPathPrefix
     ) {
-        let axiosResponse = await restAxios.get(
-            apiPathPrefix + path
-        ).catch();
-        return axiosResponse.data as T;
+        try {
+            let axiosResponse = await restAxios.get(
+                apiPathPrefix + path
+            )
+            return axiosResponse.data as T;
+        } catch (e: any) {
+            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            throw e;
+        }
     }
 
     async delete<T>(
         path: string,
         pathPrefix: string = apiPathPrefix
     ) {
-        let axiosResponse = await restAxios.delete(
-            apiPathPrefix + path
-        );
-        return axiosResponse.data as T;
+        try {
+            let axiosResponse = await restAxios.delete(
+                apiPathPrefix + path
+            );
+            return axiosResponse.data as T;
+        } catch (e: any) {
+            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            throw e;
+        }
     }
 }
 
