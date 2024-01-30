@@ -36,6 +36,8 @@ public class UserController {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
+
     @GetMapping
     public ListDto<UserDto> getUsers() {
         return ListDto.<UserDto>builder().values(userService.getAllUsers()).build();
@@ -146,6 +148,7 @@ public class UserController {
         if (signUpRequest == null || signUpRequest.getUsername() == null || signUpRequest.getUsername().isBlank()) {
             throw new ResponseStatusException(400, "Invalid username", null);
         }
+
         boolean userNameAlreadyExists = userRepository.findByUsername(signUpRequest.getUsername()) != null;
         if (authenticatedUser != null || userNameAlreadyExists) {
             throw new ResponseStatusException(400, "Already registered", null);
@@ -156,8 +159,13 @@ public class UserController {
             throw new ResponseStatusException(400, "Invalid password. Min 4 chars.", null);
         }
 
+        if (!signUpRequest.getUsername().matches(USERNAME_REGEX)) {
+            throw new ResponseStatusException(400, "Invalid username", null);
+        }
+
         userRepository.save(UserEntity.builder()
                 .username(signUpRequest.getUsername())
+                .name(signUpRequest.getFullName())
                 .password(passwordEncoder.encode(password))
                 .build()
         );
