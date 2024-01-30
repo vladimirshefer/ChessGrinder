@@ -97,7 +97,8 @@ export default function LoginPage() {
                 <input className={"border-b-2 outline-none"} placeholder={loc("Full name")}
                        {...signUpForm.register("fullName")}
                 />
-                <Conditional on={false}> {/* Disabled until emails are introduced */}
+                {/* Disabled until emails are introduced */}
+                <Conditional on={false}>
                     <input className={"border-b-2 outline-none"} placeholder={loc("Email")}
                            {...signUpForm.register("email")}
                     />
