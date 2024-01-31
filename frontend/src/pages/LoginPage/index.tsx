@@ -58,7 +58,6 @@ export default function LoginPage() {
             username: data["username"],
             password: data["password"],
             fullName: data["fullName"],
-            email: data["email"],
         } as UserSignUpRequest;
 
         await signUp(userSignupRequest)
@@ -98,12 +97,6 @@ export default function LoginPage() {
                 <input className={"border-b-2 outline-none"} placeholder={loc("Full name")}
                        {...signUpForm.register("fullName")}
                 />
-                {/* Disabled until emails are introduced */}
-                <Conditional on={false}>
-                    <input className={"border-b-2 outline-none"} placeholder={loc("Email")}
-                           {...signUpForm.register("email")}
-                    />
-                </Conditional>
                 <input className={"border-b-2 outline-none"} placeholder={loc("Username")}
                        {...signUpForm.register("username")}
                 />

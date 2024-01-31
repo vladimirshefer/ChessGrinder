@@ -1,6 +1,5 @@
 package com.chessgrinder.chessgrinder.dto;
 
-import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +8,5 @@ import lombok.Data;
 public class UserSignUpRequest {
     private String username;
     private String fullName;
-    @Nullable
-    private String email;
     private String password;
 }
