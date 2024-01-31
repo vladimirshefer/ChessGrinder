@@ -19,8 +19,8 @@ export default function LoginPage() {
     let signInForm = useForm()
     let signUpForm = useForm()
 
-    let ENABLE_LOGIN_USERNAME_PASSWORD = mode === "local" || true
-    let ENABLE_REGISTRATION_USERNAME_PASSWORD = mode === "local" || true
+    let ENABLE_LOGIN_USERNAME_PASSWORD = mode === "local"
+    let ENABLE_REGISTRATION_USERNAME_PASSWORD = mode === "local"
 
     useEffect(() => {
         if (!!authenticatedUser) {
