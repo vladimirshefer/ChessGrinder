@@ -7,6 +7,7 @@ import {useMode} from "lib/api/repository/apiSettings";
 import {useLoc} from "strings/loc";
 import {useForm} from "react-hook-form";
 import {UserSignUpRequest} from "lib/api/dto";
+import config from "config";
 
 
 const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9]+$/g
@@ -19,8 +20,8 @@ export default function LoginPage() {
     let signInForm = useForm()
     let signUpForm = useForm()
 
-    let ENABLE_LOGIN_USERNAME_PASSWORD = mode === "local"
-    let ENABLE_REGISTRATION_USERNAME_PASSWORD = mode === "local"
+    let ENABLE_LOGIN_USERNAME_PASSWORD = mode === "local" || config.features["auth.signupWithPasswordEnabled"]
+    let ENABLE_REGISTRATION_USERNAME_PASSWORD = mode === "local" || config.features["auth.signupWithPasswordEnabled"]
 
     useEffect(() => {
         if (!!authenticatedUser) {
