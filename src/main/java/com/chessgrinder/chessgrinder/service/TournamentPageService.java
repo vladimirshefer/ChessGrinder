@@ -32,9 +32,7 @@ public class TournamentPageService {
         List<ParticipantEntity> tournamentParticipantEntities = participantRepository.findByTournamentId(tournamentId);
         List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
 
-
-        TournamentDto tournamentsDto = tournamentMapper.toDto(tournamentEntity);
-
+        TournamentDto tournamentDto = tournamentMapper.toDto(tournamentEntity);
         List<RoundDto> roundsDto = roundMapper.toDto(tournamentRoundEntities
                 .stream()
                 .sorted(Comparator.comparing(RoundEntity::getNumber))
@@ -43,9 +41,7 @@ public class TournamentPageService {
         List<ParticipantDto> participantsDto = participantMapper.toDto(tournamentParticipantEntities)
                 .stream().sorted(Comparator.comparing(ParticipantDto::getScore)
                         .thenComparing((participant1, participant2) -> {
-
                             ParticipantDto winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, roundsDto);
-
                             if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
                                     return -1;
                                 } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
@@ -58,7 +54,7 @@ public class TournamentPageService {
                 .collect(Collectors.toList());
 
         return TournamentPageDto.builder()
-                .tournament(tournamentsDto)
+                .tournament(tournamentDto)
                 .participants(participantsDto)
                 .rounds(roundsDto)
                 .build();
@@ -88,10 +84,4 @@ public class TournamentPageService {
         }
         return null;
     }
-
-
-
-
-
-
 }
