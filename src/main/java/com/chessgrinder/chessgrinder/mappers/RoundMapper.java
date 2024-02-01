@@ -48,18 +48,14 @@ public class RoundMapper {
         if (size == 0) {
             return result;
         }
-//        <123..., {1, 2, 3, 4, 5, 6}>
         final var firstRoundMatches = roundEntities.get(0).getMatches();
-        //В list находятся очки при самом запуске тура, т.е. в первом раунде всё по нулям
-        //На начало второго тура уже есть очки за первый тур и т.д.
-        //На начало последнего тура находится сумма всех предыдущих туров (не текущего)
-        //Количество очков на начало туров
-        //В последнюю ячейку закладывается результат всего турнира во избежание ошибки индексации
+//        Key - participant's id, value - linked list of points
+//        List contains number of points at the beginning of the rounds (in the first round everything is zero)
+//        The last cell contains the result of the entire tournament to avoid indexing errors
         Map<UUID, List<Double>> pointsPerRoundMap = new HashMap<>(firstRoundMatches.size() * 2);
 
         //Initialization - searching for participants
-        //Нужно учитывать, что один участник может быть null, если будет BUY
-        //Неизвестно, могут ли белые быть null, поэтому надо проверять всех
+        //It must be taken into account that one participant may be null if there is a BUY
         for (final var match : firstRoundMatches) {
             final var first = match.getParticipant1();
             final var second = match.getParticipant2();
@@ -71,12 +67,10 @@ public class RoundMapper {
             }
         }
 
-        //TODO узнать почему pointsPerRoundMap заполняется неправильно (не работает по индукции)
-        //У меня есть предположение, что этот список надо заполнять и при поражении, а не только при победе
-        //Теперь новая проблема: т.к. итерация начинается с 1, неизвестны результаты первого тура
-        //Предположенное решение: закладывать результаты в i+1 ячейку
         //TODO подумать (обсудить с Владимиром), можно ли создать единую систему присуждения очков
         //(чтобы все менять в одном месте, если надо будет менять, например, BUY)
+
+        //Lists are filled in by induction
         for (int roundIndex = 0; roundIndex < size; ++roundIndex) {
             final RoundEntity currentRound = roundEntities.get(roundIndex);
             for (final var match : currentRound.getMatches()) {
@@ -85,45 +79,31 @@ public class RoundMapper {
                 if (match.getResult() == MatchResult.WHITE_WIN) {
                     var firstList = pointsPerRoundMap.get(first.getId());
                     final var firstCurrentScore = firstList.get(roundIndex);
+                    firstList.set(roundIndex + 1, firstCurrentScore + 1);
                     var secondList = pointsPerRoundMap.get(second.getId());
                     final var secondCurrentScore = secondList.get(roundIndex);
-//                    if (roundIndex != size) {
-                        firstList.set(roundIndex + 1, firstCurrentScore + 1);
-                        secondList.set(roundIndex + 1, secondCurrentScore);
-//                    }
+                    secondList.set(roundIndex + 1, secondCurrentScore);
                 }
                 else if (match.getResult() == MatchResult.BLACK_WIN) {
                     var firstList = pointsPerRoundMap.get(first.getId());
                     final var firstCurrentScore = firstList.get(roundIndex);
+                    firstList.set(roundIndex + 1, firstCurrentScore);
                     var secondList = pointsPerRoundMap.get(second.getId());
                     final var secondCurrentScore = secondList.get(roundIndex);
-//                    if (roundIndex != size) {
-                        firstList.set(roundIndex + 1, firstCurrentScore);
-                        secondList.set(roundIndex + 1, secondCurrentScore + 1);
-//                    }
+                    secondList.set(roundIndex + 1, secondCurrentScore + 1);
                 }
                 else if (match.getResult() == MatchResult.DRAW) {
                     var firstList = pointsPerRoundMap.get(first.getId());
                     final var firstCurrentScore = firstList.get(roundIndex);
+                    firstList.set(roundIndex + 1, firstCurrentScore + 0.5);
                     var secondList = pointsPerRoundMap.get(second.getId());
                     final var secondCurrentScore = secondList.get(roundIndex);
-//                    if (roundIndex != size) {
-                        firstList.set(roundIndex + 1, firstCurrentScore + 0.5);
-                        secondList.set(roundIndex + 1, secondCurrentScore + 0.5);
-//                    }
+                    secondList.set(roundIndex + 1, secondCurrentScore + 0.5);
                 }
-                //Если это BUY, тогда один из участников может быть null!
-                //И тогда 1 очко присуждается тому, кто не нулл
                 else if (match.getResult() == MatchResult.BUY) {
-                    List<Double> list = pointsPerRoundMap.get((first != null ? first : second).getId());
+                    var list = pointsPerRoundMap.get((first != null ? first : second).getId());
                     final var currentScore = list.get(roundIndex);
-//                    if (roundIndex != size) {
-                        list.set(roundIndex + 1, currentScore + 1);
-//                    }
-                }
-                else {
-                    //Вылезает это исключение, т.к. результата может не быть (это ?-?)
-//                    throw new RuntimeException("Unchecked MatchResult enum");
+                    list.set(roundIndex + 1, currentScore + 1);
                 }
             }
         }
@@ -132,19 +112,9 @@ public class RoundMapper {
 
     private List<MatchEntity> getMatchEntities(RoundEntity round) {
         List<MatchEntity> result = round.getMatches();
-//        round - это i-ая сущность списка туров (round.getNumber)
-//        Нужны также туры, которые стоят до этого тура, чтобы подсчитать очки
-        //Т.е. нужно как-то передать tournamentRoundEntities двумя методами в иерархии выше
-//        Хотя в принципе хватит и roundEntities
-//        В моем примере в одном раунде 3 пары (matches)
-        //Для оптимизации это всё можно посчитать один раз (в последний)
-        //Нужно сформировать карту для каждого пользователя по турам (Что-то типа Map<String, Set<String>>)
-        //Ключ - id участника, значение - связный список баллов
-
-        //См. в чат гпт "Чтобы сначала отсортировать по сумме очков двух участников"
-        //TODO нужно сравнивать не по сумме очков вообще, а только с учетом предыдущих туров
-        //Проблема: каждый участник хранит в себе сумму очков вообще за все туры, а не за конкретные
-        //TODO узнать что происходит после POST /finish (public void updateResults(UUID tournamentId))
+        // TODO См. в чат гпт "Чтобы сначала отсортировать по сумме очков двух участников"
+        // В методе (public void updateResults(UUID tournamentId)) рассчитываются очки
+        //Есть еще public void calculate()  - это все упоминания прибавления очков в программе
         return round.getMatches()
                 .stream().sorted(
                         Comparator.<MatchEntity, String> comparing(
