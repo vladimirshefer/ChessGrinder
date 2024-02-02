@@ -157,6 +157,10 @@ public class UserController {
             throw new ResponseStatusException(400, "Invalid username", null);
         }
 
+        if (signUpRequest.getUsername().contains("@")) {
+            throw new ResponseStatusException(400, "Email could not be a username", null);
+        }
+
         boolean userNameAlreadyExists = userRepository.findByUsername(signUpRequest.getUsername()) != null;
         if (authenticatedUser != null || userNameAlreadyExists) {
             throw new ResponseStatusException(400, "Already registered", null);
