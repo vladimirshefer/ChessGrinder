@@ -145,7 +145,7 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public void sighUp(
+    public void signUp(
             @RequestBody UserSignUpRequest signUpRequest,
             @AuthenticatedUser(required = false) UserEntity authenticatedUser
     ) {

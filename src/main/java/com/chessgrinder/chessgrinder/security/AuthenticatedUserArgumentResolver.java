@@ -58,7 +58,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
             var requiredParameter = annotation.required();
 
             if (requiredParameter) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No bearer token present");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
             }
 
             return null;
