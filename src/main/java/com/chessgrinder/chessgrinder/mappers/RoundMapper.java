@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.mappers;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,30 +18,48 @@ public class RoundMapper {
     private final MatchMapper matchMapper;
 
     public List<RoundDto> toDto(List<RoundEntity> roundEntities) {
-
         return roundEntities.stream().map(round -> RoundDto.builder()
                         .isFinished(round.isFinished())
                         .number(round.getNumber())
-                        .matches(matchMapper.toDto(round.getMatches()
-                                .stream().sorted(
-                                        Comparator.<MatchEntity, String>comparing(
-                                                        it -> Optional.ofNullable(it)
-                                                                .map(MatchEntity::getParticipant1)
-                                                                .map(ParticipantEntity::getNickname)
-                                                                .orElse(null),
-                                                        nullsLast(naturalOrder()))
-                                                .thenComparing(
-                                                        it -> Optional.ofNullable(it)
-                                                                .map(MatchEntity::getParticipant2)
-                                                                .map(ParticipantEntity::getNickname)
-                                                                .orElse(null),
-                                                        nullsLast(naturalOrder())
-                                                )
-                                )
-                                .collect(Collectors.toList())
-                        ))
+                        .matches(matchMapper.toDto(getSortedMatchEntities(round)))
                         .build())
                 .toList();
+    }
+
+    //First you need to sort by points (total for the tournament), if they are the same,
+    //then sort by nickname
+    private List<MatchEntity> getSortedMatchEntities(RoundEntity round) {
+        return round.getMatches()
+                .stream().sorted(
+                        Comparator.<MatchEntity, BigDecimal>comparing(
+                                        it -> Optional.ofNullable(it)
+                                                .map(m -> {
+                                                    BigDecimal score1 = Optional.ofNullable(m.getParticipant1())
+                                                            .map(ParticipantEntity::getScore)
+                                                            .orElse(BigDecimal.ZERO);
+                                                    BigDecimal score2 = Optional.ofNullable(m.getParticipant2())
+                                                            .map(ParticipantEntity::getScore)
+                                                            .orElse(BigDecimal.ZERO);
+                                                    return score1.add(score2);
+                                                })
+                                                .orElse(BigDecimal.ZERO),
+                                        nullsLast(reverseOrder()))
+                                .thenComparing(
+                                        it -> Optional.ofNullable(it)
+                                                .map(MatchEntity::getParticipant1)
+                                                .map(ParticipantEntity::getNickname)
+                                                .orElse(null),
+                                        nullsLast(naturalOrder())
+                                )
+                                .thenComparing(
+                                        it -> Optional.ofNullable(it)
+                                                .map(MatchEntity::getParticipant2)
+                                                .map(ParticipantEntity::getNickname)
+                                                .orElse(null),
+                                        nullsLast(naturalOrder())
+                                )
+                )
+                .collect(Collectors.toList());
     }
 
     public RoundDto toDto(RoundEntity roundEntity) {
