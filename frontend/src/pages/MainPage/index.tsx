@@ -7,6 +7,7 @@ import tournamentRepository from "lib/api/repository/TournamentRepository";
 import userRepository from "lib/api/repository/UserRepository";
 import {useLoc} from "strings/loc";
 import {Link, useNavigate} from "react-router-dom";
+import {compareBy} from "lib/util/Comparator";
 
 function MainPage() {
     let loc = useLoc()
@@ -38,7 +39,7 @@ function MainPage() {
     const maxUsers: number = 10;
     return <>
         <div className={"p-3"}>
-            <MemberList members={users.slice(0, maxUsers)}/>
+            <MemberList members={users.sort(compareBy(it => -(it.reputation || 0))).slice(0, maxUsers)}/>
             <div className={"grid py-2"}>
                 <Link to={"/users"}>
                     <button className={"btn bg-primary w-full"}>

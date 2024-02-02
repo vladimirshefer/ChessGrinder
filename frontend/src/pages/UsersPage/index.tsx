@@ -2,6 +2,7 @@ import React, {Fragment} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import MemberList from "../MainPage/MemberList";
+import {compareBy} from "lib/util/Comparator";
 
 export default function UsersPage() {
 
@@ -18,6 +19,6 @@ export default function UsersPage() {
         return <>Loading...</>
     }
     return <div className={"p-2"}>
-        <MemberList members={users}/>
+        <MemberList members={users.sort(compareBy(it => -(it.reputation || 0)))}/>
     </div>
 }
