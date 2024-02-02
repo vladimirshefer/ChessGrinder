@@ -132,7 +132,7 @@ export default function UserProfilePage() {
     let {username} = useParams()
     let navigate = useNavigate()
     let loc = useLoc()
-    let [authenticatedUser] = useAuthenticatedUser()
+    let [authenticatedUser, authenticatedUserReload] = useAuthenticatedUser()
     let [activeTab, setActiveTab] = useSearchParam("tab", "history")
 
     useEffect(() => {
@@ -165,7 +165,8 @@ export default function UserProfilePage() {
     })
 
     async function logout() {
-        await loginPageRepository.logout()
+        await loginPageRepository.signOut()
+        authenticatedUserReload()
     }
 
     if (!userProfile) {

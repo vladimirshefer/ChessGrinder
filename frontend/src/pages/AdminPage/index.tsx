@@ -1,18 +1,20 @@
 import {useMode} from "lib/api/repository/apiSettings";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 export default function AdminPage() {
     let [mode, setMode] = useMode()
+    let [, authenticatedUserReload] = useAuthenticatedUser()
 
     return <>
         <h2>Admin Page</h2>
         <div className={"m-2"}>
             <span>Mode</span>
             <select defaultValue={mode}
-                    onChange={(e) => {
-                        loginPageRepository.logout();
+                    onChange={async (e) => {
+                        await loginPageRepository.signOut();
                         setMode(e.target.value);
-                        window.location.reload();
+                        authenticatedUserReload();
                     }}
                     name={"Mode"}
             >

@@ -1,14 +1,27 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {useNavigate} from "react-router-dom";
-import {ConditionalOnMode} from "components/Conditional";
+import {Conditional, ConditionalOnMode} from "components/Conditional";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
+import {useMode} from "lib/api/repository/apiSettings";
+import {useLoc} from "strings/loc";
+import {useForm} from "react-hook-form";
+import {UserSignUpRequest} from "lib/api/dto";
+import config from "config";
+
+
+const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9]+$/g
 
 export default function LoginPage() {
-    let [username, setUsername] = useState("");
-    let [password, setPassword] = useState("");
     let navigate = useNavigate()
-    let [authenticatedUser] = useAuthenticatedUser()
+    let [authenticatedUser, authenticatedUserRefresh] = useAuthenticatedUser()
+    let loc = useLoc();
+    let [mode,] = useMode();
+    let signInForm = useForm()
+    let signUpForm = useForm()
+
+    let ENABLE_LOGIN_USERNAME_PASSWORD = mode === "local" || config.features["auth.signupWithPasswordEnabled"]
+    let ENABLE_REGISTRATION_USERNAME_PASSWORD = mode === "local" || config.features["auth.signupWithPasswordEnabled"]
 
     useEffect(() => {
         if (!!authenticatedUser) {
@@ -16,71 +29,90 @@ export default function LoginPage() {
         }
     }, [authenticatedUser, navigate])
 
-    async function login(username: string, password: string) {
-        await loginPageRepository.login(username, password)
+    async function signIn(username: string, password: string) {
+        await loginPageRepository.signIn(username, password)
+        await authenticatedUserRefresh()
     }
 
-    async function register(username: string, password: string) {
-        alert("Registration is not yet supported")
+    async function signUp(data: UserSignUpRequest) {
+        await loginPageRepository.signUp(data)
+            .catch(it => alert(it?.response?.data?.message || it?.message || "SignUp failed"))
+        await authenticatedUserRefresh()
     }
 
-    return <div className={"grid grid-cols-12"}>
-        <div className={"col-span-12 grid grid-cols-12 p-4"}>
+    async function handleSignInSubmit(data: any) {
+        await signIn(data["username"], data["password"])
+    }
+
+    async function handleSignUpSubmit(data: any) {
+        if (data["password"] !== data["passwordConfirm"]) {
+            alert("Password mismatch")
+            return
+        }
+
+        if (!!data["username"] && !USERNAME_REGEX.test(data["username"])) {
+            alert("Incorrect username. Must start with letter and contain no special chars.")
+            return
+        }
+
+        let userSignupRequest = {
+            username: data["username"],
+            password: data["password"],
+            fullName: data["fullName"],
+        } as UserSignUpRequest;
+
+        await signUp(userSignupRequest)
+    }
+
+    return <div className={"grid p-2 gap-5 text-left"}>
+        <div className={"grid gap-2"}>
             <ConditionalOnMode mode={"production"}>
-                <div className={"col-span-12 font-bold"}>
-                    <h3>Social login</h3>
-                </div>
-                <div className={"col-span-12"}>
-                    <div className={"p-5"}>
-                        <a href={"/api/oauth2/authorization/google"}>
-                            <img className={"h-8 inline-block"} src={"/google_logo.png"}
-                                 alt={"Sign in with Google"}></img>
-                        </a>
-                    </div>
+                <h3 className={"font-semibold uppercase"}>Social login</h3>
+                <div className={"flex justify-center w-full"}>
+                    <a href={"/api/oauth2/authorization/google"}>
+                        <img className={"h-8 inline-block"} src={"/google_logo.png"}
+                             alt={"Sign in with Google"}></img>
+                    </a>
                 </div>
             </ConditionalOnMode>
         </div>
 
-        <ConditionalOnMode mode={"local"}>
-            <div className={"col-span-12 md:col-span-6 grid grid-cols-12 p-5 bg-gray-50 rounded-md mx-5 mt-5"}>
-                <h3 className={"col-span-12 font-bold"}>Login</h3>
-                <span className={"col-span-12 lg:col-span-4"}>Username:</span>
-                <input className={"col-span-12 lg:col-span-8 border-b-2 outline-none border-blue-b-300"}
-                       onChange={(e) => setUsername(e.target.value)}
+        <Conditional on={ENABLE_LOGIN_USERNAME_PASSWORD}>
+            <form className={"grid gap-1"} onSubmit={signInForm.handleSubmit(handleSignInSubmit)}>
+                <h3 className={"font-semibold uppercase"}>{loc("Sign in")}</h3>
+                <input className={"border-b-2 outline-none"} placeholder={loc("Username")}
+                       {...signInForm.register("username")}
                 />
-                <span className={"col-span-12 lg:col-span-4"}>Password:</span>
-                <input className={"col-span-12 lg:col-span-8 border-b-2 outline-none border-blue-b-300"}
+                <input className={"border-b-2 outline-none"} placeholder={loc("Password")}
                        type={"password"}
-                       onChange={(e) => setPassword(e.target.value)}
+                       {...signInForm.register("password")}
                 />
-                <button className={"col-span-12 bg-purple-200 rounded-full mt-2"}
-                        onClick={() => login(username, password)}
-                >
-                    Login
+                <button className={"btn-primary uppercase"} type={"submit"}>
+                    {loc("Sign in")}
                 </button>
-            </div>
-            <div className={"col-span-12 md:col-span-6 grid grid-cols-12 p-5 bg-gray-50 rounded-md mx-5 mt-5"}>
-                <h3 className={"col-span-12 font-bold"}>Register</h3>
-                <span className={"col-span-12 lg:col-span-4"}>Username:</span>
-                <input className={"col-span-12 lg:col-span-8 border-b-2 outline-none border-blue-b-300"}
-                       onChange={(e) => setUsername(e.target.value)}
+            </form>
+        </Conditional>
+        <Conditional on={ENABLE_REGISTRATION_USERNAME_PASSWORD}>
+            <form className={"grid gap-1"} onSubmit={signUpForm.handleSubmit(handleSignUpSubmit)}>
+                <h3 className={"font-semibold uppercase"}>{loc("Sign up")}</h3>
+                <input className={"border-b-2 outline-none"} placeholder={loc("Full name")}
+                       {...signUpForm.register("fullName")}
                 />
-                <span className={"col-span-12 lg:col-span-4"}>Password:</span>
-                <input className={"col-span-12 lg:col-span-8 border-b-2 outline-none border-blue-b-300"}
+                <input className={"border-b-2 outline-none"} placeholder={loc("Username")}
+                       {...signUpForm.register("username")}
+                />
+                <input className={"border-b-2 outline-none"} placeholder={loc("Password")}
+                       {...signUpForm.register("password")}
                        type={"password"}
-                       onChange={(e) => setPassword(e.target.value)}
                 />
-                <span className={"col-span-12 lg:col-span-4"}>Password confirm:</span>
-                <input className={"col-span-12 lg:col-span-8 border-b-2 outline-none border-blue-b-300"}
+                <input className={"border-b-2 outline-none"} placeholder={loc("Password confirm")}
                        type={"password"}
-                       onChange={(e) => setPassword(e.target.value)}
+                       {...signUpForm.register("passwordConfirm")}
                 />
-                <button className={"col-span-12 bg-purple-200 rounded-full mt-2"}
-                        onClick={() => register(username, password)}
-                >
-                    Register
+                <button type={"submit"} className={"btn-primary uppercase"}>
+                    {loc("Sign up")}
                 </button>
-            </div>
-        </ConditionalOnMode>
+            </form>
+        </Conditional>
     </div>
 }
