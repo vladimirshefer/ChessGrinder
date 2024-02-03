@@ -32,6 +32,7 @@ export default function LoginPage() {
     async function signIn(username: string, password: string) {
         await loginPageRepository.signIn(username, password)
         await authenticatedUserRefresh()
+        await signInForm.reset()
     }
 
     async function signUp(data: UserSignUpRequest) {
@@ -45,23 +46,32 @@ export default function LoginPage() {
     }
 
     async function handleSignUpSubmit(data: any) {
-        if (data["password"] !== data["passwordConfirm"]) {
+        let username = data["username"];
+        let password = data["password"];
+
+        if (password !== data["passwordConfirm"]) {
             alert("Password mismatch")
             return
         }
 
-        if (!!data["username"] && !USERNAME_REGEX.test(data["username"])) {
-            alert("Incorrect username. Must start with letter and contain no special chars.")
-            return
-        }
-
         let userSignupRequest = {
-            username: data["username"],
-            password: data["password"],
+            username: username,
+            password: password,
             fullName: data["fullName"],
         } as UserSignUpRequest;
 
         await signUp(userSignupRequest)
+        await signUpForm.reset()
+        alert("Success")
+    }
+
+    async function handleSignUpViolated(errors: object) {
+        let message = ""
+        for (const [field, error] of Object.entries(errors)) {
+            message += (error?.message || field) + "\n";
+        }
+        alert(message);
+        console.error(message);
     }
 
     return <div className={"grid p-2 gap-5 text-left"}>
@@ -93,21 +103,61 @@ export default function LoginPage() {
             </form>
         </Conditional>
         <Conditional on={ENABLE_REGISTRATION_USERNAME_PASSWORD}>
-            <form className={"grid gap-1"} onSubmit={signUpForm.handleSubmit(handleSignUpSubmit)}>
+            <form className={"grid gap-1"} onSubmit={signUpForm.handleSubmit(handleSignUpSubmit, handleSignUpViolated)}>
                 <h3 className={"font-semibold uppercase"}>{loc("Sign up")}</h3>
                 <input className={"border-b-2 outline-none"} placeholder={loc("Full name")}
-                       {...signUpForm.register("fullName")}
+                       {...signUpForm.register("fullName", {
+                           required: {
+                               value: true,
+                               message: `${loc("Full name")} is required`
+                           },
+                           minLength: {
+                               value: 4,
+                               message: `${loc("Full name")} must be at least 4 symbols length`
+                           },
+                       })}
                 />
                 <input className={"border-b-2 outline-none"} placeholder={loc("Username")}
-                       {...signUpForm.register("username")}
+                       {...signUpForm.register("username", {
+                           required: {
+                               value: true,
+                               message: `${loc("Username")} is required`
+                           },
+                           minLength: {
+                               value: 4,
+                               message: `${loc("Username")} must be at least 4 symbols length`
+                           },
+                           pattern: {
+                               value: USERNAME_REGEX,
+                               message: `Invalid ${loc("Username")}`
+                           }
+                       })}
                 />
                 <input className={"border-b-2 outline-none"} placeholder={loc("Password")}
-                       {...signUpForm.register("password")}
+                       {...signUpForm.register("password", {
+                           required: {
+                               value: true,
+                               message: `${loc("Password")} is required`
+                           },
+                           minLength: {
+                               value: 8,
+                               message: `${loc("Password")} must be at least 8 symbols length`
+                           },
+                       })}
                        type={"password"}
                 />
                 <input className={"border-b-2 outline-none"} placeholder={loc("Password confirm")}
                        type={"password"}
-                       {...signUpForm.register("passwordConfirm")}
+                       {...signUpForm.register("passwordConfirm", {
+                           required: {
+                               value: true,
+                               message: `${loc("Password confirm")} is required`
+                           },
+                           minLength: {
+                               value: 8,
+                               message: `${loc("Password confirm")} must be at least 8 symbols length`
+                           },
+                       })}
                 />
                 <button type={"submit"} className={"btn-primary uppercase"}>
                     {loc("Sign up")}
