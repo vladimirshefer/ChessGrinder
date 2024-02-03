@@ -53,9 +53,15 @@ class RestApiLoginPageRepository implements LoginPageRepository {
     }
 
     async signOut(): Promise<void> {
-        await restApiClient.get("/logout");
+        await restApiClient.get("/logout")
+            .catch(error => {
+                // Logout in spring returns redirect. This should not fail logout.
+                if (error.response && [301, 302].includes(error.response.status)) {
+                    return;
+                }
+                throw error;
+            });
     }
-
 
     async signUp(data: UserSignUpRequest): Promise<void> {
         await restApiClient.post("/user/signUp", data)
