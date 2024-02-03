@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("/user")
@@ -74,16 +74,42 @@ public class UserController {
     ) {
         UserEntity user = findUserByIdOrUsername(userIdOrUsername);
         List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
+        Map<UUID, Integer> placesPerTournament = getPlacesPerTournament(participants);
         List<UserHistoryRecordDto> history = participants.stream()
                 .map(participant ->
                         UserHistoryRecordDto.builder()
                                 .tournament(tournamentMapper.toDto(participant.getTournament()))
                                 .participant(participantMapper.toDto(participant))
-                                .place(-1) // TODO
+                                //TODO сделать как participant.getPlace(как-то так, хотя можно засунуть в toDto выше)
+                                .place(placesPerTournament.get(participant.getTournament().getId()))
                                 .build()
                 )
                 .toList();
         return ListDto.<UserHistoryRecordDto>builder().values(history).build();
+    }
+
+    //Returns table of participant's places who this user was, not all participants of tournament
+    //One tournament per participant
+    //First it should be sorted by points, then by Buchholz, and only then by nickname (all in descending order)
+    private Map<UUID, Integer> getPlacesPerTournament(List<ParticipantEntity> allParticipants) {
+        Map<UUID, Integer> placesPerTournament = new HashMap<>();
+        for (var participant : allParticipants) {
+            final var tournament = participant.getTournament();
+            if (tournament == null) continue;
+            final var tId = tournament.getId();
+            var tournamentParticipants = participantRepository.findByTournamentId(tId);
+            tournamentParticipants.sort(Comparator
+                    .comparing(ParticipantEntity::getScore, Comparator.reverseOrder())
+                    .thenComparing(ParticipantEntity::getBuchholz, Comparator.reverseOrder())
+                    .thenComparing(ParticipantEntity::getNickname, Comparator.reverseOrder()));
+            final int place = IntStream.range(0, tournamentParticipants.size())
+                    .filter(i -> tournamentParticipants.get(i).equals(participant))
+                    .findFirst()
+                    .orElse(-1) + 1;
+            placesPerTournament.put(tId, place);
+        }
+
+        return placesPerTournament;
     }
 
     @Nonnull
