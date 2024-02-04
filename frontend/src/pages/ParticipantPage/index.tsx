@@ -63,6 +63,7 @@ export default function ParticipantPage() {
             score: 0,
             userFullName: "",
             buchholz: 0,
+            isMissing: false,
         })
             .catch(propagate(() => "Could not change nickname!"))
         await participantQuery.refetch()

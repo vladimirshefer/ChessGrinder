@@ -71,6 +71,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
             name: nickname || authData.username,
             buchholz: 0,
             score: 0,
+            isMissing: false,
         })
         localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
     }
