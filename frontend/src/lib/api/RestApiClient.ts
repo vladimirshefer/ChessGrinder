@@ -36,7 +36,7 @@ class RestApiClient {
             );
             return axiosResponse.data as T;
         } catch (e: any) {
-            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            console.error(e?.response?.data?.message || e?.message || `Request failed: POST ${path}`)
             throw e;
         }
     }
@@ -53,7 +53,7 @@ class RestApiClient {
             );
             return axiosResponse.data as T;
         } catch (e: any) {
-            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            console.error(e?.response?.data?.message || e?.message || `Request failed: PUT ${path}`)
             throw e;
         }
     }
@@ -70,7 +70,7 @@ class RestApiClient {
             );
             return axiosResponse.data as T;
         } catch (e: any) {
-            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            console.error(e?.response?.data?.message || e?.message || `Request failed: PATCH ${path}`)
             throw e;
         }
     }
@@ -85,7 +85,7 @@ class RestApiClient {
             )
             return axiosResponse.data as T;
         } catch (e: any) {
-            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            console.error(e?.response?.data?.message || e?.message || `Request failed: GET ${path}`)
             throw e;
         }
     }
@@ -100,7 +100,7 @@ class RestApiClient {
             );
             return axiosResponse.data as T;
         } catch (e: any) {
-            console.error(e?.response?.data?.message || e?.message || "SignUp failed")
+            console.error(e?.response?.data?.message || e?.message || `Request failed: DELETE ${path}`)
             throw e;
         }
     }
