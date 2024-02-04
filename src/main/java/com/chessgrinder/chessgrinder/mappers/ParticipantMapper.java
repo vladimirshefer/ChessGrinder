@@ -23,6 +23,7 @@ public class ParticipantMapper {
                 .userFullName(Optional.ofNullable(participant.getUser()).map(UserEntity::getName).orElse(null))
                 .buchholz(participant.getBuchholz())
                 .score(participant.getScore())
+                .isMissing(participant.isMissing())
                 .build();
     }
 

@@ -32,6 +32,7 @@ export interface ParticipantDto {
     userFullName?: string | null | undefined
     score: number
     buchholz: number
+    isMissing: boolean
 }
 
 export interface TournamentPageData {

@@ -32,4 +32,6 @@ public class ParticipantDto {
     @Nonnull
     private BigDecimal buchholz = BigDecimal.ZERO;
 
+    private boolean isMissing = false;
+
 }
