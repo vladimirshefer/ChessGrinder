@@ -6,6 +6,7 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import jakarta.annotation.Nullable;
 import org.opentest4j.AssertionFailedError;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -131,11 +132,11 @@ class MockSwissTournamentRunner {
 
     private static String asString(MatchDto matchDto) {
         if (matchDto == null) return "null";
-        return "match(" +
+        return ".match(\"" +
                 (matchDto.getWhite() != null ? matchDto.getWhite().getId() : null) +
-                ", " +
+                "\", \"" +
                 (matchDto.getBlack() != null ? matchDto.getBlack().getId() : null) +
-                ", " +
+                "\", " +
                 matchDto.getResult() +
                 ")";
     }
@@ -143,16 +144,16 @@ class MockSwissTournamentRunner {
     private static String asStringWithResults(MatchDto matchDto) {
         if (matchDto == null) return "null";
         return "match(" +
-                (matchDto.getWhite() != null ? (
-                        matchDto.getWhite().getId() + "(" + matchDto.getWhite().getScore() + ", " + matchDto.getWhite().getBuchholz() + ")"
-                ) : null) +
+                (matchDto.getWhite() != null ? asStringWithResults(matchDto.getWhite()) : null) +
                 ", " +
-                (matchDto.getBlack() != null ? (
-                        matchDto.getBlack().getId() + "(" + matchDto.getBlack().getScore() + ", " + matchDto.getBlack().getBuchholz() + ")"
-                ) : null) +
+                (matchDto.getBlack() != null ? asStringWithResults(matchDto.getBlack()) : null) +
                 ", " +
                 matchDto.getResult() +
                 ")";
+    }
+
+    private static String asStringWithResults(ParticipantDto participant) {
+        return participant.getId() + "(" + participant.getScore() + ", " + participant.getBuchholz() + ")";
     }
 
     public MockSwissTournamentRunner show(Consumer<String> printer) {
@@ -165,8 +166,36 @@ class MockSwissTournamentRunner {
         return this;
     }
 
+    public MockSwissTournamentRunner showParticipants(Consumer<String> printer) {
+        List<ParticipantDto> sorted = participants.stream()
+                .sorted(Comparator
+                        .comparing(ParticipantDto::getScore)
+                        .thenComparing(ParticipantDto::getBuchholz)
+                        .reversed()
+                )
+                .toList();
+        for (ParticipantDto participant : sorted) {
+            printer.accept(asStringWithResults(participant));
+        }
+        return this;
+    }
+
     public MockSwissTournamentRunner newParticipant(String name) {
         participants.add(SwissMatchupStrategyImplTest.participant(name, 0, 0));
+        return this;
+    }
+
+    public MockSwissTournamentRunner missParticipant(String name) {
+        participants.stream().filter(it -> it.getId().equals(name))
+                .findAny().orElseThrow()
+                .setMissing(true);
+        return this;
+    }
+
+    public MockSwissTournamentRunner returnParticipant(String name) {
+        participants.stream().filter(it -> it.getId().equals(name))
+                .findAny().orElseThrow()
+                .setMissing(false);
         return this;
     }
 

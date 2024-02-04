@@ -85,6 +85,22 @@ class JavafoMatchupStrategyImplTest {
                         .match("user2", "user8", MatchResult.WHITE_WIN)
                 )
                 .show(System.out::println)
+                .missParticipant("user8")
+                .thenRound(round -> round
+                        .match("user1", "user7", MatchResult.WHITE_WIN)
+                        .match("user3", "user5", MatchResult.DRAW)
+                        .match("user2", "user4", MatchResult.BLACK_WIN)
+                        .match("user6", null, MatchResult.BUY)
+                        .match("user8", null, MatchResult.MISS))
+                .show(System.out::println)
+                .returnParticipant("user8")
+                .thenRound(round -> round
+                        .match("user3", "user1", MatchResult.BLACK_WIN)
+                        .match("user7", "user5", MatchResult.WHITE_WIN)
+                        .match("user4", "user8", MatchResult.DRAW)
+                        .match("user6", "user2", MatchResult.DRAW))
+                .show(System.out::println)
+                .showParticipants(System.out::println)
         ;
     }
 }
