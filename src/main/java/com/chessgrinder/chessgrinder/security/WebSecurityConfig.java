@@ -27,6 +27,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Slf4j
 public class WebSecurityConfig {
 
+    private static final String HOME_PATH = "/";
+
     @Autowired
     private CustomOAuth2UserService oauthUserService;
 
@@ -42,7 +44,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(httpRequests -> httpRequests
                         .anyRequest().permitAll()
                 )
-                .formLogin(Customizer.withDefaults())
+                .formLogin(it -> it.defaultSuccessUrl(HOME_PATH))
                 .logout(Customizer.withDefaults())
                 .httpBasic(it -> it.disable())
                 .oauth2Login(oauth2Login ->
@@ -53,11 +55,11 @@ public class WebSecurityConfig {
                                     if (authentication.getPrincipal() instanceof CustomOAuth2User customOAuth2User) {
                                         userService.processOAuthPostLogin(customOAuth2User);
                                     }
-                                    response.sendRedirect("/");
+                                    response.sendRedirect(HOME_PATH);
                                 })
                                 .failureHandler((request, response, exception) -> {
-                                    log.warn("Could not login user vis oauth2", exception);
-                                    response.sendRedirect("/");
+                                    log.warn("Could not login user via oauth2", exception);
+                                    response.sendRedirect(HOME_PATH);
                                 })
                 )
                 .cors(it -> it.disable())

@@ -54,10 +54,11 @@ public class UserService {
     }
 
     public void processOAuthPostLogin(CustomOAuth2User oAuth2User) {
-        UserEntity user = userRepository.findByUsername(oAuth2User.getEmail());
+        UserEntity user = userRepository.findByEmail(oAuth2User.getEmail());
 
         if (user == null) {
             UserEntity newUser = new UserEntity();
+            newUser.setEmail(oAuth2User.getEmail());
             newUser.setUsername(oAuth2User.getEmail());
             newUser.setName(oAuth2User.getFullName());
             newUser.setProvider(UserEntity.Provider.GOOGLE);

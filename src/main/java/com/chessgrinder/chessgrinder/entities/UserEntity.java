@@ -44,6 +44,10 @@ public class UserEntity {
     @Nullable
     private String password;
 
+    @Column(name = "email")
+    @Nullable
+    private String email;
+
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
