@@ -87,7 +87,7 @@ function AddParticipant(
                             presenter={user => <div>
                                 <div className={"grid text-left bg-white p-2"}>
                                     <span className={"text-sm"}>{user.name}</span>
-                                    <span className={"text-xs text-gray-500"}>{user.username}</span>
+                                    <span className={"text-xs text-gray-500"}>{user.id}</span>
                                 </div>
                             </div>}
                         />
