@@ -81,8 +81,8 @@ public class UserController {
                                 .tournament(tournamentMapper.toDto(participant.getTournament()))
                                 .participant(participantMapper.toDto(participant))
                                 //TODO сделать как participant.getPlace(как-то так, хотя можно засунуть в toDto выше)
-//                        placesPerTournament.get(participant.getTournament().getId())
-                                .place(participant.getPlace())
+                                .place(placesPerTournament.get(participant.getTournament().getId()))
+//                                .place(participant.getPlace())
                                 .build()
                 )
                 .toList();
@@ -93,6 +93,12 @@ public class UserController {
     //One tournament per participant
     //First it should be sorted by points, then by Buchholz, and only then by nickname (all in descending order)
     //TODO если в турнире у всех по 0 очков, то у всех будет последнее место
+
+    // + по идее, место должно ставиться там же, где устанавливается и score
+    //Это в public List<ParticipantDto> getResult() <- public List<MatchDto> matchUp
+    // <- public void makeMatchUp <- @PostMapping("/{roundNumber}/action/matchup")
+    //Этот метод вызывается при нажатии кнопки "Draw" (это странно, т.к. в таком случае, очков не присваивается)
+    //Очки присваиваются только после кнопки завершить (запрос @PostMapping("/{roundNumber}/action/finish"))
 
     //Как присвоить значения существующим участникам в миграции в БД?
     //1. В цикле пройтись по каждому участнику в participants_table
@@ -110,6 +116,7 @@ public class UserController {
             tournamentParticipants.sort(Comparator
                     .comparing(ParticipantEntity::getScore, Comparator.reverseOrder())
                     .thenComparing(ParticipantEntity::getBuchholz, Comparator.reverseOrder())
+                    //Я уверен, что ники тоже должны сортироваться в обратном порядке
                     .thenComparing(ParticipantEntity::getNickname, Comparator.reverseOrder()));
             final int place = IntStream.range(0, tournamentParticipants.size())
                     .filter(i -> tournamentParticipants.get(i).equals(participant))

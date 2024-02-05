@@ -170,9 +170,12 @@ public class RoundService {
             }
         });
         List<ParticipantEntity> participants = participantRepository.findByTournamentId(tournamentId);
+        //В принципе, можно отсортировать participants по принципу ранее
         for (ParticipantEntity participant : participants) {
-            participant.setScore(BigDecimal.valueOf(pointsMap.getOrDefault(participant.getId().toString(), 0d)));
-            participant.setBuchholz(BigDecimal.valueOf(buchholzMap.getOrDefault(participant.getId().toString(), 0d)));
+            final var pId = participant.getId().toString();
+            participant.setScore(BigDecimal.valueOf(pointsMap.getOrDefault(pId, 0d)));
+            participant.setBuchholz(BigDecimal.valueOf(buchholzMap.getOrDefault(pId, 0d)));
+            participant.setPlace(-1); //TODO высчитать
         }
         participantRepository.saveAll(participants);
     }
