@@ -101,11 +101,12 @@ function TournamentPane(
             </div>
         </Conditional>
         <Conditional on={isFinished}>
-            <div className={"py-3 flex gap-5 uppercase text-left"}>
+            <div className={"py-3 flex gap-2 uppercase text-left w-full"}>
                 <div className={"grid justify-items-start content-start"}>
                     <span className={"text-sm"}>{loc("Winner")}</span>
                     <span className={"font-bold"}>{winnerName}</span>
                 </div>
+                <div className={"grow"}></div>
                 <div className={"grid justify-items-start content-start"}>
                     <span className={"text-sm"}>{loc("Result")}</span>
                     <span className={"font-bold"}>{winnerResult}</span>
