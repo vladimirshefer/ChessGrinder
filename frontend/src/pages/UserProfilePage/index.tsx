@@ -159,7 +159,7 @@ export default function UserProfilePage() {
         queryKey: ["history", userProfile, activeTab],
         queryFn: async () => {
             if (!userProfile) return null;
-            return userRepository.getHistory(userProfile.username)
+            return userRepository.getHistory(userProfile.id)
         },
         enabled: activeTab === "history"
     })
