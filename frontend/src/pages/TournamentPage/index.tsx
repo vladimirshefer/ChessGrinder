@@ -46,7 +46,7 @@ function AddParticipant(
             name: nickName || participants.find(it => it.id === userId)?.name || userId,
             score: 0,
             buchholz: 0,
-            isMissing: false
+            isMissing: false,
         };
         console.log(participant)
         return await addParticipant(participant);
@@ -87,7 +87,7 @@ function AddParticipant(
                             presenter={user => <div>
                                 <div className={"grid text-left bg-white p-2"}>
                                     <span className={"text-sm"}>{user.name}</span>
-                                    <span className={"text-xs text-gray-500"}>{user.username}</span>
+                                    <span className={"text-xs text-gray-500"}>{user.id}</span>
                                 </div>
                             </div>}
                         />

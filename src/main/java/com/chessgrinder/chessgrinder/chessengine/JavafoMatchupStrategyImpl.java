@@ -3,8 +3,10 @@ package com.chessgrinder.chessgrinder.chessengine;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
+import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersTrfLine;
 import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto;
 import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto.TrfMatchResult;
+import com.chessgrinder.chessgrinder.trf.line.MissingPlayersTrfLineParser;
 import com.chessgrinder.chessgrinder.trf.line.PlayerTrfLineParser;
 import javafo.api.JaVaFoApi;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,7 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
     private static final Object JAVAFO_MONITOR = new Object();
 
     private final PlayerTrfLineParser playerTrfLineParser = new PlayerTrfLineParser();
+    private final MissingPlayersTrfLineParser missingPlayersTrfLineParser = new MissingPlayersTrfLineParser();
     private static final int DEFAULT_RATING = 1000;
 
     @Override
@@ -39,6 +42,14 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
         stringBuilder.append("\n");
         Consumer<String> trfCollector = (it) -> stringBuilder.append(it);
 
+        List<ParticipantDto> missingParticipants = participants.stream().filter(it -> it.isMissing())
+                .toList();
+
+        missingPlayersTrfLineParser.tryWrite(trfCollector, MissingPlayersTrfLine.builder()
+                .playerIds(missingParticipants.stream().map(it -> playerIds.indexOf(it.getId()) + 1).toList())
+                .build()
+        );
+        stringBuilder.append("\n");
         participantsMatches.forEach((participant, matches) -> {
             PlayerTrfLineDto playerTrfLineDto = toTrfDto(participant, matches, playerIds);
             playerTrfLineParser.tryWrite(trfCollector, playerTrfLineDto);
@@ -70,7 +81,19 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
                 )
                 .toList();
 
-        return result;
+        List<MatchDto> missingMatches = missingParticipants.stream()
+                .map(it -> MatchDto.builder()
+                        .white(it)
+                        .black(null)
+                        .result(MatchResult.MISS)
+                        .build()
+                )
+                .toList();
+
+        var resultWithMisses = new ArrayList<>(result);
+        resultWithMisses.addAll(missingMatches);
+
+        return resultWithMisses;
     }
 
     private static ParticipantDto getParticipantDto(List<ParticipantDto> participants, List<String> playerIds, String playerId) {
@@ -124,6 +147,7 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
     public static char getResultChar(boolean isWhite, MatchResult result) {
         if (result.equals(MatchResult.DRAW)) return TrfMatchResult.DRAW.getCharCode();
         if (result.equals(MatchResult.BUY)) return TrfMatchResult.FULL_POINT_BYE.getCharCode();
+        if (result.equals(MatchResult.MISS)) return TrfMatchResult.ZERO_POINT_BYE.getCharCode();
         if (isWhite && result.equals(MatchResult.WHITE_WIN)) return TrfMatchResult.WIN.getCharCode();
         if (isWhite && result.equals(MatchResult.BLACK_WIN)) return TrfMatchResult.LOSS.getCharCode();
         if (!isWhite && result.equals(MatchResult.BLACK_WIN)) return TrfMatchResult.WIN.getCharCode();
