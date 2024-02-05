@@ -46,6 +46,7 @@ function AddParticipant(
             name: nickName || participants.find(it => it.id === userId)?.name || userId,
             score: 0,
             buchholz: 0,
+            isMissing: false
         };
         console.log(participant)
         return await addParticipant(participant);
