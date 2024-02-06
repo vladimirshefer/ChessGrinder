@@ -33,6 +33,8 @@ function MatchResultSelector(
                 return "½ - ½"
             case "BUY":
                 return "BUY"
+            case "MISS":
+                return "MISS"
             default:
                 return "? - ?"
         }
@@ -72,6 +74,7 @@ function MatchResultSelector(
                         <ResultSelectItem result={"½ - ½"} onClick={() => setResult("DRAW")}/>
                         <ResultSelectItem result={"? - ?"} onClick={() => setResult(null)}/>
                         <ResultSelectItem result={"BUY"} onClick={() => setResult("BUY")}/>
+                        <ResultSelectItem result={"MISS"} onClick={() => setResult("MISS")}/>
                     </ul>
                 </Conditional>
             </div>
@@ -94,6 +97,7 @@ function MatchRow(
                         ${match.result === "BLACK_WIN" ? "bg-gray-200" : ""}
                         ${match.result === "BUY" ? "bg-anzac-400" : ""} 
                         ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        ${match.result === "MISS" ? "bg-gray-200" : ""} 
                         ${!match.result ? "bg-gray-50" : ""} 
                         `}
         >
@@ -110,6 +114,7 @@ function MatchRow(
                         ${match.result === "WHITE_WIN" ? "bg-gray-200" : ""}
                         ${match.result === "BUY" ? "bg-anzac-400" : ""} 
                         ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        ${match.result === "MISS" ? "bg-gray-200" : ""} 
                         ${!match.result ? "bg-gray-50" : ""} 
                         `}
         >

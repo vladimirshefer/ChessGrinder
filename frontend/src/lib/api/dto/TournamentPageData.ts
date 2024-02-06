@@ -18,7 +18,7 @@ export interface MatchDto {
     black: ParticipantDto | null
 }
 
-export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW" | "BUY"
+export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW" | "BUY" | "MISS"
 
 export interface RoundDto {
     isFinished: boolean
