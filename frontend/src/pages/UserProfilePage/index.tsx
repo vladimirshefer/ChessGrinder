@@ -166,7 +166,7 @@ export default function UserProfilePage() {
 
     async function logout() {
         await loginPageRepository.signOut()
-        authenticatedUserReload()
+        await authenticatedUserReload()
     }
 
     if (!userProfile) {
