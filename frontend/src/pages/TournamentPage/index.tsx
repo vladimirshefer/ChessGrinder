@@ -13,7 +13,8 @@ import {AiOutlineClose, AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutline
 import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
-import DropdownSelect from "../../components/DropdownSelect";
+import DropdownSelect from "components/DropdownSelect";
+import roundRepository from "lib/api/repository/RoundRepository";
 
 function AddParticipant(
     {
@@ -140,33 +141,39 @@ function TournamentPage() {
     }
 
     async function createRound() {
-        await tournamentPageRepository.postRound(id!!)
+        await roundRepository.postRound(id!!)
         await tournamentQuery.refetch()
         navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""))
     }
 
     async function drawRound() {
-        await tournamentPageRepository.drawRound(id!!, roundId!!)
+        try {
+            await roundRepository.drawRound(id!!, roundId!!)
+        } catch (e) {
+            let errorMessage = "Pairing failed!";
+            alert(errorMessage)
+            console.error(errorMessage)
+        }
         await tournamentQuery.refetch()
     }
 
     async function submitMatchResult(match: MatchDto, result: MatchResult) {
-        await tournamentPageRepository.postMatchResult(id!!, roundId!!, match.id, result)
+        await roundRepository.postMatchResult(id!!, roundId!!, match.id, result)
         await tournamentQuery.refetch()
     }
 
     async function deleteRound() {
-        await tournamentPageRepository.deleteRound(id!!, roundId!!)
+        await roundRepository.deleteRound(id!!, roundId!!)
         navigate(`/tournament/${id}`)
     }
 
     async function finishRound() {
-        await tournamentPageRepository.finishRound(id!!, roundId!!)
+        await roundRepository.finishRound(id!!, roundId!!)
         await tournamentQuery.refetch()
     }
 
     async function reopenRound() {
-        await tournamentPageRepository.reopenRound(id!!, roundId!!)
+        await roundRepository.reopenRound(id!!, roundId!!)
         await tournamentQuery.refetch()
     }
 
