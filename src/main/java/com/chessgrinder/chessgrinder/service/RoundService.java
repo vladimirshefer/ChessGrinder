@@ -64,9 +64,12 @@ public class RoundService {
         if (roundEntity == null) {
             return;
         }
-        if (roundEntity.getMatches().contains(null)) {
-            System.out.println("There are unfinished rounds");
-            return;
+        for (MatchEntity match : roundEntity.getMatches()) {
+
+            if (match.getResult() == null) {
+                throw new IllegalStateException("Can not finish round with unknown match result");
+
+            }
         }
         roundEntity.setFinished(true);
         roundRepository.save(roundEntity);

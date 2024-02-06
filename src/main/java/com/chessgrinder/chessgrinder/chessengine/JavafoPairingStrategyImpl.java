@@ -65,7 +65,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
             }
         }
 
-        List<MatchDto> result = Arrays.stream(pairingsFileContent.split("\n"))
+        List<MatchDto> result = Arrays.stream(pairingsFileContent.split("\\r?\\n|\\r"))
                 .skip(1)
                 .map(it -> it.split(" "))
                 .map(it ->
