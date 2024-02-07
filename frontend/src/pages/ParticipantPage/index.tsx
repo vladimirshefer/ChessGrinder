@@ -64,6 +64,7 @@ export default function ParticipantPage() {
             userFullName: "",
             buchholz: 0,
             isMissing: false,
+            place: -1
         })
             .catch(propagate(() => "Could not change nickname!"))
         await participantQuery.refetch()

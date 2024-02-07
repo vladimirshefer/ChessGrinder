@@ -23,7 +23,6 @@ function ResultsTable(
             </div>
             {
                 participants
-                    .sort((a, b) => -(a.score !== b.score ? a.score - b.score : a.buchholz - b.buchholz))
                     .map((participant, idx) => {
                         return <div className={"col-span-12 grid grid-cols-12 p-2 border-b text-sm"} key={participant.name}>
                             <div className={"col-span-1 text-gray-600"}>{idx + 1}</div>

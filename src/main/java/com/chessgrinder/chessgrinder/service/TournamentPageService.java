@@ -38,7 +38,6 @@ public class TournamentPageService {
                 .sorted(Comparator.comparing(RoundEntity::getNumber))
                 .collect(Collectors.toList()));
 
-        //TODO сделать сортировку участников по месту в турнире
         List<ParticipantDto> participantsDto = participantMapper.toDto(tournamentParticipantEntities)
                 .stream().sorted(Comparator.comparing(ParticipantDto::getPlace))
                 .collect(Collectors.toList());

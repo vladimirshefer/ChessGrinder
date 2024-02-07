@@ -30,9 +30,8 @@ function TournamentPane(
         queryKey: ["tournamentWinner", tournament.id],
         queryFn: async () => {
             let tournamentData = await tournamentPageRepository.getData(tournament.id);
-            let participantsSorted: ParticipantDto[] = tournamentData?.participants
-                ?.sort(compareBy(it => -it.buchholz))
-                ?.sort(compareBy(it => -it.score)) || [];
+            // sorted on server side
+            let participantsSorted: ParticipantDto[] = tournamentData?.participants || [];
             if (participantsSorted.length === 0) {
                 return null
             }

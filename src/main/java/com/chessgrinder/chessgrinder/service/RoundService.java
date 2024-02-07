@@ -190,9 +190,9 @@ public class RoundService {
                         .thenComparing((participant1, participant2) -> {
                             ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
                             if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
-                                return -1;
-                            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
                                 return 1;
+                            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
+                                return -1;
                             } else {
                                 return 0;
                             }
@@ -208,7 +208,7 @@ public class RoundService {
         participantRepository.saveAll(participants);
     }
 
-    public static ParticipantEntity findWinnerBetweenTwoParticipants(ParticipantEntity first, ParticipantEntity second, List<RoundEntity> roundsDto) {
+    private static ParticipantEntity findWinnerBetweenTwoParticipants(ParticipantEntity first, ParticipantEntity second, List<RoundEntity> roundsDto) {
         for (RoundEntity round : roundsDto) {
             if (round.getMatches() != null) {
                 for (MatchEntity match : round.getMatches()) {

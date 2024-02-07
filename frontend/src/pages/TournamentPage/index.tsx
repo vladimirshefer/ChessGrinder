@@ -48,6 +48,7 @@ function AddParticipant(
             score: 0,
             buchholz: 0,
             isMissing: false,
+            place: -1,
         };
         console.log(participant)
         return await addParticipant(participant);
