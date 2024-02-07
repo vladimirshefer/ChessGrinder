@@ -16,6 +16,7 @@ import BadgePage from "pages/BadgePage";
 import UserProfileEditPage from "pages/UserProfileEditPage";
 import {AuthenticatedUserContextProvider} from "contexts/AuthenticatedUserContext";
 import {LanguageContextProvider} from "contexts/LanguageContext";
+import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient()
 
@@ -48,6 +49,7 @@ function App() {
                                     <Route path="/users" element={<UsersPage/>}/>
                                     <Route path="/badges" element={<BadgesPage/>}/>
                                     <Route path="/badge/:badgeId" element={<BadgePage/>}/>
+                                    <Route path="/privacyPolicy" element={<PrivacyPolicyPage/>}/>
                                 </Routes>
                             </React.StrictMode>
                         </ApplicationRouter>
