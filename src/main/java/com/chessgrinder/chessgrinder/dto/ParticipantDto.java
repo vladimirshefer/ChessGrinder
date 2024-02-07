@@ -34,4 +34,6 @@ public class ParticipantDto {
 
     private boolean isMissing = false;
 
+    @Nonnull
+    private Integer place = -1;
 }

@@ -74,58 +74,16 @@ public class UserController {
     ) {
         UserEntity user = findUserByIdOrUsername(userIdOrUsername);
         List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
-        Map<UUID, Integer> placesPerTournament = getPlacesPerTournament(participants);
         List<UserHistoryRecordDto> history = participants.stream()
                 .map(participant ->
                         UserHistoryRecordDto.builder()
                                 .tournament(tournamentMapper.toDto(participant.getTournament()))
                                 .participant(participantMapper.toDto(participant))
-                                //TODO сделать как participant.getPlace(как-то так, хотя можно засунуть в toDto выше)
-                                .place(placesPerTournament.get(participant.getTournament().getId()))
-//                                .place(participant.getPlace())
+                                .place(participant.getPlace())
                                 .build()
                 )
                 .toList();
         return ListDto.<UserHistoryRecordDto>builder().values(history).build();
-    }
-
-    //Returns table of participant's places who this user was, not all participants of tournament
-    //One tournament per participant
-    //First it should be sorted by points, then by Buchholz, and only then by nickname (all in descending order)
-    //TODO если в турнире у всех по 0 очков, то у всех будет последнее место
-
-    // + по идее, место должно ставиться там же, где устанавливается и score
-    //Это в public List<ParticipantDto> getResult() <- public List<MatchDto> matchUp
-    // <- public void makeMatchUp <- @PostMapping("/{roundNumber}/action/matchup")
-    //Этот метод вызывается при нажатии кнопки "Draw" (это странно, т.к. в таком случае, очков не присваивается)
-    //Очки присваиваются только после кнопки завершить (запрос @PostMapping("/{roundNumber}/action/finish"))
-
-    //Как присвоить значения существующим участникам в миграции в БД?
-    //1. В цикле пройтись по каждому участнику в participants_table
-    //2. В цикле надо получить id каждого турнира, в котором участвовал участник
-    //3. По id турнира получить список всех участников турнира
-    //3.1 Отсортировать этот список (думаю, это можно сделать по ORDER BY)
-    //4. Берем индекс из получившегося списка по id участника
-    private Map<UUID, Integer> getPlacesPerTournament(List<ParticipantEntity> allParticipants) {
-        Map<UUID, Integer> placesPerTournament = new HashMap<>();
-        for (var participant : allParticipants) {
-            final var tournament = participant.getTournament();
-            if (tournament == null) continue;
-            final var tId = tournament.getId();
-            var tournamentParticipants = participantRepository.findByTournamentId(tId);
-            tournamentParticipants.sort(Comparator
-                    .comparing(ParticipantEntity::getScore, Comparator.reverseOrder())
-                    .thenComparing(ParticipantEntity::getBuchholz, Comparator.reverseOrder())
-                    //Я уверен, что ники тоже должны сортироваться в обратном порядке
-                    .thenComparing(ParticipantEntity::getNickname, Comparator.reverseOrder()));
-            final int place = IntStream.range(0, tournamentParticipants.size())
-                    .filter(i -> tournamentParticipants.get(i).equals(participant))
-                    .findFirst()
-                    .orElse(-1) + 1;
-            placesPerTournament.put(tId, place);
-        }
-
-        return placesPerTournament;
     }
 
     @Nonnull

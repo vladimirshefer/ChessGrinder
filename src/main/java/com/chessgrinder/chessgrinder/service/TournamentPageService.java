@@ -38,21 +38,9 @@ public class TournamentPageService {
                 .sorted(Comparator.comparing(RoundEntity::getNumber))
                 .collect(Collectors.toList()));
 
+        //TODO сделать сортировку участников по месту в турнире
         List<ParticipantDto> participantsDto = participantMapper.toDto(tournamentParticipantEntities)
-                .stream().sorted(Comparator.comparing(ParticipantDto::getScore)
-                        .thenComparing((participant1, participant2) -> {
-
-                            ParticipantDto winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, roundsDto);
-
-                            if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
-                                    return -1;
-                                } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
-                                    return 1;
-                                } else {
-                                    return 0;
-                                }
-                        })
-                )
+                .stream().sorted(Comparator.comparing(ParticipantDto::getPlace))
                 .collect(Collectors.toList());
 
         return TournamentPageDto.builder()
@@ -61,35 +49,4 @@ public class TournamentPageService {
                 .rounds(roundsDto)
                 .build();
     }
-
-    public ParticipantDto findWinnerBetweenTwoParticipants(ParticipantDto first, ParticipantDto second, List<RoundDto> roundsDto) {
-        for (RoundDto round : roundsDto) {
-            if (round.getMatches() != null) {
-                for (MatchDto match : round.getMatches()) {
-                    if (match.getWhite() != null && match.getBlack() != null) {
-                        if (match.getWhite().equals(first) && match.getBlack().equals(second)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getWhite();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getBlack();
-                            }
-                        } else if (match.getWhite().equals(second) && match.getBlack().equals(first)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getWhite();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getBlack();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-
-
-
-
-
 }

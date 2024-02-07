@@ -54,5 +54,4 @@ public class ParticipantEntity {
     @Nonnull
     @Column(name = "place")
     private Integer place;
-
 }
