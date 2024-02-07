@@ -166,6 +166,9 @@ public class RoundService {
                     addResult(pointsMap, enemiesMap, white, black, 1);
                     addResult(pointsMap, enemiesMap, black, white, 1);
                 }
+                case MISS -> {
+                    // Is miss, then no action is required because players did not play
+                }
             }
         }
         enemiesMap.forEach((player, enemiesSet) -> {

@@ -10,6 +10,8 @@ export interface ParticipantRepository {
     deleteParticipant(tournamentId: string, participantId: string): Promise<void>
     getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto>
     updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
+    missParticipant(tournamentId: string, participantId: string): Promise<void>;
+    unmissParticipant(tournamentId: string, participantId: string): Promise<void>;
 }
 
 class LocalStorageParticipantRepository implements ParticipantRepository {
@@ -38,7 +40,22 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
     }
 
     async updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void> {
-        throw new Error("Not supported: Update participant")
+        await this.deleteParticipant(tournamentId, participant.id)
+        await this.postParticipant(tournamentId, participant)
+    }
+
+    async missParticipant(tournamentId: string, participantId: string): Promise<void> {
+        let participantDto = await this.getParticipant(tournamentId, participantId);
+        await this.deleteParticipant(tournamentId, participantId)
+        participantDto.isMissing = true;
+        await this.postParticipant(tournamentId, participantDto)
+    }
+
+    async unmissParticipant(tournamentId: string, participantId: string): Promise<void> {
+        let participantDto = await this.getParticipant(tournamentId, participantId);
+        await this.deleteParticipant(tournamentId, participantId)
+        participantDto.isMissing = false;
+        await this.postParticipant(tournamentId, participantDto)
     }
 }
 
@@ -56,7 +73,15 @@ class RestApiParticipantRepository implements ParticipantRepository {
     }
 
     async updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void> {
-        throw await restApiClient.put(`/tournament/${tournamentId}/participant/${participant.id}`, participant)
+        await restApiClient.put(`/tournament/${tournamentId}/participant/${participant.id}`, participant)
+    }
+
+    async missParticipant(tournamentId: string, participantId: string): Promise<void> {
+        await restApiClient.post(`/tournament/${tournamentId}/participant/${participantId}/action/miss`)
+    }
+
+    async unmissParticipant(tournamentId: string, participantId: string): Promise<void> {
+        await restApiClient.post(`/tournament/${tournamentId}/participant/${participantId}/action/unmiss`)
     }
 }
 

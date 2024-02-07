@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @SuppressWarnings("Convert2MethodRef")
@@ -42,14 +42,24 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(httpRequests -> httpRequests
                         .anyRequest().permitAll()
                 )
-                .formLogin(Customizer.withDefaults())
-                .logout(Customizer.withDefaults())
+                .formLogin(it -> it
+                        // to void redirect to default http spring endpoint
+                        .successHandler(
+                                (req, res, auth) -> res.setStatus(HttpStatus.NO_CONTENT.value())
+                        )
+                )
+                .logout(it -> it
+                        // to void redirect to default http spring endpoint
+                        .logoutSuccessHandler(
+                                new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)
+                        )
+                )
                 .httpBasic(it -> it.disable())
                 .oauth2Login(oauth2Login ->
                         oauth2Login
                                 .userInfoEndpoint(it -> it.userService(oauthUserService))
                                 .successHandler((request, response, authentication) -> {
-                                    log.debug("Successfully authenticated user "+ authentication.getName() +" via oauth2");
+                                    log.debug("Successfully authenticated user " + authentication.getName() + " via oauth2");
                                     if (authentication.getPrincipal() instanceof CustomOAuth2User customOAuth2User) {
                                         userService.processOAuthPostLogin(customOAuth2User);
                                     }

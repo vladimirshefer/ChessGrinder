@@ -18,7 +18,7 @@ export function MemberList(
         <h2 className={"text-xl my-2 uppercase text-left font-semibold"}>{loc("Members")}</h2>
         <div className={"w-full grid grid-cols-12"}>
             {users.map(user => {
-                return <div key={user.name} className={"col-span-12 flex"}>
+                return <div key={user.id} className={"col-span-12 flex"}>
                     <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
                         <Gravatar
                             text={user.username || user.id}

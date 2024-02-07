@@ -8,8 +8,10 @@ import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.service.*;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/tournament/{tournamentId}/participant")
@@ -51,8 +53,31 @@ public class ParticipantController {
             @PathVariable UUID participantId,
             @RequestBody ParticipantDto participantDto
     ) {
-        ParticipantEntity participant = participantRepository.findById(participantId).orElseThrow();
+        ParticipantEntity participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No participant with id " + participantId));
         participant.setNickname(participantDto.getName());
+        participantRepository.save(participant);
+    }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PostMapping("/{participantId}/action/miss")
+    public void miss(
+            @PathVariable UUID participantId
+    ){
+        ParticipantEntity participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No participant with id " + participantId));
+        participant.setMissing(true);
+        participantRepository.save(participant);
+    }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PostMapping("/{participantId}/action/unmiss")
+    public void unmiss(
+            @PathVariable UUID participantId
+    ){
+        ParticipantEntity participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No participant with id " + participantId));
+        participant.setMissing(false);
         participantRepository.save(participant);
     }
 }

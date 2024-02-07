@@ -6,7 +6,6 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import jakarta.annotation.Nullable;
 import org.opentest4j.AssertionFailedError;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -188,14 +187,14 @@ class MockSwissTournamentRunner {
     public MockSwissTournamentRunner missParticipant(String name) {
         participants.stream().filter(it -> it.getId().equals(name))
                 .findAny().orElseThrow()
-                .setMissing(true);
+                .setIsMissing(true);
         return this;
     }
 
     public MockSwissTournamentRunner returnParticipant(String name) {
         participants.stream().filter(it -> it.getId().equals(name))
                 .findAny().orElseThrow()
-                .setMissing(false);
+                .setIsMissing(false);
         return this;
     }
 

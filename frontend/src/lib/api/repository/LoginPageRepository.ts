@@ -32,7 +32,6 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
             accessToken: username,
             roles: memberDto?.roles || roles
         })
-        window.location.reload()
         return username
     }
 

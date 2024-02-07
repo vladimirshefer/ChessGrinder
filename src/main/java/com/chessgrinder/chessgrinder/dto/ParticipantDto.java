@@ -32,7 +32,13 @@ public class ParticipantDto {
     @Nonnull
     private BigDecimal buchholz = BigDecimal.ZERO;
 
-    private boolean isMissing = false;
+    /*
+     Boolean (boxed) to force lombok to generate getIsMissing()
+     instead of isMissing() getter.
+     This is required to make Jackson correctly serialize DTO with
+     isMissing field instead of missing field.
+    */
+    private Boolean isMissing = false;
 
     @Nonnull
     private Integer place = -1;

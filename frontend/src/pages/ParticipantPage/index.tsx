@@ -118,9 +118,26 @@ export default function ParticipantPage() {
                         }}
                 >Delete
                 </button>
-                <button className={"btn-unsupported"}
-                >Missing
-                </button>
+                <Conditional on={participantQuery.data && !participantQuery.data?.isMissing}>
+                    <button className={"btn-light"}
+                            onClick={async () => {
+                                await participantRepository.missParticipant(tournamentId!!, participantId!!)
+                                await participantQuery.refetch()
+                            }}
+                    >
+                        Missing on tournament
+                    </button>
+                </Conditional>
+                <Conditional on={participantQuery.data && participantQuery.data?.isMissing}>
+                    <button className={"btn-light"}
+                            onClick={async () => {
+                                await participantRepository.unmissParticipant(tournamentId!!, participantId!!)
+                                await participantQuery.refetch()
+                            }}
+                    >
+                        Returned to tournament
+                    </button>
+                </Conditional>
             </ConditionalOnUserRole>
         </div>
     </div>

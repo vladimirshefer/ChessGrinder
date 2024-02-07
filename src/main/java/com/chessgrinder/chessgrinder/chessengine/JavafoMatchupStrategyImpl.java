@@ -42,7 +42,7 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
         stringBuilder.append("\n");
         Consumer<String> trfCollector = (it) -> stringBuilder.append(it);
 
-        List<ParticipantDto> missingParticipants = participants.stream().filter(it -> it.isMissing())
+        List<ParticipantDto> missingParticipants = participants.stream().filter(it -> it.getIsMissing())
                 .toList();
 
         missingPlayersTrfLineParser.tryWrite(trfCollector, MissingPlayersTrfLine.builder()
