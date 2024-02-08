@@ -80,12 +80,9 @@ class LocalStorageUserRepository implements UserRepository {
             })
             .filter(([, participant]) => !!participant)
             .map(([tournament, participant]) => {
-                let participantDtos = tournament.participants
-                    .sort((a, b) => -(a.score !== b.score ? a.score - b.score : a.buchholz - b.buchholz))
                 return {
                     tournament: tournament.tournament,
                     participant: participant,
-                    place: participantDtos.indexOf(participant!!) + 1,
                 } as UserHistoryRecordDto
             });
         return {

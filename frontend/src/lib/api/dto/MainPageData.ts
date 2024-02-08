@@ -55,7 +55,6 @@ export enum UserRoles {
 export interface UserHistoryRecordDto {
     tournament: TournamentDto
     participant: ParticipantDto
-    place: number
 }
 
 export interface UserReputationHistoryRecordDto{

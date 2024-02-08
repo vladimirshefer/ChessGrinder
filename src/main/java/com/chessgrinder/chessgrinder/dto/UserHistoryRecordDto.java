@@ -8,5 +8,4 @@ import lombok.Data;
 public class UserHistoryRecordDto {
     private TournamentDto tournament;
     private ParticipantDto participant;
-    private Integer place;
 }

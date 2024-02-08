@@ -78,7 +78,6 @@ public class UserController {
                         UserHistoryRecordDto.builder()
                                 .tournament(tournamentMapper.toDto(participant.getTournament()))
                                 .participant(participantMapper.toDto(participant))
-                                .place(participant.getPlace())
                                 .build()
                 )
                 .toList();
