@@ -33,6 +33,7 @@ public class ParticipantService {
                 .user(userEntity)
                 .score(BigDecimal.ZERO)
                 .buchholz(BigDecimal.ZERO)
+                .place(-1)
                 .build();
 
         participantRepository.save(participantEntity);

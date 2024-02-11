@@ -72,6 +72,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
             buchholz: 0,
             score: 0,
             isMissing: false,
+            place: -1
         })
         localStorageUtil.setObject(`cgd.tournament.${tournamentId}`, tournament)
     }

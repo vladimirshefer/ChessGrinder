@@ -18,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -79,7 +78,6 @@ public class UserController {
                         UserHistoryRecordDto.builder()
                                 .tournament(tournamentMapper.toDto(participant.getTournament()))
                                 .participant(participantMapper.toDto(participant))
-                                .place(-1) // TODO
                                 .build()
                 )
                 .toList();

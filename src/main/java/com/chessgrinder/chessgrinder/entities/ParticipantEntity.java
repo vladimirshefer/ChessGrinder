@@ -51,4 +51,7 @@ public class ParticipantEntity {
     @Column(name = "is_missing")
     private boolean isMissing;
 
+    @Nonnull
+    @Column(name = "place")
+    private Integer place;
 }

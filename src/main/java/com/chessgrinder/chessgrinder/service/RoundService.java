@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.service;
 import com.chessgrinder.chessgrinder.chessengine.MatchupStrategy;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
+import com.chessgrinder.chessgrinder.dto.RoundDto;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoundEntity;
@@ -11,6 +12,7 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.exceptions.RoundNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.MatchMapper;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
+import com.chessgrinder.chessgrinder.mappers.RoundMapper;
 import com.chessgrinder.chessgrinder.repositories.MatchRepository;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ public class RoundService {
     private final MatchRepository matchRepository;
 
     private final MatchMapper matchMapper;
+    private final RoundMapper roundMapper;
 
     private final ParticipantMapper participantMapper;
 
@@ -134,6 +138,7 @@ public class RoundService {
 
     public void updateResults(UUID tournamentId) {
         List<MatchEntity> matches = matchRepository.findFinishedByTournamentId(tournamentId);
+        //<gamer's UUID, points>
         Map<String, Double> pointsMap = new HashMap<>();
         Map<String, Set<String>> enemiesMap = new HashMap<>();
         Map<String, Double> buchholzMap = new HashMap<>();
@@ -172,12 +177,60 @@ public class RoundService {
                 buchholzMap.computeIfPresent(player, (__, b) -> b + pointsMap.get(enemy));
             }
         });
+
         List<ParticipantEntity> participants = participantRepository.findByTournamentId(tournamentId);
         for (ParticipantEntity participant : participants) {
-            participant.setScore(BigDecimal.valueOf(pointsMap.getOrDefault(participant.getId().toString(), 0d)));
-            participant.setBuchholz(BigDecimal.valueOf(buchholzMap.getOrDefault(participant.getId().toString(), 0d)));
+            final var pId = participant.getId().toString();
+            participant.setScore(BigDecimal.valueOf(pointsMap.getOrDefault(pId, 0d)));
+            participant.setBuchholz(BigDecimal.valueOf(buchholzMap.getOrDefault(pId, 0d)));
+        }
+
+        List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
+        participants.sort(Comparator.comparing(ParticipantEntity::getScore)
+                        .thenComparing((participant1, participant2) -> {
+                            ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
+                            if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
+                                return 1;
+                            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
+                                return -1;
+                            } else {
+                                return 0;
+                            }
+                        })
+                        .thenComparing(ParticipantEntity::getBuchholz)
+                        .thenComparing(ParticipantEntity::getNickname)
+        );
+        final int size = participants.size();
+        for (int i = 0; i < size; ++i) {
+            final var participant = participants.get(i);
+            participant.setPlace(size - i);
         }
         participantRepository.saveAll(participants);
+    }
+
+    private static ParticipantEntity findWinnerBetweenTwoParticipants(ParticipantEntity first, ParticipantEntity second, List<RoundEntity> roundsDto) {
+        for (RoundEntity round : roundsDto) {
+            if (round.getMatches() != null) {
+                for (MatchEntity match : round.getMatches()) {
+                    if (match.getParticipant1() != null && match.getParticipant2() != null) {
+                        if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
+                            if (match.getResult() == MatchResult.WHITE_WIN) {
+                                return match.getParticipant1();
+                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
+                                return match.getParticipant2();
+                            }
+                        } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
+                            if (match.getResult() == MatchResult.WHITE_WIN) {
+                                return match.getParticipant1();
+                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
+                                return match.getParticipant2();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void addResult(Map<String, Double> points, Map<String, Set<String>> enemies, @Nullable String player, @Nullable String enemy, double pointsToAdd) {
@@ -191,12 +244,6 @@ public class RoundService {
         }
     }
 
-    @Nullable
-    private ParticipantEntity getParticipantEntity(@Nullable ParticipantDto participantDto) {
-        if (participantDto == null) return null;
-        return participantRepository.findById(UUID.fromString(participantDto.getId())).get();
-    }
-
     public void markUserAsMissedInTournament(UUID userId, UUID tournamentId) {
         ParticipantEntity participantEntity = participantRepository.findByTournamentIdAndUserId(tournamentId, userId);
         participantEntity.setMissing(true);
@@ -204,7 +251,6 @@ public class RoundService {
     }
 
     public void deleteRound(UUID tournamentId, Integer roundNumber) throws RoundNotFoundException {
-
         RoundEntity roundEntity = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
         if (roundEntity == null) {
@@ -221,5 +267,4 @@ public class RoundService {
             log.error("Could not update results", e);
         }
     }
-
 }
