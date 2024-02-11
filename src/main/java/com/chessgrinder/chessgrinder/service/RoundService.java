@@ -1,9 +1,8 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.chessengine.MatchupStrategy;
+import com.chessgrinder.chessgrinder.chessengine.PairingStrategy;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
-import com.chessgrinder.chessgrinder.dto.RoundDto;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoundEntity;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class RoundService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
     private final ParticipantRepository participantRepository;
-    private final MatchupStrategy swissEngine;
+    private final PairingStrategy swissEngine;
     private final MatchRepository matchRepository;
 
     private final MatchMapper matchMapper;
@@ -90,7 +88,7 @@ public class RoundService {
     }
 
     @Transactional
-    public void makeMatchUp(UUID tournamentId, Integer roundNumber) {
+    public void makePairings(UUID tournamentId, Integer roundNumber) {
 
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
@@ -109,7 +107,7 @@ public class RoundService {
 
         List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
 
-        List<MatchDto> matchesDto = swissEngine.matchUp(participantDtos, allMatches, false);
+        List<MatchDto> matchesDto = swissEngine.makePairings(participantDtos, allMatches, false);
         List<MatchEntity> matches = new ArrayList<>();
 
         for (MatchDto matchDto : matchesDto) {
@@ -124,13 +122,13 @@ public class RoundService {
                 participant2 = participantRepository.findById(UUID.fromString(matchDto.getBlack().getId())).orElse(null);
             }
 
-            matches.add(
-                    MatchEntity.builder()
-                            .round(round)
-                            .participant1(participant1)
-                            .participant2(participant2)
-                            .result(matchDto.getResult())
-                            .build());
+            matches.add(MatchEntity.builder()
+                    .round(round)
+                    .participant1(participant1)
+                    .participant2(participant2)
+                    .result(matchDto.getResult())
+                    .build()
+            );
         }
 
         matchRepository.saveAll(matches);

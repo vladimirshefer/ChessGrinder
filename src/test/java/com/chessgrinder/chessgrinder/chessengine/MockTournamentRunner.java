@@ -10,21 +10,21 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-class MockSwissTournamentRunner {
+class MockTournamentRunner {
     private static final double NO_VALUE = -1000;
 
-    private final MatchupStrategy swissEngine;
+    private final PairingStrategy pairingStrategy;
     private List<ParticipantDto> participants;
     private final List<List<MatchDto>> rounds = new ArrayList<>();
 
-    public MockSwissTournamentRunner(MatchupStrategy swissEngine, String... participants) {
-        this.swissEngine = swissEngine;
-        this.participants = new ArrayList<>(Arrays.stream(participants).map(it -> it != null ? SwissMatchupStrategyImplTest.participant(it, 0, 0) : null).toList());
+    public MockTournamentRunner(PairingStrategy pairingStrategy, String... participants) {
+        this.pairingStrategy = pairingStrategy;
+        this.participants = new ArrayList<>(Arrays.stream(participants).map(it -> it != null ? SwissPairingStrategyImplTest.participant(it, 0, 0) : null).toList());
     }
 
-    public MockSwissTournamentRunner thenRound(Consumer<MockRoundBuilder> round) {
+    public MockTournamentRunner thenRound(Consumer<MockRoundBuilder> round) {
         int newRoundNumber = rounds.size();
-        List<MatchDto> actualMatches = swissEngine.matchUp(
+        List<MatchDto> actualMatches = pairingStrategy.makePairings(
                 participants,
                 rounds,
                 true
@@ -155,7 +155,7 @@ class MockSwissTournamentRunner {
         return participant.getId() + "(" + participant.getScore() + ", " + participant.getBuchholz() + ")";
     }
 
-    public MockSwissTournamentRunner show(Consumer<String> printer) {
+    public MockTournamentRunner show(Consumer<String> printer) {
         int lastRoundIndex = rounds.size() - 1;
         List<MatchDto> round = rounds.get(lastRoundIndex);
         printer.accept("Round " + lastRoundIndex);
@@ -165,7 +165,7 @@ class MockSwissTournamentRunner {
         return this;
     }
 
-    public MockSwissTournamentRunner showParticipants(Consumer<String> printer) {
+    public MockTournamentRunner showParticipants(Consumer<String> printer) {
         List<ParticipantDto> sorted = participants.stream()
                 .sorted(Comparator
                         .comparing(ParticipantDto::getScore)
@@ -179,19 +179,19 @@ class MockSwissTournamentRunner {
         return this;
     }
 
-    public MockSwissTournamentRunner newParticipant(String name) {
-        participants.add(SwissMatchupStrategyImplTest.participant(name, 0, 0));
+    public MockTournamentRunner newParticipant(String name) {
+        participants.add(SwissPairingStrategyImplTest.participant(name, 0, 0));
         return this;
     }
 
-    public MockSwissTournamentRunner missParticipant(String name) {
+    public MockTournamentRunner missParticipant(String name) {
         participants.stream().filter(it -> it.getId().equals(name))
                 .findAny().orElseThrow()
                 .setIsMissing(true);
         return this;
     }
 
-    public MockSwissTournamentRunner returnParticipant(String name) {
+    public MockTournamentRunner returnParticipant(String name) {
         participants.stream().filter(it -> it.getId().equals(name))
                 .findAny().orElseThrow()
                 .setIsMissing(false);
@@ -206,9 +206,9 @@ class MockSwissTournamentRunner {
         }
 
         public MockRoundBuilder match(@Nullable String user1, @Nullable String user2, @Nullable MatchResult matchResult) {
-            matches.add(SwissMatchupStrategyImplTest.createMatch(
-                    SwissMatchupStrategyImplTest.participant(user1, NO_VALUE, NO_VALUE),
-                    SwissMatchupStrategyImplTest.participant(user2, NO_VALUE, NO_VALUE),
+            matches.add(SwissPairingStrategyImplTest.createMatch(
+                    SwissPairingStrategyImplTest.participant(user1, NO_VALUE, NO_VALUE),
+                    SwissPairingStrategyImplTest.participant(user2, NO_VALUE, NO_VALUE),
                     matchResult
             ));
             return this;
@@ -227,7 +227,7 @@ class MockSwissTournamentRunner {
          * @return self
          */
         public MockRoundBuilder match(ParticipantDto user1, ParticipantDto user2, MatchResult matchResult) {
-            matches.add(SwissMatchupStrategyImplTest.createMatch(
+            matches.add(SwissPairingStrategyImplTest.createMatch(
                     user1,
                     user2,
                     matchResult

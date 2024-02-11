@@ -11,16 +11,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static com.chessgrinder.chessgrinder.chessengine.SwissMatchupStrategyImpl.split;
+import static com.chessgrinder.chessgrinder.chessengine.SwissPairingStrategyImpl.split;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @ExtendWith(MockitoExtension.class)
-public class SwissMatchupStrategyImplTest {
+public class SwissPairingStrategyImplTest {
 
-    SwissMatchupStrategyImpl swissEngine = new SwissMatchupStrategyImpl();
+    SwissPairingStrategyImpl swissEngine = new SwissPairingStrategyImpl();
 
     @Test
     public void testSplit() {
@@ -40,7 +40,7 @@ public class SwissMatchupStrategyImplTest {
 
         List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4);
 
-        List<MatchDto> matches = swissEngine.matchUp(participants, emptyList(), false);
+        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), false);
 
         assertEquals(2, matches.size());
 
@@ -62,7 +62,7 @@ public class SwissMatchupStrategyImplTest {
 
         List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4, participant5);
 
-        List<MatchDto> matches = swissEngine.matchUp(participants, emptyList(), false);
+        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), false);
         MatchDto firstMatch = matches.get(0);
         MatchDto secondMatch = matches.get(1);
         MatchDto buy = matches.get(2);
@@ -83,7 +83,7 @@ public class SwissMatchupStrategyImplTest {
     @Test
     public void test_ZeroParticipants() {
         List<ParticipantDto> participants = List.of();
-        List<MatchDto> matches = swissEngine.matchUp(participants, emptyList(), false);
+        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), false);
 
         assertEquals(0, matches.size());
     }
@@ -99,7 +99,7 @@ public class SwissMatchupStrategyImplTest {
         List<List<MatchDto>> matchHistory = List.of(List.of(match));
         List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4);
 
-        List<MatchDto> matches = swissEngine.matchUp(participants, matchHistory, false);
+        List<MatchDto> matches = swissEngine.makePairings(participants, matchHistory, false);
 
         MatchDto firstMatch = matches.get(0);
         MatchDto secondMatch = matches.get(1);
@@ -118,7 +118,7 @@ public class SwissMatchupStrategyImplTest {
         ParticipantDto participant1 = createParticipant("user1", 0, 0);
         ParticipantDto participant2 = createParticipant("user2", 0, 0);
         ParticipantDto participant3 = createParticipant("user3", 0, 0);
-        List<MatchDto> round1 = swissEngine.matchUp(
+        List<MatchDto> round1 = swissEngine.makePairings(
                 List.of(participant1, participant2, participant3),
                 List.of(),
                 false
@@ -150,8 +150,8 @@ public class SwissMatchupStrategyImplTest {
                 .show(System.out::println);
     }
 
-    public static MockSwissTournamentRunner runTournament(MatchupStrategy swissEngine, String... participants) {
-        return new MockSwissTournamentRunner(swissEngine, participants);
+    public static MockTournamentRunner runTournament(PairingStrategy swissEngine, String... participants) {
+        return new MockTournamentRunner(swissEngine, participants);
     }
 
     public static ParticipantDto createParticipant(String name, int score, int buchholz) {

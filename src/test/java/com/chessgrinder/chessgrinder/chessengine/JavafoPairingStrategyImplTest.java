@@ -3,13 +3,13 @@ package com.chessgrinder.chessgrinder.chessengine;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.junit.jupiter.api.Test;
 
-import static com.chessgrinder.chessgrinder.chessengine.SwissMatchupStrategyImplTest.participant;
-import static com.chessgrinder.chessgrinder.chessengine.SwissMatchupStrategyImplTest.runTournament;
+import static com.chessgrinder.chessgrinder.chessengine.SwissPairingStrategyImplTest.participant;
+import static com.chessgrinder.chessgrinder.chessengine.SwissPairingStrategyImplTest.runTournament;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class JavafoMatchupStrategyImplTest {
+class JavafoPairingStrategyImplTest {
 
-    MatchupStrategy swissEngine = new JavafoMatchupStrategyImpl();
+    PairingStrategy swissEngine = new JavafoPairingStrategyImpl();
 
     @Test
     void test5p() {
@@ -30,7 +30,7 @@ class JavafoMatchupStrategyImplTest {
 
     @Test
     void test2pOverflown() {
-        MockSwissTournamentRunner tournament = runTournament(swissEngine, "user1", "user2")
+        MockTournamentRunner tournament = runTournament(swissEngine, "user1", "user2")
                 .thenRound(round -> round
                         .match(participant("user1", 1, 0), participant("user2", 0, 1), MatchResult.WHITE_WIN)
                 )

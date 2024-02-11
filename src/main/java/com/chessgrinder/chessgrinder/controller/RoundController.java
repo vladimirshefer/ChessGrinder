@@ -36,8 +36,8 @@ public class RoundController {
 
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping("/{roundNumber}/action/matchup")
-    public void makeMatchUp(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
-        roundService.makeMatchUp(tournamentId, roundNumber);
+    public void makePairings(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
+        roundService.makePairings(tournamentId, roundNumber);
     }
 
     @Secured(RoleEntity.Roles.ADMIN)

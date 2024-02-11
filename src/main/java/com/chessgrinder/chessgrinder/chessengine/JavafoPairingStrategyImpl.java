@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 @Component
-public class JavafoMatchupStrategyImpl implements MatchupStrategy {
+public class JavafoPairingStrategyImpl implements PairingStrategy {
     /**
      * JaVaFo is no thread-safe library, therefore to avoid concurrency problems,
      * the requests to JaVaFo are synchronized on this monitor.
@@ -28,7 +28,7 @@ public class JavafoMatchupStrategyImpl implements MatchupStrategy {
     private static final int DEFAULT_RATING = 1000;
 
     @Override
-    public List<MatchDto> matchUp(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, boolean recalculateResults) {
+    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, boolean recalculateResults) {
         if (participants.isEmpty()) return Collections.emptyList();
 
         Map<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(participants, matchHistory);

@@ -4,9 +4,9 @@ import java.util.*;
 
 import com.chessgrinder.chessgrinder.dto.*;
 
-public interface MatchupStrategy {
+public interface PairingStrategy {
 
-    List<MatchDto> matchUp(
+    List<MatchDto> makePairings(
             List<ParticipantDto> participantIds,
             /**
              * List per round.

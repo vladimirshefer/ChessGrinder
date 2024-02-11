@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 //@Component
 @RequiredArgsConstructor
-public class SwissMatchupStrategyImpl implements MatchupStrategy {
+public class SwissPairingStrategyImpl implements PairingStrategy {
 
     /**
      * "Main" method for swiss service. Takes list of all participants and return list of all matches.
@@ -24,7 +24,7 @@ public class SwissMatchupStrategyImpl implements MatchupStrategy {
      * @param matchHistory1 All submitted match results in the whole tournament.
      * @return The list of matches to be played in new round.
      */
-    public List<MatchDto> matchUp(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory1, boolean recalculateResults) {
+    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory1, boolean recalculateResults) {
         List<MatchDto> matchHistory = matchHistory1.stream().flatMap(Collection::stream).toList();
 
         List<MatchDto> matches = new ArrayList<>();
