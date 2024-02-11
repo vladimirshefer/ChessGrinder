@@ -102,6 +102,7 @@ public class TournamentController {
                 .nickname(nickname)
                 .score(BigDecimal.ZERO)
                 .buchholz(BigDecimal.ZERO)
+                .place(0)
                 .build();
 
         participantRepository.save(participant);

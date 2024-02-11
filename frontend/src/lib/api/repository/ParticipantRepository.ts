@@ -4,11 +4,13 @@ import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import {requirePresent} from "lib/util/common";
 import {UserDto} from "lib/api/dto/MainPageData";
+import authService from "lib/auth/AuthService";
 
 export interface ParticipantRepository {
     postParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
     deleteParticipant(tournamentId: string, participantId: string): Promise<void>
     getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto>
+    getMe(tournamentId: string): Promise<ParticipantDto>
     updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
     missParticipant(tournamentId: string, participantId: string): Promise<void>;
     unmissParticipant(tournamentId: string, participantId: string): Promise<void>;
@@ -57,6 +59,14 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
         participantDto.isMissing = false;
         await this.postParticipant(tournamentId, participantDto)
     }
+
+    async getMe(tournamentId: string): Promise<ParticipantDto> {
+        let username = authService.getAuthData()?.username;
+        let tournament = requirePresent(localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`), `No tournament with id ${tournamentId}`)
+        let participant = tournament.participants.find(it => it.userId === username)
+        if (!participant) throw new Error(`No participant with userId ${username} in tournament ${tournamentId}`)
+        return participant
+    }
 }
 
 class RestApiParticipantRepository implements ParticipantRepository {
@@ -70,6 +80,10 @@ class RestApiParticipantRepository implements ParticipantRepository {
 
     async getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto> {
         return await restApiClient.get<ParticipantDto>(`/tournament/${tournamentId}/participant/${participantId}`)
+    }
+
+    async getMe(tournamentId: string): Promise<ParticipantDto> {
+        return await restApiClient.get<ParticipantDto>(`/tournament/${tournamentId}/participant/me`);
     }
 
     async updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void> {
