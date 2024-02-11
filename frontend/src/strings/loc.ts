@@ -9,7 +9,12 @@ let locales: { [lang: string]: { [word: string]: string } } = {
     "default": locale_default,
 }
 
-export function useLoc() {
+/**
+ * React hook;
+ * Returns localization function;
+ *
+ */
+export function useLoc(): (key: string) => string {
     let [language] = useContext(LanguageContext);
 
     return (key: string): string => {
