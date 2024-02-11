@@ -49,6 +49,9 @@ function MainPage() {
             </div>
         </div>
         <TournamentsList tournaments={tournaments} createTournament={createTournament}/>
+        <div className={"w-full mt-5 text-sm"}>
+            <Link className={"underline"} to={'/privacyPolicy'}>Privacy Policy</Link>
+        </div>
     </>
 
 }
