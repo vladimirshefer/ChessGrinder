@@ -8,7 +8,6 @@ import {IoLocationSharp} from "react-icons/io5";
 import "./TournamentsList.css"
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "../../lib/api/repository/TournamentPageRepository";
-import {compareBy} from "lib/util/Comparator";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import dayjs from "dayjs";
 import {BsFillRecordFill} from "react-icons/bs";
