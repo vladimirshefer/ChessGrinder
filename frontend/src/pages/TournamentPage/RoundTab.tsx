@@ -12,14 +12,14 @@ export default function RoundTab(
         submitRoundFinished,
         deleteRound,
         reopenRound,
-        drawRound,
+        runPairing,
     }: {
         round: RoundDto,
         submitMatchResult: (match: MatchDto, result: MatchResult | null) => void,
         submitRoundFinished: () => void,
         deleteRound: () => void,
         reopenRound: () => void,
-        drawRound: () => void,
+        runPairing: () => void,
     }
 ) {
     let loc = useLoc();
@@ -34,8 +34,8 @@ export default function RoundTab(
             <div className={"mt-2 px-2 w-full flex justify-end gap-2"}>
                 <Conditional on={!round.isFinished}>
                     <button className={"btn-dark p-1 px-1"}
-                            onClick={() => drawRound()}
-                    >Draw
+                            onClick={() => runPairing()}
+                    >{loc("Pairing")}
                     </button>
                 </Conditional>
                 {

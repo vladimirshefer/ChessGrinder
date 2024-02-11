@@ -147,9 +147,9 @@ function TournamentPage() {
         navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""))
     }
 
-    async function drawRound() {
+    async function runPairingForRound() {
         try {
-            await roundRepository.drawRound(id!!, roundId!!)
+            await roundRepository.runPairing(id!!, roundId!!)
         } catch (e) {
             let errorMessage = "Pairing failed!";
             alert(errorMessage)
@@ -237,14 +237,10 @@ function TournamentPage() {
             <Conditional on={!!roundId}>
                 <RoundTab
                     round={tournamentData?.rounds[roundId!! - 1]!!}
-                    submitMatchResult={(match, result) => {
-                        submitMatchResult(match, result!!);
-                    }}
-                    submitRoundFinished={() => {
-                        finishRound()
-                    }}
+                    submitMatchResult={(match, result) => submitMatchResult(match, result!!)}
+                    submitRoundFinished={() => finishRound()}
                     deleteRound={() => deleteRound()}
-                    drawRound={() => drawRound()}
+                    runPairing={() => runPairingForRound()}
                     reopenRound={() => reopenRound()}
                 />
             </Conditional>

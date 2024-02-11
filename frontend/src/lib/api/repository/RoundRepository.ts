@@ -9,7 +9,7 @@ export interface RoundRepository {
 
     deleteRound(tournamentId: string, roundNumber: number): Promise<void>
 
-    drawRound(tournamentId: string, roundNumber: number): Promise<void>
+    runPairing(tournamentId: string, roundNumber: number): Promise<void>
 
     finishRound(tournamentId: string, roundNumber: number): Promise<void>
 
@@ -19,14 +19,6 @@ export interface RoundRepository {
 }
 
 class LocalStorageRoundRepository implements RoundRepository {
-    private computeIfAbsent<T>(map: Map<string, T>, key: string, defaultValue: T, valueMapper: (v: T) => T) {
-        let previousValue = map.get(key);
-        if (previousValue === undefined) {
-            map.set(key, defaultValue)
-        } else {
-            map.set(key, valueMapper(previousValue))
-        }
-    }
 
     async postRound(tournamentId: string): Promise<void> {
         let tournament = await tournamentPageRepository.getData(tournamentId)
@@ -40,7 +32,7 @@ class LocalStorageRoundRepository implements RoundRepository {
         this.saveTournament(tournamentId, tournament)
     }
 
-    async drawRound(tournamentId: string, roundNumber: number): Promise<void> {
+    async runPairing(tournamentId: string, roundNumber: number): Promise<void> {
         let tournament = await tournamentPageRepository.getData(tournamentId)
         if (!tournament) {
             throw new Error(`No tournament with id ${tournamentId}`)
@@ -143,11 +135,6 @@ class LocalStorageRoundRepository implements RoundRepository {
 }
 
 class ProductionRoundRepository implements RoundRepository {
-    async getData(tournamentId: string): Promise<TournamentPageData | null> {
-        return await restApiClient.get<TournamentPageData>(`/pages/tournament/${tournamentId}`)
-            .catch((e) => Promise.resolve(null));
-    }
-
     async postRound(tournamentId: string): Promise<void> {
         await restApiClient.post(`/tournament/${tournamentId}/round`, {})
     }
@@ -162,7 +149,7 @@ class ProductionRoundRepository implements RoundRepository {
         await restApiClient.delete(`/tournament/${tournamentId}/round/${roundNumber}`)
     }
 
-    async drawRound(tournamentId: string, roundNumber: number): Promise<void> {
+    async runPairing(tournamentId: string, roundNumber: number): Promise<void> {
         await restApiClient.post(`/tournament/${tournamentId}/round/${roundNumber}/action/matchup`)
     }
 
