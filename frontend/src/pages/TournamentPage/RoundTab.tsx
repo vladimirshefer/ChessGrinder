@@ -23,6 +23,11 @@ export default function RoundTab(
     }
 ) {
     let loc = useLoc();
+
+    if (!round) {
+        return <>Error</>
+    }
+
     return <div>
         <MatchesTable matches={round.matches || []}
                       submitMatchResult={(match, result) => {
