@@ -98,23 +98,25 @@ function TournamentPage() {
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
                 <button
                     className={`w-full h-full py-1 px-3 border border-black uppercase ${!roundId ? "bg-anzac-400 text-white" : "hover:bg-gray-300 text-black"}`}
+                    title={loc("Tournament page")}
                 >
                     <AiOutlineHome/>
                 </button>
             </Link>
             {roundNumbers.map(rid => {
-                return <Link key={rid} to={`/tournament/${id}/round/${rid}`}>
-                    <button
+                return <Link key={rid} to={`/tournament/${id}/round/${rid}`} title={loc(`Open round`) + " " + rid}>
+                    <div
                         className={`w-full py-1 px-3  border border-black
                                     ${rid === roundId ? "bg-primary text-white" : "hover:bg-gray-300"}`}>
                         {rid}
-                    </button>
+                    </div>
                 </Link>
             })}
             <Conditional on={tournament.status !== "FINISHED"}>
                 <ConditionalOnUserRole role={UserRoles.ADMIN}>
                     <button className={`py-1 px-3`}
                             onClick={createRound}
+                            title={loc("New round")}
                     ><AiOutlinePlus/>
                     </button>
                 </ConditionalOnUserRole>

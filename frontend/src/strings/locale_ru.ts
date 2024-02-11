@@ -11,6 +11,7 @@ let locale_ru: { [key: string]: string } = {
     "Admin": "Админ",
     "Administrator": "Администратор",
     "Add participant": "Добавить участника",
+    "New round": "Новый раунд",
     "Name": "Имя",
     "More info": "Подробнее",
     "Members": "Участники клуба",

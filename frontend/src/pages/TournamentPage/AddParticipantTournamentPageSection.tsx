@@ -51,6 +51,7 @@ export default function AddParticipantTournamentPageSection(
         <>
             <Conditional on={!inputEnabled}>
                 <button className={"w-full bg-black text-white p-1 uppercase"}
+                        title={loc("Add participant")}
                         onClick={() => setInputEnabled(true)}> {loc("Add participant")} </button>
             </Conditional>
             <Conditional on={inputEnabled}>
@@ -88,6 +89,7 @@ export default function AddParticipantTournamentPageSection(
                     </div>
                     <div className={"col-span-12 flex gap-x-1"}>
                         <button className={"btn-dark uppercase col-span-8 grow"}
+                                title={loc("Add participant")}
                                 onClick={() => {
                                     if (selectedValue || nickName) {
                                         getSubmitValue(selectedValue);
@@ -97,6 +99,7 @@ export default function AddParticipantTournamentPageSection(
                             {loc("Add participant")}
                         </button>
                         <button className={"btn-light !px-6"}
+                                title={loc("Cancel")}
                                 onClick={() => {
                                     setInputEnabled(false)
                                 }}>

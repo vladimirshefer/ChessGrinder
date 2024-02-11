@@ -88,7 +88,7 @@ export default function DropdownSelect<T>(
                 </div>
                 {
                     filteredValues.map(value =>
-                        <div
+                        <button
                             key={keyExtractor(value)}
                             className={"bg-inherit"}
                             onClick={() => {
@@ -98,7 +98,7 @@ export default function DropdownSelect<T>(
                                 onSelect(value);
                             }}>
                             {presenter(value)}
-                        </div>
+                        </button>
                     )
                 }
             </div>
