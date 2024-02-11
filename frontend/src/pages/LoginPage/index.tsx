@@ -8,6 +8,7 @@ import {useLoc} from "strings/loc";
 import {useForm} from "react-hook-form";
 import {UserSignUpRequest} from "lib/api/dto";
 import config from "config";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 
 const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9]+$/g
@@ -79,11 +80,8 @@ export default function LoginPage() {
             <ConditionalOnMode mode={"production"}>
                 <h3 className={"font-semibold uppercase"}>Social login</h3>
                 <div className={"flex justify-center w-full"}>
-                    <a href={"/api/oauth2/authorization/google"} className={"flex gap-2 border-2 p-2 content-center justify-center"}>
-                        <img className={"h-8 inline-block"} src={"/google_logo.png"}
-                             alt={"Sign in with Google"}></img>
-                        <span className={"flex justify-center items-center text-center font-semibold"}
-                        >Sign in with Google</span>
+                    <a href={"/api/oauth2/authorization/google"}>
+                        <GoogleLoginButton/>
                     </a>
                 </div>
             </ConditionalOnMode>
