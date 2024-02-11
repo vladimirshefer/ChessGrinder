@@ -57,16 +57,20 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
         trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(line.getTitle()), 3, ' '));
         trfConsumer.accept(" ");
         String name = line.getName() != null ? line.getName() : line.getStartingRank() + "";
-        trfConsumer.accept(toFixedLengthLeft(name, 34, ' '));
+        trfConsumer.accept(toFixedLengthLeft(name, 33, ' '));
+        trfConsumer.accept(" ");
         trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(line.getRating()), 4, ' '));
         trfConsumer.accept(toFixedLengthLeft("", 29, ' ')); // TODO insert federation, FIDE number, birthday
         trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(line.getPoints()), 4, ' '));
-        trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(line.getRank()), 4, ' '));
+        trfConsumer.accept(" ");
+        trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(line.getRank()), 3, ' '));
         trfConsumer.accept("  ");
 
-        for (PlayerTrfLineDto.Match match : line.getMatches()) {
-            trfConsumer.accept(toFixedLengthRight(match.getOpponentPlayerId() != 0 ? match.getOpponentPlayerId() : "0000", 4, ' '));
-            trfConsumer.accept(" " + match.getColor() + " " + match.getResult() + "  ");
+        if (line.getMatches() != null && !line.getMatches().isEmpty()) {
+            for (PlayerTrfLineDto.Match match : line.getMatches()) {
+                trfConsumer.accept(toFixedLengthRight(match.getOpponentPlayerId() != 0 ? match.getOpponentPlayerId() : "0000", 4, ' '));
+                trfConsumer.accept(" " + match.getColor() + " " + match.getResult() + "  ");
+            }
         }
     }
 
@@ -82,7 +86,8 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
 
     public static String toFixedLengthLeft(Object original, int targetLength, char gapChar) {
         StringBuilder sb = new StringBuilder();
-        sb.append(original);
+        String originalString = String.valueOf(original);
+        sb.append(originalString, 0, Math.min(originalString.length(), targetLength));
         while (sb.length() < targetLength) {
             sb.append(gapChar);
         }

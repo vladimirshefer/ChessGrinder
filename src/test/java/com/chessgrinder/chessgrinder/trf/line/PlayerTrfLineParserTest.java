@@ -25,4 +25,19 @@ class PlayerTrfLineParserTest {
         assertEquals(trfLine, trf.toString());
     }
 
+    /**
+     * Tests the case if the name length is very long, then it should be trimmed
+     */
+    @Test
+    void testOverflow() {
+        var parser = new PlayerTrfLineParser();
+        String trfLine = "001    0      abcdefghijklmnopqrttuwwxyzabcdefg                                            ";
+        var result = PlayerTrfLineDto.builder()
+                .name("abcdefghijklmnopqrttuwwxyzabcdefghijklmnopqrttuwwxyz")
+                .build();
+        StringBuilder trf = new StringBuilder();
+        parser.tryWrite(trf::append, result);
+        assertEquals(trfLine, trf.toString());
+    }
+
 }
