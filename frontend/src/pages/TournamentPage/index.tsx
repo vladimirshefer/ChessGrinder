@@ -5,7 +5,7 @@ import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
-import ConditionalOnUserRole, {Conditional} from "components/Conditional";
+import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
@@ -23,6 +23,14 @@ function TournamentPage() {
         queryKey: ["tournamentPageData", id],
         queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
     });
+
+    let meParticipantQuery = useQuery({
+        queryKey: ["meParticipant", id],
+        queryFn: async () => {
+            return await participantRepository.getMe(tournament.id)
+                .catch(() => null);
+        }
+    })
 
     let {data: tournamentData} = tournamentQuery;
 
@@ -124,6 +132,41 @@ function TournamentPage() {
         </div>
         <>
             <Conditional on={!roundId}>
+                <>
+                    {!meParticipantQuery.data && (
+                        <div className={"px-2"}>
+                            <ConditionalOnAuthorized>{
+                                !meParticipantQuery?.data ? (
+                                    <button className={"btn-primary w-full uppercase"}
+                                            onClick={async () => {
+                                                let nickname = prompt("Please enter your nickname");
+                                                if (!nickname) {
+                                                    alert("Nickname is not provided. Registration is cancelled.")
+                                                } else {
+                                                    await tournamentRepository.participate(tournament.id, nickname)
+                                                        .catch(() => alert("Could not participate in tournament"));
+                                                    await meParticipantQuery.refetch()
+                                                    await tournamentQuery.refetch()
+                                                }
+                                            }}
+                                    >
+                                        {loc("Participate")}
+                                    </button>
+                                ) : (
+                                    <div className={"btn-light w-full uppercase"}>Participating</div>
+                                )
+                            }
+                            </ConditionalOnAuthorized>
+                            <ConditionalOnAuthorized authorized={false}>
+                                <Link to={"/login"} className={"w-full"}>
+                                    <button className={"btn-primary w-full uppercase"}>
+                                        {loc("Participate")}
+                                    </button>
+                                </Link>
+                            </ConditionalOnAuthorized>
+                        </div>
+                    )}
+                </>
                 <ConditionalOnUserRole role={UserRoles.ADMIN}>
                     <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
                 </ConditionalOnUserRole>
