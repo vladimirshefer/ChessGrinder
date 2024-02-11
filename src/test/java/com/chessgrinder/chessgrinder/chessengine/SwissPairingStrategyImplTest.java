@@ -161,6 +161,8 @@ public class SwissPairingStrategyImplTest {
                 .name(name)
                 .score(BigDecimal.valueOf(score))
                 .buchholz(BigDecimal.valueOf(buchholz))
+                .place(-1)
+                .isMissing(false)
                 .build();
     }
 
@@ -171,6 +173,8 @@ public class SwissPairingStrategyImplTest {
                 .name(name)
                 .score(BigDecimal.valueOf(score))
                 .buchholz(BigDecimal.valueOf(buchholz))
+                .place(-1)
+                .isMissing(false)
                 .build();
     }
 
