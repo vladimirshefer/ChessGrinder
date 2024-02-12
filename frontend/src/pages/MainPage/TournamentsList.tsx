@@ -1,5 +1,5 @@
 import {TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
-import ConditionalOnUserRole from "components/Conditional";
+import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import "./TournamentsList.css"
 import {TournamentPane} from "./TournamentPane";
@@ -28,6 +28,11 @@ export function TournamentsList(
                     </button>
                 </li>
             </ConditionalOnUserRole>
+            <Conditional on={!tournaments || tournaments.length === 0}>
+                <div className={"col-span-12"}>
+                    <span>No tournaments</span>
+                </div>
+            </Conditional>
             {tournaments.map(tournament => {
                 return <li key={tournament.id}
                            className={`col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 

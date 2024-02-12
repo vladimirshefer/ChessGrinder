@@ -8,10 +8,17 @@ import userRepository from "lib/api/repository/UserRepository";
 import {useLoc} from "strings/loc";
 import {Link, useNavigate} from "react-router-dom";
 import {compareBy} from "lib/util/Comparator";
+import useSearchParam from "lib/react/hooks/useSearchParam";
 
 function MainPage() {
     let loc = useLoc()
     let navigate = useNavigate()
+    /**
+     * allows to add ?activeTournamentsOnly=true to the main page url.
+     * This will hide everything except for currently available tournaments.
+     * This is used to create advertisement link for social media.
+     */
+    let activeTournamentsOnly = useSearchParam("activeTournamentsOnly", "false")[0] === "true"
 
     let {
         data: {
@@ -37,18 +44,25 @@ function MainPage() {
     }
 
     const maxUsers: number = 10;
+
+    let tournamentsVisible = activeTournamentsOnly
+        ? tournaments.filter(it => it.status === "ACTIVE" || it.status === "PLANNED")
+        : tournaments;
+
     return <>
-        <div className={"p-3"}>
-            <MemberList members={users.sort(compareBy(it => -(it.reputation || 0))).slice(0, maxUsers)}/>
-            <div className={"grid py-2"}>
-                <Link to={"/users"}>
-                    <button className={"btn bg-primary w-full"}>
-                        {loc("All users")}
-                    </button>
-                </Link>
+        {!activeTournamentsOnly && (
+            <div className={"p-3"}>
+                <MemberList members={users.sort(compareBy(it => -(it.reputation || 0))).slice(0, maxUsers)}/>
+                <div className={"grid py-2"}>
+                    <Link to={"/users"}>
+                        <button className={"btn bg-primary w-full"}>
+                            {loc("All users")}
+                        </button>
+                    </Link>
+                </div>
             </div>
-        </div>
-        <TournamentsList tournaments={tournaments} createTournament={createTournament}/>
+        )}
+        <TournamentsList tournaments={tournamentsVisible} createTournament={createTournament}/>
         <div className={"w-full mt-5 text-sm"}>
             <Link className={"underline"} to={'/privacyPolicy'}>Privacy Policy</Link>
         </div>
