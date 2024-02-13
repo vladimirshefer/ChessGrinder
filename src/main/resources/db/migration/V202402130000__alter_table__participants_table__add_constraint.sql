@@ -1,3 +1,5 @@
+DELETE FROM participants_table WHERE tournament_id IS NULL;
+
 ALTER TABLE participants_table
     DROP CONSTRAINT fk__participants_table__tournaments_table;
 
