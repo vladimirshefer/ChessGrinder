@@ -11,6 +11,7 @@ import UserProfilePage from "pages/UserProfilePage";
 import ParticipantPage from "pages/ParticipantPage";
 import BadgesPage from "pages/BadgesPage";
 import UsersPage from "pages/UsersPage";
+import AllTournamentsPage from "pages/AllTournamentsPage";
 import TournamentEditPage from "pages/TournamentEditPage";
 import BadgePage from "pages/BadgePage";
 import UserProfileEditPage from "pages/UserProfileEditPage";
@@ -47,6 +48,7 @@ function App() {
                                     <Route path="/user/:username" element={<UserProfilePage/>}/>
                                     <Route path="/user/me/edit" element={<UserProfileEditPage/>}/>
                                     <Route path="/users" element={<UsersPage/>}/>
+                                    <Route path="/tournaments" element={<AllTournamentsPage/>}/>
                                     <Route path="/badges" element={<BadgesPage/>}/>
                                     <Route path="/badge/:badgeId" element={<BadgePage/>}/>
                                     <Route path="/privacyPolicy" element={<PrivacyPolicyPage/>}/>

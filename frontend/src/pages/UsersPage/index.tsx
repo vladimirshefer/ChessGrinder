@@ -1,8 +1,7 @@
-import React, {Fragment} from "react";
+import React from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import MemberList from "../MainPage/MemberList";
-import {compareBy} from "lib/util/Comparator";
 
 export default function UsersPage() {
 
