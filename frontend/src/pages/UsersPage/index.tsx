@@ -19,6 +19,6 @@ export default function UsersPage() {
         return <>Loading...</>
     }
     return <div className={"p-2"}>
-        <MemberList members={users.sort(compareBy(it => -(it.reputation || 0)))}/>
+        <MemberList members={users}/>
     </div>
 }

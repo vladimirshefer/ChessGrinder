@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -43,7 +44,10 @@ public class UserController {
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
-        return ListDto.<UserDto>builder().values(userService.getAllUsers()).build();
+        final var allUsers = userService.getAllUsers().stream()
+                .sorted(Comparator.comparing(UserDto::getReputation).reversed())
+                .collect(Collectors.toList());
+        return ListDto.<UserDto>builder().values(allUsers).build();
     }
 
     @GetMapping("/{userId}")
