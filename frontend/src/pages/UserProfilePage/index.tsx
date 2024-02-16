@@ -195,6 +195,11 @@ export default function UserProfilePage() {
                     title={userProfile.name || userProfile.username || userProfile.id || "Unknown"}>
                     {userProfile.name || userProfile.username || userProfile.id || "Unknown"}
                 </h1>
+                <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                    <span className={"text-sm text-gray-500"}>
+                         {userProfile.username}
+                    </span>
+                </ConditionalOnUserRole>
                 <div className={"flex font-semibold gap-4 items-center"}>
                     <div className={"flex gap-1 items-center"}>
                         <AiOutlineTrophy/>
