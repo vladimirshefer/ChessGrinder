@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.security;
 
 import com.chessgrinder.chessgrinder.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Slf4j
 public class WebSecurityConfig {
 
+    public static final String HOME_PAGE = "/";
+
+    public static final String OAUTH2_STATE_SEPARATOR = ",";
+
     @Autowired
     private CustomOAuth2UserService oauthUserService;
 
@@ -35,6 +40,9 @@ public class WebSecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private WithRefererOAuth2AuthorizationRequestResolver oAuth2authorizationRequestResolver;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -57,17 +65,26 @@ public class WebSecurityConfig {
                 .httpBasic(it -> it.disable())
                 .oauth2Login(oauth2Login ->
                         oauth2Login
+                                .authorizationEndpoint(it -> it.authorizationRequestResolver(oAuth2authorizationRequestResolver))
                                 .userInfoEndpoint(it -> it.userService(oauthUserService))
                                 .successHandler((request, response, authentication) -> {
                                     log.debug("Successfully authenticated user " + authentication.getName() + " via oauth2");
                                     if (authentication.getPrincipal() instanceof CustomOAuth2User customOAuth2User) {
                                         userService.processOAuthPostLogin(customOAuth2User);
                                     }
-                                    response.sendRedirect("/");
+                                    String redirectTo = HOME_PAGE;
+                                    String state = request.getParameter("state");
+                                    if (StringUtils.isNotBlank(state)) {
+                                        String[] stateSplit = state.split(OAUTH2_STATE_SEPARATOR);
+                                        if (stateSplit.length >= 2) {
+                                            redirectTo = stateSplit[1];
+                                        }
+                                    }
+                                    response.sendRedirect(redirectTo);
                                 })
                                 .failureHandler((request, response, exception) -> {
                                     log.warn("Could not login user vis oauth2", exception);
-                                    response.sendRedirect("/");
+                                    response.sendRedirect(HOME_PAGE);
                                 })
                 )
                 .cors(it -> it.disable())
@@ -89,5 +106,6 @@ public class WebSecurityConfig {
     public static BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
 }

@@ -1,4 +1,4 @@
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import React, {useContext, useRef, useState} from "react";
 import {useLoc} from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
@@ -17,6 +17,9 @@ function Header() {
     let [dropdownOpened, setDropdownOpened] = useState(false);
     let [, setLanguage] = useContext(LanguageContext)
     let loc = useLoc()
+
+    let location = useLocation();
+    let referer = encodeURIComponent(location.pathname);
 
     useClickOutsideHandler(droprownRef, () => setDropdownOpened(false));
 
@@ -43,6 +46,7 @@ function Header() {
         </li>
     }
 
+    let refererQueryParam = "?referer=" + referer;
     return <div>
         <div
             className={"w-full flex justify-between content-center items-center bg-white text-black border-b-2 border-black p-2"}>
@@ -54,7 +58,7 @@ function Header() {
                 <div className={"rounded-full overflow-hidden h-8 w-8 bg-white mx-2 border border-black"}>
                     {
                         !authenticatedUser ? (
-                            <Link to={"/login"}>
+                            <Link to={"/login" + refererQueryParam}>
                                 <Gravatar text={""} type={GravatarType.MysteryPerson} size={50}/>
                             </Link>
                         ) : (
@@ -73,7 +77,7 @@ function Header() {
                 </div>
             </div>
         </div>
-        <ul ref={droprownRef} className={`bg-white shadow w-full absolute z-25 py-5
+        <ul ref={droprownRef} className={`bg-white shadow w-full absolute z-50 py-5
                                     ${dropdownOpened ? "" : "hidden"}`}
             onClick={() => setDropdownOpened(false)}
         >
@@ -90,7 +94,7 @@ function Header() {
                 }} text={loc("Logout")}/>
             </ConditionalOnAuthorized>
             <ConditionalOnAuthorized authorized={false}>
-                <NavLink onClick={() => navigate("/login")} text={loc("Login")}/>
+                <NavLink onClick={() => navigate("/login" + refererQueryParam)} text={loc("Login")}/>
             </ConditionalOnAuthorized>
             <li className={"flex gap-2 justify-center p-2"}>
                 <button onClick={() => setLanguage("ru")}>RU</button>
