@@ -20,7 +20,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient()
 
-let ApplicationRouter = 1 > 0 /*TODO*/ ? HashRouter : BrowserRouter
+let ApplicationRouter = BrowserRouter
 
 function App() {
 
