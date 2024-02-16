@@ -1,7 +1,7 @@
 import React from 'react';
 import 'App.css';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {BrowserRouter, HashRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import MainPage from "pages/MainPage"
 import TournamentPage from "pages/TournamentPage"
 import Header from "components/Header";
