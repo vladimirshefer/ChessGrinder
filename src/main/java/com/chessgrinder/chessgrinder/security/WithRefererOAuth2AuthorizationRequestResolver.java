@@ -9,6 +9,23 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Component;
 
+/**
+ * <pre>
+ * Patches the Spring Oauth2 Request so that it keeps
+ * the referer parameter inside of `state` parameter.
+ * This is legal by OAuth2 specification, but no supported
+ * by Spring Security.
+ * By default, Spring Security puts only random ID for preventing
+ * CSRF attacks. We add the custom value joined by "," (comma).
+ *
+ * Example by default:
+ * state=MYRANDOMTOKENTOPREVENTCSRF
+ * Example with this resolver:
+ * state=MYRANDOMTOKENTOPREVENTCSRF,/path/to/page
+ *
+ * Source: https://github.com/spring-projects/spring-security/issues/7808#issuecomment-580836833
+ * </pre>
+ */
 @Component
 public class WithRefererOAuth2AuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
 
