@@ -7,18 +7,10 @@ import tournamentRepository from "lib/api/repository/TournamentRepository";
 import userRepository from "lib/api/repository/UserRepository";
 import {useLoc} from "strings/loc";
 import {Link, useNavigate} from "react-router-dom";
-import {compareBy} from "lib/util/Comparator";
-import useSearchParam from "lib/react/hooks/useSearchParam";
 
 function MainPage() {
     let loc = useLoc()
     let navigate = useNavigate()
-    /**
-     * allows to add ?activeTournamentsOnly=true to the main page url.
-     * This will hide everything except for currently available tournaments.
-     * This is used to create advertisement link for social media.
-     */
-    let activeTournamentsOnly = useSearchParam("activeTournamentsOnly", "false")[0] === "true"
 
     let {
         data: {
@@ -43,31 +35,41 @@ function MainPage() {
         await navigate(`/tournament/${tournament.id}/edit`)
     }
 
-    const maxUsers: number = 10;
+    let tournamentsVisible = tournaments.filter(
+        it => it.status === "ACTIVE" || it.status === "PLANNED"
+    );
+    if (tournamentsVisible.length === 0) {
+        const maxTourNumber: number = 2;
+        //sorted on server's side
+        tournamentsVisible = tournaments.slice(0, maxTourNumber);
+    }
 
-    let tournamentsVisible = activeTournamentsOnly
-        ? tournaments.filter(it => it.status === "ACTIVE" || it.status === "PLANNED")
-        : tournaments;
-
+    const maxUsers: number = 8;
     return <>
-        {!activeTournamentsOnly && (
-            <div className={"p-3"}>
-                <MemberList members={users.sort(compareBy(it => -(it.reputation || 0))).slice(0, maxUsers)}/>
-                <div className={"grid py-2"}>
-                    <Link to={"/users"}>
-                        <button className={"btn bg-primary w-full"}>
-                            {loc("All users")}
-                        </button>
-                    </Link>
-                </div>
+       <div className={"p-3"}>
+            <MemberList members={users.slice(0, maxUsers)}/>
+            <div className={"grid py-2"}>
+                <Link to={"/users"}>
+                    <button className={"btn bg-primary w-full"}>
+                        {loc("All users")}
+                    </button>
+                </Link>
             </div>
-        )}
-        <TournamentsList tournaments={tournamentsVisible} createTournament={createTournament}/>
+        </div>
+        <div className={"p-3"}>
+            <TournamentsList tournaments={tournamentsVisible} createTournament={createTournament}/>
+            <div className={"grid py-2"}>
+                <Link to={"/tournaments"}>
+                    <button className={"btn bg-primary w-full"}>
+                        {loc("All tournaments")}
+                    </button>
+                </Link>
+            </div>
+        </div>
         <div className={"w-full mt-5 text-sm"}>
             <Link className={"underline"} to={'/privacyPolicy'}>Privacy Policy</Link>
         </div>
     </>
-
 }
 
 export default MainPage

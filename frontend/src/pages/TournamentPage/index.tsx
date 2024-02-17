@@ -5,7 +5,7 @@ import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
-import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "components/Conditional";
+import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
@@ -14,6 +14,7 @@ import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
 import roundRepository from "lib/api/repository/RoundRepository";
 import AddParticipantTournamentPageSection from "./AddParticipantTournamentPageSection";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 function TournamentPage() {
     let loc = useLoc()
@@ -22,7 +23,10 @@ function TournamentPage() {
     let tournamentQuery = useQuery({
         queryKey: ["tournamentPageData", id],
         queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
-    });
+    })
+
+    let [authenticatedUser] = useAuthenticatedUser()
+    let isAuthenticatedUser = !!authenticatedUser
 
     let meParticipantQuery = useQuery({
         queryKey: ["meParticipant", id],
@@ -86,7 +90,8 @@ function TournamentPage() {
 
     if (tournamentQuery.isError) return <>Error!</>
     if (!tournamentQuery.isSuccess) return <>Loading</>
-    let tournament = tournamentQuery.data!!.tournament;
+    let tournament = tournamentQuery.data!!.tournament
+    let isParticipating = (meParticipantQuery.isSuccess && !!meParticipantQuery.data)
 
     return <>
         <div className={"flex mt-4 p-2 items-top content-center"}>
@@ -133,10 +138,10 @@ function TournamentPage() {
         <>
             <Conditional on={!roundId}>
                 <>
-                    {!meParticipantQuery.data && (
+                    {!isParticipating && (
                         <div className={"px-2"}>
-                            <ConditionalOnAuthorized>{
-                                !meParticipantQuery?.data ? (
+                            {isAuthenticatedUser ?
+                                (
                                     <button className={"btn-primary w-full uppercase"}
                                             onClick={async () => {
                                                 let nickname = prompt("Please enter your nickname");
@@ -153,17 +158,14 @@ function TournamentPage() {
                                         {loc("Participate")}
                                     </button>
                                 ) : (
-                                    <div className={"btn-light w-full uppercase"}>Participating</div>
+                                    <Link to={"/login"} className={"w-full"}>
+                                        <button className={"btn-primary w-full uppercase"}>
+                                            {loc("Participate")}
+                                        </button>
+                                    </Link>
                                 )
                             }
-                            </ConditionalOnAuthorized>
-                            <ConditionalOnAuthorized authorized={false}>
-                                <Link to={"/login"} className={"w-full"}>
-                                    <button className={"btn-primary w-full uppercase"}>
-                                        {loc("Participate")}
-                                    </button>
-                                </Link>
-                            </ConditionalOnAuthorized>
+
                         </div>
                     )}
                 </>

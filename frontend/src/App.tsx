@@ -1,7 +1,7 @@
 import React from 'react';
 import 'App.css';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {BrowserRouter, HashRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import MainPage from "pages/MainPage"
 import TournamentPage from "pages/TournamentPage"
 import Header from "components/Header";
@@ -11,16 +11,18 @@ import UserProfilePage from "pages/UserProfilePage";
 import ParticipantPage from "pages/ParticipantPage";
 import BadgesPage from "pages/BadgesPage";
 import UsersPage from "pages/UsersPage";
+import AllTournamentsPage from "pages/AllTournamentsPage";
 import TournamentEditPage from "pages/TournamentEditPage";
 import BadgePage from "pages/BadgePage";
 import UserProfileEditPage from "pages/UserProfileEditPage";
 import {AuthenticatedUserContextProvider} from "contexts/AuthenticatedUserContext";
 import {LanguageContextProvider} from "contexts/LanguageContext";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
+import NotFoundPage from "pages/NotFoundPage";
 
 const queryClient = new QueryClient()
 
-let ApplicationRouter = 1 > 0 /*TODO*/ ? HashRouter : BrowserRouter
+let ApplicationRouter = BrowserRouter
 
 function App() {
 
@@ -47,9 +49,11 @@ function App() {
                                     <Route path="/user/:username" element={<UserProfilePage/>}/>
                                     <Route path="/user/me/edit" element={<UserProfileEditPage/>}/>
                                     <Route path="/users" element={<UsersPage/>}/>
+                                    <Route path="/tournaments" element={<AllTournamentsPage/>}/>
                                     <Route path="/badges" element={<BadgesPage/>}/>
                                     <Route path="/badge/:badgeId" element={<BadgePage/>}/>
                                     <Route path="/privacyPolicy" element={<PrivacyPolicyPage/>}/>
+                                    <Route path='*' element={<NotFoundPage />}/>
                                 </Routes>
                             </React.StrictMode>
                         </ApplicationRouter>
