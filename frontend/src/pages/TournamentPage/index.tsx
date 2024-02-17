@@ -138,7 +138,7 @@ function TournamentPage() {
         <>
             <Conditional on={!roundId}>
                 <>
-                    {!isParticipating && (
+                    {!isParticipating && tournamentData?.tournament?.status === "PLANNED" && (
                         <div className={"px-2"}>
                             {isAuthenticatedUser ?
                                 (

@@ -3,7 +3,7 @@ import {useLoc} from "strings/loc";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {FiArrowUpRight} from "react-icons/fi";
 import {BsFillRecordFill} from "react-icons/bs";
 import dayjs from "dayjs";
@@ -21,6 +21,7 @@ export function TournamentPane(
     }
 ) {
     let loc = useLoc();
+    let location = useLocation()
 
     /**
      * TODO migrate to special endpoint instead of tournamentPage
@@ -45,8 +46,6 @@ export function TournamentPane(
                 .catch(() => null);
         }
     })
-
-    let participateButtonSupported = true // TODO @vshefer delete
 
     let isPlanned = tournament.status === "PLANNED"
     let isFinished = tournament.status === "FINISHED"
@@ -121,7 +120,7 @@ export function TournamentPane(
             </div>
         </Conditional>
         <div className={"p-1"}></div>
-        <Conditional on={participateButtonSupported && (isPlanned)}>
+        <Conditional on={isPlanned}>
             <div className={"w-full"}>
                 <ConditionalOnAuthorized>{
                     !meParticipantQuery?.data ? (
@@ -145,7 +144,7 @@ export function TournamentPane(
                 }
                 </ConditionalOnAuthorized>
                 <ConditionalOnAuthorized authorized={false}>
-                    <Link to={"/login"} className={"w-full"}>
+                    <Link to={"/login?referer=" + location.pathname} className={"w-full"}>
                         <button className={"btn-primary w-full uppercase"}>
                             {loc("Participate")}
                         </button>
