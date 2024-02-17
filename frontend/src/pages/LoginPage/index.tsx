@@ -9,6 +9,7 @@ import {useForm} from "react-hook-form";
 import {UserSignUpRequest} from "lib/api/dto";
 import config from "config";
 import GoogleLoginButton from "./GoogleLoginButton";
+import useSearchParam from "lib/react/hooks/useSearchParam";
 
 
 const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9]+$/g
@@ -20,6 +21,7 @@ export default function LoginPage() {
     let [mode,] = useMode();
     let signInForm = useForm()
     let signUpForm = useForm()
+    let [referer] = useSearchParam("referer", "")
 
     let ENABLE_LOGIN_USERNAME_PASSWORD = mode === "local" || config.features["auth.signupWithPasswordEnabled"]
     let ENABLE_REGISTRATION_USERNAME_PASSWORD = mode === "local" || config.features["auth.signupWithPasswordEnabled"]
@@ -80,7 +82,7 @@ export default function LoginPage() {
             <ConditionalOnMode mode={"production"}>
                 <h3 className={"font-semibold uppercase"}>Social login</h3>
                 <div className={"flex justify-center w-full"}>
-                    <a href={"/api/oauth2/authorization/google"}>
+                    <a href={`/api/oauth2/authorization/google?referer=${referer}`}>
                         <GoogleLoginButton/>
                     </a>
                 </div>
