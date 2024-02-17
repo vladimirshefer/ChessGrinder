@@ -109,7 +109,7 @@ function MatchRow(
         <div className={"col-span-4 text-xl text-center"}>
             <MatchResultSelector canSetResult={canEditResults} result={match.result} setResult={setResult}/>
         </div>
-        <div className={`col-span-4 text-xs p-3 font-semibold
+        <div className={`grid col-span-4 text-xs p-3 
                         ${match.result === "BLACK_WIN" ? "bg-anzac-400" : ""} 
                         ${match.result === "WHITE_WIN" ? "bg-gray-200" : ""}
                         ${match.result === "BUY" ? "bg-anzac-400" : ""} 
@@ -118,7 +118,10 @@ function MatchRow(
                         ${!match.result ? "bg-gray-50" : ""} 
                         `}
         >
-            <span>{match.black?.name || "—"}</span>
+            <span className={"font-semibold"}>{match.black?.name || "—"}</span>
+            {match.black?.userFullName &&
+                <span>{match.black?.userFullName}</span>
+            }
         </div>
     </div>;
 }

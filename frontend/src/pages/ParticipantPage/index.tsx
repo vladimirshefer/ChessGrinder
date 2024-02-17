@@ -6,10 +6,15 @@ import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {useForm} from "react-hook-form";
 import {propagate} from "lib/util/misc";
+import {AiOutlineArrowLeft, AiOutlineDelete} from "react-icons/ai";
+import React from "react";
+import {useLoc} from "strings/loc";
+import Toggle from "components/Toggle";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
     let editForm = useForm()
+    let loc = useLoc();
 
     let {
         tournamentId,
@@ -55,7 +60,7 @@ export default function ParticipantPage() {
         </>
     }
 
-    async function changeNickname(data: { [key: string]: string}) {
+    async function changeNickname(data: { [key: string]: string }) {
         await participantRepository.updateParticipant(tournamentId!!, {
             id: participantQuery.data?.id || "",
             name: data["nickname"],
@@ -70,10 +75,19 @@ export default function ParticipantPage() {
         await participantQuery.refetch()
     }
 
-    return <div className={"p-3"}>
+    let missing = (participantQuery.data && participantQuery.data?.isMissing) || false;
+
+    return <div className={"p-3 text-left"}>
         <div className={"p-3"}>
             <Conditional on={participantQuery.isSuccess}>
-                <h1 className={"text-xl font-bold"}>{participantQuery.data?.name}</h1>
+                <div className={"flex items-center gap-2"}>
+                    <Link to={"/tournament/" + tournamentId} className={"text-xl"} title={loc("Back")}>
+                    <AiOutlineArrowLeft/>
+                    </Link>
+                    <h1 className={"text-xl font-bold flex gap-2"}>
+                        {participantQuery.data?.name}
+                    </h1>
+                </div>
             </Conditional>
             <Conditional on={userQuery.isSuccess}>
                 <h2>{userQuery.data?.name}</h2>
@@ -98,48 +112,50 @@ export default function ParticipantPage() {
                         placeholder={"Nickname"}
                         {...editForm.register("nickname")}
                     />
-                    <button className={"btn-light"} type={"submit"}>Save</button>
+                    <button className={"btn-light"} type={"submit"}>{loc("Save")}</button>
                 </div>
             </form>
+
+            <div className={"grid gap-2 text-left py-3"}>
+                <div className={"flex justify-bottom gap-2"}>
+                    <span className="">Missing</span>
+                    <Toggle
+                        title={"Set missing"}
+                        checked={missing}
+                        setChecked={async (v) => {
+                            if (missing) {
+                                await participantRepository.unmissParticipant(tournamentId!!, participantId!!)
+                            } else {
+                                await participantRepository.missParticipant(tournamentId!!, participantId!!)
+                            }
+                            await participantQuery.refetch()
+                        }}
+                    />
+                </div>
+            </div>
         </ConditionalOnUserRole>
 
         <div className={"flex gap-2 justify-end"}>
             <Link to={`/tournament/${tournamentId}`}>
-                <button className={"btn-light"}>
-                    Back
+                <button className={"btn-light"} title={loc("Back")}>
+                    {loc("Back")}
                 </button>
             </Link>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <button className={"btn-danger"}
+                <button className={"btn-danger flex gap-1 items-center"}
+                        title={loc("Delete")}
                         onClick={async () => {
                             if (window.confirm(`Do you want to delete user ${participantId} from tournament ${tournamentId}?`)) {
                                 await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
                                 navigate(`/tournament/${tournamentId}`)
                             }
                         }}
-                >Delete
+                >
+                    {loc("Delete")}
+                    <span><AiOutlineDelete/></span>
                 </button>
-                <Conditional on={participantQuery.data && !participantQuery.data?.isMissing}>
-                    <button className={"btn-light"}
-                            onClick={async () => {
-                                await participantRepository.missParticipant(tournamentId!!, participantId!!)
-                                await participantQuery.refetch()
-                            }}
-                    >
-                        Missing on tournament
-                    </button>
-                </Conditional>
-                <Conditional on={participantQuery.data && participantQuery.data?.isMissing}>
-                    <button className={"btn-light"}
-                            onClick={async () => {
-                                await participantRepository.unmissParticipant(tournamentId!!, participantId!!)
-                                await participantQuery.refetch()
-                            }}
-                    >
-                        Returned to tournament
-                    </button>
-                </Conditional>
             </ConditionalOnUserRole>
         </div>
+
     </div>
 }
