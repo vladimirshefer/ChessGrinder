@@ -68,26 +68,18 @@ public class WithRefererOAuth2AuthorizationRequestResolver implements OAuth2Auth
     }
 
     private String getRefererOrEmpty(HttpServletRequest request) {
-        if (request != null) {
-            String referer = "";
-            // Do not use Referer header
-            //noinspection ConstantValue
-            if (false) {
-                String refererHeader = request.getHeader("Referer");
-                if (StringUtils.isNotBlank(refererHeader)) {
-                    referer = refererHeader;
-                }
-            }
-            String refererParam = request.getParameter("referer");
-            if (StringUtils.isNotBlank(refererParam)) {
-                referer = refererParam;
-            }
-            if (!referer.startsWith("/")) {
-                referer = "/" + referer;
-            }
-            return referer;
+        if (request == null) {
+            return "";
         }
-        return "";
+        String referer = "";
+        String refererParam = request.getParameter("referer");
+        if (StringUtils.isNotBlank(refererParam)) {
+            referer = refererParam;
+        }
+        if (!referer.startsWith("/")) {
+            referer = "/" + referer;
+        }
+        return referer;
     }
 
 }
