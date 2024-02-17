@@ -26,6 +26,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
     private final PlayerTrfLineParser playerTrfLineParser = new PlayerTrfLineParser();
     private final MissingPlayersTrfLineParser missingPlayersTrfLineParser = new MissingPlayersTrfLineParser();
     private static final int DEFAULT_RATING = 1000;
+    private static final String NEWLINE_REGEX = "\\r?\\n|\\r";
 
     @Override
     public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, boolean recalculateResults) {
@@ -65,7 +66,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
             }
         }
 
-        List<MatchDto> result = Arrays.stream(pairingsFileContent.split("\n"))
+        List<MatchDto> result = Arrays.stream(pairingsFileContent.split(NEWLINE_REGEX))
                 .skip(1)
                 .map(it -> it.split(" "))
                 .map(it ->

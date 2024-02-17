@@ -64,6 +64,13 @@ public class RoundService {
         if (roundEntity == null) {
             return;
         }
+        for (MatchEntity match : roundEntity.getMatches()) {
+
+            if (match.getResult() == null) {
+                throw new IllegalStateException("Can not finish round with unknown match result");
+
+            }
+        }
         roundEntity.setFinished(true);
         roundRepository.save(roundEntity);
         try {
