@@ -1,8 +1,9 @@
 import {qualifiedService} from "lib/api/repository/apiSettings";
-import {BadgeDto, ListDto} from "lib/api/dto/MainPageData";
+import {BadgeDto, ListDto, UserBadgeDto, UserDto} from "lib/api/dto/MainPageData";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import restApiClient from "lib/api/RestApiClient";
 import {requirePresent} from "lib/util/common";
+import userRepository from "lib/api/repository/UserRepository";
 
 export interface BadgeRepository {
     getBadges(): Promise<ListDto<BadgeDto>>;
@@ -10,6 +11,7 @@ export interface BadgeRepository {
     createBadge(badge: BadgeDto): Promise<void>;
     assignBadge(badgeId: string, userId: string): Promise<void>;
     deleteBadge(badgeId: string): Promise<void>;
+    getUsers(badgeId: string): Promise<ListDto<UserDto>>;
 }
 
 class LocalStorageBadgeRepository implements BadgeRepository {
@@ -44,6 +46,21 @@ class LocalStorageBadgeRepository implements BadgeRepository {
         localStorageUtil.removeObject(`cgd.badge.${badgeId}`)
     }
 
+    async getUsers(badgeId: string): Promise<ListDto<UserDto>> {
+        let usersBadges = localStorageUtil.getAllObjectsByPrefix(`cgd.user_badge`) as UserBadgeDto[];
+
+        let usersFound = usersBadges
+            .filter(it => it.badgeId === badgeId)
+            .map(it => it.userId)
+            .map(async it => await userRepository.getUser(it));
+
+        let usersResolved = (await Promise.all(usersFound))
+            .filter(it => !!it)
+            .map(it => it as UserDto)
+
+        return {values: usersResolved}
+    }
+
 }
 
 class RestApiBadgeRepository implements BadgeRepository {
@@ -65,6 +82,10 @@ class RestApiBadgeRepository implements BadgeRepository {
 
     async deleteBadge(badgeId: string): Promise<void> {
         await restApiClient.delete(`/badge/${badgeId}`)
+    }
+
+    async getUsers(badgeId: string): Promise<ListDto<UserDto>> {
+        return restApiClient.get(`/badge/${badgeId}/users`);
     }
 }
 

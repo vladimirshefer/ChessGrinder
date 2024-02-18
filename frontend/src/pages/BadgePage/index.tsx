@@ -3,7 +3,8 @@ import {useQuery} from "@tanstack/react-query";
 import {useNavigate, useParams} from "react-router-dom";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import ConditionalOnUserRole from "../../components/Conditional";
-import {UserRoles} from "../../lib/api/dto/MainPageData";
+import {UserRoles} from "lib/api/dto/MainPageData";
+import {UserPane} from "pages/MainPage/UserPane";
 
 export default function BadgePage() {
     let {badgeId} = useParams()
@@ -14,6 +15,13 @@ export default function BadgePage() {
         queryFn: async () => {
             return badgeRepository.getBadge(badgeId!!)
         },
+    })
+
+    let usersQuery = useQuery({
+        queryKey: ["badgeUsers", badgeId],
+        queryFn: async () => {
+            return await badgeRepository.getUsers(badgeId!!)
+        }
     })
 
     if (!badgeId) return <>No badge selected.</>
@@ -69,21 +77,9 @@ export default function BadgePage() {
             <span>Users</span>
         </div>
         <div className={"grid"}>
-            <div className={"flex gap-2"}>
-                <div>
-                    <Gravatar
-                        text={"345"}
-                        type={GravatarType.Robohash}
-                        size={50}
-                        className={"rounded-full"}
-                    />
-                </div>
-                <div className={"grid"}>
-                    <div>
-                        <span>Vladimir Shefer</span>
-                    </div>
-                </div>
-            </div>
+            {
+                usersQuery.isSuccess && usersQuery.data!!.values.map(it => <UserPane user={it}/>)
+            }
         </div>
     </div>
 }

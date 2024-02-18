@@ -19,4 +19,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
     @Modifying
     @Query("UPDATE UserEntity u SET u.reputation = u.reputation + :amount WHERE u.id = :userId")
     void addReputation(UUID userId, Integer amount);
+
+    @Query("SELECT ub.user from UserBadgeEntity ub WHERE ub.badge.id = :badgeId")
+    List<UserEntity> findAllByBadgeId(UUID badgeId);
 }
