@@ -15,9 +15,11 @@ import dayjs from "dayjs";
 import roundRepository from "lib/api/repository/RoundRepository";
 import AddParticipantTournamentPageSection from "./AddParticipantTournamentPageSection";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
+import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 
 function TournamentPage() {
     let loc = useLoc()
+    let loginPageLink = useLoginPageLink();
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
     let tournamentQuery = useQuery({
@@ -158,7 +160,7 @@ function TournamentPage() {
                                         {loc("Participate")}
                                     </button>
                                 ) : (
-                                    <Link to={"/login"} className={"w-full"}>
+                                    <Link to={loginPageLink} className={"w-full"}>
                                         <button className={"btn-primary w-full uppercase"}>
                                             {loc("Participate")}
                                         </button>

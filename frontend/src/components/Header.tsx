@@ -1,4 +1,4 @@
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import React, {useContext, useRef, useState} from "react";
 import {useLoc} from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
@@ -9,6 +9,7 @@ import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {LanguageContext} from "contexts/LanguageContext";
+import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 
 function Header() {
     let navigate = useNavigate()
@@ -18,8 +19,7 @@ function Header() {
     let [, setLanguage] = useContext(LanguageContext)
     let loc = useLoc()
 
-    let location = useLocation();
-    let referer = encodeURIComponent(location.pathname);
+    let loginPageLink = useLoginPageLink();
 
     useClickOutsideHandler(droprownRef, () => setDropdownOpened(false));
 
@@ -46,7 +46,6 @@ function Header() {
         </li>
     }
 
-    let refererQueryParam = "?referer=" + referer;
     return <div>
         <div
             className={"w-full flex justify-between content-center items-center bg-white text-black border-b-2 border-black p-2"}>
@@ -58,7 +57,7 @@ function Header() {
                 <div className={"rounded-full overflow-hidden h-8 w-8 bg-white mx-2 border border-black"}>
                     {
                         !authenticatedUser ? (
-                            <Link to={"/login" + refererQueryParam}>
+                            <Link to={loginPageLink}>
                                 <Gravatar text={""} type={GravatarType.MysteryPerson} size={50}/>
                             </Link>
                         ) : (
@@ -94,7 +93,7 @@ function Header() {
                 }} text={loc("Logout")}/>
             </ConditionalOnAuthorized>
             <ConditionalOnAuthorized authorized={false}>
-                <NavLink onClick={() => navigate("/login" + refererQueryParam)} text={loc("Login")}/>
+                <NavLink onClick={() => navigate(loginPageLink)} text={loc("Login")}/>
             </ConditionalOnAuthorized>
             <li className={"flex gap-2 justify-center p-2"}>
                 <button onClick={() => setLanguage("ru")}>RU</button>

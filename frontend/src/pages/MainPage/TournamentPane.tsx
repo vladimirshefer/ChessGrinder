@@ -3,7 +3,7 @@ import {useLoc} from "strings/loc";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
-import {Link, useLocation} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {FiArrowUpRight} from "react-icons/fi";
 import {BsFillRecordFill} from "react-icons/bs";
 import dayjs from "dayjs";
@@ -12,6 +12,7 @@ import {AiFillClockCircle} from "react-icons/ai";
 import {IoLocationSharp} from "react-icons/io5";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import participantRepository from "lib/api/repository/ParticipantRepository";
+import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 
 export function TournamentPane(
     {
@@ -21,7 +22,7 @@ export function TournamentPane(
     }
 ) {
     let loc = useLoc();
-    let location = useLocation()
+    let loginPageLink = useLoginPageLink();
 
     /**
      * TODO migrate to special endpoint instead of tournamentPage
@@ -144,7 +145,7 @@ export function TournamentPane(
                 }
                 </ConditionalOnAuthorized>
                 <ConditionalOnAuthorized authorized={false}>
-                    <Link to={"/login?referer=" + location.pathname} className={"w-full"}>
+                    <Link to={loginPageLink} className={"w-full"}>
                         <button className={"btn-primary w-full uppercase"}>
                             {loc("Participate")}
                         </button>
