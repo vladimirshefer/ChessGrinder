@@ -1,5 +1,5 @@
 import React from "react";
-import {MemberList} from "./MemberList";
+import {MemberList} from "pages/MainPage/MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
 import {ListDto, UserDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
@@ -46,8 +46,8 @@ function MainPage() {
 
     const maxUsers: number = 8;
     return <>
-       <div className={"p-3"}>
-            <MemberList members={users.slice(0, maxUsers)}/>
+        <div className={"p-3"}>
+            <MemberList users={users.slice(0, maxUsers)}/>
             <div className={"grid py-2"}>
                 <Link to={"/users"}>
                     <button className={"btn bg-primary w-full"}>

@@ -1,7 +1,7 @@
 import React from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
-import MemberList from "../MainPage/MemberList";
+import MemberList from "pages/MainPage/MemberList";
 
 export default function UsersPage() {
 
@@ -18,6 +18,6 @@ export default function UsersPage() {
         return <>Loading...</>
     }
     return <div className={"p-2"}>
-        <MemberList members={users}/>
+        <MemberList users={users}/>
     </div>
 }
