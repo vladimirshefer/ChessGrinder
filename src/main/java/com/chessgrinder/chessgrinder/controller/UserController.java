@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
@@ -78,6 +79,10 @@ public class UserController {
         UserEntity user = findUserByIdOrUsername(userIdOrUsername);
         List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
         List<UserHistoryRecordDto> history = participants.stream()
+                .filter(participant -> TournamentStatus.FINISHED == Optional
+                        .ofNullable(participant.getTournament())
+                        .map(TournamentEntity::getStatus)
+                        .orElse(null))
                 .map(participant ->
                         UserHistoryRecordDto.builder()
                                 .tournament(tournamentMapper.toDto(participant.getTournament()))
