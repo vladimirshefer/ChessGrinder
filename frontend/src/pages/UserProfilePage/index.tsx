@@ -3,7 +3,13 @@ import React, {useEffect, useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
-import {BadgeDto, UserDto, UserReputationHistoryRecordDto, UserRoles} from "lib/api/dto/MainPageData";
+import {
+    BadgeDto,
+    DEFAULT_DATETIME_FORMAT,
+    UserDto,
+    UserReputationHistoryRecordDto,
+    UserRoles
+} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
@@ -17,6 +23,8 @@ import DropdownSelect from "components/DropdownSelect";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {useForm} from "react-hook-form";
 import {propagate} from "lib/util/misc";
+import {FaRegHeart} from "react-icons/fa";
+import dayjs from "dayjs";
 
 function AssignAchievementPane(
     {
@@ -161,7 +169,7 @@ export default function UserProfilePage() {
             if (!userProfile) return null;
             return userRepository.getHistory(userProfile.id)
         },
-        enabled: activeTab === "history"
+        // enabled: activeTab === "history"
     })
 
     async function logout() {
@@ -172,6 +180,21 @@ export default function UserProfilePage() {
     if (!userProfile) {
         return <>No such user</>
     }
+
+    let now = dayjs()
+    let nowMonthStr = now.format(`YYYY-MM`)
+    let userHistory = historyQuery.data?.values || [];
+    let seasonPoints = userHistory
+        .filter(it => {
+            let tournamentDate = dayjs(it.tournament.date, DEFAULT_DATETIME_FORMAT);
+            return nowMonthStr === tournamentDate.format('YYYY-MM')
+        })
+        .map(it => it.participant.score)
+        .reduce((a, b) => a + b, 0);
+
+    let totalPoints = userHistory
+        .map(it => it.participant.score)
+        .reduce((a, b) => a + b, 0);
 
     return <div className={"grid p-4"}>
         <div className={"flex gap-1 items-center"}>
@@ -201,13 +224,22 @@ export default function UserProfilePage() {
                     </span>
                 </ConditionalOnUserRole>
                 <div className={"flex font-semibold gap-4 items-center"}>
-                    <div className={"flex gap-1 items-center"}>
-                        <AiOutlineTrophy/>
-                        <span>{userProfile.reputation || 0}</span>
-                    </div>
-                    <div className={"flex gap-1 items-center"}>
+                    <div className={"flex gap-1 items-center"} title={loc("Tournaments")}>
                         <BiSolidChess/>
                         <span>{historyQuery.data?.count || "?"}</span>
+                    </div>
+                    <div className={"flex gap-1 items-center"} title={loc("Points")}>
+                        <AiOutlineTrophy/>
+                        <span>{totalPoints}</span>
+                        <Conditional on={seasonPoints > 0}>
+                        <span className={"text-green-800 text-sm"} title={loc("Season Points")}>
+                            (↑{seasonPoints})
+                        </span>
+                        </Conditional>
+                    </div>
+                    <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
+                        <FaRegHeart/>
+                        <span>{userProfile.reputation || 0}</span>
                     </div>
                 </div>
             </div>
@@ -231,10 +263,6 @@ export default function UserProfilePage() {
         </div>
         <Conditional on={activeTab === "history"}>
             <div className={"text-sm"}>
-                {/*<div className="flex text-left">*/}
-                {/*    <h2 className={"uppercase grow"}>{loc("Tournaments")}</h2>*/}
-                {/*    <span>{historyQuery.data?.count || ""}</span>*/}
-                {/*</div>*/}
                 <div className="p-1"></div>
                 <div className={"grid grid-cols-12 text-left font-semibold border-b-2"}>
                     <span
@@ -248,8 +276,12 @@ export default function UserProfilePage() {
                             {historyQuery.data?.values?.map(row =>
                                 <div key={row.tournament.id}
                                      className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
-                                    <Link to={`/tournament/${row.tournament.id}`}
-                                          className={"col-span-8"}>{row.tournament.name || row.tournament.id}</Link>
+                                    <Link to={`/tournament/${row.tournament.id}`} className={"grid col-span-8"}>
+                                        {row.tournament.name || row.tournament.id}
+                                        <span className={"text-xs text-gray-800"}>
+                                            {dayjs(row.tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
+                                        </span>
+                                    </Link>
                                     <span className={"col-span-2"}>{row.participant.place}</span>
                                     <span className={"col-span-2"}>{row.participant.score}</span>
                                 </div>
