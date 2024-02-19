@@ -83,6 +83,7 @@ public class UserController {
                         .ofNullable(participant.getTournament())
                         .map(TournamentEntity::getStatus)
                         .orElse(null))
+                .sorted(Comparator.comparing((ParticipantEntity it) -> it.getTournament().getDate()).reversed())
                 .map(participant ->
                         UserHistoryRecordDto.builder()
                                 .tournament(tournamentMapper.toDto(participant.getTournament()))
