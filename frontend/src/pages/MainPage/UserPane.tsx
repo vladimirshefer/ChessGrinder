@@ -90,3 +90,5 @@ export function UserPane(
         </div>
     </div>;
 }
+
+export default UserPane;
