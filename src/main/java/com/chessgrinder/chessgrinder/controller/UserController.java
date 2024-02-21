@@ -152,6 +152,17 @@ public class UserController {
         userRepository.save(authenticatedUser);
     }
 
+    @DeleteMapping("/{userId}")
+    public void deleteUser(
+            @PathVariable UUID userId,
+            @AuthenticatedUser UserEntity authenticatedUser
+    ) {
+        if (!userId.equals(authenticatedUser.getId())) {
+            throw new ResponseStatusException(403, "Not allowed to change other's profile", null);
+        }
+        System.out.println("TODO epta");
+    }
+
     @PostMapping("/signUp")
     public void signUp(
             @RequestBody UserSignUpRequest signUpRequest,

@@ -43,6 +43,26 @@ export default function UserProfileEditPage() {
         }
     }
 
+    const handleDeleteProfile = async () => {
+      const expectedConfirmation: string = authenticatedUser?.name || authenticatedUser?.id || "";
+      const userConfirmation = prompt(loc(`Are you sure?\nTo delete profile enter \n${expectedConfirmation}`));
+
+      if (userConfirmation !== expectedConfirmation) {
+        if (userConfirmation === null) return;
+        if (userConfirmation?.length === 0) {
+            alert(loc("You entered empty nickname. Profile won't be deleted"));
+        }
+        else {
+            alert(loc("You entered wrong nickname. Profile won't be deleted"));
+        }
+        return;
+      }
+//       alert("AAAAAAgh");
+      //TODO надо ли после этого делать логаут?
+      await userRepository.deleteUser(authenticatedUser?.id!!);
+//       await navigate("/");
+    };
+
     return <div className={"p-3"}>
         <div className="flex py-2">
             <h1 className={"font-semibold uppercase"}>{loc("Settings")}</h1>
@@ -94,7 +114,9 @@ export default function UserProfileEditPage() {
                         </Link>
                     </div>
                     <div className={"flex justify-end"}>
-                        <button className="btn-danger uppercase">{loc("Delete profile")}</button>
+                        <button type="button" className="btn-danger uppercase" onClick={handleDeleteProfile}>
+                            {loc("Delete profile")}
+                        </button>
                     </div>
                 </div>
             </div>
