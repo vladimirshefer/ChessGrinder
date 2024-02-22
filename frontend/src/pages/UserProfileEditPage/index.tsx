@@ -6,6 +6,7 @@ import {useForm} from "react-hook-form";
 import {useLoc} from "strings/loc";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {UserDto} from "lib/api/dto/MainPageData";
+import loginPageRepository from "lib/api/repository/LoginPageRepository";
 
 export default function UserProfileEditPage() {
     let [authenticatedUser, refresh] = useAuthenticatedUser();
@@ -44,23 +45,19 @@ export default function UserProfileEditPage() {
     }
 
     const handleDeleteProfile = async () => {
-      const expectedConfirmation: string = authenticatedUser?.name || authenticatedUser?.id || "";
-      const userConfirmation = prompt(loc(`Are you sure?\nTo delete profile enter \n${expectedConfirmation}`));
+        const expectedConfirmation: string = authenticatedUser?.name || authenticatedUser?.id || "";
+        const userConfirmation = prompt(loc("Are you sure?\nTo delete profile enter \n") + expectedConfirmation);
 
-      if (userConfirmation !== expectedConfirmation) {
-        if (userConfirmation === null) return;
-        if (userConfirmation?.length === 0) {
-            alert(loc("You entered empty nickname. Profile won't be deleted"));
+        if (userConfirmation !== expectedConfirmation) {
+            if (userConfirmation !== null) {
+                alert(loc("You entered wrong username. Profile won't be deleted"));
+            }
+            return;
         }
-        else {
-            alert(loc("You entered wrong nickname. Profile won't be deleted"));
-        }
-        return;
-      }
-//       alert("AAAAAAgh");
-      //TODO надо ли после этого делать логаут?
-      await userRepository.deleteUser(authenticatedUser?.id!!);
-//       await navigate("/");
+        await userRepository.deleteUser(authenticatedUser?.id!!);
+        await navigate("/");
+        await loginPageRepository.signOut();
+        await refresh();
     };
 
     return <div className={"p-3"}>

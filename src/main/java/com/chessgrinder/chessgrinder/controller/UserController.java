@@ -158,9 +158,9 @@ public class UserController {
             @AuthenticatedUser UserEntity authenticatedUser
     ) {
         if (!userId.equals(authenticatedUser.getId())) {
-            throw new ResponseStatusException(403, "Not allowed to change other's profile", null);
+            throw new ResponseStatusException(403, "Not allowed to delete other's profile", null);
         }
-        System.out.println("TODO epta");
+        userRepository.deleteById(userId);
     }
 
     @PostMapping("/signUp")

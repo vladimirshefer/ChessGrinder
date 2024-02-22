@@ -102,8 +102,7 @@ class LocalStorageUserRepository implements UserRepository {
     }
 
     async deleteUser(userId: string): Promise<void> {
-    //TODO раскомментировать
-//         localStorageUtil.removeObject(`${this.userKeyPrefix}.${userId}`);
+        localStorageUtil.removeObject(`${this.userKeyPrefix}.${userId}`);
     }
 }
 

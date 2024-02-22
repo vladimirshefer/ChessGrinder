@@ -51,6 +51,9 @@ let locale_ru: { [key: string]: string } = {
     "Sign out": "Выйти",
     "Can't update user's name": "Не удалось изменить имя пользователя",
     "Pairing": "Жеребьевка",
+    "Are you sure?\nTo delete profile enter \n": "Вы уверены?\nДля удаления профиля наберите \n",
+    "You entered wrong username. Profile won't be deleted":
+        "Вы ввели некорректный никнейм. Профиль не будет удален",
 }
 
 export default locale_ru
