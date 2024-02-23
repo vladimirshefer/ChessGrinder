@@ -10,6 +10,7 @@ import {AiOutlineArrowLeft, AiOutlineDelete} from "react-icons/ai";
 import React from "react";
 import {useLoc} from "strings/loc";
 import Toggle from "components/Toggle";
+import tournamentRepository from "lib/api/repository/TournamentRepository";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
@@ -30,11 +31,19 @@ export default function ParticipantPage() {
     })
 
     let userQuery = useQuery({
-        queryKey: ["participantUser", participantQuery.data],
+        queryKey: ["user", participantQuery.data?.userId],
         queryFn: async () => {
             if (!participantId || !participantQuery.isSuccess || !participantQuery.data?.userId) return null
             return await userRepository.getUser(participantQuery.data?.userId!!)
         },
+    })
+
+    let tournamentQuery = useQuery({
+        queryKey: ["tournament", tournamentId],
+        queryFn: async () => {
+            if (!tournamentId) return null
+            return await tournamentRepository.getTournament(tournamentId)
+        }
     })
 
     if (!tournamentId) {
@@ -82,7 +91,7 @@ export default function ParticipantPage() {
             <Conditional on={participantQuery.isSuccess}>
                 <div className={"flex items-center gap-2"}>
                     <Link to={"/tournament/" + tournamentId} className={"text-xl"} title={loc("Back")}>
-                    <AiOutlineArrowLeft/>
+                        <AiOutlineArrowLeft/>
                     </Link>
                     <h1 className={"text-xl font-bold flex gap-2"}>
                         {participantQuery.data?.name}
@@ -136,19 +145,25 @@ export default function ParticipantPage() {
         </ConditionalOnUserRole>
 
         <div className={"flex gap-2 justify-end"}>
-            <Link to={`/tournament/${tournamentId}`}>
-                <button className={"btn-light"} title={loc("Back")}>
-                    {loc("Back")}
-                </button>
-            </Link>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <button className={"btn-danger flex gap-1 items-center"}
                         title={loc("Delete")}
                         onClick={async () => {
-                            if (window.confirm(`Do you want to delete user ${participantId} from tournament ${tournamentId}?`)) {
-                                await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
-                                navigate(`/tournament/${tournamentId}`)
+                            let participantFriendlyName = userQuery.data?.name || participantQuery.data?.name || participantId;
+                            let tournamentFriendlyName = tournamentQuery.data?.name || tournamentId;
+                            if (!window.confirm(`Do you want to delete user ${participantFriendlyName} from tournament ${tournamentFriendlyName}?`)) {
+                                return;
                             }
+                            if (tournamentQuery.data?.status !== "PLANNED") {
+                                if (!window.confirm("Tournament already started!\n" +
+                                    "Deleting the participant could break the pairing engine!\n" +
+                                    "Consider \"Missing\" instead.\n" +
+                                    "Are you sure?")) {
+                                    return
+                                }
+                            }
+                            await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
+                            navigate(`/tournament/${tournamentId}`)
                         }}
                 >
                     {loc("Delete")}

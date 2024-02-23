@@ -8,6 +8,7 @@ import {compareBy, reverse} from "lib/util/Comparator";
 import {requirePresent} from "lib/util/common";
 
 export interface TournamentRepository {
+    getTournament(tournamentId: string): Promise<TournamentDto>
     postTournament: () => Promise<TournamentDto>
     startTournament: (tournamentId: string) => Promise<void>
     finishTournament: (tournamentId: string) => Promise<void>
@@ -18,7 +19,12 @@ export interface TournamentRepository {
 }
 
 class LocalStorageTournamentRepository implements TournamentRepository {
-    async postTournament() {
+    async getTournament(tournamentId: string): Promise<TournamentDto> {
+        let tournamentPageData = localStorageUtil.getObject(`cgd.tournament.${tournamentId}`) as TournamentPageData;
+        return tournamentPageData.tournament
+    }
+
+    async postTournament(): Promise<TournamentDto> {
         let id = `${Math.trunc(Math.random() * 1000000) + 1000000}`;
         let tournament = {
             date: LocalStorageTournamentRepository.getTodayDate(),
@@ -97,7 +103,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
 }
 
 class RestApiTournamentRepository implements TournamentRepository {
-    async postTournament() {
+    async postTournament(): Promise<TournamentDto> {
         return await restApiClient.post<TournamentDto>("/tournament");
     }
 
@@ -111,6 +117,10 @@ class RestApiTournamentRepository implements TournamentRepository {
 
     async getTournaments(): Promise<TournamentListDto> {
         return await restApiClient.get<TournamentListDto>("/tournament");
+    }
+
+    async getTournament(tournamentId: string): Promise<TournamentDto> {
+        return await restApiClient.get<TournamentDto>(`/tournament/${tournamentId}`);
     }
 
     async deleteTournament(tournamentId: string): Promise<void> {
