@@ -157,10 +157,24 @@ public class UserController {
             @PathVariable UUID userId,
             @AuthenticatedUser UserEntity authenticatedUser
     ) {
-        if (!userId.equals(authenticatedUser.getId())) {
+        if (!isAllowedToBeDeleted(userId, authenticatedUser)) {
             throw new ResponseStatusException(403, "Not allowed to delete other's profile", null);
         }
         userRepository.deleteById(userId);
+    }
+
+    private boolean isAllowedToBeDeleted(UUID userId, UserEntity authenticatedUser) {
+        if (userId.equals(authenticatedUser.getId())) {
+            return true;
+        }
+
+        boolean isDeleterAdmin = authenticatedUser.isAdmin();
+        final var deletedUser = userRepository.findById(userId).orElseThrow();
+        boolean isDeletedAdmin = deletedUser.isAdmin();
+        if (isDeleterAdmin) {
+            return !isDeletedAdmin;
+        }
+        return false;
     }
 
     @PostMapping("/signUp")

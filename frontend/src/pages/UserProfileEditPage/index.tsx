@@ -45,19 +45,26 @@ export default function UserProfileEditPage() {
     }
 
     const handleDeleteProfile = async () => {
-        const expectedConfirmation: string = authenticatedUser?.name || authenticatedUser?.id || "";
-        const userConfirmation = prompt(loc("Are you sure?\nTo delete profile enter \n") + expectedConfirmation);
+        var expectedConfirmation: string = authenticatedUser?.name || authenticatedUser?.id || "";
+        expectedConfirmation = loc("I confirm the deletion of my profile ") + expectedConfirmation;
+        const userConfirmation = prompt(loc("Enter \"") + expectedConfirmation
+            + loc("\"\nDeletion is final and cannot be undone."));
 
         if (userConfirmation !== expectedConfirmation) {
             if (userConfirmation !== null) {
-                alert(loc("You entered wrong username. Profile won't be deleted"));
+                alert(loc("You entered wrong text. Profile won't be deleted"));
             }
             return;
         }
-        await userRepository.deleteUser(authenticatedUser?.id!!);
-        await navigate("/");
-        await loginPageRepository.signOut();
-        await refresh();
+        try {
+            await userRepository.deleteUser(authenticatedUser?.id!!);
+            await navigate("/");
+            await loginPageRepository.signOut();
+            await refresh();
+        }
+        catch(e) {
+            alert(loc("Can't delete user"));
+        }
     };
 
     return <div className={"p-3"}>
