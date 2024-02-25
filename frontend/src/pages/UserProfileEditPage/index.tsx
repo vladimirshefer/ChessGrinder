@@ -6,6 +6,7 @@ import {useForm} from "react-hook-form";
 import {useLoc} from "strings/loc";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {UserDto} from "lib/api/dto/MainPageData";
+import loginPageRepository from "lib/api/repository/LoginPageRepository";
 
 export default function UserProfileEditPage() {
     let [authenticatedUser, refresh] = useAuthenticatedUser();
@@ -42,6 +43,29 @@ export default function UserProfileEditPage() {
             alert(loc("Can't update user's name"));
         }
     }
+
+    const handleDeleteProfile = async () => {
+        var expectedConfirmation: string = authenticatedUser?.name || authenticatedUser?.id || "";
+        expectedConfirmation = loc("I confirm the deletion of my profile ") + expectedConfirmation;
+        const userConfirmation = prompt(loc("Enter") + " \"" + expectedConfirmation
+            + "\"\n" + loc("Deletion is final and cannot be undone."));
+
+        if (userConfirmation !== expectedConfirmation) {
+            if (userConfirmation !== null) {
+                alert(loc("You entered wrong text. Profile won't be deleted"));
+            }
+            return;
+        }
+        try {
+            await userRepository.deleteUser(authenticatedUser?.id!!);
+            await navigate("/");
+            await loginPageRepository.signOut();
+            await refresh();
+        }
+        catch(e) {
+            alert(loc("Can't delete user"));
+        }
+    };
 
     return <div className={"p-3"}>
         <div className="flex py-2">
@@ -94,7 +118,9 @@ export default function UserProfileEditPage() {
                         </Link>
                     </div>
                     <div className={"flex justify-end"}>
-                        <button className="btn-danger uppercase">{loc("Delete profile")}</button>
+                        <button type="button" className="btn-danger uppercase" onClick={handleDeleteProfile}>
+                            {loc("Delete profile")}
+                        </button>
                     </div>
                 </div>
             </div>

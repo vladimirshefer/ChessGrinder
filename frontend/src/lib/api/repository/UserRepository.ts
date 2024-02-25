@@ -24,6 +24,8 @@ export interface UserRepository {
     assignReputation(data: UserReputationHistoryRecordDto): Promise<void>
 
     updateUser(username: string, user: UserDto): Promise<void>
+
+    deleteUser(userId: string): Promise<void>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -98,6 +100,10 @@ class LocalStorageUserRepository implements UserRepository {
     async updateUser(username: string, user: UserDto): Promise<void> {
         alert("Unsupported");
     }
+
+    async deleteUser(userId: string): Promise<void> {
+        localStorageUtil.removeObject(`${this.userKeyPrefix}.${userId}`);
+    }
 }
 
 class RestApiUserRepository implements UserRepository {
@@ -123,6 +129,10 @@ class RestApiUserRepository implements UserRepository {
 
     async updateUser(username: string, user: UserDto): Promise<void> {
         return restApiClient.patch(`/user/${username}`, user);
+    }
+
+    async deleteUser(userId: string): Promise<void> {
+        await restApiClient.delete(`/user/${userId}`);
     }
 }
 

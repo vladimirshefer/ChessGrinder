@@ -152,6 +152,23 @@ public class UserController {
         userRepository.save(authenticatedUser);
     }
 
+    @DeleteMapping("/{userId}")
+    public void deleteUser(
+            @PathVariable UUID userId,
+            @AuthenticatedUser UserEntity authenticatedUser
+    ) {
+        if (!userId.equals(authenticatedUser.getId())) {
+            boolean isDeleterAdmin = authenticatedUser.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
+            final var deletedUser = userRepository.findById(userId).orElseThrow();
+            boolean isDeletedAdmin = deletedUser.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
+            if (!isDeleterAdmin || isDeletedAdmin) {
+                throw new ResponseStatusException(403, "Not allowed to delete other's profile", null);
+            }
+        }
+
+        userRepository.deleteById(userId);
+    }
+
     @PostMapping("/signUp")
     public void signUp(
             @RequestBody UserSignUpRequest signUpRequest,
