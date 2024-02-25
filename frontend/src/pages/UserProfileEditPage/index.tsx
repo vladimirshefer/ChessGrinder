@@ -47,8 +47,8 @@ export default function UserProfileEditPage() {
     const handleDeleteProfile = async () => {
         var expectedConfirmation: string = authenticatedUser?.name || authenticatedUser?.id || "";
         expectedConfirmation = loc("I confirm the deletion of my profile ") + expectedConfirmation;
-        const userConfirmation = prompt(loc("Enter \"") + expectedConfirmation
-            + loc("\"\nDeletion is final and cannot be undone."));
+        const userConfirmation = prompt(loc("Enter") + " \"" + expectedConfirmation
+            + "\"\n" + loc("Deletion is final and cannot be undone."));
 
         if (userConfirmation !== expectedConfirmation) {
             if (userConfirmation !== null) {

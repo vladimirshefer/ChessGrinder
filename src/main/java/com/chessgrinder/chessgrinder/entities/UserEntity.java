@@ -59,10 +59,6 @@ public class UserEntity {
     @Column(name = "reputation")
     private int reputation = 0;
 
-    public boolean isAdmin() {
-        return roles.stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
-    }
-
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB
     }

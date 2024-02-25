@@ -51,9 +51,9 @@ let locale_ru: { [key: string]: string } = {
     "Sign out": "Выйти",
     "Can't update user's name": "Не удалось изменить имя пользователя",
     "Pairing": "Жеребьевка",
-    "Enter \"": "Введите \"",
+    "Enter": "Введите",
     "I confirm the deletion of my profile ": "Я подтверждаю удаление своего профиля ",
-    "\"\nDeletion is final and cannot be undone.": "\"\nУдаление является окончательным и не может быть отменено.",
+    "Deletion is final and cannot be undone.": "Удаление является окончательным и не может быть отменено.",
     "You entered wrong text. Profile won't be deleted":
         "Вы ввели некорректный текст. Профиль не будет удален",
 }
