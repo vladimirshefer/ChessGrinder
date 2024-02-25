@@ -6,6 +6,7 @@ import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
+import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
@@ -31,6 +32,7 @@ public class TournamentController {
     private final TournamentRepository tournamentRepository;
     private final UserRepository userRepository;
     private final ParticipantRepository participantRepository;
+    private final TournamentMapper tournamentMapper;
 
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping
@@ -40,7 +42,9 @@ public class TournamentController {
 
     @Secured(RoleEntity.Roles.ADMIN)
     @GetMapping("/{tournamentId}/action/start")
-    public void startTournament(@PathVariable UUID tournamentId) {
+    public void startTournament(
+            @PathVariable UUID tournamentId
+    ) {
         tournamentService.startTournament(tournamentId);
     }
 
@@ -53,6 +57,15 @@ public class TournamentController {
     @GetMapping
     public Object getTournaments() {
         return Map.of("tournaments", tournamentService.findTournaments());
+    }
+
+    @GetMapping("/{tournamentId}")
+    public TournamentDto getTournament(
+            @PathVariable UUID tournamentId
+    ) {
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
+        return tournamentMapper.toDto(tournamentEntity);
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
