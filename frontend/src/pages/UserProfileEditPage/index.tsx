@@ -7,6 +7,7 @@ import {useLoc} from "strings/loc";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {UserDto} from "lib/api/dto/MainPageData";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
+import "profilePicture.css"
 
 export default function UserProfileEditPage() {
     let [authenticatedUser, refresh] = useAuthenticatedUser();
@@ -34,7 +35,7 @@ export default function UserProfileEditPage() {
         try {
             await userRepository.updateUser(currentUserName, userPageData);
             //If method above won't throw exception, program will go further
-            navigate(`/user/${currentUserName}`);
+            navigate(`/user/${authenticatedUser?.id}`);
             if (authenticatedUser) {
                 refresh();
             }
@@ -72,9 +73,15 @@ export default function UserProfileEditPage() {
             <h1 className={"font-semibold uppercase"}>{loc("Settings")}</h1>
         </div>
         <form className={"grid gap-2"} onSubmit={handleSubmit(saveUserData)}>
-            <div>
-                <Gravatar text={authenticatedUser.username || authenticatedUser.id} type={GravatarType.Robohash} size={100}
-                          className={"rounded-full"}/>
+            <div className="profile-image-container">
+                <Gravatar text={authenticatedUser.username || authenticatedUser.id}
+                          type={GravatarType.Robohash}
+                          size={100}
+                          className={"rounded-full"}
+                />
+                <div className="change-photo-overlay">
+                    {loc("Change photo")}
+                </div>
             </div>
             <div className={"grid grow text-left gap-2"}>
                 <input type={"text"} className={"font-semibold uppercase truncate border-b-2"}
@@ -113,7 +120,7 @@ export default function UserProfileEditPage() {
                         <button type={"submit"} className="btn-primary uppercase">
                             {loc("Save")}
                         </button>
-                        <Link to={`/user/${currentUserName}`}>
+                        <Link to={`/user/${authenticatedUser?.id}`}>
                             <button className="btn-light uppercase">{loc("Cancel")}</button>
                         </Link>
                     </div>

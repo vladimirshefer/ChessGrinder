@@ -1,0 +1,19 @@
+.profile-image-container {
+  max-width: max-content;
+  position: relative;
+}
+
+.change-photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    padding: 6px;
+    border-radius: 0 0 50% 50%; /* Округление только нижних углов */
+    margin: 0 auto; /* Центрируем текст горизонтально */
+    font-size: 12px; /* Уменьшаем размер шрифта */
+    white-space: nowrap; /* Предотвращаем перенос текста на следующую строку */
+}
