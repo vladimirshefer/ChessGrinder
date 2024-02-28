@@ -1,0 +1,27 @@
+.profile-image-container {
+  max-width: max-content;
+  position: relative;
+}
+
+.profile-image-container:hover {
+  cursor: pointer;
+}
+
+.change-photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
+    padding: 6px;
+    border-radius: 0 0 50% 50%;
+    margin: 0 auto;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.input-file {
+    display: none;
+}

@@ -1,15 +1,17 @@
 import Gravatar, {GravatarType} from "components/Gravatar";
 import userRepository from "lib/api/repository/UserRepository";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import {useLoc} from "strings/loc";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {UserDto} from "lib/api/dto/MainPageData";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
-import "profilePicture.css"
+// import {launchImageLibrary} from "react-native-image-picker";
+import "profilePhoto.css"
 
 export default function UserProfileEditPage() {
+    const [url, setUrl] = useState();
     let [authenticatedUser, refresh] = useAuthenticatedUser();
     let navigate = useNavigate()
     let loc = useLoc()
@@ -68,12 +70,23 @@ export default function UserProfileEditPage() {
         }
     };
 
+    const Upload = () => (
+      <label>
+        <input type="file" />
+      </label>
+    );
+    const handlePhotoClick = async () => {
+        alert("TODO начать загрузку пикчи");
+//         const result = launchImageLibrary
+    };
+
     return <div className={"p-3"}>
         <div className="flex py-2">
             <h1 className={"font-semibold uppercase"}>{loc("Settings")}</h1>
         </div>
         <form className={"grid gap-2"} onSubmit={handleSubmit(saveUserData)}>
-            <div className="profile-image-container">
+            <input type = "file" className="input-file" />
+            <div className="profile-image-container" onClick={handlePhotoClick}>
                 <Gravatar text={authenticatedUser.username || authenticatedUser.id}
                           type={GravatarType.Robohash}
                           size={100}
