@@ -56,6 +56,8 @@ let locale_ru: { [key: string]: string } = {
     "Deletion is final and cannot be undone.": "Удаление является окончательным и не может быть отменено.",
     "You entered wrong text. Profile won't be deleted":
         "Вы ввели некорректный текст. Профиль не будет удален",
+    "Open": "Открыть",
+    "Participating": "Участвую",
 }
 
 export default locale_ru
