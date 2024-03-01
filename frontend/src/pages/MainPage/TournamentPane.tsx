@@ -5,7 +5,7 @@ import tournamentPageRepository from "lib/api/repository/TournamentPageRepositor
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import {Link} from "react-router-dom";
 import {FiArrowUpRight} from "react-icons/fi";
-import {BsFillRecordFill} from "react-icons/bs";
+import {BsBookmarkCheckFill, BsFillRecordFill} from "react-icons/bs";
 import dayjs from "dayjs";
 import {Conditional, ConditionalOnAuthorized} from "components/Conditional";
 import {AiFillClockCircle} from "react-icons/ai";
@@ -67,18 +67,25 @@ export function TournamentPane(
         }
     }
 
+    let isMeParticipating = !!meParticipantQuery?.data?.id;
+
     return <div className={`grid justify-items-start w-full p-4 
                 ${isPlanned ? "tournament-planned" : isFinished ? "tournament-finished" : "tournament-active"}`}>
-        <div className={"grid justify-items-start"}>
-            <Link className={"flex gap-2 hover:underline font-semibold text-lg text-left items-center"}
+        <div className={"grid w-full justify-items-start"}>
+            <Link className={"flex w-full gap-2 text-lg text-left justify-between items-center"}
                   to={`/tournament/${tournament.id}`}
             >
-                <span className={"grow"}>{tournament.name || loc("Unnamed Tournament")}
-                    <FiArrowUpRight className={"inline-block ml-1 -mt-[1px]"}/>
-                </span>
-                {tournament.status === "ACTIVE" &&
-                    <span className={"text-red-500"}><BsFillRecordFill/></span>
-                }
+                <div className="flex gap-2 hover:underline font-semibold">
+                    <span className={"grow"}>
+                        {tournament.name || loc("Unnamed Tournament")}
+                    </span>
+                    <Conditional on={tournament.status === "ACTIVE"}>
+                        <span className={"text-red-500"}><BsFillRecordFill/></span>
+                    </Conditional>
+                </div>
+                <Conditional on={isFinished && isMeParticipating}>
+                    <BsBookmarkCheckFill title={loc("Participating")}/>
+                </Conditional>
             </Link>
             <small className={"font-bold text-left"}>
                 {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
@@ -93,17 +100,24 @@ export function TournamentPane(
                 </span>
                 <Conditional on={!!tournament.locationName}>
                     {tournament.locationUrl ?
-                        <Link to={tournament.locationUrl} target={"_blank"} className={"flex items-center text-left"}>
+                        <Link to={tournament.locationUrl} target={"_blank"}
+                              className={"flex items-center text-left"}>
                             <IoLocationSharp className={"text-primary mr-3"}/>
-                            {tournament.locationName || "Seven roads"}
+                            {tournament.locationName || ""}
                             <FiArrowUpRight className={"ml-1"}/>
                         </Link>
                         :
                         <span className={"flex items-center text-left"}>
                             <IoLocationSharp className={"text-primary mr-3"}/>
-                            {tournament.locationName || "Seven roads"}
+                            {tournament.locationName || ""}
                         </span>
                     }
+                </Conditional>
+                <Conditional on={isMeParticipating}>
+                    <span className={"flex items-center text-left"}>
+                        <BsBookmarkCheckFill className={"text-primary mr-3"}/>
+                        {loc("Participating")}
+                    </span>
                 </Conditional>
             </div>
         </Conditional>
@@ -122,9 +136,9 @@ export function TournamentPane(
         </Conditional>
         <div className={"p-1"}></div>
         <Conditional on={isPlanned}>
-            <div className={"w-full"}>
+            <div className={"w-full flex"}>
                 <ConditionalOnAuthorized>{
-                    !meParticipantQuery?.data ? (
+                    !isMeParticipating ? (
                         <button className={"btn-primary w-full uppercase"}
                                 onClick={async () => {
                                     let nickname = prompt("Please enter your nickname");
@@ -140,7 +154,9 @@ export function TournamentPane(
                             {loc("Participate")}
                         </button>
                     ) : (
-                        <div className={"btn-light w-full uppercase"}>Participating</div>
+                        <Link className={"btn-primary w-full uppercase"} to={`/tournament/${tournament.id}`}>
+                            {loc("Open")}
+                        </Link>
                     )
                 }
                 </ConditionalOnAuthorized>
@@ -152,6 +168,13 @@ export function TournamentPane(
                     </Link>
                 </ConditionalOnAuthorized>
             </div>
+        </Conditional>
+        <Conditional on={isActive}>
+            <Link className={"btn-primary w-full uppercase"}
+                  to={`/tournament/${tournament.id}`}
+            >
+                {loc("Open")}
+            </Link>
         </Conditional>
         <Conditional on={isFinished}>
             <div>
