@@ -173,7 +173,9 @@ function TournamentPage() {
                     )}
                 </>
                 <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                    <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
+                    <Conditional on={tournamentQuery.data?.tournament?.status != "FINISHED"}>
+                        <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
+                    </Conditional>
                 </ConditionalOnUserRole>
                 <div className={"p-2"}>{/*Just padding*/}</div>
                 <ResultsTable participants={participants}
