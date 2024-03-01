@@ -173,7 +173,7 @@ function TournamentPage() {
                     )}
                 </>
                 <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                    <Conditional on={tournamentQuery.data?.tournament?.status != "FINISHED"}>
+                    <Conditional on={tournamentQuery.data?.tournament?.status !== "FINISHED"}>
                         <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
                     </Conditional>
                 </ConditionalOnUserRole>
