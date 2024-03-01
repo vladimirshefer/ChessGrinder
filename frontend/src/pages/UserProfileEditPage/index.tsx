@@ -40,22 +40,21 @@ export default function UserProfileEditPage() {
             }
         }
         catch(e) {
-            alert(loc("Can't update user's name"));
+            alert(loc("Can not update user name"));
         }
     }
 
     const handleDeleteProfile = async () => {
-        var expectedConfirmation: string = authenticatedUser?.name || authenticatedUser?.id || "";
-        expectedConfirmation = loc("I confirm the deletion of my profile ") + expectedConfirmation;
+        let userNameOrId = authenticatedUser?.name || authenticatedUser?.username || "";
+        let expectedConfirmation = loc("I confirm the deletion of my profile") + " " + userNameOrId;
         const userConfirmation = prompt(loc("Enter") + " \"" + expectedConfirmation
-            + "\"\n" + loc("Deletion is final and cannot be undone."));
+            + "\"\n" + loc("Deletion is final and cannot be undone") + ".");
 
-        if (userConfirmation !== expectedConfirmation) {
-            if (userConfirmation !== null) {
-                alert(loc("You entered wrong text. Profile won't be deleted"));
-            }
+        if (userConfirmation?.trim() !== expectedConfirmation.trim()) {
+            alert(loc("You entered wrong text. Profile won't be deleted"));
             return;
         }
+
         try {
             await userRepository.deleteUser(authenticatedUser?.id!!);
             await navigate("/");
@@ -63,7 +62,7 @@ export default function UserProfileEditPage() {
             await refresh();
         }
         catch(e) {
-            alert(loc("Can't delete user"));
+            alert("Can not delete user")
         }
     };
 
