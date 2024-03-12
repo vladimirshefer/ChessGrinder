@@ -29,7 +29,7 @@ function ResultsTable(
                             <div className={"col-span-7"}>
                                 <button onClick={() => openParticipant(participant)}>
                                     <div className={"grid text-left"}>
-                                        <span className={"font-semibold"}>{participant.name}</span>
+                                        <span className={"font-semibold"}>{participant.name || "No nickname"}</span>
                                         {participant.userFullName &&
                                             <span>{participant.userFullName}</span>
                                         }
