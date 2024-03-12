@@ -24,7 +24,7 @@ function ResultsTable(
             {
                 participants
                     .map((participant, idx) => {
-                        return <div className={"col-span-12 grid grid-cols-12 p-2 border-b text-sm"} key={participant.name}>
+                        return <div className={`col-span-12 grid grid-cols-12 p-2 border-b text-sm ${participant.isMissing ? "bg-gray-100" : ""}`} key={participant.name}>
                             <div className={"col-span-1 text-gray-600"}>{idx + 1}</div>
                             <div className={"col-span-7"}>
                                 <button onClick={() => openParticipant(participant)}>
