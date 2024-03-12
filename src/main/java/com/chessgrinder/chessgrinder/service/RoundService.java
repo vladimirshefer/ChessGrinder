@@ -203,6 +203,7 @@ public class RoundService {
                             }
                         })
                         .thenComparing(ParticipantEntity::getBuchholz)
+                        .thenComparing(Comparator.comparing(ParticipantEntity::isMissing).reversed())
                         .thenComparing(ParticipantEntity::getNickname)
         );
         final int size = participants.size();
