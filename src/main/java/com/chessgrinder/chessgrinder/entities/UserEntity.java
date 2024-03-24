@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.entities;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import jakarta.annotation.Nullable;
@@ -9,6 +10,11 @@ import lombok.extern.slf4j.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Setter
@@ -19,6 +25,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class UserEntity {
     @Id
     @Column(name = "id", nullable = false)
@@ -58,6 +65,22 @@ public class UserEntity {
 
     @Column(name = "reputation")
     private int reputation = 0;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreatedDate
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private OffsetDateTime updatedAt;
+
+    @Column(name = "created_by")
+    @CreatedBy
+    private UUID createdBy;
+
+    @Column(name = "updated_by")
+    @LastModifiedBy
+    private UUID updatedBy;
 
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB
