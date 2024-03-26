@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.entities;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.*;
 
 import jakarta.annotation.Nullable;
@@ -68,19 +68,19 @@ public class UserEntity {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", insertable = false)
     @LastModifiedDate
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
 
-    @Column(name = "created_by")
+    @Column(name = "created_by", nullable = false, updatable = false)
     @CreatedBy
-    private UUID createdBy;
+    private String createdBy;
 
-    @Column(name = "updated_by")
+    @Column(name = "updated_by", insertable = false)
     @LastModifiedBy
-    private UUID updatedBy;
+    private String updatedBy;
 
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB

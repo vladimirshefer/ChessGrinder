@@ -8,7 +8,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -33,8 +32,6 @@ public class MyUserDetails implements UserDetails {
     public String getUsername() {
         return userEntity.getUsername();
     }
-
-    public UUID getId() {return userEntity.getId();}
 
     @Override
     public boolean isAccountNonExpired() {

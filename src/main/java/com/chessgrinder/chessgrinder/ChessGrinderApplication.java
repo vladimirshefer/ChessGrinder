@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @SpringBootApplication
 @EnableWebSecurity
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class ChessGrinderApplication {
 
     public static void main(String[] args) {
