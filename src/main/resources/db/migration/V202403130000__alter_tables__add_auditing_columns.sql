@@ -11,3 +11,7 @@ ALTER TABLE users_roles_table
     ADD COLUMN updated_at TIMESTAMP,
     ADD COLUMN created_by VARCHAR(255),
     ADD COLUMN updated_by VARCHAR(255);
+
+ALTER TABLE user_reputation_history_table
+    ADD COLUMN created_by VARCHAR(255),
+    ADD COLUMN updated_by VARCHAR(255);
