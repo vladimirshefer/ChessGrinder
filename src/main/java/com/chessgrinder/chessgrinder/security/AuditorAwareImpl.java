@@ -1,12 +1,9 @@
 package com.chessgrinder.chessgrinder.security;
 
-import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Objects;
 import java.util.Optional;
 
 public class AuditorAwareImpl implements AuditorAware<String> {
@@ -15,12 +12,17 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     @Nonnull
     public Optional<String> getCurrentAuditor() {
         //TODO https://www.youtube.com/watch?v=1D5zEzLX1iY Засунуть тесты!
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return Optional.empty();
         }
-        var user = ((CustomOAuth2User) (authentication.getPrincipal())).getUser();
-        assert Objects.requireNonNull(user).getUsername() != null;
+        final var principal = (CustomOAuth2User) authentication.getPrincipal();
+        final var user = principal.getUser();
+        if (user == null || user.getUsername() == null) {
+            //if user just created
+            final var attr = principal.getAttributes();
+            return attr.containsKey("email") ? Optional.of(attr.get("email").toString()) : Optional.empty();
+        }
         return Optional.of(user.getUsername());
     }
 }
