@@ -11,7 +11,6 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     @Override
     @Nonnull
     public Optional<String> getCurrentAuditor() {
-        //TODO https://www.youtube.com/watch?v=1D5zEzLX1iY Засунуть тесты!
         final var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return Optional.empty();

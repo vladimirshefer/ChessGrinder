@@ -138,13 +138,13 @@ public class UserController {
         userRepository.addReputation(userId, data.getAmount());
     }
 
-    @PatchMapping("/{userName}")
+    @PatchMapping("/{userId}")
     public void updateUser(
-            @PathVariable String userName,
+            @PathVariable UUID userId,
             @RequestBody UserDto userDto,
             @AuthenticatedUser UserEntity authenticatedUser
     ) {
-        if (!userName.equals(authenticatedUser.getUsername())) {
+        if (!userId.equals(authenticatedUser.getId())) {
             throw new ResponseStatusException(403, "Not allowed to change other's name", null);
         }
 
