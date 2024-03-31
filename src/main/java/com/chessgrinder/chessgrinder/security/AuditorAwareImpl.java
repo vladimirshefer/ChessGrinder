@@ -13,10 +13,9 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     public Optional<String> getCurrentAuditor() {
         final var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() ||
-                !(authentication.getPrincipal() instanceof CustomOAuth2User)) {
+                !(authentication.getPrincipal() instanceof CustomOAuth2User principal)) {
             return Optional.empty();
         }
-        final var principal = (CustomOAuth2User) authentication.getPrincipal();
         final var user = principal.getUser();
         if (user == null || user.getUsername() == null) {
             //if user just created
