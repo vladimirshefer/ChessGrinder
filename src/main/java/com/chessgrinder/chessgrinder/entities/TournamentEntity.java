@@ -20,7 +20,7 @@ import org.hibernate.annotations.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TournamentEntity {
+public class TournamentEntity extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id")

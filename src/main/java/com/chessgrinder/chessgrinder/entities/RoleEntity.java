@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RoleEntity {
+public class RoleEntity extends AbstractAuditingEntity {
 
     @Id
     @UuidGenerator

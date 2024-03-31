@@ -18,7 +18,7 @@ import org.hibernate.annotations.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoundEntity {
+public class RoundEntity extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id")

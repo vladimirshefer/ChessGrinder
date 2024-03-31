@@ -23,7 +23,7 @@ export interface UserRepository {
 
     assignReputation(data: UserReputationHistoryRecordDto): Promise<void>
 
-    updateUser(username: string, user: UserDto): Promise<void>
+    updateUser(userId: string, user: UserDto): Promise<void>
 
     deleteUser(userId: string): Promise<void>
 }
@@ -97,7 +97,7 @@ class LocalStorageUserRepository implements UserRepository {
         alert("Unsupported");
     }
 
-    async updateUser(username: string, user: UserDto): Promise<void> {
+    async updateUser(userId: string, user: UserDto): Promise<void> {
         alert("Unsupported");
     }
 
@@ -127,8 +127,8 @@ class RestApiUserRepository implements UserRepository {
         return restApiClient.post(`/user/${data.userId}/reputation`, data);
     }
 
-    async updateUser(username: string, user: UserDto): Promise<void> {
-        return restApiClient.patch(`/user/${username}`, user);
+    async updateUser(userId: string, user: UserDto): Promise<void> {
+        return restApiClient.patch(`/user/${userId}`, user);
     }
 
     async deleteUser(userId: string): Promise<void> {

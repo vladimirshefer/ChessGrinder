@@ -16,7 +16,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BadgeEntity {
+public class BadgeEntity extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id")
@@ -31,5 +31,4 @@ public class BadgeEntity {
 
     @Column(name = "picture_url")
     private String pictureUrl;
-
 }

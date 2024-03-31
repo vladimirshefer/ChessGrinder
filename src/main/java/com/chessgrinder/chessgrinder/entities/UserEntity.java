@@ -19,7 +19,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class UserEntity extends AbstractAuditingEntity {
     @Id
     @Column(name = "id", nullable = false)
     @UuidGenerator

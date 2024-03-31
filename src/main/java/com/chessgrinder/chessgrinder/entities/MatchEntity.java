@@ -18,7 +18,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MatchEntity {
+public class MatchEntity extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id")
@@ -43,5 +43,4 @@ public class MatchEntity {
     @Enumerated(EnumType. STRING)
     @Nullable
     private MatchResult result;
-
 }

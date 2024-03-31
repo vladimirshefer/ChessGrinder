@@ -19,7 +19,7 @@ export default function UserProfileEditPage() {
         }
     }, [authenticatedUser, navigate]);
 
-    const currentUserName: string = authenticatedUser?.username || '';
+    const currentUserId: string = authenticatedUser?.id!!;
 
     const {register, handleSubmit} = useForm();
     if (!authenticatedUser) {
@@ -32,9 +32,9 @@ export default function UserProfileEditPage() {
             name : data.fullName
         } as UserDto;
         try {
-            await userRepository.updateUser(currentUserName, userPageData);
+            await userRepository.updateUser(currentUserId, userPageData);
             //If method above won't throw exception, program will go further
-            navigate(`/user/${currentUserName}`);
+            navigate(`/user/${currentUserId}`);
             if (authenticatedUser) {
                 refresh();
             }
@@ -112,7 +112,7 @@ export default function UserProfileEditPage() {
                         <button type={"submit"} className="btn-primary uppercase">
                             {loc("Save")}
                         </button>
-                        <Link to={`/user/${currentUserName}`}>
+                        <Link to={`/user/${currentUserId}`}>
                             <button className="btn-light uppercase">{loc("Cancel")}</button>
                         </Link>
                     </div>

@@ -16,7 +16,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserBadgeEntity {
+public class UserBadgeEntity extends AbstractAuditingEntity {
 
     @Id
     @UuidGenerator

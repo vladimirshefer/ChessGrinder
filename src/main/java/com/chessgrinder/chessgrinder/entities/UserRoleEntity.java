@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRoleEntity {
+public class UserRoleEntity extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -30,5 +30,4 @@ public class UserRoleEntity {
     @ManyToOne
     @JoinColumn(name="role_id", nullable = false)
     private RoleEntity role;
-
 }
