@@ -46,6 +46,9 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Enumerated(EnumType. STRING)
     private TournamentStatus status;
 
+    @Column(name = "number_of_rounds")
+    private Integer numberOfRounds;
+
     @ToString.Exclude
     @OneToMany(mappedBy = "tournament")
     private List<RoundEntity> rounds;

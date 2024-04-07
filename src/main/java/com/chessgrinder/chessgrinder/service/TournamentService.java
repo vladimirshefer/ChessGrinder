@@ -10,6 +10,7 @@ import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -23,6 +24,10 @@ public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
     private final TournamentMapper tournamentMapper;
+    private static final int DEFAULT_NUMBER_OF_ROUNDS = 6;
+    //TODO подумать, можно ли вынести все константы в один класс
+    private static final int MIN_NUMBER_OF_ROUNDS = 0;
+    private static final int MAX_NUMBER_OF_ROUNDS = 99;
 
     public List<TournamentDto> findTournaments() {
         return tournamentRepository.findAll().stream()
@@ -39,6 +44,7 @@ public class TournamentService {
         TournamentEntity tournamentEntity = TournamentEntity.builder()
                 .date(date)
                 .status(TournamentStatus.PLANNED)
+                .numberOfRounds(DEFAULT_NUMBER_OF_ROUNDS)
                 .build();
 
         tournamentEntity = tournamentRepository.save(tournamentEntity);
@@ -70,5 +76,20 @@ public class TournamentService {
 
     public void deleteTournament(UUID tournamentId) {
         tournamentRepository.deleteById(tournamentId);
+    }
+
+    public void updateTournament(UUID tournamentId, TournamentDto tournamentDto) {
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
+        tournament.setName(tournamentDto.getName());
+        tournament.setDate(tournamentDto.getDate());
+        tournament.setLocationName(tournamentDto.getLocationName());
+        tournament.setLocationUrl(tournamentDto.getLocationUrl());
+        final var numOfRounds = tournamentDto.getNumberOfRounds();
+        if (numOfRounds < MIN_NUMBER_OF_ROUNDS || numOfRounds > MAX_NUMBER_OF_ROUNDS) {
+            throw new ResponseStatusException(400, "Wrong rounds number range", null);
+        }
+        tournament.setNumberOfRounds(numOfRounds);
+        tournamentRepository.save(tournament);
     }
 }

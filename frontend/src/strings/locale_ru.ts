@@ -57,6 +57,8 @@ let locale_ru: { [key: string]: string } = {
     "You entered wrong text. Profile won't be deleted": "Вы ввели некорректный текст. Профиль не будет удален",
     "Open": "Открыть",
     "Participating": "Участвую",
+    "Number of rounds": "Количество туров",
+    "Wrong rounds number range": "Некорректное значение кол-ва туров",
 }
 
 export default locale_ru
