@@ -46,6 +46,9 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Enumerated(EnumType. STRING)
     private TournamentStatus status;
 
+    /**
+     * Number of allowed rounds (not actual number of rounds)
+     */
     @Column(name = "number_of_rounds")
     private Integer numberOfRounds;
 

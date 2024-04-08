@@ -20,11 +20,12 @@ public class SwissPairingStrategyImpl implements PairingStrategy {
     /**
      * "Main" method for swiss service. Takes list of all participants and return list of all matches.
      *
-     * @param participants the participants to be paired for new round.
-     * @param matchHistory1 All submitted match results in the whole tournament.
+     * @param participants   the participants to be paired for new round.
+     * @param matchHistory1  All submitted match results in the whole tournament.
+     * @param numberOfRounds Number of allowed rounds
      * @return The list of matches to be played in new round.
      */
-    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory1, boolean recalculateResults) {
+    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory1, Integer numberOfRounds, boolean recalculateResults) {
         List<MatchDto> matchHistory = matchHistory1.stream().flatMap(Collection::stream).toList();
 
         List<MatchDto> matches = new ArrayList<>();

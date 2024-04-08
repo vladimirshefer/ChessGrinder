@@ -115,7 +115,7 @@ public class RoundService {
 
         List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
 
-        List<MatchDto> matchesDto = swissEngine.makePairings(participantDtos, allMatches, false);
+        List<MatchDto> matchesDto = swissEngine.makePairings(participantDtos, allMatches, tournament.getNumberOfRounds(), false);
         List<MatchEntity> matches = new ArrayList<>();
 
         for (MatchDto matchDto : matchesDto) {

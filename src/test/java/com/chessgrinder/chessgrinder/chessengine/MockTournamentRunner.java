@@ -27,6 +27,7 @@ class MockTournamentRunner {
         List<MatchDto> actualMatches = pairingStrategy.makePairings(
                 participants,
                 rounds,
+                1000,
                 true
         );
         MockRoundBuilder mockRoundBuilder = new MockRoundBuilder();

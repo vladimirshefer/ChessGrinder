@@ -40,7 +40,7 @@ public class SwissPairingStrategyImplTest {
 
         List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4);
 
-        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), false);
+        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), 1, false);
 
         assertEquals(2, matches.size());
 
@@ -49,7 +49,6 @@ public class SwissPairingStrategyImplTest {
 
         assertEquals(participant3, matches.get(1).getWhite());
         assertEquals(participant4, matches.get(1).getBlack());
-
     }
 
     @Test
@@ -62,7 +61,7 @@ public class SwissPairingStrategyImplTest {
 
         List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4, participant5);
 
-        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), false);
+        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), 1, false);
         MatchDto firstMatch = matches.get(0);
         MatchDto secondMatch = matches.get(1);
         MatchDto buy = matches.get(2);
@@ -83,7 +82,7 @@ public class SwissPairingStrategyImplTest {
     @Test
     public void test_ZeroParticipants() {
         List<ParticipantDto> participants = List.of();
-        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), false);
+        List<MatchDto> matches = swissEngine.makePairings(participants, emptyList(), 1, false);
 
         assertEquals(0, matches.size());
     }
@@ -99,7 +98,7 @@ public class SwissPairingStrategyImplTest {
         List<List<MatchDto>> matchHistory = List.of(List.of(match));
         List<ParticipantDto> participants = List.of(participant1, participant2, participant3, participant4);
 
-        List<MatchDto> matches = swissEngine.makePairings(participants, matchHistory, false);
+        List<MatchDto> matches = swissEngine.makePairings(participants, matchHistory, 1, false);
 
         MatchDto firstMatch = matches.get(0);
         MatchDto secondMatch = matches.get(1);
@@ -121,6 +120,7 @@ public class SwissPairingStrategyImplTest {
         List<MatchDto> round1 = swissEngine.makePairings(
                 List.of(participant1, participant2, participant3),
                 List.of(),
+                1,
                 false
         );
         assertEquals(
