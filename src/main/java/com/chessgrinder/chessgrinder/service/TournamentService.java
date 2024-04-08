@@ -25,7 +25,6 @@ public class TournamentService {
     private final RoundRepository roundRepository;
     private final TournamentMapper tournamentMapper;
     private static final int DEFAULT_NUMBER_OF_ROUNDS = 6;
-    //TODO подумать, можно ли вынести все константы в один класс
     private static final int MIN_NUMBER_OF_ROUNDS = 0;
     private static final int MAX_NUMBER_OF_ROUNDS = 99;
 
@@ -88,6 +87,9 @@ public class TournamentService {
         final var numOfRounds = tournamentDto.getNumberOfRounds();
         if (numOfRounds < MIN_NUMBER_OF_ROUNDS || numOfRounds > MAX_NUMBER_OF_ROUNDS) {
             throw new ResponseStatusException(400, "Wrong rounds number range", null);
+        }
+        if (numOfRounds < tournament.getRounds().size()) {
+            throw new ResponseStatusException(400, "Entered number of rounds is less than number of existing rounds", null);
         }
         tournament.setNumberOfRounds(numOfRounds);
         tournamentRepository.save(tournament);

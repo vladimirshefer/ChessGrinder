@@ -61,6 +61,8 @@ let locale_ru: { [key: string]: string } = {
     "Wrong rounds number range": "Некорректное значение кол-ва туров",
     "Can't add new round. Change number of rounds in settings":
         "Невозможно добавить новый тур. Измените кол-во туров в настройках",
+    "Entered number of rounds is less than number of existing rounds":
+        "Введенное количество раундов меньше количества существующих раундов.",
 }
 
 export default locale_ru
