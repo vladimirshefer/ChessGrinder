@@ -59,6 +59,8 @@ let locale_ru: { [key: string]: string } = {
     "Participating": "Участвую",
     "Number of rounds": "Количество туров",
     "Wrong rounds number range": "Некорректное значение кол-ва туров",
+    "Can't add new round. Change number of rounds in settings":
+        "Невозможно добавить новый тур. Измените кол-во туров в настройках",
 }
 
 export default locale_ru
