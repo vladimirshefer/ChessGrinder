@@ -11,7 +11,6 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.exceptions.RoundNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.MatchMapper;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
-import com.chessgrinder.chessgrinder.mappers.RoundMapper;
 import com.chessgrinder.chessgrinder.repositories.MatchRepository;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
@@ -21,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -36,15 +36,16 @@ public class RoundService {
     private final MatchRepository matchRepository;
 
     private final MatchMapper matchMapper;
-    private final RoundMapper roundMapper;
 
     private final ParticipantMapper participantMapper;
 
     public void createRound(UUID tournamentId) {
-
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow();
         RoundEntity lastExistedRoundEntity = roundRepository.findFirstByTournamentIdOrderByNumberDesc(tournamentId);
         Integer nextRoundNumber = lastExistedRoundEntity != null ? lastExistedRoundEntity.getNumber() + 1 : 1;
+        if (nextRoundNumber > tournamentEntity.getRoundsNumber()) {
+            throw new ResponseStatusException(400, "Can't add new round. Change rounds number in settings", null);
+        }
 
         RoundEntity nextRoundEntity = RoundEntity.builder()
                 .id(UUID.randomUUID())
@@ -114,7 +115,7 @@ public class RoundService {
 
         List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
 
-        List<MatchDto> matchesDto = swissEngine.makePairings(participantDtos, allMatches, false);
+        List<MatchDto> matchesDto = swissEngine.makePairings(participantDtos, allMatches, tournament.getRoundsNumber(), false);
         List<MatchEntity> matches = new ArrayList<>();
 
         for (MatchDto matchDto : matchesDto) {

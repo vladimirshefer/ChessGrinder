@@ -74,13 +74,7 @@ public class TournamentController {
             @PathVariable UUID tournamentId,
             @RequestBody TournamentDto tournamentDto
     ) {
-        TournamentEntity tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
-        tournament.setName(tournamentDto.getName());
-        tournament.setDate(tournamentDto.getDate());
-        tournament.setLocationName(tournamentDto.getLocationName());
-        tournament.setLocationUrl(tournamentDto.getLocationUrl());
-        tournamentRepository.save(tournament);
+        tournamentService.updateTournament(tournamentId, tournamentDto);
     }
 
     @Secured(RoleEntity.Roles.ADMIN)

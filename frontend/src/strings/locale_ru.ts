@@ -57,6 +57,12 @@ let locale_ru: { [key: string]: string } = {
     "You entered wrong text. Profile won't be deleted": "Вы ввели некорректный текст. Профиль не будет удален",
     "Open": "Открыть",
     "Participating": "Участвую",
+    "Rounds number": "Количество раундов",
+    "Wrong rounds number range": "Некорректное значение кол-ва раундов",
+    "Can't add new round. Change rounds number in settings":
+        "Невозможно добавить новый раунд. Измените кол-во раундов в настройках",
+    "Entered rounds number is less than existing rounds number":
+        "Введенное количество раундов меньше количества существующих раундов",
 }
 
 export default locale_ru

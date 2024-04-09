@@ -27,9 +27,10 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
     private final MissingPlayersTrfLineParser missingPlayersTrfLineParser = new MissingPlayersTrfLineParser();
     private static final int DEFAULT_RATING = 1000;
     private static final String NEWLINE_REGEX = "\\r?\\n|\\r";
+    private static final int STANDARD_PAIRING_CODE = 1000;
 
     @Override
-    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, boolean recalculateResults) {
+    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber, boolean recalculateResults) {
         if (participants.isEmpty()) return Collections.emptyList();
 
         Map<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(participants, matchHistory);
@@ -39,11 +40,11 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
 
         StringBuilder stringBuilder = new StringBuilder();
         // XXR - number of rounds. required for pairing.
-        stringBuilder.append("XXR 1000");
+        stringBuilder.append(String.format("XXR %d", roundsNumber));
         stringBuilder.append("\n");
-        Consumer<String> trfCollector = (it) -> stringBuilder.append(it);
+        Consumer<String> trfCollector = stringBuilder::append;
 
-        List<ParticipantDto> missingParticipants = participants.stream().filter(it -> it.getIsMissing())
+        List<ParticipantDto> missingParticipants = participants.stream().filter(ParticipantDto::getIsMissing)
                 .toList();
 
         missingPlayersTrfLineParser.tryWrite(trfCollector, MissingPlayersTrfLine.builder()
@@ -60,7 +61,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
         String pairingsFileContent;
         synchronized (JAVAFO_MONITOR) {
             try {
-                pairingsFileContent = JaVaFoApi.exec(1000, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
+                pairingsFileContent = JaVaFoApi.exec(STANDARD_PAIRING_CODE, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
             } catch (Exception e) {
                 throw new RuntimeException("Could not do pairing via javafo. \n" + stringBuilder, e);
             }

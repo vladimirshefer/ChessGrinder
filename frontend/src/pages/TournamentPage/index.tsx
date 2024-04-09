@@ -54,9 +54,13 @@ function TournamentPage() {
     }
 
     async function createRound() {
-        await roundRepository.postRound(id!!)
-        await tournamentQuery.refetch()
-        navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""))
+        try {
+            await roundRepository.postRound(id!!);
+            await tournamentQuery.refetch();
+            navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""));
+        } catch (error: any) {
+            alert(loc(error.response.data.message));
+        }
     }
 
     async function runPairingForRound() {
