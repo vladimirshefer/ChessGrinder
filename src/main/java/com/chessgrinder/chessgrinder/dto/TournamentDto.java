@@ -26,5 +26,5 @@ public class TournamentDto {
 
     private TournamentStatus status;
 
-    private Integer numberOfRounds;
+    private Integer roundsNumber;
 }

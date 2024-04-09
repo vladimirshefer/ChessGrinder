@@ -28,7 +28,7 @@ export default function TournamentEditPage() {
         tournament.name = data.name
         tournament.locationUrl = data.locationUrl
         tournament.locationName = data.locationName
-        tournament.numberOfRounds = parseInt(data.numberOfRounds, 10);
+        tournament.roundsNumber = parseInt(data.roundsNumber, 10);
         let startTime: string = data.startTime || "20:00";
         let startDate: string = data.startDate || "2023-10-11"
         tournament.date = dayjs(startDate + "T" + startTime, DEFAULT_DATETIME_FORMAT).format(DEFAULT_DATETIME_FORMAT)
@@ -56,7 +56,7 @@ export default function TournamentEditPage() {
     let tournament: TournamentPageData = {...tournamentQuery.data!!} as TournamentPageData
     let tournamentStartDate = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("YYYY-MM-DD")
     let tournamentStartTime = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")
-    const tournamentNumberOfRounds: number = tournament.tournament.numberOfRounds;
+    const tournamentRoundsNumber: number = tournament.tournament.roundsNumber;
 
     return <>
         <h1 className={"text-left text-lg uppercase font-semibold p-2"}>{loc("Edit tournament")}</h1>
@@ -77,10 +77,10 @@ export default function TournamentEditPage() {
             <input type={"time"} id={"startTime"} placeholder={"Start Time"} {...register("startTime")}
                    className={"border-b"}
                    defaultValue={tournamentStartTime}/>
-            <label htmlFor={"numberOfRounds"}>{loc("Number of rounds")}</label>
-            <input type={"number"} id={"numberOfRounds"} placeholder={loc("Number of rounds")}
-                    {...register("numberOfRounds")}
-                    defaultValue={tournamentNumberOfRounds}/>
+            <label htmlFor={"roundsNumber"}>{loc("Rounds number")}</label>
+            <input type={"number"} id={"roundsNumber"} placeholder={loc("Rounds number")}
+                    {...register("roundsNumber")}
+                    defaultValue={tournamentRoundsNumber}/>
 
             <div className={"flex gap-2 justify-end"}>
                 <button type={"submit"} className={"btn-primary uppercase font-semibold"}>

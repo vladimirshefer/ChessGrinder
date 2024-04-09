@@ -30,7 +30,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
     private static final int STANDARD_PAIRING_CODE = 1000;
 
     @Override
-    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer numberOfRounds, boolean recalculateResults) {
+    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber, boolean recalculateResults) {
         if (participants.isEmpty()) return Collections.emptyList();
 
         Map<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(participants, matchHistory);
@@ -40,7 +40,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
 
         StringBuilder stringBuilder = new StringBuilder();
         // XXR - number of rounds. required for pairing.
-        stringBuilder.append(String.format("XXR %d", numberOfRounds));
+        stringBuilder.append(String.format("XXR %d", roundsNumber));
         stringBuilder.append("\n");
         Consumer<String> trfCollector = stringBuilder::append;
 

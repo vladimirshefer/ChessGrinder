@@ -19,7 +19,7 @@ public class TournamentMapper {
                 .locationUrl(tournamentEntity.getLocationUrl())
                 .date(tournamentEntity.getDate())
                 .status(tournamentEntity.getStatus())
-                .numberOfRounds(tournamentEntity.getNumberOfRounds())
+                .roundsNumber(tournamentEntity.getRoundsNumber())
                 .build();
     }
 

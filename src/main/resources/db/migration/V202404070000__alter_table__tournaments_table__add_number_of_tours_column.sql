@@ -1,10 +1,10 @@
 ALTER TABLE tournaments_table
-    ADD COLUMN number_of_rounds INTEGER;
+    ADD COLUMN rounds_number INTEGER;
 UPDATE tournaments_table AS t
-SET number_of_rounds = (
+SET rounds_number = (
     SELECT COUNT(*)
     FROM rounds_table AS r
     WHERE r.tournament_id = t.id
 );
 ALTER TABLE tournaments_table
-    ALTER COLUMN number_of_rounds SET NOT NULL;
+    ALTER COLUMN rounds_number SET NOT NULL;

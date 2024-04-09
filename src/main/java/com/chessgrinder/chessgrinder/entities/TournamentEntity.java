@@ -49,8 +49,8 @@ public class TournamentEntity extends AbstractAuditingEntity {
     /**
      * Number of allowed rounds (not actual number of rounds)
      */
-    @Column(name = "number_of_rounds")
-    private Integer numberOfRounds;
+    @Column(name = "rounds_number")
+    private Integer roundsNumber;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "tournament")

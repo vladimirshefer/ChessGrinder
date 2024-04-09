@@ -43,8 +43,8 @@ public class RoundService {
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow();
         RoundEntity lastExistedRoundEntity = roundRepository.findFirstByTournamentIdOrderByNumberDesc(tournamentId);
         Integer nextRoundNumber = lastExistedRoundEntity != null ? lastExistedRoundEntity.getNumber() + 1 : 1;
-        if (nextRoundNumber > tournamentEntity.getNumberOfRounds()) {
-            throw new ResponseStatusException(400, "Can't add new round. Change number of rounds in settings", null);
+        if (nextRoundNumber > tournamentEntity.getRoundsNumber()) {
+            throw new ResponseStatusException(400, "Can't add new round. Change rounds number in settings", null);
         }
 
         RoundEntity nextRoundEntity = RoundEntity.builder()
@@ -115,7 +115,7 @@ public class RoundService {
 
         List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
 
-        List<MatchDto> matchesDto = swissEngine.makePairings(participantDtos, allMatches, tournament.getNumberOfRounds(), false);
+        List<MatchDto> matchesDto = swissEngine.makePairings(participantDtos, allMatches, tournament.getRoundsNumber(), false);
         List<MatchEntity> matches = new ArrayList<>();
 
         for (MatchDto matchDto : matchesDto) {

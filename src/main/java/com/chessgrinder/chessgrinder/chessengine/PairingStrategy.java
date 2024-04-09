@@ -12,7 +12,7 @@ public interface PairingStrategy {
              * List per round.
              */
             List<List<MatchDto>> matchHistory,
-            Integer numberOfRounds,
+            Integer roundsNumber,
             boolean recalculateResults
     );
 }

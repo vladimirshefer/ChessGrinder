@@ -37,7 +37,7 @@ export interface TournamentDto {
     status?: TournamentStatus
     locationName?: string
     locationUrl?: string
-    numberOfRounds: number
+    roundsNumber: number
 }
 
 export interface TournamentListDto {
