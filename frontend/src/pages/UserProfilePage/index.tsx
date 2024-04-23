@@ -181,17 +181,7 @@ export default function UserProfilePage() {
         return <>No such user</>
     }
 
-    let now = dayjs()
-    let nowMonthStr = now.format(`YYYY-MM`)
     let userHistory = historyQuery.data?.values || [];
-    let seasonPoints = userHistory
-        .filter(it => {
-            let tournamentDate = dayjs(it.tournament.date, DEFAULT_DATETIME_FORMAT);
-            return nowMonthStr === tournamentDate.format('YYYY-MM')
-        })
-        .map(it => it.participant.score)
-        .reduce((a, b) => a + b, 0);
-
     let totalPoints = userHistory
         .map(it => it.participant.score)
         .reduce((a, b) => a + b, 0);
@@ -231,11 +221,6 @@ export default function UserProfilePage() {
                     <div className={"flex gap-1 items-center"} title={loc("Points")}>
                         <AiOutlineTrophy/>
                         <span>{totalPoints}</span>
-                        <Conditional on={seasonPoints > 0}>
-                        <span className={"text-green-800 text-sm"} title={loc("Season Points")}>
-                            (↑{seasonPoints})
-                        </span>
-                        </Conditional>
                     </div>
                     <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
                         <FaRegHeart/>

@@ -21,6 +21,8 @@ export interface UserRepository {
 
     getHistory(userId: string): Promise<ListDto<UserHistoryRecordDto>>
 
+    getTotalPoints(userId: string, startSeason: Date, endSeason: Date): Promise<number>
+
     assignReputation(data: UserReputationHistoryRecordDto): Promise<void>
 
     updateUser(userId: string, user: UserDto): Promise<void>
@@ -93,6 +95,11 @@ class LocalStorageUserRepository implements UserRepository {
         };
     }
 
+    async getTotalPoints(userId: string, startSeason: Date, endSeason: Date): Promise<number> {
+        alert("Unsupported");
+        return 0;
+    }
+
     async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {
         alert("Unsupported");
     }
@@ -121,6 +128,14 @@ class RestApiUserRepository implements UserRepository {
 
     async getHistory(userId: string): Promise<ListDto<UserHistoryRecordDto>> {
         return restApiClient.get(`/user/${userId}/history`);
+    }
+
+    async getTotalPoints(userId: string, startSeason: Date, endSeason: Date): Promise<number> {
+        const queryParams: Record<string, string> = {
+            startSeasonDate: startSeason.toISOString().substring(0, 10),
+            endSeasonDate: endSeason.toISOString().substring(0, 10)
+        };
+        return restApiClient.get(`/user/${userId}/totalPoints`, queryParams);
     }
 
     async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {

@@ -77,11 +77,17 @@ class RestApiClient {
 
     async get<T>(
         path: string,
+        queryParams: Record<string, string> = {},
         pathPrefix: string = apiPathPrefix
     ) {
         try {
+            const queryParamsStr: string = Object.entries(queryParams)
+                    .map(([key, value]) => `${key}=${value}`)
+                    .join('&');
+            console.log(apiPathPrefix + path + ((queryParamsStr.length === 0)? "" : ("?" + queryParamsStr)));
             let axiosResponse = await restAxios.get(
                 apiPathPrefix + path
+                    + ((queryParamsStr.length === 0)? "" : ("?" + queryParamsStr))
             )
             return axiosResponse.data as T;
         } catch (e: any) {

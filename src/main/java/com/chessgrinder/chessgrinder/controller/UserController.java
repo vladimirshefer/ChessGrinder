@@ -13,12 +13,16 @@ import com.chessgrinder.chessgrinder.service.UserService;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -72,9 +76,12 @@ public class UserController {
         return userMapper.toDto(authenticatedUser);
     }
 
+    //TODO сюда надо как-то вставить даты начала и конца
     @GetMapping("/{userIdOrUsername}/history")
     public ListDto<UserHistoryRecordDto> history(
-            @PathVariable String userIdOrUsername
+            @PathVariable String userIdOrUsername,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startSeasonDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endSeasonDate
     ) {
         UserEntity user = findUserByIdOrUsername(userIdOrUsername);
         List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
@@ -93,6 +100,24 @@ public class UserController {
                 .toList();
         return ListDto.<UserHistoryRecordDto>builder().values(history).build();
     }
+
+    @GetMapping("/{userIdOrUsername}/totalPoints")
+    public BigDecimal getTotalPoints(
+            @PathVariable String userIdOrUsername,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startSeasonDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endSeasonDate) {
+        UserEntity user = findUserByIdOrUsername(userIdOrUsername);
+        List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
+        return participants.stream()
+                .filter(participant -> {
+                    final LocalDateTime tournamentDate = participant.getTournament().getDate();
+                    Date tournamentDateAsDate = Date.from(tournamentDate.atZone(ZoneId.systemDefault()).toInstant());
+                    return !tournamentDateAsDate.before(startSeasonDate) && !tournamentDateAsDate.after(endSeasonDate);
+                })
+                .map(ParticipantEntity::getScore) // Преобразование в BigDecimal
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 
     @Nonnull
     private UserEntity findUserByIdOrUsername(String userIdOrUsername) {
