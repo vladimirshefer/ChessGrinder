@@ -10,8 +10,8 @@ export function MemberList(
         endSeasonDate = null,
     }: {
         users: UserDto[],
-        startSeasonDate?: Date | null,
-        endSeasonDate?: Date | null,
+        startSeasonDate?: string | null,
+        endSeasonDate?: string | null,
     }
 ) {
     let loc = useLoc()

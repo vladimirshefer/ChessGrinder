@@ -2,9 +2,13 @@ import React from "react";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import MemberList from "pages/MainPage/MemberList";
+import useSearchParam from "lib/react/hooks/useSearchParam";
 
 export default function UsersPage() {
 
+    let startSeason = useSearchParam("startSeason", "false")[0];
+    let endSeason = useSearchParam("endSeason", "false")[0];
+    console.log(startSeason!! + "@@@");
     let usersQuery = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
@@ -18,9 +22,9 @@ export default function UsersPage() {
         return <>Loading...</>
     }
 
-//     let startSeason = useSearchParam("startSeason", "false");
+
 
     return <div className={"p-2"}>
-        <MemberList users={users}/>
+        <MemberList users={users} startSeasonDate={startSeason} endSeasonDate={endSeason}/>
     </div>
 }

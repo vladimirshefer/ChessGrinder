@@ -111,11 +111,12 @@ public class UserController {
     @GetMapping("/{userIdOrUsername}/totalPoints")
     public BigDecimal getTotalPoints(
             @PathVariable String userIdOrUsername,
-            @RequestParam(required = false) String startSeasonDateString,
-            @RequestParam(required = false) String endSeasonDateString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            @RequestParam(required = false, name = "startSeasonDate") String startSeasonDateString,
+            @RequestParam(required = false, name = "endSeasonDate") String endSeasonDateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         Date startSeasonDate;
         Date endSeasonDate;
+        //TODO даты могут быть "null", а не null, это надо на фронте исправить!
         try {
             startSeasonDate = dateFormat.parse(startSeasonDateString == null ? startDateString : startSeasonDateString);
         } catch (ParseException e) {
@@ -126,7 +127,7 @@ public class UserController {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        //Setting to UTC
+        //Setting to UTC TODO возможно, надо убрать
         startSeasonDate.setTime(startSeasonDate.getTime() - TimeZone.getDefault().getOffset(startSeasonDate.getTime()));
         endSeasonDate.setTime(endSeasonDate.getTime() - TimeZone.getDefault().getOffset(endSeasonDate.getTime()));
         final var startSeasonDateFinal = startSeasonDate;
