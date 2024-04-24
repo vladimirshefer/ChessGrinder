@@ -10,9 +10,13 @@ import React from "react";
 
 export function UserPane(
     {
-        user
+        user,
+        startSeasonDate = null,
+        endSeasonDate = null,
     }: {
-        user: UserDto
+        user: UserDto,
+        startSeasonDate?: Date | null,
+        endSeasonDate?: Date | null,
     }
 ) {
     let loc = useLoc()
@@ -22,8 +26,7 @@ export function UserPane(
     let userHistoryQuery = useQuery({
         queryKey: ["userHistory", user.id],
         queryFn: async () => {
-//             return await userRepository.getHistory(user.id);
-            return await userRepository.getTotalPoints(user.id, new Date('1970-01-01'), new Date('2100-01-01'));
+            return await userRepository.getTotalPoints(user.id, startSeasonDate!!, endSeasonDate!!);
         }
     });
 

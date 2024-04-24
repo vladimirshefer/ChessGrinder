@@ -17,6 +17,9 @@ export default function UsersPage() {
     if (!users) {
         return <>Loading...</>
     }
+
+//     let startSeason = useSearchParam("startSeason", "false");
+
     return <div className={"p-2"}>
         <MemberList users={users}/>
     </div>

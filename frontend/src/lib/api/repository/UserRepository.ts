@@ -131,11 +131,13 @@ class RestApiUserRepository implements UserRepository {
     }
 
     async getTotalPoints(userId: string, startSeason: Date, endSeason: Date): Promise<number> {
-        const queryParams: Record<string, string> = {
-            startSeasonDate: startSeason.toISOString().substring(0, 10),
-            endSeasonDate: endSeason.toISOString().substring(0, 10)
+        //TODO по возможности, сделать эту структуру пустой (чтобы не было ...=null)
+        const queryParams: Record<string, string | null> = {
+            startSeasonDate: startSeason ? startSeason.toISOString().substring(0, 10) : null,
+            endSeasonDate: endSeason ? endSeason.toISOString().substring(0, 10) : null
         };
-        return restApiClient.get(`/user/${userId}/totalPoints`, queryParams);
+        console.log("!!!!");
+        return restApiClient.get(`/user/${userId}/totalPoints`, queryParams as Record<string, string>);
     }
 
     async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {

@@ -84,7 +84,6 @@ class RestApiClient {
             const queryParamsStr: string = Object.entries(queryParams)
                     .map(([key, value]) => `${key}=${value}`)
                     .join('&');
-            console.log(apiPathPrefix + path + ((queryParamsStr.length === 0)? "" : ("?" + queryParamsStr)));
             let axiosResponse = await restAxios.get(
                 apiPathPrefix + path
                     + ((queryParamsStr.length === 0)? "" : ("?" + queryParamsStr))

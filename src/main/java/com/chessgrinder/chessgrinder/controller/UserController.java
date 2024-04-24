@@ -21,8 +21,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,10 +45,14 @@ public class UserController {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+
+
     @Value("${chessgrinder.feature.auth.signupWithPasswordEnabled:true}")
     private boolean isSignupWithPasswordEnabled;
 
     private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
+    private static final String startDateString = "1970-01-01";
+    private static final String endDateString = "2100-01-01";
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
@@ -104,20 +111,39 @@ public class UserController {
     @GetMapping("/{userIdOrUsername}/totalPoints")
     public BigDecimal getTotalPoints(
             @PathVariable String userIdOrUsername,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startSeasonDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endSeasonDate) {
+            @RequestParam(required = false) String startSeasonDateString,
+            @RequestParam(required = false) String endSeasonDateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date startSeasonDate;
+        Date endSeasonDate;
+        try {
+            startSeasonDate = dateFormat.parse(startSeasonDateString == null ? startDateString : startSeasonDateString);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            endSeasonDate = dateFormat.parse(endSeasonDateString == null ? endDateString : endSeasonDateString);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        //Setting to UTC
+        startSeasonDate.setTime(startSeasonDate.getTime() - TimeZone.getDefault().getOffset(startSeasonDate.getTime()));
+        endSeasonDate.setTime(endSeasonDate.getTime() - TimeZone.getDefault().getOffset(endSeasonDate.getTime()));
+        final var startSeasonDateFinal = startSeasonDate;
+        final var endSeasonDateFinal = endSeasonDate;
+
         UserEntity user = findUserByIdOrUsername(userIdOrUsername);
+        //TODO упомянуть При создании турнира иниц. локальное время!!
         List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
         return participants.stream()
                 .filter(participant -> {
-                    final LocalDateTime tournamentDate = participant.getTournament().getDate();
-                    Date tournamentDateAsDate = Date.from(tournamentDate.atZone(ZoneId.systemDefault()).toInstant());
-                    return !tournamentDateAsDate.before(startSeasonDate) && !tournamentDateAsDate.after(endSeasonDate);
+                    final LocalDateTime tournamentDateTime = participant.getTournament().getDate();
+                    Date tournamentDate = Date.from(tournamentDateTime.toInstant(ZoneOffset.UTC));
+                    return !tournamentDate.before(startSeasonDateFinal) && !tournamentDate.after(endSeasonDateFinal);
                 })
-                .map(ParticipantEntity::getScore) // Преобразование в BigDecimal
+                .map(ParticipantEntity::getScore)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
 
     @Nonnull
     private UserEntity findUserByIdOrUsername(String userIdOrUsername) {
