@@ -20,27 +20,13 @@ export function UserPane(
     }
 ) {
     let loc = useLoc()
-    //TODO мне кажется, что надо создать отдельный запрос и отвязаться от UserPane
-    //(а именно так, как было сделано до введения сезонности)
-    //Можно ли сделать так, чтобы передавать даты не в этот класс, а в другой (похожий)?
     let userHistoryQuery = useQuery({
         queryKey: ["userHistory", user.id],
         queryFn: async () => {
-            return await userRepository.getTotalPoints(user.id, startSeasonDate!!, endSeasonDate!!);
+            return await userRepository.getTotalPoints(user.id, startSeasonDate, endSeasonDate);
         }
     });
 
-    //userHistory используется здесь только для сложения очков -
-    //а можно ли сразу сумму из бэка передавать?
-    //Придумать какой-нибудь метод userRepository.getTotalPoints(user.id); чтобы он возвращал только число
-    //Сейчас getHistory по факту нужен только для страницы профиля пользователя
-    //Можно ли в таком случае мой новый запрос совместить с этим?
-    //Надо еще посмотреть, чтобы это никак не влияло на главную страницу
-//     let userHistory = userHistoryQuery.data?.values || [];
-//     let totalPoints = userHistory
-//         .map(it => it.participant.score)
-//         .reduce((a, b) => a + b, 0);
-//     let totalPoints = 6;
     let totalPoints = userHistoryQuery.data;
 
     return <div key={user.id} className={"col-span-12 flex"}>

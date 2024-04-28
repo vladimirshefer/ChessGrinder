@@ -6,13 +6,12 @@ import useSearchParam from "lib/react/hooks/useSearchParam";
 
 export default function UsersPage() {
 
-    let startSeason = useSearchParam("startSeason", "false")[0];
-    let endSeason = useSearchParam("endSeason", "false")[0];
-    console.log(startSeason!! + "@@@");
+    let startSeason = useSearchParam("startSeason")[0];
+    let endSeason = useSearchParam("endSeason")[0];
     let usersQuery = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
-            return await userRepository.getUsers()
+            return await userRepository.getUsers() //TODO можно попытаться засунуть прямо сюда!
         },
     })
 

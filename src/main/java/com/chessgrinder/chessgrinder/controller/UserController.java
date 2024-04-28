@@ -13,7 +13,6 @@ import com.chessgrinder.chessgrinder.service.UserService;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,8 +49,10 @@ public class UserController {
     private boolean isSignupWithPasswordEnabled;
 
     private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
-    private static final String startDateString = "1970-01-01";
-    private static final String endDateString = "2100-01-01";
+    private static final String START_DATE_STRING = "01.01.1970";
+    private static final String END_DATE_STRING = "01.01.2100";
+    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
@@ -83,12 +83,9 @@ public class UserController {
         return userMapper.toDto(authenticatedUser);
     }
 
-    //TODO сюда надо как-то вставить даты начала и конца
     @GetMapping("/{userIdOrUsername}/history")
     public ListDto<UserHistoryRecordDto> history(
-            @PathVariable String userIdOrUsername,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startSeasonDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endSeasonDate
+            @PathVariable String userIdOrUsername
     ) {
         UserEntity user = findUserByIdOrUsername(userIdOrUsername);
         List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
@@ -113,23 +110,14 @@ public class UserController {
             @PathVariable String userIdOrUsername,
             @RequestParam(required = false, name = "startSeasonDate") String startSeasonDateString,
             @RequestParam(required = false, name = "endSeasonDate") String endSeasonDateString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         Date startSeasonDate;
         Date endSeasonDate;
-        //TODO даты могут быть "null", а не null, это надо на фронте исправить!
         try {
-            startSeasonDate = dateFormat.parse(startSeasonDateString == null ? startDateString : startSeasonDateString);
+            startSeasonDate = DATE_FORMAT.parse(startSeasonDateString == null ? START_DATE_STRING : startSeasonDateString);
+            endSeasonDate = DATE_FORMAT.parse(endSeasonDateString == null ? END_DATE_STRING : endSeasonDateString);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, null);
         }
-        try {
-            endSeasonDate = dateFormat.parse(endSeasonDateString == null ? endDateString : endSeasonDateString);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        //Setting to UTC TODO возможно, надо убрать
-        startSeasonDate.setTime(startSeasonDate.getTime() - TimeZone.getDefault().getOffset(startSeasonDate.getTime()));
-        endSeasonDate.setTime(endSeasonDate.getTime() - TimeZone.getDefault().getOffset(endSeasonDate.getTime()));
         final var startSeasonDateFinal = startSeasonDate;
         final var endSeasonDateFinal = endSeasonDate;
 
