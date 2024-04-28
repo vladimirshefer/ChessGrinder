@@ -21,9 +21,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,7 +56,7 @@ public class UserController {
     private static final String START_DATE_STRING = "01.01.1970";
     private static final String END_DATE_STRING = "01.01.2100";
     private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
+
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
@@ -112,11 +116,20 @@ public class UserController {
             @RequestParam(required = false, name = "endSeasonDate") String endSeasonDateString) {
         Date startSeasonDate;
         Date endSeasonDate;
+
+//        LocalDateTime localDateTime = LocalDate.parse((startSeasonDateString == null ? START_DATE_STRING : startSeasonDateString), DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
+//        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+//        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
         try {
-            startSeasonDate = DATE_FORMAT.parse(startSeasonDateString == null ? START_DATE_STRING : startSeasonDateString);
-            endSeasonDate = DATE_FORMAT.parse(endSeasonDateString == null ? END_DATE_STRING : endSeasonDateString);
-        } catch (ParseException e) {
-            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, null);
+//            DateTimeFormatter format = DateTimeFormatter.ofPattern(DATE_FORMAT_STRING);
+//            LocalDate date = LocalDate.parse(startSeasonDateString == null ? START_DATE_STRING : startSeasonDateString, format);
+            startSeasonDate = getDateFromString(startSeasonDateString, START_DATE_STRING);
+            endSeasonDate = getDateFromString(endSeasonDateString, END_DATE_STRING);
+//            startSeasonDate = DATE_FORMAT.parse(startSeasonDateString == null ? START_DATE_STRING : startSeasonDateString);
+//            endSeasonDate = DATE_FORMAT.parse(endSeasonDateString == null ? END_DATE_STRING : endSeasonDateString);
+        } catch (Exception e) {
+            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
         }
         final var startSeasonDateFinal = startSeasonDate;
         final var endSeasonDateFinal = endSeasonDate;
@@ -132,6 +145,12 @@ public class UserController {
                 })
                 .map(ParticipantEntity::getScore)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private static Date getDateFromString(String dateString, String defaultDateString) {
+        String formalDate = (dateString == null ? defaultDateString : dateString);
+        LocalDateTime localDateTime = LocalDate.parse(formalDate, DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     @Nonnull

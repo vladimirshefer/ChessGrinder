@@ -11,23 +11,23 @@ import React from "react";
 export function UserPane(
     {
         user,
-        startSeasonDate = null,
-        endSeasonDate = null,
+        totalPoints = undefined
     }: {
         user: UserDto,
-        startSeasonDate?: string | null,
-        endSeasonDate?: string | null,
+        totalPoints?: number | undefined | null
     }
 ) {
     let loc = useLoc()
     let userHistoryQuery = useQuery({
         queryKey: ["userHistory", user.id],
         queryFn: async () => {
-            return await userRepository.getTotalPoints(user.id, startSeasonDate, endSeasonDate);
+            return await userRepository.getTotalPoints(user.id, null, null);
         }
     });
 
-    let totalPoints = userHistoryQuery.data;
+    if (totalPoints === null || totalPoints === undefined) {
+        totalPoints = userHistoryQuery.data;
+    }
 
     return <div key={user.id} className={"col-span-12 flex"}>
         <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>

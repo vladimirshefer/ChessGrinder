@@ -1,13 +1,19 @@
 import React from "react";
 import {useQuery} from "@tanstack/react-query";
+import { useLocation } from 'react-router-dom';
 import userRepository from "lib/api/repository/UserRepository";
 import MemberList from "pages/MainPage/MemberList";
-import useSearchParam from "lib/react/hooks/useSearchParam";
 
 export default function UsersPage() {
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const startSeason = searchParams.get('startSeason');
+    const endSeason = searchParams.get('endSeason');
 
-    let startSeason = useSearchParam("startSeason")[0];
-    let endSeason = useSearchParam("endSeason")[0];
+    if (searchParams.size !== 0 && (startSeason === null || endSeason === null)) {
+        alert("PFFF TODO");
+    }
+
     let usersQuery = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
@@ -15,13 +21,10 @@ export default function UsersPage() {
         },
     })
 
-
     let users = usersQuery.data?.values;
     if (!users) {
         return <>Loading...</>
     }
-
-
 
     return <div className={"p-2"}>
         <MemberList users={users} startSeasonDate={startSeason} endSeasonDate={endSeason}/>
