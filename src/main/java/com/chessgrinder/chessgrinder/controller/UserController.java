@@ -60,8 +60,8 @@ public class UserController {
 
     @GetMapping
     public ListDto<UserDto> getUsers() {
-        final var allUsers = userService.getAllUsers().stream()
-                .sorted(Comparator.comparing(UserDto::getReputation).reversed())
+        final List<UserDto> allUsers = userService.getAllUsers().stream()
+                .sorted(Comparator.comparing(UserDto::getTotalPoints).reversed())
                 .collect(Collectors.toList());
         return ListDto.<UserDto>builder().values(allUsers).build();
     }

@@ -19,6 +19,7 @@ export interface UserDto {
     badges: BadgeDto[]
     roles?: string[]
     reputation?: number
+    totalPoints?: number
 }
 
 export interface ListDto<T extends any> {

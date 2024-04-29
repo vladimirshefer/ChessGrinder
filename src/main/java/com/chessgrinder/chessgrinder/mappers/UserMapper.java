@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.mappers;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.*;
 
@@ -14,12 +15,17 @@ import org.springframework.stereotype.*;
 public class UserMapper {
     private final BadgeRepository badgeRepository;
     private final BadgeMapper badgeMapper;
+    private final ParticipantRepository participantRepository;
     public UserDto toDto(UserEntity user) {
 
         List<BadgeEntity> userBadges = badgeRepository.getAllBadgesByUserId(user.getId());
         if (userBadges == null) {
             userBadges = Collections.emptyList();
         }
+        final List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
+        BigDecimal totalPoints = participants.stream()
+                .map(ParticipantEntity::getScore)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return UserDto.builder()
                 .id(user.getId().toString())
@@ -28,6 +34,7 @@ public class UserMapper {
                 .name(user.getName())
                 .roles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toList()))
                 .reputation(user.getReputation())
+                .totalPoints(totalPoints)
                 .build();
     }
 
