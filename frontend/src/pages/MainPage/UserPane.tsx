@@ -18,15 +18,15 @@ export function UserPane(
     }
 ) {
     let loc = useLoc()
-    let userHistoryQuery = useQuery({
-        queryKey: ["userHistory", user.id],
-        queryFn: async () => {
-            return await userRepository.getTotalPoints(user.id, null, null);
-        }
-    });
+//     let userHistoryQuery = useQuery({
+//         queryKey: ["userHistory", user.id],
+//         queryFn: async () => {
+//             return await userRepository.getTotalPoints(user.id, null, null);
+//         }
+//     });
 
     if (totalPoints === null || totalPoints === undefined) {
-        totalPoints = userHistoryQuery.data;
+        totalPoints = -111;
     }
 
     return <div key={user.id} className={"col-span-12 flex"}>

@@ -6,10 +6,17 @@ import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
+import com.chessgrinder.chessgrinder.utils.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,10 +29,35 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public List<UserDto> getAllUsers() {
+    private static final String START_DATE_STRING = "01.01.1970";
+    private static final String END_DATE_STRING = "01.01.2100";
+    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
+
+    public List<UserDto> getAllUsers(String startSeasonDateString, String endSeasonDateString) {
+        final Pair<Date, Date> dates = getSeasonDates(startSeasonDateString, endSeasonDateString);
         List<UserEntity> users = userRepository.findAll();
 
-        return users.stream().map(userMapper::toDto).collect(Collectors.toList());
+        return users.stream().map(user -> userMapper.toDto(user, dates.getFirst(), dates.getSecond()))
+                .collect(Collectors.toList());
+    }
+
+    private static Pair<Date, Date> getSeasonDates(String startSeasonDateString, String endSeasonDateString) {
+        Date startSeasonDate;
+        Date endSeasonDate;
+
+        try {
+            startSeasonDate = getDateFromString(startSeasonDateString, START_DATE_STRING);
+            endSeasonDate = getDateFromString(endSeasonDateString, END_DATE_STRING);
+        } catch (Exception e) {
+            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
+        }
+        return new Pair<>(startSeasonDate, endSeasonDate);
+    }
+
+    private static Date getDateFromString(String dateString, String defaultDateString) {
+        String formalDate = (dateString == null ? defaultDateString : dateString);
+        LocalDateTime localDateTime = LocalDate.parse(formalDate, DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public UserDto getUserByUserId(String userId) {

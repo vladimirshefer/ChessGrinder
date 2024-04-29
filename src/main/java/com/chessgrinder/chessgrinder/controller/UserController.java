@@ -10,6 +10,7 @@ import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.UserService;
+import com.chessgrinder.chessgrinder.utils.Pair;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,20 +48,17 @@ public class UserController {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-
-
     @Value("${chessgrinder.feature.auth.signupWithPasswordEnabled:true}")
     private boolean isSignupWithPasswordEnabled;
 
     private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
-    private static final String START_DATE_STRING = "01.01.1970";
-    private static final String END_DATE_STRING = "01.01.2100";
-    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
-
 
     @GetMapping
-    public ListDto<UserDto> getUsers() {
-        final List<UserDto> allUsers = userService.getAllUsers().stream()
+    public ListDto<UserDto> getUsers(
+            @RequestParam(required = false, name = "startSeasonDate") String startSeasonDateString,
+            @RequestParam(required = false, name = "endSeasonDate") String endSeasonDateString
+    ) {
+        final List<UserDto> allUsers = userService.getAllUsers(startSeasonDateString, endSeasonDateString).stream()
                 .sorted(Comparator.comparing(UserDto::getTotalPoints).reversed())
                 .collect(Collectors.toList());
         return ListDto.<UserDto>builder().values(allUsers).build();
@@ -109,49 +107,35 @@ public class UserController {
         return ListDto.<UserHistoryRecordDto>builder().values(history).build();
     }
 
-    @GetMapping("/{userIdOrUsername}/totalPoints")
-    public BigDecimal getTotalPoints(
-            @PathVariable String userIdOrUsername,
-            @RequestParam(required = false, name = "startSeasonDate") String startSeasonDateString,
-            @RequestParam(required = false, name = "endSeasonDate") String endSeasonDateString) {
-        Date startSeasonDate;
-        Date endSeasonDate;
-
-//        LocalDateTime localDateTime = LocalDate.parse((startSeasonDateString == null ? START_DATE_STRING : startSeasonDateString), DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
-//        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-
-//        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-        try {
-//            DateTimeFormatter format = DateTimeFormatter.ofPattern(DATE_FORMAT_STRING);
-//            LocalDate date = LocalDate.parse(startSeasonDateString == null ? START_DATE_STRING : startSeasonDateString, format);
-            startSeasonDate = getDateFromString(startSeasonDateString, START_DATE_STRING);
-            endSeasonDate = getDateFromString(endSeasonDateString, END_DATE_STRING);
-//            startSeasonDate = DATE_FORMAT.parse(startSeasonDateString == null ? START_DATE_STRING : startSeasonDateString);
-//            endSeasonDate = DATE_FORMAT.parse(endSeasonDateString == null ? END_DATE_STRING : endSeasonDateString);
-        } catch (Exception e) {
-            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
-        }
-        final var startSeasonDateFinal = startSeasonDate;
-        final var endSeasonDateFinal = endSeasonDate;
-
-        UserEntity user = findUserByIdOrUsername(userIdOrUsername);
-        //TODO упомянуть При создании турнира иниц. локальное время!!
-        List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
-        return participants.stream()
-                .filter(participant -> {
-                    final LocalDateTime tournamentDateTime = participant.getTournament().getDate();
-                    Date tournamentDate = Date.from(tournamentDateTime.toInstant(ZoneOffset.UTC));
-                    return !tournamentDate.before(startSeasonDateFinal) && !tournamentDate.after(endSeasonDateFinal);
-                })
-                .map(ParticipantEntity::getScore)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    private static Date getDateFromString(String dateString, String defaultDateString) {
-        String formalDate = (dateString == null ? defaultDateString : dateString);
-        LocalDateTime localDateTime = LocalDate.parse(formalDate, DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-    }
+//    @GetMapping("/{userIdOrUsername}/totalPoints")
+//    public BigDecimal getTotalPoints(
+//            @PathVariable String userIdOrUsername,
+//            @RequestParam(required = false, name = "startSeasonDate") String startSeasonDateString,
+//            @RequestParam(required = false, name = "endSeasonDate") String endSeasonDateString) {
+//        Date startSeasonDate;
+//        Date endSeasonDate;
+//
+//        try {
+//            startSeasonDate = getDateFromString(startSeasonDateString, START_DATE_STRING);
+//            endSeasonDate = getDateFromString(endSeasonDateString, END_DATE_STRING);
+//        } catch (Exception e) {
+//            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
+//        }
+//        final var startSeasonDateFinal = startSeasonDate;
+//        final var endSeasonDateFinal = endSeasonDate;
+//
+//        UserEntity user = findUserByIdOrUsername(userIdOrUsername);
+//        //TODO упомянуть При создании турнира иниц. локальное время!!
+//        List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
+//        return participants.stream()
+//                .filter(participant -> {
+//                    final LocalDateTime tournamentDateTime = participant.getTournament().getDate();
+//                    Date tournamentDate = Date.from(tournamentDateTime.toInstant(ZoneOffset.UTC));
+//                    return !tournamentDate.before(startSeasonDateFinal) && !tournamentDate.after(endSeasonDateFinal);
+//                })
+//                .map(ParticipantEntity::getScore)
+//                .reduce(BigDecimal.ZERO, BigDecimal::add);
+//    }
 
     @Nonnull
     private UserEntity findUserByIdOrUsername(String userIdOrUsername) {

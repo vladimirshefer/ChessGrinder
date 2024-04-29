@@ -19,8 +19,10 @@ export default function UsersPage() {
     let usersQuery = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
-            return await userRepository.getUsers() //TODO можно попытаться засунуть прямо сюда!
+            return await userRepository.getUsersWithSeasonDates(startSeason, endSeason);
+             //TODO можно попытаться засунуть прямо сюда!
             //только с другим названием, например: getUsersWithSeasonDates
+            //Да, этот метод нужен только здесь!
         },
     })
 

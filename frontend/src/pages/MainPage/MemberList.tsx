@@ -30,8 +30,8 @@ export function MemberList(
             let userId2SeasonPoints = {} as any;
             try {
                 for (const user of users) {
-                    let points = await userRepository.getTotalPoints(user.id, startSeasonDate, endSeasonDate);
-                    userId2SeasonPoints[user.id] = points;
+//                     let points = await userRepository.getTotalPoints(user.id, startSeasonDate, endSeasonDate);
+                    userId2SeasonPoints[user.id] = 666;
                 }
                 return userId2SeasonPoints;
             }

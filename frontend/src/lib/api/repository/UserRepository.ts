@@ -17,6 +17,8 @@ export interface UserRepository {
 
     getUsers(): Promise<ListDto<UserDto>>
 
+    getUsersWithSeasonDates(startSeason: string | null, endSeason: string | null): Promise<ListDto<UserDto>>
+
     getMe(): Promise<UserDto | null>
 
     getHistory(userId: string): Promise<ListDto<UserHistoryRecordDto>>
@@ -54,6 +56,10 @@ class LocalStorageUserRepository implements UserRepository {
         return {
             values: users
         };
+    }
+
+    async getUsersWithSeasonDates(startSeason: string | null, endSeason: string | null): Promise<ListDto<UserDto>> {
+        return this.getUsers();
     }
 
     async getMe(): Promise<UserDto | null> {
@@ -120,6 +126,15 @@ class RestApiUserRepository implements UserRepository {
 
     async getUsers(): Promise<ListDto<UserDto>> {
         return restApiClient.get(`/user`);
+    }
+
+    async getUsersWithSeasonDates(startSeason: string | null, endSeason: string | null): Promise<ListDto<UserDto>> {
+        //TODO вставить query параметры
+        const queryParams: Record<any, any> = {
+            startSeasonDate: startSeason,
+            endSeasonDate: endSeason
+        };
+        return restApiClient.get(`/user`, queryParams);
     }
 
     async getMe(): Promise<UserDto | null> {
