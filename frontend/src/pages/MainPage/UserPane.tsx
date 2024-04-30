@@ -8,9 +8,9 @@ import React from "react";
 
 export function UserPane(
     {
-        user,
+        user
     }: {
-        user: UserDto,
+        user: UserDto
     }
 ) {
     let loc = useLoc()

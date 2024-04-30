@@ -10,7 +10,6 @@ import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.UserService;
-import com.chessgrinder.chessgrinder.utils.Pair;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,17 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -58,9 +47,7 @@ public class UserController {
             @RequestParam(required = false, name = "startSeasonDate") String startSeasonDateString,
             @RequestParam(required = false, name = "endSeasonDate") String endSeasonDateString
     ) {
-        final List<UserDto> allUsers = userService.getAllUsers(startSeasonDateString, endSeasonDateString).stream()
-                .sorted(Comparator.comparing(UserDto::getTotalPoints).reversed())
-                .collect(Collectors.toList());
+        final List<UserDto> allUsers = userService.getAllUsers(startSeasonDateString, endSeasonDateString);
         return ListDto.<UserDto>builder().values(allUsers).build();
     }
 

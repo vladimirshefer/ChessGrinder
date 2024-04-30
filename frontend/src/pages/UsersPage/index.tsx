@@ -12,13 +12,13 @@ export default function UsersPage() {
     const startSeason = searchParams.get('startSeason');
     const endSeason = searchParams.get('endSeason');
 
-    if (searchParams.size !== 0 && (startSeason === null || endSeason === null)) {
-        alert(loc("Wrong parameters count"));
-    }
-
     let usersQuery = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
+            if (searchParams.size !== 0 && (startSeason === null || endSeason === null)) {
+                alert(loc("Wrong set of request parameters"));
+                return null;
+            }
             try {
                 return await userRepository.getUsersWithSeasonDates(startSeason, endSeason);
             }
@@ -32,7 +32,6 @@ export default function UsersPage() {
     if (!users) {
         return <>Loading...</>
     }
-
     return <div className={"p-2"}>
         <MemberList users={users}/>
     </div>

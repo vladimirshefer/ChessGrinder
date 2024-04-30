@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,8 @@ public class UserService {
         List<UserEntity> users = userRepository.findAll();
 
         return users.stream().map(user -> userMapper.toDto(user, dates.getFirst(), dates.getSecond()))
+                .sorted(Comparator.comparing(UserDto::getTotalPoints)
+                        .thenComparing(UserDto::getReputation).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -51,6 +54,9 @@ public class UserService {
             }
         } catch (Exception e) {
             throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
+        }
+        if (startSeasonDate != null && endSeasonDate != null && endSeasonDate.before(startSeasonDate)) {
+            throw new ResponseStatusException(400, "End date can't be before start date", null);
         }
         return new Pair<>(startSeasonDate, endSeasonDate);
     }

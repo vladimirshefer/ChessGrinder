@@ -181,10 +181,7 @@ export default function UserProfilePage() {
         return <>No such user</>
     }
 
-    let userHistory = historyQuery.data?.values || [];
-    let totalPoints = userHistory
-        .map(it => it.participant.score)
-        .reduce((a, b) => a + b, 0);
+    let totalPoints = userProfile.totalPoints;
 
     return <div className={"grid p-4"}>
         <div className={"flex gap-1 items-center"}>

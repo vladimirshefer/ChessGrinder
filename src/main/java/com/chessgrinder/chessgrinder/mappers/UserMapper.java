@@ -8,6 +8,7 @@ import java.util.stream.*;
 
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.repositories.*;
 import lombok.*;
 import org.springframework.stereotype.*;
@@ -45,10 +46,14 @@ public class UserMapper {
         final boolean areDatesNull = startSeason == null || endSeason == null;
         return participants.stream()
                 .filter(p -> {
+                    final var tournament = p.getTournament();
+                    if (tournament.getStatus() != TournamentStatus.FINISHED) {
+                        return false;
+                    }
                     if (areDatesNull) {
                         return true;
                     }
-                    final LocalDateTime tournamentDateTime = p.getTournament().getDate();
+                    final LocalDateTime tournamentDateTime = tournament.getDate();
                     Date tournamentDate = Date.from(tournamentDateTime.toInstant(ZoneOffset.UTC));
                     return !tournamentDate.before(startSeason) && !tournamentDate.after(endSeason);
                 })
