@@ -29,8 +29,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    private static final String START_DATE_STRING = "01.01.1970";
-    private static final String END_DATE_STRING = "01.01.2100";
     private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
     public List<UserDto> getAllUsers(String startSeasonDateString, String endSeasonDateString) {
@@ -42,21 +40,23 @@ public class UserService {
     }
 
     private static Pair<Date, Date> getSeasonDates(String startSeasonDateString, String endSeasonDateString) {
-        Date startSeasonDate;
-        Date endSeasonDate;
-
+        Date startSeasonDate = null;
+        Date endSeasonDate = null;
         try {
-            startSeasonDate = getDateFromString(startSeasonDateString, START_DATE_STRING);
-            endSeasonDate = getDateFromString(endSeasonDateString, END_DATE_STRING);
+            if (startSeasonDateString != null) {
+                startSeasonDate = getDateFromString(startSeasonDateString);
+            }
+            if (endSeasonDateString != null) {
+                endSeasonDate = getDateFromString(endSeasonDateString);
+            }
         } catch (Exception e) {
             throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
         }
         return new Pair<>(startSeasonDate, endSeasonDate);
     }
 
-    private static Date getDateFromString(String dateString, String defaultDateString) {
-        String formalDate = (dateString == null ? defaultDateString : dateString);
-        LocalDateTime localDateTime = LocalDate.parse(formalDate, DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
+    private static Date getDateFromString(String dateString) {
+        LocalDateTime localDateTime = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 

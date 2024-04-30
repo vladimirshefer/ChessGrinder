@@ -19,10 +19,12 @@ export default function UsersPage() {
     let usersQuery = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
-            return await userRepository.getUsersWithSeasonDates(startSeason, endSeason);
-             //TODO можно попытаться засунуть прямо сюда!
-            //только с другим названием, например: getUsersWithSeasonDates
-            //Да, этот метод нужен только здесь!
+            try {
+                return await userRepository.getUsersWithSeasonDates(startSeason, endSeason);
+            }
+            catch (error: any) {
+                alert(loc(error.response.data.message));
+            }
         },
     })
 
@@ -32,6 +34,6 @@ export default function UsersPage() {
     }
 
     return <div className={"p-2"}>
-        <MemberList users={users} startSeasonDate={startSeason} endSeasonDate={endSeason}/>
+        <MemberList users={users}/>
     </div>
 }

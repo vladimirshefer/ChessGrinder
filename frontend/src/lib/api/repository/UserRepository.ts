@@ -129,7 +129,6 @@ class RestApiUserRepository implements UserRepository {
     }
 
     async getUsersWithSeasonDates(startSeason: string | null, endSeason: string | null): Promise<ListDto<UserDto>> {
-        //TODO вставить query параметры
         const queryParams: Record<any, any> = {
             startSeasonDate: startSeason,
             endSeasonDate: endSeason

@@ -1,7 +1,5 @@
 import {UserDto} from "lib/api/dto/MainPageData";
 import {useLoc} from "strings/loc";
-import {useQuery} from "@tanstack/react-query";
-import userRepository from "lib/api/repository/UserRepository";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {Link} from "react-router-dom";
 import {AiOutlineTrophy} from "react-icons/ai";
@@ -11,23 +9,11 @@ import React from "react";
 export function UserPane(
     {
         user,
-        totalPoints = undefined
     }: {
         user: UserDto,
-        totalPoints?: number | undefined | null
     }
 ) {
     let loc = useLoc()
-//     let userHistoryQuery = useQuery({
-//         queryKey: ["userHistory", user.id],
-//         queryFn: async () => {
-//             return await userRepository.getTotalPoints(user.id, null, null);
-//         }
-//     });
-
-    if (totalPoints === null || totalPoints === undefined) {
-        totalPoints = -111;
-    }
 
     return <div key={user.id} className={"col-span-12 flex"}>
         <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
