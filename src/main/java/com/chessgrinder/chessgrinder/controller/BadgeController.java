@@ -10,6 +10,7 @@ import com.chessgrinder.chessgrinder.mappers.BadgeMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.BadgeRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class BadgeController {
     private final BadgeMapper badgeMapper;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final UserService userService;
 
     @GetMapping
     public ListDto<BadgeDto> getBadges() {
@@ -62,6 +64,7 @@ public class BadgeController {
             @PathVariable UUID badgeId
     ){
         List<UserEntity> userEntities = userRepository.findAllByBadgeId(badgeId);
+        userService.calcPointsPerUser(userEntities);
         List<UserDto> userDtos = userMapper.toDto(userEntities);
         return ListDto.<UserDto>builder().values(userDtos).build();
     }

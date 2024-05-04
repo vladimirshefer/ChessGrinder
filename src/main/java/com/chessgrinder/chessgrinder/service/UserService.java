@@ -1,25 +1,25 @@
 package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.dto.*;
+import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
+import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
-import com.chessgrinder.chessgrinder.utils.Pair;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,20 +29,57 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ParticipantRepository participantRepository;
 
     private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
     public List<UserDto> getAllUsers(String startSeasonDateString, String endSeasonDateString) {
-        final Pair<Date, Date> dates = getSeasonDates(startSeasonDateString, endSeasonDateString);
+        final var dates = getSeasonDates(startSeasonDateString, endSeasonDateString);
         List<UserEntity> users = userRepository.findAll();
+        calcPointsPerUser(users, dates.getKey(), dates.getValue());
 
-        return users.stream().map(user -> userMapper.toDto(user, dates.getFirst(), dates.getSecond()))
+        return users.stream().map(userMapper::toDto)
                 .sorted(Comparator.comparing(UserDto::getTotalPoints)
                         .thenComparing(UserDto::getReputation).reversed())
                 .collect(Collectors.toList());
     }
 
-    private static Pair<Date, Date> getSeasonDates(String startSeasonDateString, String endSeasonDateString) {
+    public void calcPointsPerUser(UserEntity user, Date startSeasonDate, Date endSeasonDate) {
+        final var userId = user.getId();
+        final List<ParticipantEntity> participants = participantRepository.findAllByUserId(userId);
+        final boolean areDatesNull = startSeasonDate == null || endSeasonDate == null;
+        final var totalPoints = participants.stream()
+                .filter(p -> {
+                    final var tournament = p.getTournament();
+                    if (tournament.getStatus() != TournamentStatus.FINISHED) {
+                        return false;
+                    }
+                    if (areDatesNull) {
+                        return true;
+                    }
+                    final LocalDateTime tournamentDateTime = tournament.getDate().toLocalDate().atStartOfDay();
+                    //date without time
+                    final Date tournamentDate = Date.from(tournamentDateTime.atZone(ZoneId.systemDefault()).toInstant());
+                    return !tournamentDate.before(startSeasonDate) && !tournamentDate.after(endSeasonDate);
+                })
+                .map(ParticipantEntity::getScore)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        user.setTotalPoints(totalPoints);
+    }
+
+    public void calcPointsPerUser(UserEntity user) {
+        calcPointsPerUser(user, null, null);
+    }
+
+    public void calcPointsPerUser(List<UserEntity> users) {
+        users.forEach(this::calcPointsPerUser);
+    }
+
+    public void calcPointsPerUser(List<UserEntity> users, Date startSeasonDate, Date endSeasonDate) {
+        users.forEach(u -> calcPointsPerUser(u, startSeasonDate, endSeasonDate));
+    }
+
+    private static Map.Entry<Date, Date> getSeasonDates(String startSeasonDateString, String endSeasonDateString) {
         Date startSeasonDate = null;
         Date endSeasonDate = null;
         try {
@@ -58,7 +95,7 @@ public class UserService {
         if (startSeasonDate != null && endSeasonDate != null && endSeasonDate.before(startSeasonDate)) {
             throw new ResponseStatusException(400, "End date can't be before start date", null);
         }
-        return new Pair<>(startSeasonDate, endSeasonDate);
+        return new AbstractMap.SimpleEntry<>(startSeasonDate, endSeasonDate);
     }
 
     private static Date getDateFromString(String dateString) {
@@ -74,7 +111,7 @@ public class UserService {
             log.error("There is no such user with id: '" + userId + "'");
             throw new UserNotFoundException("There is no such user with id: '" + userId + "'");
         }
-
+        calcPointsPerUser(user);
         return userMapper.toDto(user);
 
     }
@@ -87,7 +124,7 @@ public class UserService {
             log.error("There is no such user with username: '" + userName + "'");
             throw new UserNotFoundException("There is no such user with username: '" + userName + "'");
         }
-
+        calcPointsPerUser(user);
         return userMapper.toDto(user);
     }
 

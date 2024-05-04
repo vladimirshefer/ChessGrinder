@@ -9,8 +9,8 @@ export default function UsersPage() {
     let loc = useLoc();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
-    const startSeason = searchParams.get('startSeason');
-    const endSeason = searchParams.get('endSeason');
+    const startSeason: string = searchParams.get('startSeason')!!;
+    const endSeason: string = searchParams.get('endSeason')!!;
 
     let usersQuery = useQuery({
         queryKey: ["members"],
@@ -20,10 +20,14 @@ export default function UsersPage() {
                 return null;
             }
             try {
+                if (startSeason === null && endSeason === null) {
+                    return await userRepository.getUsers();
+                }
                 return await userRepository.getUsersWithSeasonDates(startSeason, endSeason);
             }
             catch (error: any) {
                 alert(loc(error.response.data.message));
+                return null;
             }
         },
     })

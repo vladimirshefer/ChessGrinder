@@ -69,6 +69,7 @@ public class UserController {
     public UserDto me(
             @AuthenticatedUser UserEntity authenticatedUser
     ) {
+        userService.calcPointsPerUser(authenticatedUser);
         return userMapper.toDto(authenticatedUser);
     }
 
