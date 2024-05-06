@@ -33,8 +33,8 @@ public class UserService {
 
     private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
-    public List<UserDto> getAllUsers(String startSeasonDateString, String endSeasonDateString) {
-        final var dates = getSeasonDates(startSeasonDateString, endSeasonDateString);
+    public List<UserDto> getAllUsers(String startSeasonDate, String endSeasonDate) {
+        final var dates = getSeasonDates(startSeasonDate, endSeasonDate);
         List<UserEntity> users = userRepository.findAll();
         calcPointsPerUser(users, dates.getKey(), dates.getValue());
 

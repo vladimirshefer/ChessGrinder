@@ -44,10 +44,10 @@ public class UserController {
 
     @GetMapping
     public ListDto<UserDto> getUsers(
-            @RequestParam(required = false, name = "startSeasonDate") String startSeasonDateString,
-            @RequestParam(required = false, name = "endSeasonDate") String endSeasonDateString
+            @RequestParam(required = false) String startSeasonDate,
+            @RequestParam(required = false) String endSeasonDate
     ) {
-        final List<UserDto> allUsers = userService.getAllUsers(startSeasonDateString, endSeasonDateString);
+        final List<UserDto> allUsers = userService.getAllUsers(startSeasonDate, endSeasonDate);
         return ListDto.<UserDto>builder().values(allUsers).build();
     }
 
