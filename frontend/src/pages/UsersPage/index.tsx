@@ -14,6 +14,9 @@ export default function UsersPage() {
         queryKey: ["members"],
         queryFn: async () => {
             try {
+                if (startSeason === null && endSeason === null) {
+                    return await userRepository.getUsers();
+                }
                 return await userRepository.getUsersWithSeasonDates(startSeason, endSeason);
             }
             catch (error: any) {
