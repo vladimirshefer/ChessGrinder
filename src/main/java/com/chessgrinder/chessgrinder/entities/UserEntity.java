@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.entities;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import jakarta.annotation.Nullable;
@@ -58,6 +59,9 @@ public class UserEntity extends AbstractAuditingEntity {
 
     @Column(name = "reputation")
     private int reputation = 0;
+
+    @Transient //won't be created in DB
+    private BigDecimal totalPoints = BigDecimal.valueOf(-1);
 
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB

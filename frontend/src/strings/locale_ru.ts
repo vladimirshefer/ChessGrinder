@@ -63,6 +63,9 @@ let locale_ru: { [key: string]: string } = {
         "Невозможно добавить новый раунд. Измените кол-во раундов в настройках",
     "Entered rounds number is less than existing rounds number":
         "Введенное количество раундов меньше количества существующих раундов",
+    "Can't parse start or end season date with format dd.MM.yyyy":
+        "Не удалось преобразовать даты начала или конца в формате dd.MM.yyyy",
+    "End date can't be before start date": "Дата конца не может быть раньше даты начала",
 }
 
 export default locale_ru

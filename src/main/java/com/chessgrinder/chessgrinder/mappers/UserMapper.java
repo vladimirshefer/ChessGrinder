@@ -14,8 +14,8 @@ import org.springframework.stereotype.*;
 public class UserMapper {
     private final BadgeRepository badgeRepository;
     private final BadgeMapper badgeMapper;
-    public UserDto toDto(UserEntity user) {
 
+    public UserDto toDto(UserEntity user) {
         List<BadgeEntity> userBadges = badgeRepository.getAllBadgesByUserId(user.getId());
         if (userBadges == null) {
             userBadges = Collections.emptyList();
@@ -28,6 +28,7 @@ public class UserMapper {
                 .name(user.getName())
                 .roles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toList()))
                 .reputation(user.getReputation())
+                .totalPoints(user.getTotalPoints())
                 .build();
     }
 

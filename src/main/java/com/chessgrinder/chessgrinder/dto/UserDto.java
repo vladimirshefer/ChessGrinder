@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.dto;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import lombok.*;
@@ -29,4 +30,6 @@ public class UserDto {
     private List<String> roles;
 
     private int reputation;
+
+    private BigDecimal totalPoints;
 }
