@@ -19,6 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
@@ -41,14 +45,40 @@ public class UserController {
     private boolean isSignupWithPasswordEnabled;
 
     private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
+    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
     @GetMapping
     public ListDto<UserDto> getUsers(
             @RequestParam(required = false) String startSeasonDate,
             @RequestParam(required = false) String endSeasonDate
     ) {
-        final List<UserDto> allUsers = userService.getAllUsers(startSeasonDate, endSeasonDate);
+        final var dates = getSeasonDates(startSeasonDate, endSeasonDate);
+        final List<UserDto> allUsers = userService.getAllUsers(dates.getKey(), dates.getValue());
         return ListDto.<UserDto>builder().values(allUsers).build();
+    }
+
+    private static Map.Entry<Date, Date> getSeasonDates(String startSeasonDate, String endSeasonDate) {
+        Date startSeason = null;
+        Date endSeason = null;
+        try {
+            if (startSeasonDate != null) {
+                startSeason = getDateFromString(startSeasonDate);
+            }
+            if (endSeasonDate != null) {
+                endSeason = getDateFromString(endSeasonDate);
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
+        }
+        if (startSeason != null && endSeason != null && endSeason.before(startSeason)) {
+            throw new ResponseStatusException(400, "End date can't be before start date", null);
+        }
+        return new AbstractMap.SimpleEntry<>(startSeason, endSeason);
+    }
+
+    private static Date getDateFromString(String date) {
+        LocalDateTime localDateTime = LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     @GetMapping("/{userId}")

@@ -12,13 +12,10 @@ import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,12 +28,9 @@ public class UserService {
     private final UserMapper userMapper;
     private final ParticipantRepository participantRepository;
 
-    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
-
-    public List<UserDto> getAllUsers(String startSeasonDate, String endSeasonDate) {
-        final var dates = getSeasonDates(startSeasonDate, endSeasonDate);
+    public List<UserDto> getAllUsers(Date startSeasonDate, Date endSeasonDate) {
         List<UserEntity> users = userRepository.findAll();
-        calcPointsPerUser(users, dates.getKey(), dates.getValue());
+        calcPointsPerUser(users, startSeasonDate, endSeasonDate);
 
         return users.stream().map(userMapper::toDto)
                 .sorted(Comparator.comparing(UserDto::getTotalPoints)
@@ -77,30 +71,6 @@ public class UserService {
 
     public void calcPointsPerUser(List<UserEntity> users, Date startSeasonDate, Date endSeasonDate) {
         users.forEach(u -> calcPointsPerUser(u, startSeasonDate, endSeasonDate));
-    }
-
-    private static Map.Entry<Date, Date> getSeasonDates(String startSeasonDateString, String endSeasonDateString) {
-        Date startSeasonDate = null;
-        Date endSeasonDate = null;
-        try {
-            if (startSeasonDateString != null) {
-                startSeasonDate = getDateFromString(startSeasonDateString);
-            }
-            if (endSeasonDateString != null) {
-                endSeasonDate = getDateFromString(endSeasonDateString);
-            }
-        } catch (Exception e) {
-            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
-        }
-        if (startSeasonDate != null && endSeasonDate != null && endSeasonDate.before(startSeasonDate)) {
-            throw new ResponseStatusException(400, "End date can't be before start date", null);
-        }
-        return new AbstractMap.SimpleEntry<>(startSeasonDate, endSeasonDate);
-    }
-
-    private static Date getDateFromString(String dateString) {
-        LocalDateTime localDateTime = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public UserDto getUserByUserId(String userId) {
