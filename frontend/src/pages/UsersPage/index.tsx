@@ -1,28 +1,19 @@
 import React from "react";
 import {useQuery} from "@tanstack/react-query";
-import { useLocation } from 'react-router-dom';
 import {useLoc} from "strings/loc";
+import useSearchParam from "lib/react/hooks/useSearchParam";
 import userRepository from "lib/api/repository/UserRepository";
 import MemberList from "pages/MainPage/MemberList";
 
 export default function UsersPage() {
     let loc = useLoc();
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    const startSeason: string = searchParams.get('startSeason')!!;
-    const endSeason: string = searchParams.get('endSeason')!!;
+    const [startSeason] = useSearchParam("startSeason");
+    const [endSeason] = useSearchParam("endSeason");
 
     let usersQuery = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
-            if (searchParams.size !== 0 && (startSeason === null || endSeason === null)) {
-                alert(loc("Wrong set of request parameters"));
-                return null;
-            }
             try {
-                if (startSeason === null && endSeason === null) {
-                    return await userRepository.getUsers();
-                }
                 return await userRepository.getUsersWithSeasonDates(startSeason, endSeason);
             }
             catch (error: any) {

@@ -41,20 +41,17 @@ public class UserService {
     public void calcPointsPerUser(UserEntity user, Date startSeasonDate, Date endSeasonDate) {
         final var userId = user.getId();
         final List<ParticipantEntity> participants = participantRepository.findAllByUserId(userId);
-        final boolean areDatesNull = startSeasonDate == null || endSeasonDate == null;
         final var totalPoints = participants.stream()
                 .filter(p -> {
                     final var tournament = p.getTournament();
                     if (tournament.getStatus() != TournamentStatus.FINISHED) {
                         return false;
                     }
-                    if (areDatesNull) {
-                        return true;
-                    }
                     final LocalDateTime tournamentDateTime = tournament.getDate().toLocalDate().atStartOfDay();
                     //date without time
                     final Date tournamentDate = Date.from(tournamentDateTime.atZone(ZoneId.systemDefault()).toInstant());
-                    return !tournamentDate.before(startSeasonDate) && !tournamentDate.after(endSeasonDate);
+                    return (startSeasonDate == null || !tournamentDate.before(startSeasonDate)) &&
+                             (endSeasonDate == null || !tournamentDate.after(endSeasonDate));
                 })
                 .map(ParticipantEntity::getScore)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
