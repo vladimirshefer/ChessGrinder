@@ -9,6 +9,7 @@ CREATE TABLE subscriptions_table (
     updated_at TIMESTAMP,
     created_by VARCHAR(255),
     updated_by VARCHAR(255),
+    UNIQUE(user_id, club_id),
     FOREIGN KEY (user_id) REFERENCES users_table(id) ON DELETE CASCADE,
     FOREIGN KEY (club_id) REFERENCES clubs_table(id) ON DELETE CASCADE,
     FOREIGN KEY (subscription_level_id) REFERENCES subscription_levels_table(id) ON DELETE CASCADE
