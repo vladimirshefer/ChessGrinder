@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.dto;
 
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
+import com.chessgrinder.chessgrinder.utils.Const;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
@@ -29,4 +30,6 @@ public class TournamentDto {
     private TournamentStatus status;
 
     private Integer roundsNumber;
+
+    private ClubDto clubDto;
 }

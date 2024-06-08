@@ -11,6 +11,8 @@ import org.springframework.stereotype.*;
 @RequiredArgsConstructor
 public class TournamentMapper {
 
+    private ClubMapper clubMapper;
+
     public TournamentDto toDto(TournamentEntity tournamentEntity) {
         return TournamentDto.builder()
                 .id(tournamentEntity.getId().toString())
@@ -21,6 +23,7 @@ public class TournamentMapper {
                 .status(tournamentEntity.getStatus())
                 .roundsNumber(tournamentEntity.getRoundsNumber())
                 .pairingStrategy(tournamentEntity.getPairingStrategy()==null ? "SWISS" : tournamentEntity.getPairingStrategy())
+                .clubDto(clubMapper.toDto(tournamentEntity.getClub()))
                 .build();
     }
 

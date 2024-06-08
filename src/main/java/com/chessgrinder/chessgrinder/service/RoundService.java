@@ -78,7 +78,6 @@ public class RoundService {
         }
 
         RoundEntity nextRoundEntity = RoundEntity.builder()
-                .id(UUID.randomUUID())
                 .number(nextRoundNumber)
                 .tournament(tournamentEntity)
                 .matches(List.of())
