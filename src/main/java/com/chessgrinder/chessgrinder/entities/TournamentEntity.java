@@ -55,4 +55,8 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "tournament")
     private List<RoundEntity> rounds;
+
+    @ManyToOne
+    @JoinColumn(name = "club_id")
+    private ClubEntity club;
 }

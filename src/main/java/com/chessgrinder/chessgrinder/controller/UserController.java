@@ -5,6 +5,7 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
+import com.chessgrinder.chessgrinder.mappers.SubscriptionMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.Nullable;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -34,6 +37,10 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final ClubRepository clubRepository;
+    private final SubscriptionLevelRepository subscriptionLevelRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionMapper subscriptionMapper;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
     private final TournamentMapper tournamentMapper;
@@ -210,5 +217,34 @@ public class UserController {
                 .password(passwordEncoder.encode(password))
                 .build()
         );
+    }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PostMapping("/{userId}/subscription")
+    public void assignSubscription(
+            @PathVariable UUID userId,
+            @RequestBody SubscriptionDto data
+    ) {
+        UserEntity user = userRepository.findById(userId).orElseThrow();
+        ClubEntity club = clubRepository.getById(UUID.fromString(data.getClub().getId()));
+        SubscriptionLevelEntity subscriptionLevel = subscriptionLevelRepository.findByName(
+                data.getSubscriptionLevel().getName()).orElseThrow();
+        final var subscription = SubscriptionEntity.builder()
+                .club(club)
+                .subscriptionLevel(subscriptionLevel)
+                .startDate(Instant.now(Clock.systemUTC()))
+                .finishDate(data.getFinishDate())
+                .user(user)
+                .build();
+
+        subscriptionRepository.save(subscription);
+    }
+
+    @GetMapping("/{userId}/subscription")
+    public ListDto<SubscriptionDto> getUserSubscriptions(
+            @PathVariable UUID userId
+    ) {
+        final var allSubscriptions = subscriptionRepository.findAllByUserId(userId);
+        return ListDto.<SubscriptionDto>builder().values(subscriptionMapper.toDto(allSubscriptions)).build();
     }
 }
