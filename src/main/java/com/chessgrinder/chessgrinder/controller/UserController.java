@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -32,6 +30,9 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final ClubRepository clubRepository;
+    private final SubscriptionLevelRepository subscriptionLevelRepository;
+    private final SubscriptionRepository subscriptionRepository;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
     private final TournamentMapper tournamentMapper;
@@ -237,5 +238,27 @@ public class UserController {
                 .password(passwordEncoder.encode(password))
                 .build()
         );
+    }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PatchMapping("/{userId}/subscription")
+    public void assignSubscription(
+            @PathVariable UUID userId,
+            @RequestBody SubscriptionDto data
+    ) {
+        UserEntity user = userRepository.findById(userId).orElseThrow();
+        ClubEntity club = clubRepository.findById(UUID.fromString(data.getClub().getId())).orElseThrow();
+        SubscriptionLevelEntity subscriptionLevel = subscriptionLevelRepository.findById(
+                UUID.fromString(data.getSubscriptionLevel().getId())).orElseThrow();
+        final var subscription = SubscriptionEntity.builder()
+                .id(UUID.randomUUID())
+                .club(club)
+                .subscriptionLevel(subscriptionLevel)
+                .startDate(Instant.now(Clock.systemUTC()))
+                .finishDate(data.getFinishDate())
+                .user(user)
+                .build();
+
+        subscriptionRepository.save(subscription);
     }
 }
