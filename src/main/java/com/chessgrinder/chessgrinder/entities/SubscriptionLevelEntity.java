@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubscriptionLevelEntity extends AbstractAuditingEntity{
+public class SubscriptionLevelEntity extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id")

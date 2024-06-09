@@ -69,11 +69,10 @@ public class ClubController {
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
-    @DeleteMapping
+    @DeleteMapping("/{clubId}")
     public void deleteClub(
-            @RequestBody ClubDto clubDto
+            @PathVariable UUID clubId
     ) {
-        final var clubId = UUID.fromString(clubDto.getId());
         if (!clubRepository.existsById(clubId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No club with id " + clubId);
         }

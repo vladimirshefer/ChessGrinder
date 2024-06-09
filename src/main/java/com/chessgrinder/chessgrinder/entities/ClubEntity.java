@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClubEntity extends AbstractAuditingEntity{
+public class ClubEntity extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id")
