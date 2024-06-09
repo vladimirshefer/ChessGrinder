@@ -24,7 +24,7 @@ public class ClubService {
         List<ClubEntity> clubs = clubRepository.findAll();
 
         return clubs.stream().map(clubMapper::toDto)
-                .sorted(Comparator.comparing(ClubDto::getRegistrationDate).reversed())
+                .sorted(Comparator.comparing(ClubDto::getRegistrationDate))
                 .collect(Collectors.toList());
     }
 }

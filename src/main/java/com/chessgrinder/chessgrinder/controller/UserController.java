@@ -241,7 +241,7 @@ public class UserController {
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
-    @PatchMapping("/{userId}/subscription")
+    @PostMapping("/{userId}/subscription")
     public void assignSubscription(
             @PathVariable UUID userId,
             @RequestBody SubscriptionDto data

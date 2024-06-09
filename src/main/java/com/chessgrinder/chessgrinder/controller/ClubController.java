@@ -33,13 +33,27 @@ public class ClubController {
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
-    @PostMapping
+    @PostMapping("/createDefaultClub")
     public void createClub() {
-        ClubEntity club = ClubEntity.builder()
-                .id(UUID.randomUUID())
+        final var clubDto = ClubDto.builder()
                 .name(DEFAULT_NAME)
                 .description(DEFAULT_DESCRIPTION)
                 .location(DEFAULT_LOCATION)
+                .build();
+
+        createClub(clubDto);
+    }
+
+    @Secured(RoleEntity.Roles.ADMIN)
+    @PostMapping("/createCustomClub")
+    public void createClub(
+            @RequestBody ClubDto clubDto
+    ) {
+        ClubEntity club = ClubEntity.builder()
+                .id(UUID.randomUUID())
+                .name(clubDto.getName())
+                .description(clubDto.getDescription())
+                .location(clubDto.getLocation())
                 .build();
 
         clubRepository.save(club);
