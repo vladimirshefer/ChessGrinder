@@ -10,3 +10,6 @@ CREATE TABLE clubs_table
     updated_by VARCHAR(255),
     UNIQUE(name, location)
 );
+
+INSERT INTO clubs_table (id, name, description, location)
+VALUES('12345678-9abc-def0-1234-56789abcdef0', 'DEFAULT CLUB', 'DEFAULT DESCRIPTION', 'DEFAULT LOCATION');

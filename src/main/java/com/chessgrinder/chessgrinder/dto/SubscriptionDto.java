@@ -10,8 +10,8 @@ import java.time.Instant;
 @Builder
 public class SubscriptionDto {
     private String id;
-    private String user_id;
-    private String club_id;
+    private UserDto user;
+    private ClubDto club;
     private SubscriptionLevelDto subscriptionLevel;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
