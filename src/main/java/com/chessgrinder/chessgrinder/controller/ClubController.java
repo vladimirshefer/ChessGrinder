@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.mappers.ClubMapper;
 import com.chessgrinder.chessgrinder.repositories.ClubRepository;
 import com.chessgrinder.chessgrinder.service.ClubService;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,7 @@ public class ClubController {
 
     private final ClubService clubService;
 
-    private static final String DEFAULT_NAME = "DEFAULT CLUB";
-    private static final String DEFAULT_DESCRIPTION = "DEFAULT DESCRIPTION";
-    private static final String DEFAULT_LOCATION = "DEFAULT LOCATION";
+    private final ClubMapper clubMapper;
 
     @GetMapping
     public ListDto<ClubDto> getAllClubs() {
@@ -32,20 +31,16 @@ public class ClubController {
         return ListDto.<ClubDto>builder().values(allClubs).build();
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
-    @PostMapping("/createDefaultClub")
-    public void createClub() {
-        final var clubDto = ClubDto.builder()
-                .name(DEFAULT_NAME)
-                .description(DEFAULT_DESCRIPTION)
-                .location(DEFAULT_LOCATION)
-                .build();
-
-        createClub(clubDto);
+    @GetMapping("/{clubId}")
+    public ClubDto getClubById(
+            @PathVariable UUID clubId
+    ) {
+        final var club = clubRepository.findById(clubId).orElseThrow();
+        return clubMapper.toDto(club);
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
-    @PostMapping("/createCustomClub")
+    @PostMapping("/createClub")
     public void createClub(
             @RequestBody ClubDto clubDto
     ) {
@@ -60,11 +55,11 @@ public class ClubController {
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
-    @PatchMapping
+    @PutMapping("/{clubId}")
     public void updateClub(
+            @PathVariable UUID clubId,
             @RequestBody ClubDto clubDto
     ) {
-        final var clubId = UUID.fromString(clubDto.getId());
         ClubEntity club = clubRepository.findById(clubId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No club with id " + clubId)
         );
