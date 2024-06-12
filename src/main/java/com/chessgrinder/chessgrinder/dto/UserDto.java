@@ -31,5 +31,6 @@ public class UserDto {
 
     private int reputation;
 
-    private BigDecimal totalPoints;
+    private BigDecimal globalScore;
+
 }

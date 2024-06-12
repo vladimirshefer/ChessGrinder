@@ -181,7 +181,7 @@ export default function UserProfilePage() {
         return <>No such user</>
     }
 
-    let totalPoints = userProfile.totalPoints;
+    let globalScore = userProfile.globalScore;
 
     return <div className={"grid p-4"}>
         <div className={"flex gap-1 items-center"}>
@@ -217,7 +217,7 @@ export default function UserProfilePage() {
                     </div>
                     <div className={"flex gap-1 items-center"} title={loc("Points")}>
                         <AiOutlineTrophy/>
-                        <span>{totalPoints}</span>
+                        <span>{globalScore}</span>
                     </div>
                     <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
                         <FaRegHeart/>

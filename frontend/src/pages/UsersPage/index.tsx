@@ -7,17 +7,17 @@ import MemberList from "pages/MainPage/MemberList";
 
 export default function UsersPage() {
     let loc = useLoc();
-    const [startSeason] = useSearchParam("startSeason");
-    const [endSeason] = useSearchParam("endSeason");
+    const [globalScoreFromDate] = useSearchParam("startSeason");
+    const [globalScoreToDate] = useSearchParam("endSeason");
 
     let usersQuery = useQuery({
         queryKey: ["members"],
         queryFn: async () => {
             try {
-                if (startSeason === null && endSeason === null) {
+                if (!globalScoreFromDate && !globalScoreToDate) {
                     return await userRepository.getUsers();
                 }
-                return await userRepository.getUsersWithSeasonDates(startSeason, endSeason);
+                return await userRepository.getUsers(globalScoreFromDate || undefined, globalScoreToDate || undefined);
             }
             catch (error: any) {
                 alert(loc(error.response.data.message));

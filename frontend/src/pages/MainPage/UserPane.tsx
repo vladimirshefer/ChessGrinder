@@ -49,7 +49,7 @@ export function UserPane(
                 </div>
                 <div className={"h-full leading-4 flex block align-bottom gap-1"} title={loc("Tournament points")}>
                     <AiOutlineTrophy className={"inline -mt-[1px] leading-4 align-bottom"}/>
-                    <span className={""}>{user.totalPoints}</span>
+                    <span className={""}>{user.globalScore || 0}</span>
                 </div>
                 <div className={"h-full leading-4 flex block align-bottom gap-1"} title={loc("Reputation")}>
                     <FaRegHeart className={"inline -mt-[1px] leading-4 align-bottom"}/>
