@@ -64,7 +64,7 @@ public class BadgeController {
             @PathVariable UUID badgeId
     ){
         List<UserEntity> userEntities = userRepository.findAllByBadgeId(badgeId);
-        userService.calcPointsPerUser(userEntities);
+        userService.calculateGlobalScore(userEntities, null, null);
         List<UserDto> userDtos = userMapper.toDto(userEntities);
         return ListDto.<UserDto>builder().values(userDtos).build();
     }
