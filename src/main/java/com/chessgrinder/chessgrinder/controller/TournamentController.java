@@ -2,7 +2,6 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
-import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
@@ -11,6 +10,7 @@ import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.service.TournamentService;
+import com.chessgrinder.chessgrinder.utils.Const;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -34,13 +34,13 @@ public class TournamentController {
     private final ParticipantRepository participantRepository;
     private final TournamentMapper tournamentMapper;
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping
     public TournamentDto createTournament() {
         return tournamentService.createTournament(LocalDateTime.now());
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @GetMapping("/{tournamentId}/action/start")
     public void startTournament(
             @PathVariable UUID tournamentId
@@ -48,7 +48,7 @@ public class TournamentController {
         tournamentService.startTournament(tournamentId);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @GetMapping("/{tournamentId}/action/finish")
     public void finishTournament(@PathVariable UUID tournamentId) {
         tournamentService.finishTournament(tournamentId);
@@ -68,7 +68,7 @@ public class TournamentController {
         return tournamentMapper.toDto(tournamentEntity);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PutMapping("/{tournamentId}")
     public void updateTournament(
             @PathVariable UUID tournamentId,
@@ -77,7 +77,7 @@ public class TournamentController {
         tournamentService.updateTournament(tournamentId, tournamentDto);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @DeleteMapping("/{tournamentId}")
     public void deleteTournament(@PathVariable UUID tournamentId) {
         tournamentService.deleteTournament(tournamentId);

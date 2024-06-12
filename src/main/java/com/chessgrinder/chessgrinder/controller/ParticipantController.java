@@ -2,12 +2,12 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
-import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.ParticipantService;
+import com.chessgrinder.chessgrinder.utils.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -25,7 +25,7 @@ public class ParticipantController {
     private final ParticipantRepository participantRepository;
     private final ParticipantMapper participantMapper;
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
     @PostMapping
     public void addParticipantToTournament(
             @PathVariable UUID tournamentId,
@@ -34,7 +34,7 @@ public class ParticipantController {
         participantService.addParticipantToTheTournament(tournamentId, participantDto);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
     @DeleteMapping("/{participantId}")
     public void delete(
             @PathVariable UUID tournamentId,
@@ -63,7 +63,7 @@ public class ParticipantController {
         return participantMapper.toDto(participantEntity);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
     @PutMapping("/{participantId}")
     public void update(
             @PathVariable UUID participantId,
@@ -75,7 +75,7 @@ public class ParticipantController {
         participantRepository.save(participant);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
     @PostMapping("/{participantId}/action/miss")
     public void miss(
             @PathVariable UUID participantId
@@ -86,7 +86,7 @@ public class ParticipantController {
         participantRepository.save(participant);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{participantId}/action/unmiss")
     public void unmiss(
             @PathVariable UUID participantId

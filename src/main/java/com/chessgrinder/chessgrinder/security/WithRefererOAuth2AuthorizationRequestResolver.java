@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.security;
 
+import com.chessgrinder.chessgrinder.utils.Const;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class WithRefererOAuth2AuthorizationRequestResolver implements OAuth2Auth
         String referer = getRefererOrEmpty(request);
         String state = auth2AuthorizationRequest.getState();
         if (StringUtils.isNotBlank(referer)) {
-            state = state + WebSecurityConfig.OAUTH2_STATE_SEPARATOR + referer;
+            state = state + Const.WebSecurity.OAUTH2_STATE_SEPARATOR + referer;
         }
         return OAuth2AuthorizationRequest
                 .from(auth2AuthorizationRequest)

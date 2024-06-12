@@ -10,6 +10,7 @@ import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.UserService;
+import com.chessgrinder.chessgrinder.utils.Const;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,9 +46,6 @@ public class UserController {
     @Value("${chessgrinder.feature.auth.signupWithPasswordEnabled:true}")
     private boolean isSignupWithPasswordEnabled;
 
-    private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
-    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
-
     @GetMapping
     public ListDto<UserDto> getUsers(
             @RequestParam(required = false) String startSeasonDate,
@@ -69,7 +67,8 @@ public class UserController {
                 endSeason = getDateFromString(endSeasonDate);
             }
         } catch (Exception e) {
-            throw new ResponseStatusException(400, "Can't parse start or end season date with format " + DATE_FORMAT_STRING, e);
+            throw new ResponseStatusException(400, "Can't parse start or end season date with format "
+                    + Const.UserRegex.DATE_FORMAT_STRING, e);
         }
         if (startSeason != null && endSeason != null && endSeason.before(startSeason)) {
             throw new ResponseStatusException(400, "End date can't be before start date", null);
@@ -78,7 +77,7 @@ public class UserController {
     }
 
     private static Date getDateFromString(String date) {
-        LocalDateTime localDateTime = LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT_STRING)).atStartOfDay();
+        LocalDateTime localDateTime = LocalDate.parse(date, DateTimeFormatter.ofPattern(Const.UserRegex.DATE_FORMAT_STRING)).atStartOfDay();
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
@@ -142,7 +141,7 @@ public class UserController {
         return user;
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{userId}/badge/{badgeId}")
     public void assignBadge(
             @PathVariable UUID userId,
@@ -154,7 +153,7 @@ public class UserController {
         userBadgeRepository.save(assignment);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{userId}/reputation")
     @Transactional
     public void assignReputation(
@@ -190,9 +189,9 @@ public class UserController {
             @AuthenticatedUser UserEntity authenticatedUser
     ) {
         if (!userId.equals(authenticatedUser.getId())) {
-            boolean isDeleterAdmin = authenticatedUser.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
+            boolean isDeleterAdmin = authenticatedUser.getRoles().stream().anyMatch(it -> it.getName().equals(Const.Roles.ADMIN));
             final var deletedUser = userRepository.findById(userId).orElseThrow();
-            boolean isDeletedAdmin = deletedUser.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
+            boolean isDeletedAdmin = deletedUser.getRoles().stream().anyMatch(it -> it.getName().equals(Const.Roles.ADMIN));
             if (!isDeleterAdmin || isDeletedAdmin) {
                 throw new ResponseStatusException(403, "Not allowed to delete other's profile", null);
             }
@@ -228,7 +227,7 @@ public class UserController {
             throw new ResponseStatusException(400, "Invalid password. Min 4 chars.", null);
         }
 
-        if (!signUpRequest.getUsername().matches(USERNAME_REGEX)) {
+        if (!signUpRequest.getUsername().matches(Const.UserRegex.USERNAME_REGEX)) {
             throw new ResponseStatusException(400, "Invalid username", null);
         }
 
@@ -240,8 +239,8 @@ public class UserController {
         );
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
-    @PostMapping("/{userId}/subscription")
+    @Secured(Const.Roles.ADMIN)
+    @PutMapping("/{userId}/subscription")
     public void assignSubscription(
             @PathVariable UUID userId,
             @RequestBody SubscriptionDto data

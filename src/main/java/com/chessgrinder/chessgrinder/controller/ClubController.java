@@ -5,6 +5,7 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.mappers.ClubMapper;
 import com.chessgrinder.chessgrinder.repositories.ClubRepository;
 import com.chessgrinder.chessgrinder.service.ClubService;
+import com.chessgrinder.chessgrinder.utils.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -39,8 +40,8 @@ public class ClubController {
         return clubMapper.toDto(club);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
-    @PostMapping("/createClub")
+    @Secured(Const.Roles.ADMIN)
+    @PostMapping
     public void createClub(
             @RequestBody ClubDto clubDto
     ) {
@@ -54,7 +55,7 @@ public class ClubController {
         clubRepository.save(club);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PutMapping("/{clubId}")
     public void updateClub(
             @PathVariable UUID clubId,
@@ -64,20 +65,14 @@ public class ClubController {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No club with id " + clubId)
         );
 
-        if (clubDto.getName() != null) {
-            club.setName(clubDto.getName());
-        }
-        if (clubDto.getDescription() != null) {
-            club.setDescription(clubDto.getDescription());
-        }
-        if (clubDto.getLocation() != null) {
-            club.setLocation(clubDto.getLocation());
-        }
+        club.setName(clubDto.getName());
+        club.setDescription(clubDto.getDescription());
+        club.setLocation(clubDto.getLocation());
 
         clubRepository.save(club);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @DeleteMapping("/{clubId}")
     public void deleteClub(
             @PathVariable UUID clubId

@@ -6,6 +6,7 @@ import com.chessgrinder.chessgrinder.entities.UserRoleEntity;
 import com.chessgrinder.chessgrinder.repositories.RoleRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRoleRepository;
+import com.chessgrinder.chessgrinder.utils.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.core.Authentication;
@@ -35,17 +36,17 @@ public class CheatController {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(401, "Please log in", null);
         }
-        if (!authentication.getAuthorities().stream().anyMatch(it -> it.getAuthority().equals(RoleEntity.Roles.ADMIN))) {
+        if (!authentication.getAuthorities().stream().anyMatch(it -> it.getAuthority().equals(Const.Roles.ADMIN))) {
             UserEntity user = userRepository.findByUsername(authentication.getName());
             if (user == null) {
                 throw new ResponseStatusException(401, "User does not exist", null);
             }
-            if (user.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN))) {
+            if (user.getRoles().stream().anyMatch(it -> it.getName().equals(Const.Roles.ADMIN))) {
                 return "User already has admin role";
             }
 
-            RoleEntity adminRole = roleRepository.findByName(RoleEntity.Roles.ADMIN)
-                    .orElseGet(() -> roleRepository.save(RoleEntity.builder().name(RoleEntity.Roles.ADMIN).build()));
+            RoleEntity adminRole = roleRepository.findByName(Const.Roles.ADMIN)
+                    .orElseGet(() -> roleRepository.save(RoleEntity.builder().name(Const.Roles.ADMIN).build()));
             userRoleRepository.save(UserRoleEntity.builder()
                             .user(user)
                             .role(adminRole)
