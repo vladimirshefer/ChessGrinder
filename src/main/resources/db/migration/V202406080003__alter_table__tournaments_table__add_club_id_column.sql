@@ -5,7 +5,7 @@ ALTER TABLE tournaments_table
             ON DELETE CASCADE;
 
 UPDATE tournaments_table
-SET club_id = '12345678-9abc-def0-1234-56789abcdef0'; -- default club
+SET club_id = 'd1dea6e7-a60f-41a5-b53b-bfb8bdc69b9d'; -- default club
 
 ALTER TABLE tournaments_table
 ALTER COLUMN club_id SET NOT NULL;

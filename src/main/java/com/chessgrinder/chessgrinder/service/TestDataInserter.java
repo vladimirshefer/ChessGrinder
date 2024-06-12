@@ -48,13 +48,13 @@ public class TestDataInserter {
 
 
 
-        BadgeEntity badgeEntity1 = badgeRepository.save(BadgeEntity.builder().id(UUID.randomUUID())
+        BadgeEntity badgeEntity1 = badgeRepository.save(BadgeEntity.builder()
                 .description("For 300 lari donation!")
                 .title("300 lari")
                 .pictureUrl("🐝")
                 .build());
 
-        BadgeEntity badgeEntity2 = badgeRepository.save(BadgeEntity.builder().id(UUID.randomUUID())
+        BadgeEntity badgeEntity2 = badgeRepository.save(BadgeEntity.builder()
                 .description("Win 3 tournaments in tryhard league!")
                 .title("3 wins in tryhard")
                 .pictureUrl("🦀")

@@ -5,6 +5,7 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
+import com.chessgrinder.chessgrinder.mappers.SubscriptionMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
@@ -34,6 +35,7 @@ public class UserController {
     private final ClubRepository clubRepository;
     private final SubscriptionLevelRepository subscriptionLevelRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionMapper subscriptionMapper;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
     private final TournamentMapper tournamentMapper;
@@ -246,11 +248,10 @@ public class UserController {
             @RequestBody SubscriptionDto data
     ) {
         UserEntity user = userRepository.findById(userId).orElseThrow();
-        ClubEntity club = clubRepository.findById(UUID.fromString(data.getClub().getId())).orElseThrow();
-        SubscriptionLevelEntity subscriptionLevel = subscriptionLevelRepository.findById(
-                UUID.fromString(data.getSubscriptionLevel().getId())).orElseThrow();
+        ClubEntity club = clubRepository.getById(UUID.fromString(data.getClub().getId()));
+        SubscriptionLevelEntity subscriptionLevel = subscriptionLevelRepository.findByName(
+                data.getSubscriptionLevel().getName()).orElseThrow();
         final var subscription = SubscriptionEntity.builder()
-                .id(UUID.randomUUID())
                 .club(club)
                 .subscriptionLevel(subscriptionLevel)
                 .startDate(Instant.now(Clock.systemUTC()))
@@ -259,5 +260,13 @@ public class UserController {
                 .build();
 
         subscriptionRepository.save(subscription);
+    }
+
+    @GetMapping("/{userId}/subscription")
+    public ListDto<SubscriptionDto> getUserSubscriptions(
+            @PathVariable UUID userId
+    ) {
+        final var allSubscriptions = subscriptionRepository.findAllByUserId(userId);
+        return ListDto.<SubscriptionDto>builder().values(subscriptionMapper.toDto(allSubscriptions)).build();
     }
 }

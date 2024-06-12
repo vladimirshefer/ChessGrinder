@@ -12,4 +12,4 @@ CREATE TABLE clubs_table
 );
 
 INSERT INTO clubs_table (id, name, description, location)
-VALUES('12345678-9abc-def0-1234-56789abcdef0', 'DEFAULT CLUB', 'DEFAULT DESCRIPTION', 'DEFAULT LOCATION');
+VALUES('d1dea6e7-a60f-41a5-b53b-bfb8bdc69b9d', 'DEFAULT CLUB', 'DEFAULT DESCRIPTION', 'DEFAULT LOCATION');

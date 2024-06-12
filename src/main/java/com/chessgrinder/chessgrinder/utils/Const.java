@@ -20,12 +20,7 @@ public class Const {
         public static final int DEFAULT_ROUNDS_NUMBER = 6;
         public static final int MIN_ROUNDS_NUMBER = 0;
         public static final int MAX_ROUNDS_NUMBER = 99;
-    }
-
-    public static class Javafo {
-        public static final Object JAVAFO_MONITOR = new Object();
-        public static final int DEFAULT_RATING = 1000;
-        public static final String NEWLINE_REGEX = "\\r?\\n|\\r";
-        public static final int STANDARD_PAIRING_CODE = 1000;
+        public static final String DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm";
+        public static final String DEFAULT_CLUB_ID = "d1dea6e7-a60f-41a5-b53b-bfb8bdc69b9d";
     }
 }

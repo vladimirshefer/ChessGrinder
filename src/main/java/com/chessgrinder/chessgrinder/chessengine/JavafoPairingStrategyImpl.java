@@ -8,7 +8,6 @@ import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto;
 import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto.TrfMatchResult;
 import com.chessgrinder.chessgrinder.trf.line.MissingPlayersTrfLineParser;
 import com.chessgrinder.chessgrinder.trf.line.PlayerTrfLineParser;
-import com.chessgrinder.chessgrinder.utils.Const;
 import javafo.api.JaVaFoApi;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +21,13 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
      * JaVaFo is no thread-safe library, therefore to avoid concurrency problems,
      * the requests to JaVaFo are synchronized on this monitor.
      */
+    private static final Object JAVAFO_MONITOR = new Object();
 
     private final PlayerTrfLineParser playerTrfLineParser = new PlayerTrfLineParser();
     private final MissingPlayersTrfLineParser missingPlayersTrfLineParser = new MissingPlayersTrfLineParser();
+    private static final int DEFAULT_RATING = 1000;
+    private static final String NEWLINE_REGEX = "\\r?\\n|\\r";
+    private static final int STANDARD_PAIRING_CODE = 1000;
 
     @Override
     public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber, boolean recalculateResults) {
@@ -56,15 +59,15 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
         });
 
         String pairingsFileContent;
-        synchronized (Const.Javafo.JAVAFO_MONITOR) {
+        synchronized (JAVAFO_MONITOR) {
             try {
-                pairingsFileContent = JaVaFoApi.exec(Const.Javafo.STANDARD_PAIRING_CODE, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
+                pairingsFileContent = JaVaFoApi.exec(STANDARD_PAIRING_CODE, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
             } catch (Exception e) {
                 throw new RuntimeException("Could not do pairing via javafo. \n" + stringBuilder, e);
             }
         }
 
-        List<MatchDto> result = Arrays.stream(pairingsFileContent.split(Const.Javafo.NEWLINE_REGEX))
+        List<MatchDto> result = Arrays.stream(pairingsFileContent.split(NEWLINE_REGEX))
                 .skip(1)
                 .map(it -> it.split(" "))
                 .map(it ->
@@ -115,7 +118,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
         PlayerTrfLineDto playerTrfLineDto = PlayerTrfLineDto.builder()
                 .startingRank(playerId)
                 .name(participant.getUserFullName() != null ? participant.getUserFullName() : participant.getName())
-                .rating(Const.Javafo.DEFAULT_RATING)
+                .rating(DEFAULT_RATING)
                 .points(participant.getScore().floatValue())
                 .matches(matches.stream()
                         .map(match -> {

@@ -36,7 +36,7 @@ public class ClubController {
     public ClubDto getClubById(
             @PathVariable UUID clubId
     ) {
-        final var club = clubRepository.findById(clubId).orElseThrow();
+        final var club = clubRepository.getById(clubId);
         return clubMapper.toDto(club);
     }
 
@@ -46,7 +46,6 @@ public class ClubController {
             @RequestBody ClubDto clubDto
     ) {
         ClubEntity club = ClubEntity.builder()
-                .id(UUID.randomUUID())
                 .name(clubDto.getName())
                 .description(clubDto.getDescription())
                 .location(clubDto.getLocation())
@@ -61,9 +60,7 @@ public class ClubController {
             @PathVariable UUID clubId,
             @RequestBody ClubDto clubDto
     ) {
-        ClubEntity club = clubRepository.findById(clubId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No club with id " + clubId)
-        );
+        ClubEntity club = clubRepository.getById(clubId);
 
         club.setName(clubDto.getName());
         club.setDescription(clubDto.getDescription());
@@ -78,7 +75,7 @@ public class ClubController {
             @PathVariable UUID clubId
     ) {
         if (!clubRepository.existsById(clubId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No club with id " + clubId);
+            throw new ResponseStatusException(HttpStatus.OK, "No club with id " + clubId);
         }
 
         clubRepository.deleteById(clubId);
