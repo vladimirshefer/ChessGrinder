@@ -34,4 +34,6 @@ public class ClubEntity extends AbstractAuditingEntity {
 
     @Column(name = "location")
     private String location;
+
+    public static final UUID DEFAULT_CLUB_ID = UUID.fromString("");
 }

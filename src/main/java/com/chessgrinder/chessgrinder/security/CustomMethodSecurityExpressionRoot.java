@@ -8,11 +8,6 @@ import java.util.function.Supplier;
 
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 
-    public boolean hasClubRole(Long clubId, String role) {
-        // Implement your logic to check if the user has the specified role for the given club
-        return true; // Replace with actual logic
-    }
-
     private Object filterObject;
 
     private Object returnObject;

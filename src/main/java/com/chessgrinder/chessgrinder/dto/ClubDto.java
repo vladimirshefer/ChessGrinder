@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.dto;
 
-import com.chessgrinder.chessgrinder.utils.Const;
+import com.chessgrinder.chessgrinder.ApplicationConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +15,6 @@ public class ClubDto {
     private String description;
     private String location;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Const.Tournaments.DATETIME_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = ApplicationConstants.DATETIME_FORMAT_STR)
     private Instant registrationDate;
 }

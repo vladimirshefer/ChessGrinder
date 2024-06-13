@@ -44,7 +44,7 @@ public class TournamentService {
     //TODO добавить Id клуба (TournamentEntity)
     @Transactional
     public TournamentDto createTournament(LocalDateTime date) {
-        ClubEntity club = clubRepository.getById(UUID.fromString(Const.Tournaments.DEFAULT_CLUB_ID));
+        ClubEntity club = clubRepository.getById(ClubEntity.DEFAULT_CLUB_ID);
         TournamentEntity tournamentEntity = TournamentEntity.builder()
                 .date(date)
                 .status(TournamentStatus.PLANNED)
