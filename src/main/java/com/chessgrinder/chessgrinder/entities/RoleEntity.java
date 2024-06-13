@@ -29,6 +29,7 @@ public class RoleEntity extends AbstractAuditingEntity {
 
     public static class Roles {
         public static final String ADMIN = "ROLE_ADMIN";
+        public static final String CLUB_ADMIN = "ROLE_CLUB_ADMIN";
         public static final String USER = "ROLE_USER";
     }
 

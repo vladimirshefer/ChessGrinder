@@ -5,6 +5,7 @@ import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.service.MatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
