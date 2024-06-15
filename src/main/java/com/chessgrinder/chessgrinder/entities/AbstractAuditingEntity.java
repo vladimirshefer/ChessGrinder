@@ -21,7 +21,6 @@ public abstract class AbstractAuditingEntity implements Serializable {
 
     @Column(name = "created_at", updatable = false)
     @CreatedDate
-    @Nullable
     private Instant createdAt;
 
     @Column(name = "updated_at", insertable = false)

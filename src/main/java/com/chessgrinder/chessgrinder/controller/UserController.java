@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @RestController
@@ -235,15 +236,20 @@ public class UserController {
             @PathVariable UUID userId,
             @RequestBody SubscriptionDto data
     ) {
-        UserEntity user = userRepository.findById(userId).orElseThrow();
+        UserEntity user = userRepository.getById(userId);
         ClubEntity club = clubRepository.getById(UUID.fromString(data.getClub().getId()));
-        SubscriptionLevelEntity subscriptionLevel = subscriptionLevelRepository.findByName(
-                data.getSubscriptionLevel().getName()).orElseThrow();
+        SubscriptionLevelEntity subscriptionLevel = subscriptionLevelRepository.getByName(
+                data.getSubscriptionLevel().getName());
+
+        final Instant startDate = data.getStartDate() == null ?
+                Instant.now(Clock.systemUTC()) : data.getStartDate();
+        final Instant finishDate = data.getFinishDate() == null ?
+                startDate.plus(1, ChronoUnit.MONTHS) : data.getFinishDate();
         final var subscription = SubscriptionEntity.builder()
                 .club(club)
                 .subscriptionLevel(subscriptionLevel)
-                .startDate(Instant.now(Clock.systemUTC()))
-                .finishDate(data.getFinishDate())
+                .startDate(startDate)
+                .finishDate(finishDate)
                 .user(user)
                 .build();
 

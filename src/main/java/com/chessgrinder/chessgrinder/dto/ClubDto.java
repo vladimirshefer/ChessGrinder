@@ -14,7 +14,4 @@ public class ClubDto {
     private String name;
     private String description;
     private String location;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Const.Tournaments.DATETIME_PATTERN)
-    private Instant registrationDate;
 }

@@ -16,7 +16,6 @@ public class ClubMapper {
                 .name(club.getName())
                 .description(club.getDescription())
                 .location(club.getLocation())
-                .registrationDate(club.getCreatedAt())
                 .build();
     }
 }

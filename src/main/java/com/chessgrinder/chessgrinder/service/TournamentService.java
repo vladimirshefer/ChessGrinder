@@ -84,10 +84,12 @@ public class TournamentService {
     public void updateTournament(UUID tournamentId, TournamentDto tournamentDto) {
         TournamentEntity tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
+        final var club = clubRepository.getById(UUID.fromString(tournamentDto.getClubDto().getId()));
         tournament.setName(tournamentDto.getName());
         tournament.setDate(tournamentDto.getDate());
         tournament.setLocationName(tournamentDto.getLocationName());
         tournament.setLocationUrl(tournamentDto.getLocationUrl());
+        tournament.setClub(club);
         final var roundsNum = tournamentDto.getRoundsNumber();
         if (roundsNum < Const.Tournaments.MIN_ROUNDS_NUMBER || roundsNum > Const.Tournaments.MAX_ROUNDS_NUMBER) {
             throw new ResponseStatusException(400, "Wrong rounds number range", null);

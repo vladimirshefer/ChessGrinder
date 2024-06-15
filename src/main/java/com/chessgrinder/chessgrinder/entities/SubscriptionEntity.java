@@ -24,7 +24,7 @@ public class SubscriptionEntity extends AbstractAuditingEntity {
     @UuidGenerator
     private UUID id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 

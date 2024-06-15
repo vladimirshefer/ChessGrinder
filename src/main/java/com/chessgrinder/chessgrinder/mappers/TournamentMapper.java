@@ -11,7 +11,7 @@ import org.springframework.stereotype.*;
 @RequiredArgsConstructor
 public class TournamentMapper {
 
-    private ClubMapper clubMapper;
+    private final ClubMapper clubMapper;
 
     public TournamentDto toDto(TournamentEntity tournamentEntity) {
         return TournamentDto.builder()
