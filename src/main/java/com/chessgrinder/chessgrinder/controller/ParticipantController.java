@@ -25,7 +25,7 @@ public class ParticipantController {
     private final ParticipantRepository participantRepository;
     private final ParticipantMapper participantMapper;
 
-    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping
     public void addParticipantToTournament(
             @PathVariable UUID tournamentId,
@@ -34,7 +34,7 @@ public class ParticipantController {
         participantService.addParticipantToTheTournament(tournamentId, participantDto);
     }
 
-    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @DeleteMapping("/{participantId}")
     public void delete(
             @PathVariable UUID tournamentId,
@@ -63,7 +63,7 @@ public class ParticipantController {
         return participantMapper.toDto(participantEntity);
     }
 
-    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PutMapping("/{participantId}")
     public void update(
             @PathVariable UUID participantId,
@@ -75,7 +75,7 @@ public class ParticipantController {
         participantRepository.save(participant);
     }
 
-    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{participantId}/action/miss")
     public void miss(
             @PathVariable UUID participantId

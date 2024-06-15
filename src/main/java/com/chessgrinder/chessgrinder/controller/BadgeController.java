@@ -33,7 +33,7 @@ public class BadgeController {
         return ListDto.<BadgeDto>builder().values(badgeMapper.toDto(badgeRepository.findAll())).build();
     }
 
-    @Secured(com.chessgrinder.chessgrinder.utils.Const.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping
     public BadgeDto create(@RequestBody BadgeDto badgeDto) {
         return badgeMapper.toDto(badgeRepository.save(BadgeEntity.builder()
@@ -64,7 +64,7 @@ public class BadgeController {
             @PathVariable UUID badgeId
     ){
         List<UserEntity> userEntities = userRepository.findAllByBadgeId(badgeId);
-        userService.calcPointsPerUser(userEntities);
+        userService.calculateGlobalScore(userEntities, null, null);
         List<UserDto> userDtos = userMapper.toDto(userEntities);
         return ListDto.<UserDto>builder().values(userDtos).build();
     }

@@ -61,7 +61,7 @@ public class UserEntity extends AbstractAuditingEntity {
     private int reputation = 0;
 
     @Transient //won't be created in DB
-    private BigDecimal totalPoints = BigDecimal.valueOf(-1);
+    private BigDecimal globalScore = BigDecimal.valueOf(-1);
 
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB

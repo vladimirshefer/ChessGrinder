@@ -2,8 +2,8 @@ import localStorageUtil from "lib/util/LocalStorageUtil";
 import {
     BadgeDto,
     ListDto,
-    UserDto,
     UserBadgeDto,
+    UserDto,
     UserHistoryRecordDto,
     UserReputationHistoryRecordDto
 } from "lib/api/dto/MainPageData";
@@ -15,9 +15,10 @@ import {ParticipantDto, TournamentPageData} from "../dto/TournamentPageData";
 export interface UserRepository {
     getUser(username: string): Promise<UserDto | null>
 
-    getUsers(): Promise<ListDto<UserDto>>
-
-    getUsersWithSeasonDates(startSeason: string | null, endSeason: string | null): Promise<ListDto<UserDto>>
+    getUsers(
+        globalScoreFromDate?: string | undefined,
+        globalScoreToDate?: string | undefined
+    ): Promise<ListDto<UserDto>>
 
     getMe(): Promise<UserDto | null>
 
@@ -54,10 +55,6 @@ class LocalStorageUserRepository implements UserRepository {
         return {
             values: users
         };
-    }
-
-    async getUsersWithSeasonDates(startSeason: string | null, endSeason: string | null): Promise<ListDto<UserDto>> {
-        return this.getUsers();
     }
 
     async getMe(): Promise<UserDto | null> {
@@ -117,16 +114,14 @@ class RestApiUserRepository implements UserRepository {
         return restApiClient.get(`/user/${username}`);
     }
 
-    async getUsers(): Promise<ListDto<UserDto>> {
-        return restApiClient.get(`/user`);
-    }
-
-    async getUsersWithSeasonDates(startSeason: string | null, endSeason: string | null): Promise<ListDto<UserDto>> {
-        const queryParams: Record<any, any> = {
-            startSeasonDate: startSeason,
-            endSeasonDate: endSeason
-        };
-        return restApiClient.get(`/user`, queryParams);
+    async getUsers(
+        globalScoreFromDate?: string | undefined,
+        globalScoreToDate?: string | undefined
+    ): Promise<ListDto<UserDto>> {
+        let queryParams: any = {}
+        if (!!globalScoreFromDate) queryParams.globalScoreFromDate = globalScoreFromDate
+        if (!!globalScoreToDate) queryParams.globalScoreToDate = globalScoreToDate
+        return restApiClient.get(`/user`, {...queryParams});
     }
 
     async getMe(): Promise<UserDto | null> {

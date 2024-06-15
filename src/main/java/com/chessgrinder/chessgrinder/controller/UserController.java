@@ -13,8 +13,11 @@ import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.
 import com.chessgrinder.chessgrinder.service.UserService;
 import com.chessgrinder.chessgrinder.utils.Const;
 import jakarta.annotation.Nonnull;
+import com.chessgrinder.chessgrinder.util.DateUtil;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
@@ -50,37 +52,23 @@ public class UserController {
 
     @GetMapping
     public ListDto<UserDto> getUsers(
-            @RequestParam(required = false) String startSeasonDate,
-            @RequestParam(required = false) String endSeasonDate
+            @Nullable
+            @RequestParam(required = false)
+            @DateTimeFormat(pattern = Const.UserRegex.DATE_FORMAT_STRING)
+            LocalDate globalScoreFromDate,
+            @Nullable
+            @RequestParam(required = false)
+            @DateTimeFormat(pattern = Const.UserRegex.DATE_FORMAT_STRING)
+            LocalDate globalScoreToDate
     ) {
-        final var dates = getSeasonDates(startSeasonDate, endSeasonDate);
-        final List<UserDto> allUsers = userService.getAllUsers(dates.getKey(), dates.getValue());
-        return ListDto.<UserDto>builder().values(allUsers).build();
-    }
-
-    private static Map.Entry<Date, Date> getSeasonDates(String startSeasonDate, String endSeasonDate) {
-        Date startSeason = null;
-        Date endSeason = null;
-        try {
-            if (startSeasonDate != null) {
-                startSeason = getDateFromString(startSeasonDate);
-            }
-            if (endSeasonDate != null) {
-                endSeason = getDateFromString(endSeasonDate);
-            }
-        } catch (Exception e) {
-            throw new ResponseStatusException(400, "Can't parse start or end season date with format "
-                    + Const.UserRegex.DATE_FORMAT_STRING, e);
-        }
-        if (startSeason != null && endSeason != null && endSeason.before(startSeason)) {
+        if (globalScoreFromDate != null && globalScoreToDate != null && globalScoreToDate.isBefore(globalScoreFromDate)) {
             throw new ResponseStatusException(400, "End date can't be before start date", null);
         }
-        return new AbstractMap.SimpleEntry<>(startSeason, endSeason);
-    }
-
-    private static Date getDateFromString(String date) {
-        LocalDateTime localDateTime = LocalDate.parse(date, DateTimeFormatter.ofPattern(Const.UserRegex.DATE_FORMAT_STRING)).atStartOfDay();
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        final List<UserDto> allUsers = userService.getAllUsers(
+                DateUtil.atStartOfDay(globalScoreFromDate),
+                DateUtil.atStartOfDay(globalScoreToDate)
+        );
+        return ListDto.<UserDto>builder().values(allUsers).build();
     }
 
     @GetMapping("/{userId}")
@@ -101,7 +89,7 @@ public class UserController {
     public UserDto me(
             @AuthenticatedUser UserEntity authenticatedUser
     ) {
-        userService.calcPointsPerUser(authenticatedUser);
+        userService.calculateGlobalScore(authenticatedUser);
         return userMapper.toDto(authenticatedUser);
     }
 
@@ -109,7 +97,7 @@ public class UserController {
     public ListDto<UserHistoryRecordDto> history(
             @PathVariable String userIdOrUsername
     ) {
-        UserEntity user = findUserByIdOrUsername(userIdOrUsername);
+        UserEntity user = userService.findUserByIdOrUsername(userIdOrUsername);
         List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
         List<UserHistoryRecordDto> history = participants.stream()
                 .filter(participant -> TournamentStatus.FINISHED == Optional
