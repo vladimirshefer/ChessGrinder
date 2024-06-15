@@ -47,7 +47,7 @@ public class UpdateSecurityAuthoritiesHandlerInterceptor implements HandlerInter
 
         var authorities = new HashSet<GrantedAuthority>();
         if (auth.isAuthenticated()) {
-            authorities.add(new SimpleGrantedAuthority(RoleEntity.Roles.USER));
+            authorities.add(new SimpleGrantedAuthority(com.chessgrinder.chessgrinder.utils.Const.Roles.USER));
         }
 
         UserEntity userFromDatabase = userRepository.findByUsername(auth.getName());

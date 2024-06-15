@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.dto.pages.*;
 import com.chessgrinder.chessgrinder.entities.*;
-import com.chessgrinder.chessgrinder.enums.*;
 import com.chessgrinder.chessgrinder.mappers.*;
 import com.chessgrinder.chessgrinder.repositories.*;
 import lombok.*;

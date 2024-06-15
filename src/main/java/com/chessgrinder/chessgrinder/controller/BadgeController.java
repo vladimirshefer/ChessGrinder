@@ -4,13 +4,13 @@ import com.chessgrinder.chessgrinder.dto.BadgeDto;
 import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.UserDto;
 import com.chessgrinder.chessgrinder.entities.BadgeEntity;
-import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.mappers.BadgeMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.BadgeRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.service.UserService;
+import com.chessgrinder.chessgrinder.utils.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +33,7 @@ public class BadgeController {
         return ListDto.<BadgeDto>builder().values(badgeMapper.toDto(badgeRepository.findAll())).build();
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping
     public BadgeDto create(@RequestBody BadgeDto badgeDto) {
         return badgeMapper.toDto(badgeRepository.save(BadgeEntity.builder()
@@ -51,7 +51,7 @@ public class BadgeController {
         return badgeMapper.toDto(badgeRepository.findById(badgeId).orElseThrow());
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @DeleteMapping("/{badgeId}")
     public void delete(
             @PathVariable UUID badgeId

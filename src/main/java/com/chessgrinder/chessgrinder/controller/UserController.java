@@ -5,12 +5,16 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
+import com.chessgrinder.chessgrinder.mappers.SubscriptionMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.UserService;
+import com.chessgrinder.chessgrinder.utils.Const;
+import jakarta.annotation.Nonnull;
 import com.chessgrinder.chessgrinder.util.DateUtil;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,12 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.annotation.Nullable;
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -34,6 +35,10 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final ClubRepository clubRepository;
+    private final SubscriptionLevelRepository subscriptionLevelRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionMapper subscriptionMapper;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
     private final TournamentMapper tournamentMapper;
@@ -46,18 +51,15 @@ public class UserController {
     @Value("${chessgrinder.feature.auth.signupWithPasswordEnabled:true}")
     private boolean isSignupWithPasswordEnabled;
 
-    private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
-    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
-
     @GetMapping
     public ListDto<UserDto> getUsers(
             @Nullable
             @RequestParam(required = false)
-            @DateTimeFormat(pattern = DATE_FORMAT_STRING)
+            @DateTimeFormat(pattern = Const.UserRegex.DATE_FORMAT_STRING)
             LocalDate globalScoreFromDate,
             @Nullable
             @RequestParam(required = false)
-            @DateTimeFormat(pattern = DATE_FORMAT_STRING)
+            @DateTimeFormat(pattern = Const.UserRegex.DATE_FORMAT_STRING)
             LocalDate globalScoreToDate
     ) {
         if (globalScoreFromDate != null && globalScoreToDate != null && globalScoreToDate.isBefore(globalScoreFromDate)) {
@@ -114,7 +116,23 @@ public class UserController {
         return ListDto.<UserHistoryRecordDto>builder().values(history).build();
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Nonnull
+    private UserEntity findUserByIdOrUsername(String userIdOrUsername) {
+        UserEntity user = userRepository.findByUsername(userIdOrUsername);
+        if (user == null) {
+            UUID userId;
+            try {
+                userId = UUID.fromString(userIdOrUsername);
+            } catch (IllegalArgumentException e) {
+                throw new UserNotFoundException("No user with id " + userIdOrUsername, e);
+            }
+            user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("No user with id " + userIdOrUsername));
+        }
+        return user;
+    }
+
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{userId}/badge/{badgeId}")
     public void assignBadge(
             @PathVariable UUID userId,
@@ -126,7 +144,7 @@ public class UserController {
         userBadgeRepository.save(assignment);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{userId}/reputation")
     @Transactional
     public void assignReputation(
@@ -162,9 +180,9 @@ public class UserController {
             @AuthenticatedUser UserEntity authenticatedUser
     ) {
         if (!userId.equals(authenticatedUser.getId())) {
-            boolean isDeleterAdmin = authenticatedUser.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
+            boolean isDeleterAdmin = authenticatedUser.getRoles().stream().anyMatch(it -> it.getName().equals(Const.Roles.ADMIN));
             final var deletedUser = userRepository.findById(userId).orElseThrow();
-            boolean isDeletedAdmin = deletedUser.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
+            boolean isDeletedAdmin = deletedUser.getRoles().stream().anyMatch(it -> it.getName().equals(Const.Roles.ADMIN));
             if (!isDeleterAdmin || isDeletedAdmin) {
                 throw new ResponseStatusException(403, "Not allowed to delete other's profile", null);
             }
@@ -200,7 +218,7 @@ public class UserController {
             throw new ResponseStatusException(400, "Invalid password. Min 4 chars.", null);
         }
 
-        if (!signUpRequest.getUsername().matches(USERNAME_REGEX)) {
+        if (!signUpRequest.getUsername().matches(Const.UserRegex.USERNAME_REGEX)) {
             throw new ResponseStatusException(400, "Invalid username", null);
         }
 
@@ -210,5 +228,39 @@ public class UserController {
                 .password(passwordEncoder.encode(password))
                 .build()
         );
+    }
+
+    @Secured(Const.Roles.ADMIN)
+    @PutMapping("/{userId}/subscription")
+    public void assignSubscription(
+            @PathVariable UUID userId,
+            @RequestBody SubscriptionDto data
+    ) {
+        UserEntity user = userRepository.getById(userId);
+        ClubEntity club = clubRepository.getById(UUID.fromString(data.getClub().getId()));
+        SubscriptionLevelEntity subscriptionLevel = subscriptionLevelRepository.getByName(
+                data.getSubscriptionLevel().getName());
+
+        final Instant startDate = data.getStartDate() == null ?
+                Instant.now(Clock.systemUTC()) : data.getStartDate();
+        final Instant finishDate = data.getFinishDate() == null ?
+                startDate.plus(1, ChronoUnit.MONTHS) : data.getFinishDate();
+        final var subscription = SubscriptionEntity.builder()
+                .club(club)
+                .subscriptionLevel(subscriptionLevel)
+                .startDate(startDate)
+                .finishDate(finishDate)
+                .user(user)
+                .build();
+
+        subscriptionRepository.save(subscription);
+    }
+
+    @GetMapping("/{userId}/subscription")
+    public ListDto<SubscriptionDto> getUserSubscriptions(
+            @PathVariable UUID userId
+    ) {
+        final var allSubscriptions = subscriptionRepository.findAllByUserId(userId);
+        return ListDto.<SubscriptionDto>builder().values(subscriptionMapper.toDto(allSubscriptions)).build();
     }
 }

@@ -1,8 +1,8 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.exceptions.RoundNotFoundException;
 import com.chessgrinder.chessgrinder.service.RoundService;
+import com.chessgrinder.chessgrinder.utils.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -16,38 +16,38 @@ public class RoundController {
 
     private final RoundService roundService;
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping()
     public void createNextRound(@PathVariable UUID tournamentId) {
         roundService.createRound(tournamentId);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{roundNumber}/action/finish")
     public void finishRound(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
         roundService.finishRound(tournamentId, roundNumber);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{roundNumber}/action/reopen")
     public void reopenRound(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
         roundService.reopenRound(tournamentId, roundNumber);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{roundNumber}/action/matchup")
     public void makePairings(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
         roundService.makePairings(tournamentId, roundNumber);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @PostMapping("/{roundNumber}/action/miss")
     public void markUserAsMissedInTournament(@PathVariable UUID tournamentId,
                             @RequestParam UUID userId) {
         roundService.markUserAsMissedInTournament(userId, tournamentId);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @Secured(Const.Roles.ADMIN)
     @DeleteMapping("/{roundNumber}")
     public void deleteRound(@PathVariable UUID tournamentId,
                             @PathVariable Integer roundNumber) throws RoundNotFoundException {

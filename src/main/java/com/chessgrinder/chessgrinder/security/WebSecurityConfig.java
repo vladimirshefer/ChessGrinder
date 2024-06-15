@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.security;
 
 import com.chessgrinder.chessgrinder.service.UserService;
+import com.chessgrinder.chessgrinder.utils.Const;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 )
 @Slf4j
 public class WebSecurityConfig {
-
-    public static final String HOME_PAGE = "/";
-
-    public static final String OAUTH2_STATE_SEPARATOR = ",";
-
     @Autowired
     private CustomOAuth2UserService oauthUserService;
 
@@ -73,10 +69,10 @@ public class WebSecurityConfig {
                                     if (authentication.getPrincipal() instanceof CustomOAuth2User customOAuth2User) {
                                         userService.processOAuthPostLogin(customOAuth2User);
                                     }
-                                    String redirectTo = HOME_PAGE;
+                                    String redirectTo = Const.WebSecurity.HOME_PAGE;
                                     String state = request.getParameter("state");
                                     if (StringUtils.isNotBlank(state)) {
-                                        String[] stateSplit = state.split(OAUTH2_STATE_SEPARATOR);
+                                        String[] stateSplit = state.split(Const.WebSecurity.OAUTH2_STATE_SEPARATOR);
                                         if (stateSplit.length >= 2) {
                                             redirectTo = stateSplit[1];
                                         }
@@ -85,7 +81,7 @@ public class WebSecurityConfig {
                                 })
                                 .failureHandler((request, response, exception) -> {
                                     log.warn("Could not login user vis oauth2", exception);
-                                    response.sendRedirect(HOME_PAGE);
+                                    response.sendRedirect(Const.WebSecurity.HOME_PAGE);
                                 })
                 )
                 .cors(it -> it.disable())

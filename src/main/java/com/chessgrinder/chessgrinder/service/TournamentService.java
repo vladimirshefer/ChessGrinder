@@ -5,8 +5,10 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
+import com.chessgrinder.chessgrinder.repositories.ClubRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import com.chessgrinder.chessgrinder.utils.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +25,9 @@ import java.util.stream.Collectors;
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
+    private final ClubRepository clubRepository;
+
     private final TournamentMapper tournamentMapper;
-    private static final int DEFAULT_ROUNDS_NUMBER = 6;
-    private static final int MIN_ROUNDS_NUMBER = 0;
-    private static final int MAX_ROUNDS_NUMBER = 99;
 
     public List<TournamentDto> findTournaments() {
         return tournamentRepository.findAll().stream()
@@ -38,12 +39,15 @@ public class TournamentService {
                 .collect(Collectors.toList());
     }
 
+    //TODO добавить Id клуба (TournamentEntity)
     @Transactional
     public TournamentDto createTournament(LocalDateTime date) {
+        ClubEntity club = clubRepository.getById(UUID.fromString(Const.Tournaments.DEFAULT_CLUB_ID));
         TournamentEntity tournamentEntity = TournamentEntity.builder()
                 .date(date)
                 .status(TournamentStatus.PLANNED)
-                .roundsNumber(DEFAULT_ROUNDS_NUMBER)
+                .roundsNumber(Const.Tournaments.DEFAULT_ROUNDS_NUMBER)
+                .club(club)
                 .build();
 
         tournamentEntity = tournamentRepository.save(tournamentEntity);
@@ -80,12 +84,14 @@ public class TournamentService {
     public void updateTournament(UUID tournamentId, TournamentDto tournamentDto) {
         TournamentEntity tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
+        final var club = clubRepository.getById(UUID.fromString(tournamentDto.getClubDto().getId()));
         tournament.setName(tournamentDto.getName());
         tournament.setDate(tournamentDto.getDate());
         tournament.setLocationName(tournamentDto.getLocationName());
         tournament.setLocationUrl(tournamentDto.getLocationUrl());
+        tournament.setClub(club);
         final var roundsNum = tournamentDto.getRoundsNumber();
-        if (roundsNum < MIN_ROUNDS_NUMBER || roundsNum > MAX_ROUNDS_NUMBER) {
+        if (roundsNum < Const.Tournaments.MIN_ROUNDS_NUMBER || roundsNum > Const.Tournaments.MAX_ROUNDS_NUMBER) {
             throw new ResponseStatusException(400, "Wrong rounds number range", null);
         }
         if (roundsNum < tournament.getRounds().size()) {

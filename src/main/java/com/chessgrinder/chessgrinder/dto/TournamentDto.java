@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.dto;
 
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
+import com.chessgrinder.chessgrinder.utils.Const;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
@@ -21,10 +22,12 @@ public class TournamentDto {
     @Nullable
     private String locationUrl;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Const.Tournaments.DATETIME_PATTERN)
     private LocalDateTime date;
 
     private TournamentStatus status;
 
     private Integer roundsNumber;
+
+    private ClubDto clubDto;
 }
