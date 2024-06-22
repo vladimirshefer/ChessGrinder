@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.entities;
 
+import com.chessgrinder.chessgrinder.ApplicationConstants;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -35,5 +36,5 @@ public class ClubEntity extends AbstractAuditingEntity {
     @Column(name = "location")
     private String location;
 
-    public static final UUID DEFAULT_CLUB_ID = UUID.fromString("");
+    public static final UUID DEFAULT_CLUB_ID = ApplicationConstants.DEFAULT_CLUB_ID;
 }

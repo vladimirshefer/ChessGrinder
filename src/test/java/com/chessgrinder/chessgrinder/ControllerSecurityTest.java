@@ -5,10 +5,10 @@ import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomPermissionEvaluator;
 import com.chessgrinder.chessgrinder.security.MyAuthorizedUserDetails;
 import com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator;
+import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -23,7 +24,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -31,7 +31,6 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultHttpSecurityExpressionHandler;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -50,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @EnableWebMvc
-@EnableWebSecurity(debug = true)
+//@EnableWebSecurity(debug = true)
 @EnableMethodSecurity(securedEnabled = true)
 @SpringBootTest(
         classes = {
@@ -59,6 +58,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 CustomPermissionEvaluator.class,
         }
 )
+@Import(ControllerSecurityTest.TestSpringConfiguration.class)
 @AutoConfigureMockMvc
 public class ControllerSecurityTest {
 
@@ -71,41 +71,21 @@ public class ControllerSecurityTest {
     private static final UUID BAR_ID = UUID.randomUUID();
     private static final UUID ADMIN_ID = UUID.randomUUID();
     private static final UUID USER_ID = UUID.randomUUID();
-    private static final String FooEntityClassName = FooEntity.class.getName();
+    private static final String FOO_ENTITY_CLASS_NAME = FooEntity.class.getName();
 
+    @SuppressWarnings("unused")
     @MockBean
     private UserRepository userRepository;
 
-    public static @interface TestUser {
-
-    }
-
     @TestConfiguration
     public static class TestSpringConfiguration {
-//        @Bean
-//        public WithSecurityContextFactory<TestUser> withSecurityContextFactory() {
-//            return new WithSecurityContextFactory<TestUser>() {
-//                @Override
-//                public SecurityContext createSecurityContext(TestUser annotation) {
-//                    return null;
-//                }
-//            };
-//        }
 
         /**
          * Disable default Spring security authorization via config.
          * Makes application be authorized only wia Method Security (@Secured and @PreAuthorize)
          */
-//        @Bean(name = "TestPermitAllFilterChain")
-        public static SecurityFilterChain filterChain(
-                HttpSecurity http,
-                CustomPermissionEvaluator customPermissionEvaluator
-        ) throws Exception {
-//            WebExpressionAuthorizationManager manager = new WebExpressionAuthorizationManager("true");
-//            DefaultHttpSecurityExpressionHandler expressionHandler = new DefaultHttpSecurityExpressionHandler();
-//            expressionHandler.setPermissionEvaluator(customPermissionEvaluator);
-//            manager.setExpressionHandler(expressionHandler);
-
+        @Bean
+        public static SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             return http
                     .authorizeHttpRequests(httpRequests -> httpRequests.anyRequest().permitAll())
                     .csrf(AbstractHttpConfigurer::disable)
@@ -159,7 +139,7 @@ public class ControllerSecurityTest {
     @RestController
     public static class TestController {
 
-        @PreAuthorize("hasPermission(#id, 'FooTestEntity', 'ADMIN')")
+        @PreAuthorize("hasPermission(#id, 'FooEntity', 'ADMIN')")
         @PostMapping("/foo/{id}")
         public void createFoo(
                 @PathVariable
@@ -168,7 +148,7 @@ public class ControllerSecurityTest {
             Assertions.assertEquals(FOO_ID, id);
         }
 
-        @PreAuthorize("hasPermission(#id, 'BarTestEntity', 'ADMIN')")
+        @PreAuthorize("hasPermission(#id, 'BarEntity', 'ADMIN')")
         @PostMapping("/bar/{id}")
         public void createBar(
                 @PathVariable
@@ -177,6 +157,7 @@ public class ControllerSecurityTest {
             Assertions.assertEquals(BAR_ID, id);
         }
 
+//        @PreAuthorize("true")
         @GetMapping(value = "/foo/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
         public FooEntity getFoo(
                 @PathVariable
@@ -189,12 +170,14 @@ public class ControllerSecurityTest {
 
     @Data
     @Getter
+    @Entity
     public static class FooEntity {
         private int value;
     }
 
     @Data
     @Getter
+    @Entity
     public static class BarEntity {
         private int value;
     }
@@ -202,10 +185,10 @@ public class ControllerSecurityTest {
     public static class FooEntityPermissionEvaluator implements EntityPermissionEvaluator<FooEntity> {
         @Override
         public boolean hasPermission(UUID userId, FooEntity entity, String permission) {
-            if (userId.equals(ADMIN_ID)) {
+            if (ADMIN_ID.equals(userId)) {
                 return true;
             }
-            if (userId.equals(USER_ID) && "USER".equalsIgnoreCase(permission)) {
+            if (USER_ID.equals(userId) && "USER".equalsIgnoreCase(permission)) {
                 return true;
             }
             return false;
@@ -213,17 +196,17 @@ public class ControllerSecurityTest {
 
         @Override
         public boolean hasPermission(UUID userId, String entityId, String permission) {
-            if (userId.equals(ADMIN_ID)) {
+            if (ADMIN_ID.equals(userId)) {
                 return true;
             }
-            if (userId.equals(USER_ID) && "USER".equalsIgnoreCase(permission)) {
+            if (USER_ID.equals(userId) && "USER".equalsIgnoreCase(permission)) {
                 return true;
             }
             return false;
         }
     }
 
-//    @BeforeEach
+    //    @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
