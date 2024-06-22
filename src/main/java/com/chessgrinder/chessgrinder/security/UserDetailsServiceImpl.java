@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("Could not find user");
         }
 
-        return new MyUserDetails(userEntity);
+        return new MyAuthorizedUserDetails(userEntity);
     }
 
 }

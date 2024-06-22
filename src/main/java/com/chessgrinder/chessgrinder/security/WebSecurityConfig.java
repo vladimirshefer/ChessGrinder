@@ -48,7 +48,7 @@ public class WebSecurityConfig {
     private WithRefererOAuth2AuthorizationRequestResolver oAuth2authorizationRequestResolver;
 
     @Bean
-    static MethodSecurityExpressionHandler expressionHandler(CustomPermissionEvaluator permissionEvaluator) {
+    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(CustomPermissionEvaluator permissionEvaluator) {
         var expressionHandler = new DefaultMethodSecurityExpressionHandler();
         expressionHandler.setPermissionEvaluator(permissionEvaluator);
         return expressionHandler;

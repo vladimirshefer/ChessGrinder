@@ -1,22 +1,25 @@
 package com.chessgrinder.chessgrinder.security;
 
-import com.chessgrinder.chessgrinder.repositories.UserRoleRepository;
+import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.List;
+import java.util.function.Predicate;
 
 @Component
 @RequiredArgsConstructor
 public class CustomPermissionEvaluator implements PermissionEvaluator {
 
-    private final UserRoleRepository userRoleRepository;
+    private final List<EntityPermissionEvaluator<?>> entityPermissionEvaluators;
+    private final UserRepository userRepository;
 
     @Override
     public boolean hasPermission(
@@ -33,33 +36,49 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 
         String targetType = targetDomainObject.getClass().getSimpleName().toUpperCase();
 
-        return hasPrivilege(auth, targetType, permission.toString().toUpperCase());
+        UserEntity userEntity = getUserEntity(auth);
+        return evaluateAll(auth, targetType, permission.toString().toUpperCase(),
+                evaluator -> evaluator.hasPermission(userEntity, targetDomainObject, permission.toString())
+        );
     }
 
     @Override
     public boolean hasPermission(
-            Authentication auth, Serializable targetId, String targetType, Object permission) {
+            @Nullable
+            Authentication auth,
+            @Nullable
+            Serializable targetId,
+            @Nullable
+            String targetType,
+            @Nullable
+            Object permission) {
         if ((auth == null) || (targetType == null) || !(permission instanceof String)) {
             return false;
         }
-        return hasPrivilege(auth, targetType.toUpperCase(),
-                permission.toString().toUpperCase());
+        return evaluateAll(auth, targetType.toUpperCase(),
+                permission.toString().toUpperCase(),
+                evaluator -> evaluator.hasPermission(getUserEntity(auth), targetId.toString(), permission.toString())
+        );
     }
 
-    private boolean hasPrivilege(Authentication auth, String targetType, String permission) {
-        Class<?> entityClass;
-        try {
-            entityClass = Class.forName(targetType);
-        } catch (ClassNotFoundException e) {
-            // TODO @vshefer 13.06.2024 change to correct exception type
-            throw new SessionAuthenticationException("Unknown secured entity type " + targetType);
-        }
-        for (GrantedAuthority grantedAuth : auth.getAuthorities()) {
-            if (grantedAuth.getAuthority().startsWith(targetType) &&
-                    grantedAuth.getAuthority().contains(permission)) {
-                return true;
+    @SneakyThrows
+    private boolean evaluateAll(Authentication auth, String targetType, String permission, Predicate<EntityPermissionEvaluator<Object>> predicate) {
+        Class<?> entityClass = Class.forName(targetType);
+        List<EntityPermissionEvaluator<Object>> entityPermissionEvaluators1 = ((List<EntityPermissionEvaluator<Object>>) (Object) entityPermissionEvaluators);
+        for (EntityPermissionEvaluator<Object> entityPermissionEvaluator : entityPermissionEvaluators1) {
+            if (entityPermissionEvaluator.isMatchingType(entityClass)) {
+                if (predicate.test(entityPermissionEvaluator)) {
+                    return true;
+                }
             }
         }
         return false;
     }
+
+    private UserEntity getUserEntity(Authentication auth) {
+        UserEntity userEntity = SecurityUtil.tryGetUserEntity(auth);
+        if (userEntity == null) userEntity = userRepository.findByUsername(auth.getName());
+        return userEntity;
+    }
+
 }

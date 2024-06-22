@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class MyUserDetails implements UserDetails {
+public class MyAuthorizedUserDetails implements UserDetails, AuthorizedUserEntityProvider {
 
     private final UserEntity userEntity;
 
@@ -51,6 +51,11 @@ public class MyUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public UserEntity getUserEntity() {
+        return userEntity;
     }
 
 }

@@ -4,6 +4,7 @@ import com.chessgrinder.chessgrinder.entities.UserEntity;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.math.BigDecimal;
@@ -11,10 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public interface UserRepository extends PagingAndSortingRepository<UserEntity, UUID>, CrudRepository<UserEntity, UUID> {
-
-    @Override
-    List<UserEntity> findAll();
+public interface UserRepository extends PagingAndSortingRepository<UserEntity, UUID>, ListCrudRepository<UserEntity, UUID> {
 
     UserEntity findByUsername(String userName);
 

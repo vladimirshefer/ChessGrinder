@@ -53,7 +53,9 @@ public class ClubController {
 
         clubRepository.save(club);
     }
-    @PreAuthorize("@securityService.hasClubRole(#clubId, 'ADMIN')")
+
+//    @PreAuthorize("@securityService.hasClubRole(#clubId, 'ADMIN')")
+    @PreAuthorize("hasPermission(#clubId, 'com.chessgrinder.ClubEntity', 'ADMIN')")
     @PutMapping("/{clubId}")
     public void updateClub(
             @PathVariable UUID clubId,
