@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -24,22 +23,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultHttpSecurityExpressionHandler;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.Collections;
@@ -49,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @EnableWebMvc
-//@EnableWebSecurity(debug = true)
+@EnableWebSecurity(debug = true)
 @EnableMethodSecurity(securedEnabled = true)
 @SpringBootTest(
         classes = {
@@ -58,12 +54,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 CustomPermissionEvaluator.class,
         }
 )
-@Import(ControllerSecurityTest.TestSpringConfiguration.class)
 @AutoConfigureMockMvc
 public class ControllerSecurityTest {
-
-    @Autowired
-    private WebApplicationContext context;
 
     @Autowired
     private MockMvc mockMvc;
@@ -71,7 +63,6 @@ public class ControllerSecurityTest {
     private static final UUID BAR_ID = UUID.randomUUID();
     private static final UUID ADMIN_ID = UUID.randomUUID();
     private static final UUID USER_ID = UUID.randomUUID();
-    private static final String FOO_ENTITY_CLASS_NAME = FooEntity.class.getName();
 
     @SuppressWarnings("unused")
     @MockBean
@@ -204,15 +195,6 @@ public class ControllerSecurityTest {
             }
             return false;
         }
-    }
-
-    //    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .apply(SharedHttpSessionConfigurer.sharedHttpSession())
-                .build();
     }
 
     @Test
