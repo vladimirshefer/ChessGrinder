@@ -91,8 +91,12 @@ function TournamentPage() {
     }
 
     async function reopenRound() {
-        await roundRepository.reopenRound(id!!, roundId!!)
-        await tournamentQuery.refetch()
+        try {
+            await roundRepository.reopenRound(id!!, roundId!!)
+            await tournamentQuery.refetch();
+        } catch (error: any) {
+            alert(loc(error.response.data.message));
+        }
     }
 
     if (tournamentQuery.isError) return <>Error!</>
