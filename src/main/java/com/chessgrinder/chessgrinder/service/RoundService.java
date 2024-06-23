@@ -95,6 +95,9 @@ public class RoundService {
         if (roundEntity == null) {
             return;
         }
+        if (!roundEntity.getTournament().getStatus().equals(TournamentStatus.ACTIVE)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tournament is not active. Round could not be reopened");
+        }
         roundEntity.setFinished(false);
         roundRepository.save(roundEntity);
         try {
