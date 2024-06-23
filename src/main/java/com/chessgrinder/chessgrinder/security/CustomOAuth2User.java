@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomOAuth2User implements OAuth2User {
+public class CustomOAuth2User implements OAuth2User, AuthorizedUserEntityProvider {
 
     @NonNull
     private OAuth2User oauth2User;
@@ -51,4 +51,11 @@ public class CustomOAuth2User implements OAuth2User {
     public String getFullName() {
         return oauth2User.getAttribute("name");
     }
+
+    @Override
+    @Nullable
+    public UserEntity getUserEntity() {
+        return user;
+    }
+
 }
