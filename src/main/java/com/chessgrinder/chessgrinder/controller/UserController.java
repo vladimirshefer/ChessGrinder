@@ -9,6 +9,7 @@ import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
+import com.chessgrinder.chessgrinder.security.CustomPermissionEvaluator;
 import com.chessgrinder.chessgrinder.security.SecurityUtil;
 import com.chessgrinder.chessgrinder.service.UserService;
 import com.chessgrinder.chessgrinder.util.DateUtil;
@@ -16,17 +17,16 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -43,6 +43,7 @@ public class UserController {
     private final UserReputationHistoryRepository userReputationHistoryRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final CustomPermissionEvaluator permissionEvaluator;
 
     @Value("${chessgrinder.feature.auth.signupWithPasswordEnabled:true}")
     private boolean isSignupWithPasswordEnabled;
@@ -216,5 +217,22 @@ public class UserController {
                 .password(passwordEncoder.encode(password))
                 .build()
         );
+    }
+
+    @GetMapping("/{userId}/checkPermission")
+    public boolean checkPermission (
+            @AuthenticatedUser UserEntity user,
+            Authentication authentication,
+            @PathVariable UUID userId,
+            @RequestParam String targetId,
+            @RequestParam String targetType,
+            @RequestParam String permission
+    ){
+        boolean isAdmin = SecurityUtil.hasRole(user, RoleEntity.Roles.ADMIN);
+        boolean isSelf = Objects.equals(userId, user.getId());
+        if (!isAdmin && !isSelf) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Can not check permissions of other users");
+        }
+        return permissionEvaluator.hasPermission(authentication, targetId, targetType, permission);
     }
 }

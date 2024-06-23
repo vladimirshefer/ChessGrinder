@@ -1,12 +1,12 @@
 import {MatchDto, MatchResult, RoundDto} from "lib/api/dto/TournamentPageData";
 import MatchesTable from "./MatchesTable";
 import React from "react";
-import ConditionalOnUserRole, {Conditional} from "components/Conditional";
-import {UserRoles} from "lib/api/dto/MainPageData";
+import {Conditional, usePermissionGranted} from "components/Conditional";
 import {useLoc} from "strings/loc";
 
 export default function RoundTab(
     {
+        tournamentId,
         round,
         submitMatchResult,
         submitRoundFinished,
@@ -14,6 +14,7 @@ export default function RoundTab(
         reopenRound,
         runPairing,
     }: {
+        tournamentId: string,
         round: RoundDto,
         submitMatchResult: (match: MatchDto, result: MatchResult | null) => void,
         submitRoundFinished: () => void,
@@ -23,6 +24,7 @@ export default function RoundTab(
     }
 ) {
     let loc = useLoc();
+    let isMeModerator = usePermissionGranted(tournamentId, "TournamentEntity", "MODERATOR");
 
     if (!round) {
         return <>Error</>
@@ -30,12 +32,12 @@ export default function RoundTab(
 
     return <div>
         <MatchesTable matches={round.matches || []}
+                      canEditResults={!round.isFinished && isMeModerator}
                       submitMatchResult={(match, result) => {
                           submitMatchResult(match, result!!);
                       }}
-                      roundIsFinished={round.isFinished}
         />
-        <ConditionalOnUserRole role={UserRoles.ADMIN}>
+        <Conditional on={isMeModerator}>
             <div className={"mt-2 px-2 w-full flex justify-end gap-2"}>
                 <Conditional on={!round.isFinished}>
                     <button className={"btn-dark p-1 px-1"}
@@ -63,6 +65,6 @@ export default function RoundTab(
                 >{loc("Delete")}
                 </button>
             </div>
-        </ConditionalOnUserRole>
+        </Conditional>
     </div>
 }
