@@ -46,6 +46,8 @@ function TournamentPage() {
 
     async function addParticipant(participant: ParticipantDto) {
         await participantRepository.postParticipant(id!!, participant)
+            .catch(e => alert("Could not add participant. " +
+                e?.response?.data?.message))
         await tournamentQuery.refetch()
     }
 
@@ -54,49 +56,50 @@ function TournamentPage() {
     }
 
     async function createRound() {
-        try {
-            await roundRepository.postRound(id!!);
-            await tournamentQuery.refetch();
-            navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""));
-        } catch (error: any) {
-            alert(loc(error.response.data.message));
-        }
+        await roundRepository.postRound(id!!)
+            .catch(e => alert("Could not cerate round. " +
+                e?.response?.data?.message));
+        await tournamentQuery.refetch();
+        navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""));
+
     }
 
     async function runPairingForRound() {
-        try {
-            await roundRepository.runPairing(id!!, roundId!!)
-        } catch (e) {
-            let errorMessage = "Pairing failed!";
-            alert(errorMessage)
-            console.error(errorMessage)
-        }
+        await roundRepository.runPairing(id!!, roundId!!)
+            .catch(e => alert("Pairing failed! " +
+                e?.response?.data?.message));
         await tournamentQuery.refetch()
     }
 
     async function submitMatchResult(match: MatchDto, result: MatchResult) {
         await roundRepository.postMatchResult(id!!, roundId!!, match.id, result)
+            .catch(e => alert("Could not set match result. " +
+                e?.response?.data?.message));
+
         await tournamentQuery.refetch()
     }
 
     async function deleteRound() {
         await roundRepository.deleteRound(id!!, roundId!!)
+            .catch(e => loc("Could not delete round. " +
+                e?.response?.data?.message))
+        await tournamentQuery.refetch()
         navigate(`/tournament/${id}`)
     }
 
     async function finishRound() {
         await roundRepository.finishRound(id!!, roundId!!)
-            .catch(it => alert("Could not finish repository. Please, check if all match results are submitted."))
+            .catch(e => alert("Could not finish repository. Please, check if all match results are submitted. " +
+                e?.response?.data?.message))
         await tournamentQuery.refetch()
     }
 
     async function reopenRound() {
-        try {
-            await roundRepository.reopenRound(id!!, roundId!!)
-            await tournamentQuery.refetch();
-        } catch (error: any) {
-            alert(loc(error.response.data.message));
-        }
+        await roundRepository.reopenRound(id!!, roundId!!)
+            .catch(e => alert("Could not reopen round. " +
+                e?.response?.data?.message))
+        await tournamentQuery.refetch();
+
     }
 
     if (tournamentQuery.isError) return <>Error!</>
