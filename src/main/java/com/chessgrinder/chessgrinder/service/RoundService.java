@@ -8,6 +8,7 @@ import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoundEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
+import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.exceptions.RoundNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.MatchMapper;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
@@ -18,6 +19,7 @@ import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,10 +43,17 @@ public class RoundService {
 
     public void createRound(UUID tournamentId) {
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow();
+        if (!tournamentEntity.getStatus().equals(TournamentStatus.ACTIVE)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not create round in non-active tournament");
+        }
+        List<RoundEntity> roundsInTournament = roundRepository.findByTournamentId(tournamentId);
+        if (roundsInTournament.stream().anyMatch(it -> !it.isFinished())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not create round because of another active round");
+        }
         RoundEntity lastExistedRoundEntity = roundRepository.findFirstByTournamentIdOrderByNumberDesc(tournamentId);
         Integer nextRoundNumber = lastExistedRoundEntity != null ? lastExistedRoundEntity.getNumber() + 1 : 1;
         if (nextRoundNumber > tournamentEntity.getRoundsNumber()) {
-            throw new ResponseStatusException(400, "Can't add new round. Change rounds number in settings", null);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't add new round. Change rounds number in settings");
         }
 
         RoundEntity nextRoundEntity = RoundEntity.builder()
