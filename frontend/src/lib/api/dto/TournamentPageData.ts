@@ -33,6 +33,7 @@ export interface ParticipantDto {
     score: number
     buchholz: number
     isMissing: boolean
+    isModerator?: boolean | null | undefined
     place: number
 }
 

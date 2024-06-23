@@ -24,6 +24,7 @@ public class ParticipantMapper {
                 .buchholz(participant.getBuchholz())
                 .score(participant.getScore())
                 .isMissing(participant.isMissing())
+                .isModerator(participant.isModerator())
                 .place(participant.getPlace())
                 .build();
     }

@@ -2,8 +2,7 @@ import {Link, useNavigate, useParams} from "react-router-dom";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
-import ConditionalOnUserRole, {Conditional} from "components/Conditional";
-import {UserRoles} from "lib/api/dto/MainPageData";
+import {Conditional, usePermissionGranted} from "components/Conditional";
 import {useForm} from "react-hook-form";
 import {propagate} from "lib/util/misc";
 import {AiOutlineArrowLeft, AiOutlineDelete} from "react-icons/ai";
@@ -47,6 +46,9 @@ export default function ParticipantPage() {
         }
     })
 
+    let isMeModerator = usePermissionGranted(tournamentId || "", "TournamentEntity", "MODERATOR");
+    let isMeOwner = usePermissionGranted(tournamentId || "", "TournamentEntity", "OWNER");
+
     if (!tournamentId) {
         return <>
             No tournamentId or userId
@@ -86,6 +88,7 @@ export default function ParticipantPage() {
     }
 
     let missing = (participantQuery.data && participantQuery.data?.isMissing) || false;
+    let moderator = (participantQuery.data && participantQuery.data?.isModerator) || false;
 
     return <div className={"p-3 text-left"}>
         <div className={"p-3"}>
@@ -110,7 +113,7 @@ export default function ParticipantPage() {
 
         <div></div>
 
-        <ConditionalOnUserRole role={UserRoles.ADMIN}>
+        <Conditional on={isMeModerator}>
             <form onSubmit={editForm.handleSubmit(changeNickname)} className={"grid p-2 gap-2 border my-2"}>
                 <h3 className={"uppercase text-start"}>
                     {loc("Change nickname")}
@@ -144,10 +147,27 @@ export default function ParticipantPage() {
                     />
                 </div>
             </div>
-        </ConditionalOnUserRole>
 
-        <div className={"flex gap-2 justify-end"}>
-            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+            <Conditional on={isMeOwner}>
+                <div className={"grid gap-2 text-left py-3"}>
+                    <div className={"flex justify-bottom gap-2"}>
+                        <span className="">{loc("Moderator")}</span>
+                        <Toggle
+                            title={"Set moderator"}
+                            checked={moderator}
+                            setChecked={async (v) => {
+                                await participantRepository.updateParticipant(tournamentId!!, {
+                                    id: participantId,
+                                    isModerator: !moderator
+                                })
+                                await participantQuery.refetch()
+                            }}
+                        />
+                    </div>
+                </div>
+            </Conditional>
+
+            <div className={"flex gap-2 justify-end"}>
                 <button className={"btn-danger flex gap-1 items-center"}
                         title={loc("Delete")}
                         onClick={async () => {
@@ -171,8 +191,8 @@ export default function ParticipantPage() {
                     {loc("Delete")}
                     <span><AiOutlineDelete/></span>
                 </button>
-            </ConditionalOnUserRole>
-        </div>
+            </div>
+        </Conditional>
 
     </div>
 }
