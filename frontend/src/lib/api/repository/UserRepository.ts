@@ -29,6 +29,8 @@ export interface UserRepository {
     updateUser(userId: string, user: UserDto): Promise<void>
 
     deleteUser(userId: string): Promise<void>
+
+    checkPermission(userId: string, targetId: string, targetType: string, permission: string): Promise<boolean>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -107,6 +109,10 @@ class LocalStorageUserRepository implements UserRepository {
     async deleteUser(userId: string): Promise<void> {
         localStorageUtil.removeObject(`${this.userKeyPrefix}.${userId}`);
     }
+
+    async checkPermission(userId: string, targetId: string, targetType: string, permission: string): Promise<boolean> {
+        return true;
+    }
 }
 
 class RestApiUserRepository implements UserRepository {
@@ -142,6 +148,12 @@ class RestApiUserRepository implements UserRepository {
 
     async deleteUser(userId: string): Promise<void> {
         await restApiClient.delete(`/user/${userId}`);
+    }
+
+    async checkPermission(userId: string, targetId: string, targetType: string, permission: string): Promise<boolean> {
+        return restApiClient.get(`/user/${userId}/checkPermission`, {
+            targetId, targetType, permission
+        });
     }
 }
 

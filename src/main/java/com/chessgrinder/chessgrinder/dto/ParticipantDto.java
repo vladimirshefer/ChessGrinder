@@ -1,14 +1,20 @@
 package com.chessgrinder.chessgrinder.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
 @Builder(toBuilder = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class ParticipantDto {
 
     private String id;
@@ -42,6 +48,15 @@ public class ParticipantDto {
     */
     @Builder.Default
     private Boolean isMissing = false;
+
+    /*
+     Boolean (boxed) to force lombok to generate getIsModerator()
+     instead of isModerator() getter.
+     This is required to make Jackson correctly serialize DTO with
+     isModerator field instead of moderator field.
+    */
+    @Builder.Default
+    private Boolean isModerator = false;
 
     @Nonnull
     @Builder.Default

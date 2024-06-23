@@ -1,6 +1,8 @@
 import {ReactElement, useMemo} from "react";
 import {useMode} from "lib/api/repository/apiSettings";
-import {useAuthenticatedUser} from "../contexts/AuthenticatedUserContext";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
+import {useQuery} from "@tanstack/react-query";
+import userRepository from "lib/api/repository/UserRepository";
 
 export function Conditional(
     {
@@ -71,4 +73,21 @@ export function ConditionalOnMode(
     return <Conditional on={currentMode === mode}>
         {children}
     </Conditional>
+}
+
+export function usePermissionGranted(
+    targetId: string,
+    targetType: string,
+    permission: string,
+) {
+    let [authenticatedUser] = useAuthenticatedUser();
+    let permissionQuery = useQuery({
+        queryKey: ["permission", authenticatedUser?.id, targetId, targetType, permission],
+        queryFn: async () => {
+            if (!authenticatedUser?.id) return false;
+            return await userRepository.checkPermission(authenticatedUser.id, targetId, targetType, permission)
+        }
+    })
+
+    return permissionQuery.data || false
 }

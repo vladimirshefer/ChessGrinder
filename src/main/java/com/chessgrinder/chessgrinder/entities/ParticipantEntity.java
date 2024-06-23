@@ -52,6 +52,9 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Column(name = "is_missing")
     private boolean isMissing;
 
+    @Column(name = "is_moderator")
+    private boolean isModerator;
+
     @Nonnull
     @Column(name = "place")
     private Integer place;
