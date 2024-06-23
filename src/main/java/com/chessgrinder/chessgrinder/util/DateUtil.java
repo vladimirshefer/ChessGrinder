@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.util;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
+
 import java.time.*;
 
 public final class DateUtil {
