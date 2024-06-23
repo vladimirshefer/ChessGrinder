@@ -32,7 +32,7 @@ function MatchResultSelector(
             case "DRAW":
                 return "½ - ½"
             case "BUY":
-                return "BUY"
+                return "BYE"
             case "MISS":
                 return "MISS"
             default:
@@ -73,7 +73,7 @@ function MatchResultSelector(
                         <ResultSelectItem result={"0 - 1"} onClick={() => setResult("BLACK_WIN")}/>
                         <ResultSelectItem result={"½ - ½"} onClick={() => setResult("DRAW")}/>
                         <ResultSelectItem result={"? - ?"} onClick={() => setResult(null)}/>
-                        <ResultSelectItem result={"BUY"} onClick={() => setResult("BUY")}/>
+                        <ResultSelectItem result={"BYE"} onClick={() => setResult("BUY")}/>
                         <ResultSelectItem result={"MISS"} onClick={() => setResult("MISS")}/>
                     </ul>
                 </Conditional>
