@@ -8,6 +8,7 @@ import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.ParticipantService;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -54,8 +55,14 @@ public class ParticipantController {
     @GetMapping("/me")
     public ParticipantDto getMe(
             @PathVariable UUID tournamentId,
-            @AuthenticatedUser UserEntity authenticatedUser
+            @AuthenticatedUser(required = false)
+            @Nullable
+            UserEntity authenticatedUser
     ) {
+        if (authenticatedUser == null) {
+            return null;
+        }
+
         ParticipantEntity participantEntity = participantRepository.findByTournamentIdAndUserId(tournamentId, authenticatedUser.getId());
         if (participantEntity == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not participating");

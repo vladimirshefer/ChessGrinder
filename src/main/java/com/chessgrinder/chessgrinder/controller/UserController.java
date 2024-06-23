@@ -11,6 +11,7 @@ import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.UserService;
 import com.chessgrinder.chessgrinder.util.DateUtil;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -86,8 +86,13 @@ public class UserController {
     @Transactional
     @GetMapping("/me")
     public UserDto me(
-            @AuthenticatedUser UserEntity authenticatedUser
+            @AuthenticatedUser(required = false)
+            @Nullable
+            UserEntity authenticatedUser
     ) {
+        if (authenticatedUser == null) {
+            return null;
+        }
         userService.calculateGlobalScore(authenticatedUser);
         return userMapper.toDto(authenticatedUser);
     }
