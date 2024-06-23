@@ -128,7 +128,11 @@ public class RoundService {
         }
 
         List<MatchEntity> alreadyExistedMatches = matchRepository.findMatchEntitiesByRoundId(round.getId());
-        matchRepository.deleteAll(alreadyExistedMatches);
+        if (alreadyExistedMatches.stream().anyMatch(it -> it.getResult() != null)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not make pairing because results already submitted. Try remove all results manually.");
+        } else {
+            matchRepository.deleteAll(alreadyExistedMatches);
+        }
 
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
