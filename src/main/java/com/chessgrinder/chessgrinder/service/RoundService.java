@@ -112,6 +112,15 @@ public class RoundService {
 
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
+        var allRounds = roundRepository.findByTournamentId(tournamentId);
+        for (RoundEntity r : allRounds) {
+            if (!r.isFinished()) {
+                if (!r.getId().equals(round.getId())) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Finish all rounds before pairing a new one");
+                }
+            }
+        }
+
         List<MatchEntity> alreadyExistedMatches = matchRepository.findMatchEntitiesByRoundId(round.getId());
         matchRepository.deleteAll(alreadyExistedMatches);
 
