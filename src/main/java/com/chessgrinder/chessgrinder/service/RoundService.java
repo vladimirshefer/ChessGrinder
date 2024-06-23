@@ -41,15 +41,21 @@ public class RoundService {
 
     private final ParticipantMapper participantMapper;
 
+    @Transactional
     public void createRound(UUID tournamentId) {
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow();
         if (!tournamentEntity.getStatus().equals(TournamentStatus.ACTIVE)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not create round in non-active tournament");
         }
+
+        // Try finish all other rounds
         List<RoundEntity> roundsInTournament = roundRepository.findByTournamentId(tournamentId);
-        if (roundsInTournament.stream().anyMatch(it -> !it.isFinished())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not create round because of another active round");
+        for (RoundEntity roundEntity : roundsInTournament) {
+            if (!roundEntity.isFinished()) {
+                finishRound(tournamentId, roundEntity.getNumber());
+            }
         }
+
         RoundEntity lastExistedRoundEntity = roundRepository.findFirstByTournamentIdOrderByNumberDesc(tournamentId);
         Integer nextRoundNumber = lastExistedRoundEntity != null ? lastExistedRoundEntity.getNumber() + 1 : 1;
         if (nextRoundNumber > tournamentEntity.getRoundsNumber()) {
@@ -64,21 +70,21 @@ public class RoundService {
                 .isFinished(false)
                 .build();
 
-        //TODO do not create round if the tournament is finished
-
         roundRepository.save(nextRoundEntity);
     }
 
+    /**
+     * @throws RuntimeException If any match has unknown result.
+     */
+    @Transactional
     public void finishRound(UUID tournamentId, Integer roundNumber) {
         RoundEntity roundEntity = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
-        if (roundEntity == null) {
+        if (roundEntity == null || roundEntity.isFinished()) {
             return;
         }
         for (MatchEntity match : roundEntity.getMatches()) {
-
             if (match.getResult() == null) {
                 throw new IllegalStateException("Can not finish round with unknown match result");
-
             }
         }
         roundEntity.setFinished(true);
