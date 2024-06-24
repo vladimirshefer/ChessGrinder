@@ -295,10 +295,15 @@ public class RoundService {
             log.error("There is no round with number: " + roundNumber + " in the tournament with id: " + tournamentId);
             throw new RoundNotFoundException();
         }
+        if (roundEntity.getTournament().getStatus() == TournamentStatus.FINISHED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not delete round in finished tournament.");
+        }
+
         roundRepository.delete(roundEntity);
         List<RoundEntity> allRoundsWithGreaterRoundNumber = roundRepository.findAllRoundsWithGreaterRoundNumber(tournamentId, roundNumber);
         allRoundsWithGreaterRoundNumber.forEach(round -> round.setNumber(round.getNumber() - 1));
         roundRepository.saveAll(allRoundsWithGreaterRoundNumber);
+
         try {
             updateResults(tournamentId);
         } catch (Exception e) {
