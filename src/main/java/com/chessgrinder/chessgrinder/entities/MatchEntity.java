@@ -43,4 +43,7 @@ public class MatchEntity extends AbstractAuditingEntity {
     @Enumerated(EnumType. STRING)
     @Nullable
     private MatchResult result;
+
+    @Column(name = "has_elo_calculated")
+    private Boolean hasEloCalculated;
 }

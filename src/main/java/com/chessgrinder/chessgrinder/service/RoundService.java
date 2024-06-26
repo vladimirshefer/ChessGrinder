@@ -11,10 +11,7 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.exceptions.RoundNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.MatchMapper;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
-import com.chessgrinder.chessgrinder.repositories.MatchRepository;
-import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
-import com.chessgrinder.chessgrinder.repositories.RoundRepository;
-import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import com.chessgrinder.chessgrinder.repositories.*;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +31,12 @@ public class RoundService {
     private final ParticipantRepository participantRepository;
     private final PairingStrategy swissEngine;
     private final MatchRepository matchRepository;
+    private final EloService eloService;
 
     private final MatchMapper matchMapper;
 
     private final ParticipantMapper participantMapper;
+    private final UserRepository userRepository;
 
     public void createRound(UUID tournamentId) {
         TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow();
@@ -176,6 +175,18 @@ public class RoundService {
                     // Is miss, then no action is required because players did not play
                 }
             }
+        }
+
+        for (MatchEntity match: matches) {
+            if (match.getParticipant1() != null && match.getParticipant2() != null &&
+                match.getParticipant1().getUser() != null && match.getParticipant2().getUser() != null) {
+
+                eloService.processMatchResult(match);
+
+                userRepository.save(match.getParticipant1().getUser());
+                userRepository.save(match.getParticipant2().getUser());
+            }
+
         }
         enemiesMap.forEach((player, enemiesSet) -> {
             buchholzMap.putIfAbsent(player, 0d);

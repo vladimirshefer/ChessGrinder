@@ -60,6 +60,9 @@ public class UserEntity extends AbstractAuditingEntity {
     @Column(name = "reputation")
     private int reputation = 0;
 
+    @Column(name = "elo_points")
+    private int eloPoints = 1200;
+
     @Transient //won't be created in DB
     private BigDecimal totalPoints = BigDecimal.valueOf(-1);
 
