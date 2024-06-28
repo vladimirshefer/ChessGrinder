@@ -27,9 +27,11 @@ public class ParticipantDto {
     private String name; //NICKNAME
 
     @Nonnull
+    @Builder.Default
     private BigDecimal score = BigDecimal.ZERO;
 
     @Nonnull
+    @Builder.Default
     private BigDecimal buchholz = BigDecimal.ZERO;
 
     /*
@@ -38,8 +40,10 @@ public class ParticipantDto {
      This is required to make Jackson correctly serialize DTO with
      isMissing field instead of missing field.
     */
+    @Builder.Default
     private Boolean isMissing = false;
 
     @Nonnull
+    @Builder.Default
     private Integer place = -1;
 }
