@@ -57,9 +57,11 @@ public class UserEntity extends AbstractAuditingEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<RoleEntity> roles;
 
+    @Builder.Default
     @Column(name = "reputation")
     private int reputation = 0;
 
+    @Builder.Default
     @Transient //won't be created in DB
     private BigDecimal globalScore = BigDecimal.valueOf(-1);
 
