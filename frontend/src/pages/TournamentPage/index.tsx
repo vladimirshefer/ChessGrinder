@@ -190,8 +190,8 @@ function TournamentPage() {
                 </ConditionalOnUserRole>
                 <div className={"p-2"}>{/*Just padding*/}</div>
                 <ResultsTable participants={participants}
-                              openParticipant={(it) => {
-                                  openParticipant(it)
+                              openParticipant={async (it) => {
+                                  await openParticipant(it)
                               }}
                 />
             </Conditional>
