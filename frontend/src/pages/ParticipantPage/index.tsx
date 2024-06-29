@@ -111,14 +111,14 @@ export default function ParticipantPage() {
         <ConditionalOnUserRole role={UserRoles.ADMIN}>
             <form onSubmit={editForm.handleSubmit(changeNickname)} className={"grid p-2 gap-2 border my-2"}>
                 <h3 className={"uppercase text-start"}>
-                    {"Change nickname"}
+                    {loc("Change nickname")}
                 </h3>
                 <div className={"flex gap-2"}>
                     <input
                         className={"input-text grow"}
                         type={"text"}
                         defaultValue={participantQuery.data?.name || ""}
-                        placeholder={"Nickname"}
+                        placeholder={loc("Nickname")}
                         {...editForm.register("nickname")}
                     />
                     <button className={"btn-light"} type={"submit"}>{loc("Save")}</button>
@@ -127,7 +127,7 @@ export default function ParticipantPage() {
 
             <div className={"grid gap-2 text-left py-3"}>
                 <div className={"flex justify-bottom gap-2"}>
-                    <span className="">Missing</span>
+                    <span className="">{loc("Missing")}</span>
                     <Toggle
                         title={"Set missing"}
                         checked={missing}
