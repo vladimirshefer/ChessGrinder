@@ -9,6 +9,7 @@ import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
+import com.chessgrinder.chessgrinder.security.SecurityUtil;
 import com.chessgrinder.chessgrinder.service.UserService;
 import com.chessgrinder.chessgrinder.util.DateUtil;
 import jakarta.annotation.Nullable;
@@ -167,9 +168,9 @@ public class UserController {
             @AuthenticatedUser UserEntity authenticatedUser
     ) {
         if (!userId.equals(authenticatedUser.getId())) {
-            boolean isDeleterAdmin = authenticatedUser.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
+            boolean isDeleterAdmin = SecurityUtil.hasRole(authenticatedUser, RoleEntity.Roles.ADMIN);
             final var deletedUser = userRepository.findById(userId).orElseThrow();
-            boolean isDeletedAdmin = deletedUser.getRoles().stream().anyMatch(it -> it.getName().equals(RoleEntity.Roles.ADMIN));
+            boolean isDeletedAdmin = SecurityUtil.hasRole(deletedUser, RoleEntity.Roles.ADMIN);
             if (!isDeleterAdmin || isDeletedAdmin) {
                 throw new ResponseStatusException(403, "Not allowed to delete other's profile", null);
             }
