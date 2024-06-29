@@ -33,7 +33,11 @@ function TournamentPage() {
     let meParticipantQuery = useQuery({
         queryKey: ["meParticipant", id],
         queryFn: async () => {
-            return await participantRepository.getMe(tournament.id)
+            if (id == null) {
+                return null;
+            }
+
+            return await participantRepository.getMe(id)
                 .catch(() => null);
         }
     })
@@ -105,7 +109,7 @@ function TournamentPage() {
     if (tournamentQuery.isError) return <>Error!</>
     if (!tournamentQuery.isSuccess) return <>Loading</>
     let tournament = tournamentQuery.data!!.tournament
-    let isParticipating = (meParticipantQuery.isSuccess && !!meParticipantQuery.data)
+    let hideParticipateButton = !meParticipantQuery.isSuccess || !!meParticipantQuery.data
 
     return <>
         <div className={"flex mt-4 p-2 items-top content-center"}>
@@ -152,7 +156,7 @@ function TournamentPage() {
         <>
             <Conditional on={!roundId}>
                 <>
-                    {!isParticipating && tournamentData?.tournament?.status === "PLANNED" && (
+                    {!hideParticipateButton && tournamentData?.tournament?.status === "PLANNED" && (
                         <div className={"px-2"}>
                             {isAuthenticatedUser ?
                                 (
