@@ -32,11 +32,11 @@ public class RoundMapper {
                     it -> Optional.ofNullable(it)
                             .map(MatchEntity::getResult)
                             .map(result -> switch (result) {
-                                case MISS -> BigDecimal.valueOf(2); // MISS is in the end
-                                case BUY -> BigDecimal.ONE; // BYE is after all meaningful results
-                                default -> BigDecimal.ZERO; // all other results (e.g. WHITE_WIN, DRAW, unknown, etc.)
+                                case MISS -> BigDecimal.valueOf(3); // MISS is in the end
+                                case BUY -> BigDecimal.valueOf(2); // BYE is after all meaningful results
+                                default -> BigDecimal.valueOf(0); // all other results (e.g. WHITE_WIN, DRAW, unknown, etc.)
                             })
-                            .orElse(BigDecimal.valueOf(3)),
+                            .orElse(BigDecimal.valueOf(0)),
                     nullsLast(naturalOrder())
             )
             .thenComparing(
