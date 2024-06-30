@@ -88,6 +88,7 @@ function MatchResultSelector(
 function MatchRow(
     idx: number,
     match: MatchDto,
+    tableNumber: number,
     canEditResults: boolean,
     setResult: (selectedResult: MatchResult | null) => void
 ) {
@@ -106,8 +107,9 @@ function MatchRow(
                 <span>{match.white?.userFullName}</span>
             }
         </div>
-        <div className={"col-span-4 text-xl text-center"}>
+        <div className={"col-span-4 text-xl text-center grid"}>
             <MatchResultSelector canSetResult={canEditResults} result={match.result} setResult={setResult}/>
+            <span className={"text-xs"}>{tableNumber || 0}</span>
         </div>
         <div className={`grid col-span-4 text-xs p-3 
                         ${match.result === "BLACK_WIN" ? "bg-anzac-400" : ""} 
@@ -149,7 +151,7 @@ function MatchesTable(
         </div>
         {
             matches.map((match, idx) => {
-                return MatchRow(idx, match, canEditResults,
+                return MatchRow(idx, match, idx + 1, canEditResults,
                     (selectedResult: MatchResult | null) => {
                         if (canEditResults) {
                             submitMatchResult(match, selectedResult);
