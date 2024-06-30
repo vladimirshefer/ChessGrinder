@@ -63,12 +63,13 @@ function TournamentPage() {
         try {
             await roundRepository.postRound(id!!)
             await tournamentQuery.refetch();
-            navigate(`/tournament/${id}` + (tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : ""));
+            let newRoundSubPath = tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : "";
+            navigate(`/tournament/${id}${newRoundSubPath}`, {replace: true});
         } catch (e: any) {
             alert("Could not create round. " +
                 e?.response?.data?.message);
         }
-   }
+    }
 
     async function runPairingForRound() {
         await roundRepository.runPairing(id!!, roundId!!)
@@ -128,7 +129,7 @@ function TournamentPage() {
             </div>
         </div>
         <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
-            <Link className={"lg:col-span-1"} to={`/tournament/${id}`}>
+            <Link className={"lg:col-span-1"} to={`/tournament/${id}`} replace={true}>
                 <button
                     className={`w-full h-full py-1 px-3 border border-black uppercase ${!roundId ? "bg-anzac-400 text-white" : "hover:bg-gray-300 text-black"}`}
                     title={loc("Tournament page")}
@@ -137,7 +138,11 @@ function TournamentPage() {
                 </button>
             </Link>
             {roundNumbers.map(rid => {
-                return <Link key={rid} to={`/tournament/${id}/round/${rid}`} title={loc(`Open round`) + " " + rid}>
+                return <Link
+                    to={`/tournament/${id}/round/${rid}`} title={loc(`Open round`) + " " + rid}
+                    key={rid}
+                    replace={!roundId} // Write history only if navigating from home page
+                >
                     <div
                         className={`w-full py-1 px-3  border border-black
                                     ${rid === roundId ? "bg-primary text-white" : "hover:bg-gray-300"}`}>
