@@ -66,6 +66,7 @@ let locale_ru: { [key: string]: string } = {
     "Can't parse start or end season date with format dd.MM.yyyy":
         "Не удалось преобразовать даты начала или конца в формате dd.MM.yyyy",
     "End date can't be before start date": "Дата конца не может быть раньше даты начала",
+    "Nicknames have been pasted to clipboard": "Никнеймы скопированы в буфер обмена",
 }
 
 export default locale_ru
