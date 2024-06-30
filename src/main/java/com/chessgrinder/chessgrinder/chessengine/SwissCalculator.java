@@ -8,6 +8,8 @@ import lombok.Getter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.chessgrinder.chessgrinder.comparator.ParticipantDtoComparators.COMPARE_PARTICIPANT_DTO_BY_BEST;
+
 public class SwissCalculator {
 
     @Getter
@@ -21,12 +23,7 @@ public class SwissCalculator {
 
     public SwissCalculator(List<ParticipantDto> participants, List<MatchDto> matchHistory) {
         this.participants = participants.stream()
-                .sorted(
-                        Comparator.comparing(ParticipantDto::getScore).reversed()
-                                .thenComparing(ParticipantDto::getBuchholz)
-                                .thenComparing(ParticipantDto::getName)
-                                .thenComparing(Comparator.nullsLast(Comparator.comparing(ParticipantDto::getUserId)))
-                )
+                .sorted(COMPARE_PARTICIPANT_DTO_BY_BEST)
                 .toList();
         this.matchHistory = Collections.unmodifiableList(matchHistory);
 
@@ -53,13 +50,6 @@ public class SwissCalculator {
 
     public void book(ParticipantDto participant) {
         bookedParticipants.add(participant.getId());
-    }
-
-    public long playedTimes(ParticipantDto p1, ParticipantDto p2) {
-        return matchHistory.stream()
-                .filter(it -> participated(p1, it))
-                .filter(it -> participated(p2, it))
-                .count();
     }
 
     public long hadBuy(ParticipantDto participantDto) {

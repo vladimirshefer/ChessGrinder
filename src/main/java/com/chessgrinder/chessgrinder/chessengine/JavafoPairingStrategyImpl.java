@@ -15,6 +15,8 @@ import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static com.chessgrinder.chessgrinder.comparator.ParticipantDtoComparators.COMPARE_PARTICIPANT_DTO_BY_NICKNAME_NULLS_LAST;
+
 @Component
 public class JavafoPairingStrategyImpl implements PairingStrategy {
     /**
@@ -35,7 +37,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
 
         Map<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(participants, matchHistory);
         List<String> playerIds = participantsMatches.keySet().stream()
-                .sorted(Comparator.comparing(ParticipantDto::getName))
+                .sorted(COMPARE_PARTICIPANT_DTO_BY_NICKNAME_NULLS_LAST)
                 .map(ParticipantDto::getId).toList();
 
         StringBuilder stringBuilder = new StringBuilder();

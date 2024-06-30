@@ -27,6 +27,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST;
+import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -223,20 +228,11 @@ public class RoundService {
         }
 
         List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
-        participants.sort(Comparator.comparing(ParticipantEntity::getScore)
-                        .thenComparing((participant1, participant2) -> {
-                            ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
-                            if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
-                                return 1;
-                            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
-                                return -1;
-                            } else {
-                                return 0;
-                            }
-                        })
-                        .thenComparing(ParticipantEntity::getBuchholz)
-                        .thenComparing(Comparator.comparing(ParticipantEntity::isMissing).reversed())
-                        .thenComparing(ParticipantEntity::getNickname)
+        participants.sort(COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST
+                .thenComparing(compareParticipantEntityByPersonalEncounter(tournamentRoundEntities))
+                .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
+                .thenComparing(Comparator.comparing(ParticipantEntity::isMissing).reversed())
+                .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
         );
         final int size = participants.size();
         for (int i = 0; i < size; ++i) {
@@ -244,6 +240,19 @@ public class RoundService {
             participant.setPlace(size - i);
         }
         participantRepository.saveAll(participants);
+    }
+
+    private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounter(List<RoundEntity> tournamentRoundEntities) {
+        return (participant1, participant2) -> {
+            ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
+            if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
+                return 1;
+            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
+                return -1;
+            } else {
+                return 0;
+            }
+        };
     }
 
     private static ParticipantEntity findWinnerBetweenTwoParticipants(ParticipantEntity first, ParticipantEntity second, List<RoundEntity> roundsDto) {
