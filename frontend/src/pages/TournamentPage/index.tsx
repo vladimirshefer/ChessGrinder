@@ -156,7 +156,7 @@ function TournamentPage() {
                 return <Link
                     to={`/tournament/${id}/round/${rid}`} title={loc(`Open round`) + " " + rid}
                     key={rid}
-                    replace={!roundId} // Write history only if navigating from home page
+                    replace={!!roundId} // Write history only if navigating from home page
                 >
                     <div
                         className={`w-full py-1 px-3  border border-black
