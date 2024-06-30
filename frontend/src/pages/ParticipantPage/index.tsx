@@ -11,6 +11,7 @@ import React from "react";
 import {useLoc} from "strings/loc";
 import Toggle from "components/Toggle";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
+import UserPane from "pages/MainPage/UserPane";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
@@ -98,12 +99,13 @@ export default function ParticipantPage() {
                     </h1>
                 </div>
             </Conditional>
-            <Conditional on={userQuery.isSuccess}>
-                <h2>{userQuery.data?.name}</h2>
+            <Conditional on={userQuery.isSuccess && userQuery.data}>
+                <div className={"py-3"}>
+                    <UserPane user={userQuery.data!!}/>
+                </div>
             </Conditional>
-            {
-                userQuery.isLoading ? <>Loading user data</> : null
-            }
+            {userQuery.isLoading ? <>Loading user data</> : null}
+            {userQuery.isError ? <>Error loading user data</> : null}
         </div>
 
         <div></div>
