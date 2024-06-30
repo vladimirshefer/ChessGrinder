@@ -5,9 +5,8 @@ import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
-import ConditionalOnUserRole, {Conditional} from "components/Conditional";
+import {Conditional, usePermissionGranted} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
-import {UserRoles} from "lib/api/dto/MainPageData";
 import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
 import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
@@ -43,6 +42,8 @@ function TournamentPage() {
     })
 
     let {data: tournamentData} = tournamentQuery;
+
+    let isMeModerator = usePermissionGranted(id || "", "TournamentEntity", "MODERATOR");
 
     let navigate = useNavigate()
     let roundNumbers = tournamentQuery.data?.rounds?.map((e, idx) => idx + 1) || [];
@@ -110,8 +111,8 @@ function TournamentPage() {
     }
 
     if (tournamentQuery.isError) return <>Error!</>
-    if (!tournamentQuery.isSuccess) return <>Loading</>
-    let tournament = tournamentQuery.data!!.tournament
+    if (!tournamentQuery.isSuccess || !tournamentQuery.data) return <>Loading</>
+    let tournament = tournamentQuery.data.tournament
     let hideParticipateButton = !meParticipantQuery.isSuccess || !!meParticipantQuery.data
 
     return <>
@@ -151,13 +152,13 @@ function TournamentPage() {
                 </Link>
             })}
             <Conditional on={tournament.status !== "FINISHED"}>
-                <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <Conditional on={isMeModerator}>
                     <button className={`py-1 px-3`}
                             onClick={createRound}
                             title={loc("New round")}
                     ><AiOutlinePlus/>
                     </button>
-                </ConditionalOnUserRole>
+                </Conditional>
             </Conditional>
         </div>
         <>
@@ -194,11 +195,11 @@ function TournamentPage() {
                         </div>
                     )}
                 </>
-                <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <Conditional on={isMeModerator}>
                     <Conditional on={tournamentQuery.data?.tournament?.status !== "FINISHED"}>
                         <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
                     </Conditional>
-                </ConditionalOnUserRole>
+                </Conditional>
                 <div className={"p-2"}>{/*Just padding*/}</div>
                 <ResultsTable participants={participants}
                               openParticipant={async (it) => {
@@ -208,6 +209,7 @@ function TournamentPage() {
             </Conditional>
             <Conditional on={!!roundId}>
                 <RoundTab
+                    tournamentId={tournament.id}
                     round={tournamentData?.rounds[roundId!! - 1]!!}
                     submitMatchResult={(match, result) => submitMatchResult(match, result!!)}
                     submitRoundFinished={() => finishRound()}
@@ -218,7 +220,7 @@ function TournamentPage() {
             </Conditional>
         </>
         <Conditional on={!roundId}>
-            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+            <Conditional on={isMeModerator}>
                 <div className={"p-2"}></div>
                 <div className={"flex gap-1 justify-end p-2"}>
                     <Conditional on={tournament.status !== "ACTIVE"}>
@@ -259,7 +261,7 @@ function TournamentPage() {
                         <AiOutlineDelete/>
                     </button>
                 </div>
-            </ConditionalOnUserRole>
+            </Conditional>
         </Conditional>
     </>
 }

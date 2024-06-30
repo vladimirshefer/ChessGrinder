@@ -1,11 +1,9 @@
 import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
-import {UserRoles} from "lib/api/dto/MainPageData";
 import {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import {useRef, useState} from "react";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {IoMdArrowDropdown} from "react-icons/io";
-import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 function MatchResultSelector(
     {
@@ -131,17 +129,15 @@ function MatchRow(
 function MatchesTable(
     {
         matches,
-        roundIsFinished,
+        canEditResults,
         submitMatchResult,
     }: {
         matches: MatchDto[],
-        roundIsFinished: boolean,
+        canEditResults: boolean,
         submitMatchResult: (match: MatchDto, result: MatchResult | null) => void,
     }
 ) {
     let loc = useLoc()
-    let [authenticatedUser] = useAuthenticatedUser();
-    let canEditResults = !roundIsFinished && (authenticatedUser?.roles?.includes(UserRoles.ADMIN) || false);
 
     return <div className={"grid grid-cols-12 p-2 gap-y-2"}>
         <div className={"col-span-12 grid grid-cols-12 border-b border-black justify-items-start"}>

@@ -11,7 +11,7 @@ export interface ParticipantRepository {
     deleteParticipant(tournamentId: string, participantId: string): Promise<void>
     getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto>
     getMe(tournamentId: string): Promise<ParticipantDto>
-    updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
+    updateParticipant(tournamentId: string, participant: Partial<ParticipantDto>): Promise<void>
     missParticipant(tournamentId: string, participantId: string): Promise<void>;
     unmissParticipant(tournamentId: string, participantId: string): Promise<void>;
 }
@@ -41,9 +41,12 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
         return participant
     }
 
-    async updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void> {
-        await this.deleteParticipant(tournamentId, participant.id)
-        await this.postParticipant(tournamentId, participant)
+    async updateParticipant(tournamentId: string, participant: Partial<ParticipantDto>): Promise<void> {
+        let participantId: string = participant.id!!;
+        let oldParticipant = await this.getParticipant(tournamentId, participantId);
+        let newParticipant: ParticipantDto = {...oldParticipant, ...participant}
+        await this.deleteParticipant(tournamentId, participantId)
+        await this.postParticipant(tournamentId, newParticipant)
     }
 
     async missParticipant(tournamentId: string, participantId: string): Promise<void> {

@@ -14,6 +14,7 @@ import com.chessgrinder.chessgrinder.service.TournamentService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -40,7 +41,7 @@ public class TournamentController {
         return tournamentService.createTournament(LocalDateTime.now());
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @GetMapping("/{tournamentId}/action/start")
     public void startTournament(
             @PathVariable UUID tournamentId
@@ -48,7 +49,7 @@ public class TournamentController {
         tournamentService.startTournament(tournamentId);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @GetMapping("/{tournamentId}/action/finish")
     public void finishTournament(@PathVariable UUID tournamentId) {
         tournamentService.finishTournament(tournamentId);
