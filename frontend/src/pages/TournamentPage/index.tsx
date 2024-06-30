@@ -103,8 +103,8 @@ function TournamentPage() {
 
     async function copyNicknamesToClipboard() {
         const allNicknames: string = participants.map(p => p.name).join("\n");
-        copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
-        alert(loc('Nicknames have been pasted to clipboard'));
+        await copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
+        alert(loc('Nicknames have been copied to clipboard'));
     }
 
     async function copyToClipboard(textToCopy: string) {
