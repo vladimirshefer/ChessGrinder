@@ -1,24 +1,28 @@
 package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.dto.UserDto;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.entities.UserRoleEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.repositories.UserRoleRepository;
 import com.chessgrinder.chessgrinder.security.CustomOAuth2User;
+import com.chessgrinder.chessgrinder.security.SecurityUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.chessgrinder.chessgrinder.util.DateUtil.nowInstantAtUtc;
@@ -30,6 +34,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final UserRoleRepository userRoleRepository;
+    private final RoleService roleService;
+
+    @Value("${chessgrinder.security.adminEmail:}")
+    private String adminEmail = "";
 
     public List<UserDto> getAllUsers(LocalDateTime globalScoreFromDate, LocalDateTime globalScoreToDate) {
         List<UserEntity> users = userRepository.findAll();
@@ -120,14 +129,36 @@ public class UserService {
     }
 
     public void processOAuthPostLogin(CustomOAuth2User oAuth2User) {
-        UserEntity user = userRepository.findByUsername(oAuth2User.getEmail());
+        String email = oAuth2User.getEmail().toLowerCase();
+        UserEntity user = userRepository.findByUsername(email);
+
 
         if (user == null) {
             UserEntity newUser = new UserEntity();
-            newUser.setUsername(oAuth2User.getEmail());
+            newUser.setUsername(email);
             newUser.setName(oAuth2User.getFullName());
             newUser.setProvider(UserEntity.Provider.GOOGLE);
             user = userRepository.save(newUser);
+        }
+
+        {
+            Set<String> adminEmails = Arrays.stream(adminEmail.split(","))
+                    .filter(StringUtils::isNotBlank)
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toSet());
+
+            if (adminEmails.contains(email)) {
+                if (!SecurityUtil.hasRole(user, RoleEntity.Roles.ADMIN)) {
+                    RoleEntity adminRole = roleService.getOrCreate(RoleEntity.Roles.ADMIN);
+                    userRoleRepository.save(UserRoleEntity.builder()
+                            .user(user)
+                            .role(adminRole)
+                            .build()
+                    );
+                }
+
+                user = userRepository.findById(user.getId()).orElseThrow();
+            }
         }
 
         oAuth2User.setUser(user);
