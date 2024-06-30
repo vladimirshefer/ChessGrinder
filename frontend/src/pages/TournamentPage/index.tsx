@@ -85,8 +85,8 @@ function TournamentPage() {
 
     async function deleteRound() {
         await roundRepository.deleteRound(id!!, roundId!!)
-            .catch(e => loc("Could not delete round. " +
-                e?.response?.data?.message))
+            .catch(e => alert(loc("Could not delete round. " +
+                e?.response?.data?.message)))
         await tournamentQuery.refetch()
         navigate(`/tournament/${id}`)
     }
