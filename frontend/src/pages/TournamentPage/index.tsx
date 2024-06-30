@@ -101,21 +101,20 @@ function TournamentPage() {
         await tournamentQuery.refetch();
     }
 
-    async function pasteNicknamesToClipboard() {
+    async function copyNicknamesToClipboard() {
         const allNicknames: string = participants.map(p => p.name).join("\n");
-        if (navigator.clipboard) {
-            await navigator.clipboard.writeText(allNicknames);
-        }
-        else {
-            // method for old browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = allNicknames === '' ? ' ' : allNicknames;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-        }
+        copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
         alert(loc('Nicknames have been pasted to clipboard'));
+    }
+
+    async function copyToClipboard(textToCopy: string) {
+        // method for old browsers (and without exceptions handling)
+        const textArea = document.createElement('textarea');
+        textArea.value = textToCopy;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
     }
 
     if (tournamentQuery.isError) return <>Error!</>
@@ -227,7 +226,7 @@ function TournamentPage() {
                 <div className={"flex p-2 items-top content-center"}>
                     <div className={"flex gap-1 justify-start p-2 grow"}>
                         <button className={"btn-light h-full !px-4"}
-                            onClick={pasteNicknamesToClipboard}
+                            onClick={copyNicknamesToClipboard}
                         >
                             <AiOutlineCopy/>
                         </button>
