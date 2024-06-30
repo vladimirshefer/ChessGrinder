@@ -8,7 +8,7 @@ import RoundTab from "pages/TournamentPage/RoundTab";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
-import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
+import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus, AiOutlineCopy} from "react-icons/ai";
 import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
@@ -106,7 +106,22 @@ function TournamentPage() {
             .catch(e => alert("Could not reopen round. " +
                 e?.response?.data?.message))
         await tournamentQuery.refetch();
+    }
 
+    async function copyNicknamesToClipboard() {
+        const allNicknames: string = participants.map(p => p.name).join("\n");
+        await copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
+        alert(loc('Nicknames have been copied to clipboard'));
+    }
+
+    async function copyToClipboard(textToCopy: string) {
+        // method for old browsers (and without exceptions handling)
+        const textArea = document.createElement('textarea');
+        textArea.value = textToCopy;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
     }
 
     if (tournamentQuery.isError) return <>Error!</>
@@ -219,45 +234,54 @@ function TournamentPage() {
         </>
         <Conditional on={!roundId}>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <div className={"p-2"}></div>
-                <div className={"flex gap-1 justify-end p-2"}>
-                    <Conditional on={tournament.status !== "ACTIVE"}>
-                        <button className={"btn-primary uppercase !px-4"}
+                <div className={"flex p-2 items-top content-center"}>
+                    <div className={"flex gap-1 justify-start p-2 grow"}>
+                        <button className={"btn-light h-full !px-4"}
+                            onClick={copyNicknamesToClipboard}
+                        >
+                            <AiOutlineCopy/>
+                        </button>
+                    </div>
+
+                    <div className={"flex gap-1 justify-end p-2"}>
+                        <Conditional on={tournament.status !== "ACTIVE"}>
+                            <button className={"btn-primary uppercase !px-4"}
+                                    onClick={async () => {
+                                        await tournamentRepository.startTournament(tournament?.id!!);
+                                        await tournamentQuery.refetch()
+                                    }}
+                            >{loc("Start")}
+                            </button>
+                        </Conditional>
+                        <Conditional on={tournament.status === "ACTIVE"}>
+                            <button className={"btn-primary uppercase"}
+                                    onClick={async () => {
+                                        await tournamentRepository.finishTournament(tournament?.id!!);
+                                        await tournamentQuery.refetch()
+                                    }}
+                            >{loc("Finish")}
+                            </button>
+                        </Conditional>
+                        <Link to={`/tournament/${tournament.id}/edit`}>
+                            <button className={"btn-light h-full !px-4"}>
+                                <AiOutlineEdit/>
+                            </button>
+                        </Link>
+                        <button className={"btn-danger uppercase !px-4"}
                                 onClick={async () => {
-                                    await tournamentRepository.startTournament(tournament?.id!!);
-                                    await tournamentQuery.refetch()
+                                    let expectedConfirmation = (tournament?.name || tournament?.id || "");
+                                    let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
+                                    if (confirmation !== expectedConfirmation) {
+                                        alert("You entered wrong id. Tournament will not be deleted.");
+                                        return;
+                                    }
+                                    await tournamentRepository.deleteTournament(tournament?.id!!);
+                                    await navigate("/");
                                 }}
-                        >{loc("Start")}
+                        >
+                            <AiOutlineDelete/>
                         </button>
-                    </Conditional>
-                    <Conditional on={tournament.status === "ACTIVE"}>
-                        <button className={"btn-primary uppercase"}
-                                onClick={async () => {
-                                    await tournamentRepository.finishTournament(tournament?.id!!);
-                                    await tournamentQuery.refetch()
-                                }}
-                        >{loc("Finish")}
-                        </button>
-                    </Conditional>
-                    <Link to={`/tournament/${tournament.id}/edit`}>
-                        <button className={"btn-light h-full !px-4"}>
-                            <AiOutlineEdit/>
-                        </button>
-                    </Link>
-                    <button className={"btn-danger uppercase !px-4"}
-                            onClick={async () => {
-                                let expectedConfirmation = (tournament?.name || tournament?.id || "");
-                                let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
-                                if (confirmation !== expectedConfirmation) {
-                                    alert("You entered wrong id. Tournament will not be deleted.");
-                                    return;
-                                }
-                                await tournamentRepository.deleteTournament(tournament?.id!!);
-                                await navigate("/");
-                            }}
-                    >
-                        <AiOutlineDelete/>
-                    </button>
+                    </div>
                 </div>
             </ConditionalOnUserRole>
         </Conditional>
