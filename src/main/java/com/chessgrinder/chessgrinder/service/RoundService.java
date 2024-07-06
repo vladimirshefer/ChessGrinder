@@ -220,7 +220,7 @@ public class RoundService {
             }
         });
 
-        List<ParticipantEntity> participants = participantRepository.findByTournamentId(tournamentId);
+        List<ParticipantEntity> participants = new ArrayList<>(participantRepository.findByTournamentId(tournamentId));
         for (ParticipantEntity participant : participants) {
             final var pId = participant.getId().toString();
             participant.setScore(BigDecimal.valueOf(pointsMap.getOrDefault(pId, 0d)));
@@ -229,26 +229,26 @@ public class RoundService {
 
         List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
         participants.sort(COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST
-                .thenComparing(compareParticipantEntityByPersonalEncounter(tournamentRoundEntities))
+                .thenComparing(compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities))
                 .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
-                .thenComparing(Comparator.comparing(ParticipantEntity::isMissing).reversed())
+                .thenComparing(ParticipantEntity::isMissing)
                 .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
         );
         final int size = participants.size();
         for (int i = 0; i < size; ++i) {
             final var participant = participants.get(i);
-            participant.setPlace(size - i);
+            participant.setPlace(i + 1);
         }
         participantRepository.saveAll(participants);
     }
 
-    private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounter(List<RoundEntity> tournamentRoundEntities) {
+    private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities) {
         return (participant1, participant2) -> {
             ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
             if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
-                return 1;
-            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
                 return -1;
+            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
+                return 1;
             } else {
                 return 0;
             }
