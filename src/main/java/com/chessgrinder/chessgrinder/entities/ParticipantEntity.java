@@ -34,6 +34,7 @@ public class ParticipantEntity extends AbstractAuditingEntity {
 
     @ManyToOne
     @JoinColumn(name = "tournament_id")
+    @Nullable // Tournament could be deleted from db.
     private TournamentEntity tournament;
 
     @Nonnull
