@@ -133,7 +133,7 @@ public class RoundService {
         }
 
         List<MatchEntity> alreadyExistedMatches = matchRepository.findMatchEntitiesByRoundId(round.getId());
-        if (alreadyExistedMatches.stream().anyMatch(it -> it.getResult() != null)) {
+        if (alreadyExistedMatches.stream().anyMatch(it -> it.getResult() != null && it.getResult() != MatchResult.BUY && it.getResult() != MatchResult.MISS)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not make pairing because results already submitted. Try remove all results manually.");
         } else {
             matchRepository.deleteAll(alreadyExistedMatches);
