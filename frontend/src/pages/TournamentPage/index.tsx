@@ -96,7 +96,7 @@ function TournamentPage() {
 
     async function finishRound() {
         await roundRepository.finishRound(id!!, roundId!!)
-            .catch(e => alert("Could not finish repository. Please, check if all match results are submitted. " +
+            .catch(e => alert("Could not finish round. Please, check if all match results are submitted. " +
                 e?.response?.data?.message))
         await tournamentQuery.refetch()
     }
