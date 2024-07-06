@@ -247,7 +247,9 @@ function TournamentPage() {
                         <Conditional on={tournament.status !== "ACTIVE"}>
                             <button className={"btn-primary uppercase !px-4"}
                                     onClick={async () => {
-                                        await tournamentRepository.startTournament(tournament?.id!!);
+                                        await tournamentRepository.startTournament(tournament?.id!!)
+                                            .catch(e => alert("Could not start tournament. " +
+                                                (e?.response?.data?.message || "Unknown error")));
                                         await tournamentQuery.refetch()
                                     }}
                             >{loc("Start")}
@@ -256,7 +258,9 @@ function TournamentPage() {
                         <Conditional on={tournament.status === "ACTIVE"}>
                             <button className={"btn-primary uppercase"}
                                     onClick={async () => {
-                                        await tournamentRepository.finishTournament(tournament?.id!!);
+                                        await tournamentRepository.finishTournament(tournament?.id!!)
+                                            .catch(e => alert("Could not finish tournament. " +
+                                                (e?.response?.data?.message || "Unknown error")));
                                         await tournamentQuery.refetch()
                                     }}
                             >{loc("Finish")}
@@ -269,13 +273,15 @@ function TournamentPage() {
                         </Link>
                         <button className={"btn-danger uppercase !px-4"}
                                 onClick={async () => {
-                                    let expectedConfirmation = (tournament?.name || tournament?.id || "");
+                                    let expectedConfirmation = (tournament?.name || tournament?.id || "DELETE");
                                     let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
                                     if (confirmation !== expectedConfirmation) {
                                         alert("You entered wrong id. Tournament will not be deleted.");
                                         return;
                                     }
-                                    await tournamentRepository.deleteTournament(tournament?.id!!);
+                                    await tournamentRepository.deleteTournament(tournament?.id!!)
+                                        .catch(e => alert("Could not delete tournament. " +
+                                            (e?.response?.data?.message || "Unknown error")));
                                     await navigate("/");
                                 }}
                         >
