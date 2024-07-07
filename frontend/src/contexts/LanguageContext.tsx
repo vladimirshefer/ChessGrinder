@@ -6,8 +6,9 @@ export const LanguageContext = React.createContext<Property<string>>(["en", (l: 
 
 export function LanguageContextProvider({children}: { children: any }) {
     const languageContextValue = useState(localStorage.getItem("cgd.language"));
+    let navigatorLanguage: string | undefined = navigator?.language?.substring(0, 2)?.toLowerCase();
 
-    return <LanguageContext.Provider value={[languageContextValue[0] || "ru", (val) => {
+    return <LanguageContext.Provider value={[languageContextValue[0] || navigatorLanguage || "ru", (val) => {
         languageContextValue[1](val);
         localStorage.setItem("cgd.language", val)
     }]}>
