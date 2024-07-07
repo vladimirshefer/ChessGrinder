@@ -76,7 +76,7 @@ export default function UserProfileEditPage() {
                           className={"rounded-full"}/>
             </div>
             <div className={"grid grow text-left gap-2"}>
-                <input type={"text"} className={"font-semibold uppercase truncate border-b-2"}
+                <input type={"text"} className={"font-semibold truncate border-b-2"}
                        defaultValue={authenticatedUser.name || authenticatedUser.username || authenticatedUser.id || "Unknown"}
                        title={loc("Full name")}
                        placeholder={loc("Full name")}
