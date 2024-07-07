@@ -29,9 +29,9 @@ function ResultsTable(
                             <div className={"col-span-7"}>
                                 <button onClick={() => openParticipant(participant)}>
                                     <div className={"grid text-left"}>
-                                        <span className={"font-semibold"}>{participant.name || "No nickname"}</span>
+                                        <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-3"}>{participant.name || "No nickname"}</span>
                                         {participant.userFullName &&
-                                            <span>{participant.userFullName}</span>
+                                            <span className={"text-ellipsis overflow-hidden line-clamp-2"}>{participant.userFullName}</span>
                                         }
                                     </div>
                                 </button>

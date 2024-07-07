@@ -100,9 +100,9 @@ function MatchRow(
                         ${!match.result ? "bg-gray-50" : ""} 
                         `}
         >
-            <span className={"font-semibold"}>{match.white?.name || "-"}</span>
+            <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{match.white?.name || "-"}</span>
             {match.white?.userFullName &&
-                <span>{match.white?.userFullName}</span>
+                <span className={"text-ellipsis overflow-hidden"}>{match.white?.userFullName}</span>
             }
         </div>
         <div className={"col-span-4 text-xl text-center grid"}>
@@ -118,9 +118,9 @@ function MatchRow(
                         ${!match.result ? "bg-gray-50" : ""} 
                         `}
         >
-            <span className={"font-semibold"}>{match.black?.name || "—"}</span>
+            <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{match.black?.name || "-"}</span>
             {match.black?.userFullName &&
-                <span>{match.black?.userFullName}</span>
+                <span className={"text-ellipsis overflow-hidden"}>{match.black?.userFullName}</span>
             }
         </div>
     </div>;
