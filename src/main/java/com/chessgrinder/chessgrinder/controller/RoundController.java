@@ -49,7 +49,7 @@ public class RoundController {
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @DeleteMapping("/{roundNumber}")
     public void deleteRound(@PathVariable UUID tournamentId,
-                            @PathVariable Integer roundNumber) throws RoundNotFoundException {
+                            @PathVariable Integer roundNumber) {
         roundService.deleteRound(tournamentId, roundNumber);
     }
 }

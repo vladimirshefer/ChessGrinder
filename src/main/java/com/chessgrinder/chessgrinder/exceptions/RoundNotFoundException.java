@@ -1,4 +1,7 @@
 package com.chessgrinder.chessgrinder.exceptions;
 
-public class RoundNotFoundException extends Exception {
+import lombok.experimental.StandardException;
+
+@StandardException
+public class RoundNotFoundException extends RuntimeException {
 }
