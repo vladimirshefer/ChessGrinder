@@ -82,28 +82,30 @@ export default function UserProfileEditPage() {
                        placeholder={loc("Full name")}
                        {...register("fullName")}
                 />
-                <input type={"text"} className={"text-sm text-gray-500 border-b-2"}
+                <input type={"text"} disabled={true} className={"text-sm text-gray-500 border-b-2"}
                        defaultValue={authenticatedUser.username}
                        title={loc("Username")}
                        placeholder={loc("Username")}
                        {...register("userName")}
                 />
                 <div className="p-2"></div>
-                <h3 className={"text-sm uppercase font-semibold"}>{loc("Change password")}</h3>
-                <div className={"grid gap-2 p-2 border"}>
-                    <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
-                           defaultValue={"*********"}
-                           title={loc("Old password")}
-                           placeholder={loc("Old password")}
-                    />
-                    <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
-                           title={loc("New password")}
-                           placeholder={loc("New password")}
-                    />
-                    <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
-                           title={loc("Confirm new password")}
-                           placeholder={loc("Confirm new password")}
-                    />
+                <div className={"hidden"}>
+                    <h3 className={"text-sm uppercase font-semibold"}>{loc("Change password")}</h3>
+                    <div className={"grid gap-2 p-2 border"}>
+                        <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
+                               defaultValue={"*********"}
+                               title={loc("Old password")}
+                               placeholder={loc("Old password")}
+                        />
+                        <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
+                               title={loc("New password")}
+                               placeholder={loc("New password")}
+                        />
+                        <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
+                               title={loc("Confirm new password")}
+                               placeholder={loc("Confirm new password")}
+                        />
+                    </div>
                 </div>
             </div>
             <div className={"grid gap-2"}>
