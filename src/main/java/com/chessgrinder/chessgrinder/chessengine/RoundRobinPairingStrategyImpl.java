@@ -118,22 +118,22 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
                 {7, 15, 8, 6, 9, 5, 10, 4, 11, 3, 12, 2, 13, 1, 14, 0}    // Round 15
         };
 
-        Map<Integer, int[][]> getBurgerTable = new HashMap<>();
+        Map<Integer, int[][]> getBergerTable = new HashMap<>();
 
-        getBurgerTable.put(4, bergerTable4); // For 3-4 players
-        getBurgerTable.put(6, bergerTable6); // For 5-6 players
-        getBurgerTable.put(8, bergerTable8); // For 7-8 players
-        getBurgerTable.put(10, bergerTable10); // For 9-10 players
-        getBurgerTable.put(12, bergerTable12); // For 10-12 players
-        getBurgerTable.put(14, bergerTable14); // For 12-14 players
-        getBurgerTable.put(16, bergerTable16); // For 14-16 players
+        getBergerTable.put(4, bergerTable4); // For 3-4 players
+        getBergerTable.put(6, bergerTable6); // For 5-6 players
+        getBergerTable.put(8, bergerTable8); // For 7-8 players
+        getBergerTable.put(10, bergerTable10); // For 9-10 players
+        getBergerTable.put(12, bergerTable12); // For 10-12 players
+        getBergerTable.put(14, bergerTable14); // For 12-14 players
+        getBergerTable.put(16, bergerTable16); // For 14-16 players
 
         List<MatchDto> pairings = new ArrayList<>();
 
         for (int i = 0; i < participants.size() - 1; i += 2) {
 
-            ParticipantDto whitePlayer = participants.get(getBurgerTable.get(participants.size())[matchHistory.size()][i]);
-            ParticipantDto blackPlayer = participants.get(getBurgerTable.get(participants.size())[matchHistory.size()][i + 1]);
+            ParticipantDto whitePlayer = participants.get(getBergerTable.get(participants.size())[matchHistory.size()][i]);
+            ParticipantDto blackPlayer = participants.get(getBergerTable.get(participants.size())[matchHistory.size()][i + 1]);
 
             MatchDto match = MatchDto.builder()
                     .white(whitePlayer)
