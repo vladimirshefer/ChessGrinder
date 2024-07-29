@@ -122,7 +122,7 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
 
         getBergerTable.put(3, bergerTable4); // For 3 players
         getBergerTable.put(4, bergerTable4); // For 4 players
-        getBergerTable.put(5, bergerTable6); // For 5players
+        getBergerTable.put(5, bergerTable6); // For 5 players
         getBergerTable.put(6, bergerTable6); // For 6 players
         getBergerTable.put(7, bergerTable8); // For 7 players
         getBergerTable.put(8, bergerTable8); // For 8 players
@@ -157,10 +157,3 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
         return pairings;
     }
 }
-
-
-
-
-
-
-

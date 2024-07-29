@@ -34,7 +34,7 @@ public class RoundRobinPairingStrategyImplTest {
     @Test
     void test6p() {
         {
-            runTournament(swissEngine, "user1", "user2", "user3", "user4", "user5","user6")
+            runTournament(swissEngine, "user1", "user2", "user3", "user4", "user5", "user6")
                     .thenRound(round -> round
                             .match(participant("user1", 1, 0), participant("user6", 0, 1), MatchResult.WHITE_WIN)
                             .match(participant("user2", 1, 0), participant("user5", 0, 1), MatchResult.WHITE_WIN)
