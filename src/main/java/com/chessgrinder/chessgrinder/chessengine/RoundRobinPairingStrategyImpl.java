@@ -120,20 +120,20 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
 
         Map<Integer, int[][]> getBergerTable = new HashMap<>();
 
-        getBergerTable.put(3, bergerTable4); // For 3-4 players
-        getBergerTable.put(4, bergerTable4); // For 3-4 players
-        getBergerTable.put(5, bergerTable6); // For 5-6 players
-        getBergerTable.put(6, bergerTable6); // For 5-6 players
-        getBergerTable.put(7, bergerTable8); // For 7-8 players
-        getBergerTable.put(8, bergerTable8); // For 7-8 players
-        getBergerTable.put(9, bergerTable10); // For 9-10 players
-        getBergerTable.put(10, bergerTable10); // For 9-10 players
-        getBergerTable.put(11, bergerTable12); // For 10-12 players
-        getBergerTable.put(12, bergerTable12); // For 10-12 players
-        getBergerTable.put(13, bergerTable14); // For 12-14 players
-        getBergerTable.put(14, bergerTable14); // For 12-14 players
-        getBergerTable.put(15, bergerTable16); // For 14-16 players
-        getBergerTable.put(16, bergerTable16); // For 14-16 players
+        getBergerTable.put(3, bergerTable4); // For 3 players
+        getBergerTable.put(4, bergerTable4); // For 4 players
+        getBergerTable.put(5, bergerTable6); // For 5players
+        getBergerTable.put(6, bergerTable6); // For 6 players
+        getBergerTable.put(7, bergerTable8); // For 7 players
+        getBergerTable.put(8, bergerTable8); // For 8 players
+        getBergerTable.put(9, bergerTable10); // For 9 players
+        getBergerTable.put(10, bergerTable10); // For 10 players
+        getBergerTable.put(11, bergerTable12); // For 11 players
+        getBergerTable.put(12, bergerTable12); // For 12 players
+        getBergerTable.put(13, bergerTable14); // For 13 players
+        getBergerTable.put(14, bergerTable14); // For 14 players
+        getBergerTable.put(15, bergerTable16); // For 15 players
+        getBergerTable.put(16, bergerTable16); // For 16 players
 
         List<MatchDto> pairings = new ArrayList<>();
 
