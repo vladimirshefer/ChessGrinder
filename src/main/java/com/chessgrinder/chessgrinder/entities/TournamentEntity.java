@@ -42,6 +42,11 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Column(name = "date")
     private LocalDateTime date;
 
+    // For new two-pairing system
+    @Nullable
+    @Column(name = "pairing_strategy")
+    private String pairingStrategy;
+
     @Column(name = "status")
     @Enumerated(EnumType. STRING)
     private TournamentStatus status;

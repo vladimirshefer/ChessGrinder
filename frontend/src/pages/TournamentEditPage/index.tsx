@@ -7,7 +7,8 @@ import {requirePresent} from "lib/util/common";
 import dayjs from "dayjs";
 import {TournamentPageData} from "../../lib/api/dto/TournamentPageData";
 import tournamentRepository from "../../lib/api/repository/TournamentRepository";
-import {DEFAULT_DATETIME_FORMAT} from "../../lib/api/dto/MainPageData";
+import {DEFAULT_DATETIME_FORMAT, PairingStrategy} from "../../lib/api/dto/MainPageData";
+
 
 export default function TournamentEditPage() {
     let loc = useLoc()
@@ -29,6 +30,8 @@ export default function TournamentEditPage() {
         tournament.locationUrl = data.locationUrl
         tournament.locationName = data.locationName
         tournament.roundsNumber = parseInt(data.roundsNumber, 10);
+        tournament.pairingStrategy = data.pairingStrategy as PairingStrategy;
+        console.log(JSON.stringify(data));
         let startTime: string = data.startTime || "20:00";
         let startDate: string = data.startDate || "2023-10-11"
         tournament.date = dayjs(startDate + "T" + startTime, DEFAULT_DATETIME_FORMAT).format(DEFAULT_DATETIME_FORMAT)
@@ -57,6 +60,7 @@ export default function TournamentEditPage() {
     let tournamentStartDate = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("YYYY-MM-DD")
     let tournamentStartTime = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")
     const tournamentRoundsNumber: number = tournament.tournament.roundsNumber;
+    const tournamentPairingSystem: PairingStrategy = tournament.tournament.pairingStrategy || "SWISS"; // Added - Default value
 
     return <>
         <h1 className={"text-left text-lg uppercase font-semibold p-2"}>{loc("Edit tournament")}</h1>
@@ -81,6 +85,12 @@ export default function TournamentEditPage() {
             <input type={"number"} id={"roundsNumber"} placeholder={loc("Rounds number")}
                     {...register("roundsNumber")}
                     defaultValue={tournamentRoundsNumber}/>
+
+            <label htmlFor={"pairingStrategy"}>{loc("Pairing Strategy")}</label>
+                   <select id={"pairingStrategy"} {...register("pairingStrategy")} defaultValue={tournamentPairingSystem} className={"border-b"}>
+                       <option value="SWISS">{loc("Swiss")}</option>
+                       <option value="ROUND_ROBIN">{loc("Round Robin")}</option>
+                   </select>
 
             <div className={"flex gap-2 justify-end"}>
                 <button type={"submit"} className={"btn-primary uppercase font-semibold"}>

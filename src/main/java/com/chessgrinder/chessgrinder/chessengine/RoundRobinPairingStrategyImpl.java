@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.chessengine;
 
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
+import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.springframework.stereotype.Component;
 import java.util.*;
 
@@ -148,7 +149,7 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
             MatchDto match = MatchDto.builder()
                     .white(whitePlayer)
                     .black(blackPlayer)
-                    .result(null)
+                    .result(whitePlayer == null || blackPlayer == null ? MatchResult.BUY : null)
                     .build();
             pairings.add(match);
 

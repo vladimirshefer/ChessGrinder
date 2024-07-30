@@ -29,6 +29,8 @@ export interface ListDto<T extends any> {
 
 export type TournamentStatus = "FINISHED" | "ACTIVE" | "PLANNED"
 
+export type PairingStrategy = "SWISS" | "ROUND_ROBIN"
+
 export let DEFAULT_DATETIME_FORMAT = "YYYY-MM-DDTHH:mm"
 
 export interface TournamentDto {
@@ -39,6 +41,7 @@ export interface TournamentDto {
     locationName?: string
     locationUrl?: string
     roundsNumber: number
+    pairingStrategy: PairingStrategy
 }
 
 export interface TournamentListDto {
