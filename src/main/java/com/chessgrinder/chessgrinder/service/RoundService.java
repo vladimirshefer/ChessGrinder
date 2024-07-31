@@ -1,6 +1,8 @@
 package com.chessgrinder.chessgrinder.service;
 
+import com.chessgrinder.chessgrinder.chessengine.JavafoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.chessengine.PairingStrategy;
+import com.chessgrinder.chessgrinder.chessengine.RoundRobinPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
@@ -39,7 +41,17 @@ public class RoundService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
     private final ParticipantRepository participantRepository;
-    private final PairingStrategy swissEngine;
+    private final JavafoPairingStrategyImpl javafoPairingStrategy;
+    private final RoundRobinPairingStrategyImpl roundRobinPairingStrategy;
+    private PairingStrategy getPairingStrategy (String name) {
+
+        Map <String, PairingStrategy> pairingStrategyMap = Map.of(
+                "SWISS", javafoPairingStrategy,
+                "ROUND_ROBIN", roundRobinPairingStrategy
+        );
+        return pairingStrategyMap.getOrDefault(name, javafoPairingStrategy);
+    }
+
     private final MatchRepository matchRepository;
 
     private final MatchMapper matchMapper;
@@ -151,7 +163,9 @@ public class RoundService {
 
         List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
 
-        List<MatchDto> matchesDto = swissEngine.makePairings(participantDtos, allMatches, tournament.getRoundsNumber(), false);
+        String pairingStrategy = tournament.getPairingStrategy();
+        PairingStrategy strategy = getPairingStrategy(pairingStrategy);
+        List<MatchDto> matchesDto = strategy.makePairings(participantDtos, allMatches, tournament.getRoundsNumber(), false);
         List<MatchEntity> matches = new ArrayList<>();
 
         for (MatchDto matchDto : matchesDto) {

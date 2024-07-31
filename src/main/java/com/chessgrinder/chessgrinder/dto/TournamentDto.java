@@ -20,6 +20,8 @@ public class TournamentDto {
     private String locationName;
     @Nullable
     private String locationUrl;
+    @Nullable
+    private String pairingStrategy;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime date;

@@ -20,6 +20,7 @@ public class TournamentMapper {
                 .date(tournamentEntity.getDate())
                 .status(tournamentEntity.getStatus())
                 .roundsNumber(tournamentEntity.getRoundsNumber())
+                .pairingStrategy(tournamentEntity.getPairingStrategy()==null ? "SWISS" : tournamentEntity.getPairingStrategy())
                 .build();
     }
 
