@@ -31,7 +31,6 @@ export default function TournamentEditPage() {
         tournament.locationName = data.locationName
         tournament.roundsNumber = parseInt(data.roundsNumber, 10);
         tournament.pairingStrategy = data.pairingStrategy as PairingStrategy;
-        console.log(JSON.stringify(data));
         let startTime: string = data.startTime || "20:00";
         let startDate: string = data.startDate || "2023-10-11"
         tournament.date = dayjs(startDate + "T" + startTime, DEFAULT_DATETIME_FORMAT).format(DEFAULT_DATETIME_FORMAT)

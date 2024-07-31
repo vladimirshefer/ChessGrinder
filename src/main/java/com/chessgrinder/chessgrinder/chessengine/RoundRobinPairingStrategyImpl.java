@@ -6,16 +6,15 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.springframework.stereotype.Component;
 import java.util.*;
 
-
+/**
+ * RoundRobinPairingStrategyImpl is a class for creating pairings based on Berger tables.
+ * In this format, each player competes against every other player exactly once.
+ * This class is applicable when the number of players is between 4 and 16, inclusive.
+ */
 
 @Component
 public class RoundRobinPairingStrategyImpl implements PairingStrategy {
 
-    /**
-     * RoundRobinPairingStrategyImpl is a class for creating pairings based on Berger tables.
-     * In this format, each player competes against every other player exactly once.
-     * This class is applicable when the number of players is between 4 and 16, inclusive.
-     */
 
     //Berger tables completed according to FIDE rules
     private static final int[][] bergerTable4 = {
