@@ -4,6 +4,7 @@ import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.springframework.stereotype.Component;
+
 import java.util.*;
 
 /**
@@ -101,8 +102,94 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
             {7, 15, 8, 6, 9, 5, 10, 4, 11, 3, 12, 2, 13, 1, 14, 0}    // Round 15
     };
 
+
+    public int currentRoundPlayersCounter(List<ParticipantDto> participants) {
+
+        return participants.size();
+    }
+
+    // Following function counts the sum of unique white and black players participated in the previous round
+    // if there were even number of players.
+    public int countWhiteAndBlackPlayersIfEven(List<List<MatchDto>> matchHistory) {
+        Set<ParticipantDto> whitePlayers = new HashSet<>();
+        Set<ParticipantDto> blackPlayers = new HashSet<>();
+
+        if (!matchHistory.isEmpty()) {
+            List<MatchDto> lastRound = matchHistory.get(matchHistory.size() - 1);
+
+            for (MatchDto match : lastRound) {
+                if (match.getWhite() != null) {
+                    whitePlayers.add(match.getWhite());
+                }
+                if (match.getBlack() != null) {
+                    blackPlayers.add(match.getBlack());
+                }
+            }
+        }
+
+        Map<String, Integer> playerCounts = new HashMap<>();
+        playerCounts.put("white", whitePlayers.size());
+        playerCounts.put("black", blackPlayers.size());
+
+        return playerCounts.get("white") + playerCounts.get("black");
+    }
+
+    public void checkForAdditionalPlayersIfEven(List<List<MatchDto>> matchHistory, int currentPlayersCounter) {
+        int currentCounts = countWhiteAndBlackPlayersIfEven(matchHistory);
+
+        if (currentCounts != currentPlayersCounter && currentCounts != 0) {
+            throw new IllegalArgumentException("It is prohibited to add additional players");
+        }
+
+    }
+
+    //  Following function counts the sum of unique white and black players participated in the previous round
+    //  and nulls as "buy-Players" as well since the participated players number was odd.
+    public int countWhiteAndBlackPlayersIfOdd(List<List<MatchDto>> matchHistory) {
+
+        Set<ParticipantDto> whitePlayers = new HashSet<>();
+        Set<ParticipantDto> blackPlayers = new HashSet<>();
+
+        int whiteNullCount = 0;
+        int blackNullCount = 0;
+
+        if (!matchHistory.isEmpty()) {
+            List<MatchDto> lastRound = matchHistory.get(matchHistory.size() - 1);
+
+            for (MatchDto match : lastRound) {
+                if (match.getWhite() != null) {
+                    whitePlayers.add(match.getWhite());
+                } else {
+                    whiteNullCount++;
+                }
+                if (match.getBlack() != null) {
+                    blackPlayers.add(match.getBlack());
+                } else {
+                    blackNullCount++;
+                }
+            }
+        }
+
+        Map<String, Integer> buysPlayerCounter = new HashMap<>();
+        buysPlayerCounter.put("white", whitePlayers.size() + whiteNullCount);
+        buysPlayerCounter.put("black", blackPlayers.size() + blackNullCount);
+
+        return buysPlayerCounter.get("white") + buysPlayerCounter.get("black");
+    }
+
+    public void checkForAdditionalPlayersIfOdd(List<List<MatchDto>> matchHistory, int currentPlayersCounter) {
+
+        int currentCountsForBuy = countWhiteAndBlackPlayersIfOdd(matchHistory);
+
+        if (currentCountsForBuy != currentPlayersCounter && currentCountsForBuy != 0) {
+            throw new IllegalArgumentException("It is prohibited to add additional players");
+        }
+    }
+
     @Override
-    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber, boolean recalculateResults) {
+    public List<MatchDto> makePairings
+            (List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber,
+             boolean recalculateResults) {
 
         participants = new ArrayList<>(participants);
 
@@ -116,6 +203,7 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
         // A player for a bye is adding in case of an odd number of players.
         if (participantsNumber % 2 != 0) {
             participants.add(null);
+            participantsNumber = participantsNumber + 1;
         }
 
         Map<Integer, int[][]> getBergerTable = new HashMap<>();
@@ -139,11 +227,20 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
 
         int[][] bergerTable = getBergerTable.get(participantsNumber);
 
+        if (!participants.contains(null)) {
+
+            checkForAdditionalPlayersIfEven(matchHistory, currentRoundPlayersCounter(participants));
+        }
+
+        if (participants.contains(null)) {
+
+            checkForAdditionalPlayersIfOdd(matchHistory, currentRoundPlayersCounter(participants));
+        }
+
         for (int i = 0; i < participantsNumber; i += 2) {
 
-
-            ParticipantDto whitePlayer = participants.get(bergerTable[matchHistory.size()][i]);
-            ParticipantDto blackPlayer = participants.get(bergerTable[matchHistory.size()][i + 1]);
+            ParticipantDto whitePlayer = participants.get(bergerTable[matchHistory.size() % (participantsNumber - 1)][i]);
+            ParticipantDto blackPlayer = participants.get(bergerTable[matchHistory.size() % (participantsNumber - 1)][(i + 1)]);
 
             MatchDto match = MatchDto.builder()
                     .white(whitePlayer)
