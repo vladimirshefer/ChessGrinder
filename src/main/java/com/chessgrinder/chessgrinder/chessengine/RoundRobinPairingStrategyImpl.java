@@ -4,7 +4,6 @@ import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.springframework.stereotype.Component;
-
 import java.util.*;
 
 /**
