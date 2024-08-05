@@ -43,6 +43,7 @@ public class RoundService {
     private final ParticipantRepository participantRepository;
     private final JavafoPairingStrategyImpl javafoPairingStrategy;
     private final RoundRobinPairingStrategyImpl roundRobinPairingStrategy;
+    private final TournamentService tournamentService;
     private PairingStrategy getPairingStrategy (String name) {
 
         Map <String, PairingStrategy> pairingStrategyMap = Map.of(
@@ -134,6 +135,15 @@ public class RoundService {
     public void makePairings(UUID tournamentId, Integer roundNumber) {
 
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
+
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElseThrow();
+        if (tournamentEntity.getStatus().equals(TournamentStatus.PLANNED)) {
+            tournamentService.startTournament(tournamentId);
+
+//            tournamentEntity.setStatus(TournamentStatus.ACTIVE);
+//            tournamentRepository.save(tournament);
+        }
+
 
         var allRounds = roundRepository.findByTournamentId(tournamentId);
         for (RoundEntity r : allRounds) {
