@@ -187,9 +187,12 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
     }
 
     @Override
-    public List<MatchDto> makePairings
-            (List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber,
-             boolean recalculateResults) {
+    public List<MatchDto> makePairings(
+            List<ParticipantDto> participants,
+            List<List<MatchDto>> matchHistory,
+            Integer roundsNumber,
+            boolean recalculateResults
+    ) {
 
         participants = new ArrayList<>(participants);
 
