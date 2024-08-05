@@ -94,10 +94,10 @@ export function TournamentPane(
         <div className={"p-1"}></div>
         <Conditional on={isPlanned || isActive}>
             <div className={"py-3"}>
-                <span className={"flex items-center"}>
-                    <AiFillClockCircle className={"text-primary mr-3"}/>
-                    {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
-                </span>
+                <IconTag
+                    icon={<AiFillClockCircle className={"text-primary"}/>}
+                    text={dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
+                />
                 <Conditional on={!!tournament.locationName}>
                     {tournament.locationUrl ?
                         <Link to={tournament.locationUrl} target={"_blank"}
@@ -114,10 +114,10 @@ export function TournamentPane(
                     }
                 </Conditional>
                 <Conditional on={isMeParticipating}>
-                    <span className={"flex items-center text-left"}>
-                        <BsBookmarkCheckFill className={"text-primary mr-3"}/>
-                        {loc("Participating")}
-                    </span>
+                    <IconTag
+                        icon={<BsBookmarkCheckFill className={"text-primary"}/>}
+                        text={loc("Participating")}
+                    />
                 </Conditional>
             </div>
         </Conditional>
