@@ -4,7 +4,6 @@ import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import {Link} from "react-router-dom";
-import {FiArrowUpRight} from "react-icons/fi";
 import {BsBookmarkCheckFill, BsFillRecordFill} from "react-icons/bs";
 import dayjs from "dayjs";
 import {Conditional, ConditionalOnAuthorized} from "components/Conditional";
@@ -98,21 +97,13 @@ export function TournamentPane(
                     icon={<AiFillClockCircle className={"text-primary"}/>}
                     text={dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
                 />
-                <Conditional on={!!tournament.locationName}>
-                    {tournament.locationUrl ?
-                        <Link to={tournament.locationUrl} target={"_blank"}
-                              className={"flex items-center text-left"}>
-                            <IoLocationSharp className={"text-primary mr-3"}/>
-                            {tournament.locationName || ""}
-                            <FiArrowUpRight className={"ml-1"}/>
-                        </Link>
-                        :
-                        <span className={"flex items-center text-left"}>
-                            <IoLocationSharp className={"text-primary mr-3"}/>
-                            {tournament.locationName || ""}
-                        </span>
-                    }
-                </Conditional>
+                {(!!tournament.locationName) && (
+                    <IconTag
+                        icon={<IoLocationSharp className={"text-primary"}/>}
+                        text={tournament.locationName || ""}
+                        link={tournament.locationUrl || undefined}
+                    />
+                )}
                 <Conditional on={isMeParticipating}>
                     <IconTag
                         icon={<BsBookmarkCheckFill className={"text-primary"}/>}
