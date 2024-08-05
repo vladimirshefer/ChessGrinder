@@ -128,7 +128,7 @@ export function TournamentPane(
         <div className={"p-1"}></div>
         <Conditional on={isPlanned}>
             <div className={"w-full flex"}>
-                <ConditionalOnAuthorized>{
+                <ConditionalOnAuthorized>{() =>
                     !isMeParticipating ? (
                         <button className={"btn-primary w-full uppercase"}
                                 onClick={async () => {
@@ -151,12 +151,13 @@ export function TournamentPane(
                     )
                 }
                 </ConditionalOnAuthorized>
-                <ConditionalOnAuthorized authorized={false}>
+                <ConditionalOnAuthorized authorized={false}>{() =>
                     <Link to={loginPageLink} className={"w-full"}>
                         <button className={"btn-primary w-full uppercase"}>
                             {loc("Participate")}
                         </button>
                     </Link>
+                }
                 </ConditionalOnAuthorized>
             </div>
         </Conditional>
