@@ -188,3 +188,32 @@ export function TournamentPane(
         </Conditional>
     </div>;
 }
+
+
+export function IconTag(
+    {
+        icon,
+        text,
+        link = undefined,
+    }: {
+        icon: any,
+        text: any,
+        link?: string | undefined,
+    }
+) {
+    let textElement = <span className={"grow text-ellipsis overflow-hidden line-clamp-1"}>
+        {text}
+    </span>;
+
+    return <span className={"flex items-center text-left gap-1"}>
+        <span>{icon}</span>
+        {(!!link) && (
+            <Link to={link} target={"_blank"}>
+                {textElement}
+            </Link>
+        )}
+        {(!link) && (
+            textElement
+        )}
+    </span>
+}
