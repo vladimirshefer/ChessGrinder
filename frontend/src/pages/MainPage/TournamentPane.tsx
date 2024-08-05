@@ -4,7 +4,6 @@ import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import {Link} from "react-router-dom";
-import {FiArrowUpRight} from "react-icons/fi";
 import {BsBookmarkCheckFill, BsFillRecordFill} from "react-icons/bs";
 import dayjs from "dayjs";
 import {Conditional, ConditionalOnAuthorized} from "components/Conditional";
@@ -94,30 +93,22 @@ export function TournamentPane(
         <div className={"p-1"}></div>
         <Conditional on={isPlanned || isActive}>
             <div className={"py-3"}>
-                <span className={"flex items-center"}>
-                    <AiFillClockCircle className={"text-primary mr-3"}/>
-                    {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
-                </span>
-                <Conditional on={!!tournament.locationName}>
-                    {tournament.locationUrl ?
-                        <Link to={tournament.locationUrl} target={"_blank"}
-                              className={"flex items-center text-left"}>
-                            <IoLocationSharp className={"text-primary mr-3"}/>
-                            {tournament.locationName || ""}
-                            <FiArrowUpRight className={"ml-1"}/>
-                        </Link>
-                        :
-                        <span className={"flex items-center text-left"}>
-                            <IoLocationSharp className={"text-primary mr-3"}/>
-                            {tournament.locationName || ""}
-                        </span>
-                    }
-                </Conditional>
+                <IconTag
+                    icon={<AiFillClockCircle className={"text-primary"}/>}
+                    text={dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
+                />
+                {(!!tournament.locationName) && (
+                    <IconTag
+                        icon={<IoLocationSharp className={"text-primary"}/>}
+                        text={tournament.locationName || ""}
+                        link={tournament.locationUrl || undefined}
+                    />
+                )}
                 <Conditional on={isMeParticipating}>
-                    <span className={"flex items-center text-left"}>
-                        <BsBookmarkCheckFill className={"text-primary mr-3"}/>
-                        {loc("Participating")}
-                    </span>
+                    <IconTag
+                        icon={<BsBookmarkCheckFill className={"text-primary"}/>}
+                        text={loc("Participating")}
+                    />
                 </Conditional>
             </div>
         </Conditional>
@@ -186,4 +177,33 @@ export function TournamentPane(
             </div>
         </Conditional>
     </div>;
+}
+
+
+export function IconTag(
+    {
+        icon,
+        text,
+        link = undefined,
+    }: {
+        icon: any,
+        text: any,
+        link?: string | undefined,
+    }
+) {
+    let textElement = <span className={"grow text-ellipsis overflow-hidden line-clamp-1"}>
+        {text}
+    </span>;
+
+    return <span className={"flex items-center text-left gap-1"}>
+        <span>{icon}</span>
+        {(!!link) && (
+            <Link to={link} target={"_blank"}>
+                {textElement}
+            </Link>
+        )}
+        {(!link) && (
+            textElement
+        )}
+    </span>
 }
