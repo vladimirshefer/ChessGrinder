@@ -1,6 +1,5 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.exceptions.RoundNotFoundException;
 import com.chessgrinder.chessgrinder.service.RoundService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
