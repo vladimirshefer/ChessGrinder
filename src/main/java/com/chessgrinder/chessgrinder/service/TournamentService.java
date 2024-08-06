@@ -3,10 +3,13 @@ package com.chessgrinder.chessgrinder.service;
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
+import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
+import com.chessgrinder.chessgrinder.repositories.MatchRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
+    private final MatchRepository matchRepository;
     private final TournamentMapper tournamentMapper;
     private final RoundService roundService;
     private static final int DEFAULT_ROUNDS_NUMBER = 6;
@@ -130,4 +134,31 @@ public class TournamentService {
         tournament.setRoundsNumber(roundsNum);
         tournamentRepository.save(tournament);
     }
+
+    @Transactional
+    public void submitMyResult(TournamentEntity tournament, UserEntity user, MatchResult matchResult) {
+        if (matchResult == MatchResult.BUY || matchResult == MatchResult.MISS) {
+            throw new IllegalArgumentException("Users are not allowed to set BYE and MISS results");
+        }
+        RoundEntity activeRound = tournament.getRounds().stream()
+                .filter(it -> !it.isFinished())
+                .max(Comparator.comparing(RoundEntity::getNumber, Comparator.nullsFirst(Comparator.naturalOrder())))
+                .orElseThrow(() -> new IllegalArgumentException("Tournament has no active rounds"));
+        MatchEntity match = activeRound.getMatches().stream()
+                .filter(it -> belongs(user, it.getParticipant1()) || belongs(user, it.getParticipant2()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("User does not participate in round"));
+        match.setResult(matchResult);
+        matchRepository.save(match);
+    }
+
+    private static boolean belongs(@Nullable UserEntity user, @Nullable ParticipantEntity participant) {
+        if (user == null || participant == null || user.getId() == null ||
+                participant.getUser() == null || participant.getUser().getId() == null) {
+            return false;
+        }
+
+        return participant.getUser().getId().equals(user.getId());
+    }
+
 }
