@@ -156,6 +156,7 @@ function MatchesTable(
             matches.map((match, idx) => {
                 return <MatchRow
                     idx={idx}
+                    key={idx}
                     match={match}
                     tableNumber={idx + 1}
                     canEditResults={canEditResults}
