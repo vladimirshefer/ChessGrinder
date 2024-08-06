@@ -13,6 +13,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ParticipantMapper {
 
+    private final TournamentMapper tournamentMapper;
+
     public ParticipantDto toDto(ParticipantEntity participant) {
         if (participant == null) return null;
 
@@ -26,6 +28,7 @@ public class ParticipantMapper {
                 .isMissing(participant.isMissing())
                 .isModerator(participant.isModerator())
                 .place(participant.getPlace())
+                .tournament(Optional.ofNullable(participant.getTournament()).map(tournamentMapper::toDto).orElse(null))
                 .build();
     }
 

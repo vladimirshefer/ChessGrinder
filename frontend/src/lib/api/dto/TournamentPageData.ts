@@ -35,6 +35,7 @@ export interface ParticipantDto {
     isMissing: boolean
     isModerator?: boolean | null | undefined
     place: number
+    tournament?: TournamentDto | null | undefined
 }
 
 export interface TournamentPageData {
