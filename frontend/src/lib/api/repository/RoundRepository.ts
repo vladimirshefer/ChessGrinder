@@ -44,9 +44,10 @@ class LocalStorageRoundRepository implements RoundRepository {
         if (round.isFinished) {
             throw new Error(`Round ${roundNumber} in tournament ${tournamentId} is already finished.`)
         }
-        let participants: ParticipantDto[] = tournament.participants || []
+        let participants: (ParticipantDto | null)[] = tournament.participants || []
         participants = [...participants]
         this.shuffleArray(participants)
+        if (participants.length % 2 === 1) participants.push(null)
         let matches: MatchDto[] = []
         let matchesAmount = Math.trunc(participants.length / 2)
         for (let i = 0; i < matchesAmount; i++) {
@@ -89,9 +90,9 @@ class LocalStorageRoundRepository implements RoundRepository {
         localStorage.setItem(`cgd.tournament.${tournamentId}`, JSON.stringify(tournament))
     }
 
-    private createMatch(white: ParticipantDto, black: ParticipantDto): MatchDto {
+    private createMatch(white: ParticipantDto | null, black: ParticipantDto | null): MatchDto {
         return {
-            id: `${white.name}_${black.name}`,
+            id: `${white?.name}_${black?.name}`,
             white: white,
             black: black,
             result: undefined
