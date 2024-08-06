@@ -116,6 +116,16 @@ public class UserController {
         return ListDto.<UserHistoryRecordDto>builder().values(history).build();
     }
 
+    @GetMapping("/{userId}/participant")
+    public ListDto<ParticipantDto> history2(
+            @PathVariable UUID userId
+    ) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No user with id " + userId));
+        List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
+        return ListDto.<ParticipantDto>builder().values(participantMapper.toDto(participants)).build();
+    }
+
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping("/{userId}/badge/{badgeId}")
     public void assignBadge(
