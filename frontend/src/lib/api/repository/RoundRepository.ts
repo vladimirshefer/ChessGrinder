@@ -26,6 +26,7 @@ class LocalStorageRoundRepository implements RoundRepository {
             throw new Error(`No tournament with id ${tournamentId}`)
         }
         tournament.rounds.push({
+            number: tournament.rounds.length + 1,
             isFinished: false,
             matches: [],
         })
