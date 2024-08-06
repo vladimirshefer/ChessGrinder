@@ -7,6 +7,7 @@ import {useLoc} from "strings/loc";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {UserDto} from "lib/api/dto/MainPageData";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
+import {FiExternalLink} from "react-icons/fi";
 
 export default function UserProfileEditPage() {
     let [authenticatedUser, refresh] = useAuthenticatedUser();
@@ -71,9 +72,16 @@ export default function UserProfileEditPage() {
             <h1 className={"font-semibold uppercase"}>{loc("Settings")}</h1>
         </div>
         <form className={"grid gap-2"} onSubmit={handleSubmit(saveUserData)}>
-            <div>
+            <div className={"grid gap-1"}>
                 <Gravatar text={authenticatedUser.username || authenticatedUser.id} type={GravatarType.Robohash} size={100}
                           className={"rounded-full"}/>
+                <div className={"text-left btn btn-light btn-sm text-sm"}>
+                    <Link to={"https://gravatar.com/profile/avatars"} target={"_blank"}>
+                        <div className={"flex gap-1 items-center"}>
+                            <span>Change avatar</span> <FiExternalLink/>
+                        </div>
+                    </Link>
+                </div>
             </div>
             <div className={"grid grow text-left gap-2"}>
                 <input type={"text"} className={"font-semibold truncate border-b-2"}

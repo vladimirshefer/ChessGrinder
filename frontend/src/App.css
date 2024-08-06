@@ -10,6 +10,12 @@
   @apply text-center;
 }
 
+.btn-sm {
+  @apply py-1;
+  @apply px-1;
+  @apply text-center;
+}
+
 .btn-primary {
   @apply btn;
   @apply bg-primary;
