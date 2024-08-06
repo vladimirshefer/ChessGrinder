@@ -164,10 +164,10 @@ export default function UserProfilePage() {
     })
 
     let historyQuery = useQuery({
-        queryKey: ["history", userProfile, activeTab],
+        queryKey: ["meParticipants", userProfile],
         queryFn: async () => {
             if (!userProfile) return null;
-            return userRepository.getHistory(userProfile.id)
+            return userRepository.getParticipant(userProfile.id)
         },
         // enabled: activeTab === "history"
     })
@@ -256,16 +256,16 @@ export default function UserProfilePage() {
                     {historyQuery.isSuccess ? (
                         <div className="grid grid-cols-12">
                             {historyQuery.data?.values?.map(row =>
-                                <div key={row.tournament.id}
+                                <div key={row.id}
                                      className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
-                                    <Link to={`/tournament/${row.tournament.id}`} className={"grid col-span-8"}>
-                                        {row.tournament.name || row.tournament.id}
+                                    <Link to={`/tournament/${row.tournament?.id}`} className={"grid col-span-8"}>
+                                        {row.tournament?.name || row.tournament?.id || ""}
                                         <span className={"text-xs text-gray-800"}>
-                                            {dayjs(row.tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
+                                            {dayjs(row.tournament?.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
                                         </span>
                                     </Link>
-                                    <span className={"col-span-2"}>{row.participant.place}</span>
-                                    <span className={"col-span-2"}>{row.participant.score}</span>
+                                    <span className={"col-span-2"}>{row.place}</span>
+                                    <span className={"col-span-2"}>{row.score}</span>
                                 </div>
                             )}
                         </div>

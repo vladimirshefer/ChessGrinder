@@ -2,7 +2,6 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
-import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
@@ -99,26 +98,14 @@ public class UserController {
         return userMapper.toDto(authenticatedUser);
     }
 
-    @GetMapping("/{userIdOrUsername}/history")
-    public ListDto<UserHistoryRecordDto> history(
-            @PathVariable String userIdOrUsername
+    @GetMapping("/{userId}/participant")
+    public ListDto<ParticipantDto> history2(
+            @PathVariable UUID userId
     ) {
-        UserEntity user = userService.findUserByIdOrUsername(userIdOrUsername);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No user with id " + userId));
         List<ParticipantEntity> participants = participantRepository.findAllByUserId(user.getId());
-        List<UserHistoryRecordDto> history = participants.stream()
-                .filter(participant -> TournamentStatus.FINISHED == Optional
-                        .ofNullable(participant.getTournament())
-                        .map(TournamentEntity::getStatus)
-                        .orElse(null))
-                .sorted(Comparator.comparing((ParticipantEntity it) -> it.getTournament().getDate()).reversed())
-                .map(participant ->
-                        UserHistoryRecordDto.builder()
-                                .tournament(tournamentMapper.toDto(participant.getTournament()))
-                                .participant(participantMapper.toDto(participant))
-                                .build()
-                )
-                .toList();
-        return ListDto.<UserHistoryRecordDto>builder().values(history).build();
+        return ListDto.<ParticipantDto>builder().values(participantMapper.toDto(participants)).build();
     }
 
     @Secured(RoleEntity.Roles.ADMIN)

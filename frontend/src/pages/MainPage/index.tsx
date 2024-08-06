@@ -7,6 +7,7 @@ import tournamentRepository from "lib/api/repository/TournamentRepository";
 import userRepository from "lib/api/repository/UserRepository";
 import {useLoc} from "strings/loc";
 import {Link, useNavigate} from "react-router-dom";
+import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
 
 function MainPage() {
     let loc = useLoc()
@@ -46,6 +47,7 @@ function MainPage() {
 
     const maxUsers: number = 8;
     return <>
+        <MyActiveTournamentPane/>
         <div className={"p-3"}>
             <MemberList users={users.slice(0, maxUsers)}/>
             <div className={"grid py-2"}>

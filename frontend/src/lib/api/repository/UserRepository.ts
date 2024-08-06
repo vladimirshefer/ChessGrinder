@@ -1,12 +1,5 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {
-    BadgeDto,
-    ListDto,
-    UserBadgeDto,
-    UserDto,
-    UserHistoryRecordDto,
-    UserReputationHistoryRecordDto
-} from "lib/api/dto/MainPageData";
+import {BadgeDto, ListDto, UserBadgeDto, UserDto, UserReputationHistoryRecordDto} from "lib/api/dto/MainPageData";
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
@@ -22,7 +15,7 @@ export interface UserRepository {
 
     getMe(): Promise<UserDto | null>
 
-    getHistory(userId: string): Promise<ListDto<UserHistoryRecordDto>>
+    getParticipant(userId: string): Promise<ListDto<ParticipantDto>>
 
     assignReputation(data: UserReputationHistoryRecordDto): Promise<void>
 
@@ -67,7 +60,7 @@ class LocalStorageUserRepository implements UserRepository {
         return null;
     }
 
-    async getHistory(userId: string): Promise<ListDto<UserHistoryRecordDto>> {
+    async getParticipant(userId: string): Promise<ListDto<ParticipantDto>> {
         let tournaments = localStorageUtil.getAllObjectsByPrefix<TournamentPageData>("cgd.tournament.");
         let result = tournaments
             .map(tournament => {
@@ -87,10 +80,8 @@ class LocalStorageUserRepository implements UserRepository {
             })
             .filter(([, participant]) => !!participant)
             .map(([tournament, participant]) => {
-                return {
-                    tournament: tournament.tournament,
-                    participant: participant,
-                } as UserHistoryRecordDto
+                participant!!.tournament = tournament.tournament
+                return participant!!
             });
         return {
             count: result.length,
@@ -135,8 +126,8 @@ class RestApiUserRepository implements UserRepository {
         return restApiClient.get(`/user/me`);
     }
 
-    async getHistory(userId: string): Promise<ListDto<UserHistoryRecordDto>> {
-        return restApiClient.get(`/user/${userId}/history`);
+    async getParticipant(userId: string): Promise<ListDto<ParticipantDto>> {
+        return restApiClient.get(`/user/${userId}/participant`);
     }
 
     async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {
