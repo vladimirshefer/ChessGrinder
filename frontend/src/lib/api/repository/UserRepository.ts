@@ -24,6 +24,8 @@ export interface UserRepository {
 
     getHistory(userId: string): Promise<ListDto<UserHistoryRecordDto>>
 
+    getParticipant(userId: string): Promise<ListDto<ParticipantDto>>
+
     assignReputation(data: UserReputationHistoryRecordDto): Promise<void>
 
     updateUser(userId: string, user: UserDto): Promise<void>
@@ -98,6 +100,35 @@ class LocalStorageUserRepository implements UserRepository {
         };
     }
 
+    async getParticipant(userId: string): Promise<ListDto<ParticipantDto>> {
+        let tournaments = localStorageUtil.getAllObjectsByPrefix<TournamentPageData>("cgd.tournament.");
+        let result = tournaments
+            .map(tournament => {
+                let matchingParticipants: ParticipantDto[] = tournament.participants
+                    .filter(participant => !!participant.userId)
+                    .map(participant => {
+                        let user = localStorageUtil.getObject<UserDto>(`cgd.user.${participant.userId!!}`);
+                        return [participant, user] as [ParticipantDto, UserDto | null];
+                    })
+                    .filter(([, user]) => !!user)
+                    .filter(([, user]) => {
+                        return user!!.id === userId || user!!.username === userId;
+                    })
+                    .map(([participant]) => participant);
+                let participant = matchingParticipants?.[0];
+                return [tournament, participant] as [TournamentPageData, ParticipantDto | undefined];
+            })
+            .filter(([, participant]) => !!participant)
+            .map(([tournament, participant]) => {
+                participant!!.tournament = tournament.tournament
+                return participant!!
+            });
+        return {
+            count: result.length,
+            values: result,
+        };
+    }
+
     async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {
         alert("Unsupported");
     }
@@ -137,6 +168,10 @@ class RestApiUserRepository implements UserRepository {
 
     async getHistory(userId: string): Promise<ListDto<UserHistoryRecordDto>> {
         return restApiClient.get(`/user/${userId}/history`);
+    }
+
+    async getParticipant(userId: string): Promise<ListDto<ParticipantDto>> {
+        return restApiClient.get(`/user/${userId}/participant`);
     }
 
     async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {

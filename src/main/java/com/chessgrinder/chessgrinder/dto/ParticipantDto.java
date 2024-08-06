@@ -61,4 +61,7 @@ public class ParticipantDto {
     @Nonnull
     @Builder.Default
     private Integer place = -1;
+
+    @Nullable
+    private TournamentDto tournament;
 }

@@ -21,6 +21,7 @@ export interface MatchDto {
 export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW" | "BUY" | "MISS"
 
 export interface RoundDto {
+    number: number
     isFinished: boolean
     matches: MatchDto[]
 }
@@ -35,6 +36,7 @@ export interface ParticipantDto {
     isMissing: boolean
     isModerator?: boolean | null | undefined
     place: number
+    tournament?: TournamentDto | null | undefined
 }
 
 export interface TournamentPageData {
