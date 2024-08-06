@@ -103,7 +103,8 @@ class LocalStorageUserRepository implements UserRepository {
     }
 
     async updateUser(userId: string, user: UserDto): Promise<void> {
-        alert("Unsupported");
+        let user1: UserDto | null = await this.getUser(userId);
+        localStorageUtil.setObject(`${this.userKeyPrefix}.${userId}`, {...user1, ...user})
     }
 
     async deleteUser(userId: string): Promise<void> {
