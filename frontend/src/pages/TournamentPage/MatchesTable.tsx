@@ -83,12 +83,21 @@ function MatchResultSelector(
     </>;
 }
 
-function MatchRow(
-    idx: number,
-    match: MatchDto,
-    tableNumber: number,
-    canEditResults: boolean,
-    setResult: (selectedResult: MatchResult | null) => void
+export function MatchRow(
+    {
+        idx,
+        match,
+        tableNumber,
+        canEditResults,
+        setResult,
+    }: {
+
+        idx: number,
+        match: MatchDto,
+        tableNumber: number,
+        canEditResults: boolean,
+        setResult: (selectedResult: MatchResult | null) => void
+    }
 ) {
     return <div className={"col-span-12 grid grid-cols-12 text-left"} key={idx}>
         <div className={`grid col-span-4 text-xs p-3 
@@ -147,15 +156,19 @@ function MatchesTable(
         </div>
         {
             matches.map((match, idx) => {
-                return MatchRow(idx, match, idx + 1, canEditResults,
-                    (selectedResult: MatchResult | null) => {
+                return <MatchRow
+                    idx={idx}
+                    match={match}
+                    tableNumber={idx + 1}
+                    canEditResults={canEditResults}
+                    setResult={(selectedResult: MatchResult | null) => {
                         if (canEditResults) {
                             submitMatchResult(match, selectedResult);
                         } else {
                             alert("Can not set results!");
                         }
-                    }
-                )
+                    }}
+                />
             })
         }
     </div>
