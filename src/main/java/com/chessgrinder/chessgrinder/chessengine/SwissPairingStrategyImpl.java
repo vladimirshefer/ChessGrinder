@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //@Component
+@Deprecated
 @RequiredArgsConstructor
 public class SwissPairingStrategyImpl implements PairingStrategy {
 
