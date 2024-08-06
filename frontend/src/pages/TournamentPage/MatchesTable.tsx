@@ -1,7 +1,7 @@
 import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
 import {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
-import {useRef, useState} from "react";
+import {Fragment, useRef, useState} from "react";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {IoMdArrowDropdown} from "react-icons/io";
 
@@ -99,8 +99,8 @@ export function MatchRow(
         setResult: (selectedResult: MatchResult | null) => void
     }
 ) {
-    return <div className={"col-span-12 grid grid-cols-12 text-left"} key={idx}>
-        <div className={`grid col-span-4 text-xs p-3 
+    return <Fragment key={idx}>
+        <div className={`grid text-xs p-3 
                         ${match.result === "WHITE_WIN" ? "bg-anzac-400" : ""} 
                         ${match.result === "BLACK_WIN" ? "bg-gray-200" : ""}
                         ${match.result === "BUY" ? "bg-anzac-400" : ""} 
@@ -114,11 +114,11 @@ export function MatchRow(
                 <span className={"text-ellipsis overflow-hidden"}>{match.white?.userFullName}</span>
             }
         </div>
-        <div className={"col-span-4 text-xl text-center grid"}>
+        <div className={"text-xl text-center grid"}>
             <MatchResultSelector canSetResult={canEditResults} result={match.result} setResult={setResult}/>
             <span className={"text-xs"}>{tableNumber || 0}</span>
         </div>
-        <div className={`grid col-span-4 text-xs p-3 
+        <div className={`grid text-xs p-3 
                         ${match.result === "BLACK_WIN" ? "bg-anzac-400" : ""} 
                         ${match.result === "WHITE_WIN" ? "bg-gray-200" : ""}
                         ${match.result === "BUY" ? "bg-anzac-400" : ""} 
@@ -132,7 +132,7 @@ export function MatchRow(
                 <span className={"text-ellipsis overflow-hidden"}>{match.black?.userFullName}</span>
             }
         </div>
-    </div>;
+    </Fragment>;
 }
 
 function MatchesTable(
@@ -148,12 +148,10 @@ function MatchesTable(
 ) {
     let loc = useLoc()
 
-    return <div className={"grid grid-cols-12 p-2 gap-y-2"}>
-        <div className={"col-span-12 grid grid-cols-12 border-b border-black justify-items-start"}>
-            <div className={"col-span-4 font-semibold uppercase"}>{loc("White")}</div>
-            <div className={"col-span-4 font-semibold uppercase justify-self-center"}>{loc("Result")}</div>
-            <div className={"col-span-4 font-semibold uppercase"}>{loc("Black")}</div>
-        </div>
+    return <div className={"grid grid-cols-[1fr_auto_1fr] p-2 gap-y-2 gap-x-2 text-left"}>
+        <div className={"font-semibold uppercase text-left"}>{loc("White")}</div>
+        <div className={"font-semibold uppercase text-center"}>{loc("Result")}</div>
+        <div className={"font-semibold uppercase text-left"}>{loc("Black")}</div>
         {
             matches.map((match, idx) => {
                 return <MatchRow
