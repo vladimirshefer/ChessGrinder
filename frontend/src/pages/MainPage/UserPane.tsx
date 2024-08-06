@@ -1,5 +1,5 @@
 import {UserDto} from "lib/api/dto/MainPageData";
-import {useLoc} from "strings/loc";
+import {useLoc, useTransliterate} from "strings/loc";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {Link} from "react-router-dom";
 import {AiOutlineTrophy} from "react-icons/ai";
@@ -14,6 +14,7 @@ export function UserPane(
     }
 ) {
     let loc = useLoc()
+    let transliterate = useTransliterate()
 
     return <div key={user.id} className={"col-span-12 flex"}>
         <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
@@ -27,7 +28,7 @@ export function UserPane(
         <div className={"grid w-full content-left items-left"}>
             <div className={"text-left"}>
                 <Link to={`/user/${user.id}`}>
-                    {user.name}
+                    {transliterate(user.name)}
                 </Link>
             </div>
             <div className={"h-[1em] text-xl flex gap-2 items-start"}>
