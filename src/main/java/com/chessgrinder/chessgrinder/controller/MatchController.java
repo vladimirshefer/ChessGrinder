@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/tournament/{tournamentId}/round/{roundId}/match/{matchId}")
+@RequestMapping("/tournament/{tournamentId}/round/{roundId}/match")
 @RequiredArgsConstructor
 public class MatchController {
 
     private final MatchService matchService;
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
-    @PostMapping()
+    @PostMapping("{matchId}")
     public void submitMatchResult(
             @PathVariable UUID tournamentId,
             @PathVariable UUID matchId,
@@ -24,4 +24,5 @@ public class MatchController {
     ) {
         matchService.submitMatchResult(matchId, submitMatchResultDto);
     }
+
 }
