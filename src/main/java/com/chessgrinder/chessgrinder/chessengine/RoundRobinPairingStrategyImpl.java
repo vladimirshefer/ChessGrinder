@@ -102,40 +102,27 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
     };
 
 
-    // Following function counts the sum of white and black players participated in the previous round.
-    public int countWhiteAndBlackPlayers(List<List<MatchDto>> matchHistory) {
+    // Following function counts the sum of players participated in the previous round.
+    public int countPlayers(List<MatchDto> lastRound) {
 
-        int whitePlayersCount = 0;
-        int blackPlayersCount = 0;
+        int playersCount = 0;
 
-        if (matchHistory.isEmpty()) {
+        if (lastRound.isEmpty()) {
             return 0;
-        }
-
-        else {
-            List<MatchDto> lastRound = matchHistory.get(matchHistory.size() - 1);
+        } else {
 
             for (MatchDto match : lastRound) {
                 if (match.getWhite() != null) {
-                    whitePlayersCount++;
+                    playersCount++;
                 }
                 if (match.getBlack() != null) {
-                    blackPlayersCount++;
+                    playersCount++;
                 }
             }
         }
 
-        return whitePlayersCount + blackPlayersCount;
+        return playersCount;
     }
-
-    public void checkForAdditionalPlayers(List<List<MatchDto>> matchHistory, int currentPlayersCounter) {
-        int currentCounts = countWhiteAndBlackPlayers(matchHistory);
-
-        if (currentCounts != currentPlayersCounter && currentCounts != 0) {
-            throw new IllegalArgumentException("It is prohibited to add additional players");
-        }
-    }
-
 
     @Override
     public List<MatchDto> makePairings(
@@ -154,7 +141,12 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
             throw new IllegalArgumentException("A pairing is not allowed if there are less than 3 or more than 16 players.");
         }
 
-        checkForAdditionalPlayers(matchHistory, participants.size());
+        // Check for additional players
+        List<MatchDto> lastRound = matchHistory.isEmpty() ? new ArrayList<>() : matchHistory.get(matchHistory.size() - 1);
+        int currentCounts = countPlayers(lastRound);
+        if (currentCounts != participants.size() && currentCounts != 0) {
+            throw new IllegalArgumentException("It is prohibited to add additional players");
+        }
 
         // A player for a bye is adding in case of an odd number of players.
         if (participantsNumber % 2 != 0) {
