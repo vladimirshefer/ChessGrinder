@@ -101,8 +101,36 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
             {7, 15, 8, 6, 9, 5, 10, 4, 11, 3, 12, 2, 13, 1, 14, 0}    // Round 15
     };
 
+
+    // Following function counts the sum of players participated in the previous round.
+    public int countPlayers(List<MatchDto> lastRound) {
+
+        int playersCount = 0;
+
+        if (lastRound.isEmpty()) {
+            return 0;
+        } else {
+
+            for (MatchDto match : lastRound) {
+                if (match.getWhite() != null) {
+                    playersCount++;
+                }
+                if (match.getBlack() != null) {
+                    playersCount++;
+                }
+            }
+        }
+
+        return playersCount;
+    }
+
     @Override
-    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber, boolean recalculateResults) {
+    public List<MatchDto> makePairings(
+            List<ParticipantDto> participants,
+            List<List<MatchDto>> matchHistory,
+            Integer roundsNumber,
+            boolean recalculateResults
+    ) {
 
         participants = new ArrayList<>(participants);
 
@@ -113,9 +141,17 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
             throw new IllegalArgumentException("A pairing is not allowed if there are less than 3 or more than 16 players.");
         }
 
+        // Check for additional players
+        List<MatchDto> lastRound = matchHistory.isEmpty() ? new ArrayList<>() : matchHistory.get(matchHistory.size() - 1);
+        int currentCounts = countPlayers(lastRound);
+        if (currentCounts != participants.size() && currentCounts != 0) {
+            throw new IllegalArgumentException("It is prohibited to add additional players");
+        }
+
         // A player for a bye is adding in case of an odd number of players.
         if (participantsNumber % 2 != 0) {
             participants.add(null);
+            participantsNumber = participantsNumber + 1;
         }
 
         Map<Integer, int[][]> getBergerTable = new HashMap<>();
@@ -141,9 +177,8 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
 
         for (int i = 0; i < participantsNumber; i += 2) {
 
-
-            ParticipantDto whitePlayer = participants.get(bergerTable[matchHistory.size()][i]);
-            ParticipantDto blackPlayer = participants.get(bergerTable[matchHistory.size()][i + 1]);
+            ParticipantDto whitePlayer = participants.get(bergerTable[matchHistory.size() % (participantsNumber - 1)][i]);
+            ParticipantDto blackPlayer = participants.get(bergerTable[matchHistory.size() % (participantsNumber - 1)][(i + 1)]);
 
             MatchDto match = MatchDto.builder()
                     .white(whitePlayer)
