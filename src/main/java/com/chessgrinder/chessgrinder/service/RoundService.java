@@ -135,6 +135,15 @@ public class RoundService {
 
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
+        Optional<TournamentEntity> currentTournament = tournamentRepository.findById(tournamentId);
+        TournamentEntity tournamentEntity = currentTournament.orElseThrow();
+        if (tournamentEntity.getStatus().equals(TournamentStatus.PLANNED)) {
+
+            tournamentEntity.setStatus(TournamentStatus.ACTIVE);
+            tournamentEntity = tournamentRepository.save(tournamentEntity);
+        }
+
+
         var allRounds = roundRepository.findByTournamentId(tournamentId);
         for (RoundEntity r : allRounds) {
             if (!r.isFinished()) {
