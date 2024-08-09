@@ -37,16 +37,13 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Nullable // Tournament could be deleted from db.
     private TournamentEntity tournament;
 
-    @Nonnull
-    @Column(name = "nickname")
+    @Column(name = "nickname", nullable = false)
     private String nickname;
 
-    @Nonnull
-    @Column(name = "score")
+    @Column(name = "score", nullable = false)
     private BigDecimal score;
 
-    @Nonnull
-    @Column(name = "buchholz")
+    @Column(name = "buchholz", nullable = false)
     private BigDecimal buchholz;
 
     @Column(name = "is_missing")
@@ -55,7 +52,6 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Column(name = "is_moderator")
     private boolean isModerator;
 
-    @Nonnull
-    @Column(name = "place")
+    @Column(name = "place", nullable = false)
     private Integer place;
 }

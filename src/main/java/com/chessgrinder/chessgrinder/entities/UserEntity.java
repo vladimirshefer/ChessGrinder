@@ -48,7 +48,7 @@ public class UserEntity extends AbstractAuditingEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @ToString.Exclude
     @JoinTable(

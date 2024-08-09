@@ -2,7 +2,6 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
-import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
@@ -21,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -77,6 +77,27 @@ class MatchControllerTest {
 
         doAnswer(invocation -> true).when(tournamentRepository).existsById(any());
         doAnswer(invocation -> ParticipantEntity.builder().build()).when(participantRepository).findById(any());
+
+        mockMvc.perform(post("/tournament/" + tournamentId + "/round/1/match/" + matchId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"matchResult\": \"WHITE_WIN\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @SneakyThrows
+    @Test
+    void testSetResultAsModerator() {
+        SecurityContextHolder.getContext().setAuthentication(createAuthentication("admin"));
+        UserEntity userEntity = UserEntity.builder()
+                .id(UUID.randomUUID())
+                .username("moderator")
+                .roles(Collections.emptyList())
+                .build();
+        doAnswer((invocation) -> userEntity).when(userRepository).findByUsername(any());
+        doAnswer((invocation) -> Optional.ofNullable(userEntity)).when(userRepository).findById(any());
+
+        doAnswer(invocation -> true).when(tournamentRepository).existsById(any());
+        doAnswer(invocation -> ParticipantEntity.builder().isModerator(true).build()).when(participantRepository).findByTournamentIdAndUserId(any(), any());
 
         mockMvc.perform(post("/tournament/" + tournamentId + "/round/1/match/" + matchId)
                         .contentType(MediaType.APPLICATION_JSON)

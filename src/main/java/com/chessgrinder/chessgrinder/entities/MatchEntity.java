@@ -43,4 +43,15 @@ public class MatchEntity extends AbstractAuditingEntity {
     @Enumerated(EnumType. STRING)
     @Nullable
     private MatchResult result;
+
+    @Column(name = "result_submitted_by_white")
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private MatchResult resultSubmittedByWhite;
+
+    @Column(name = "result_submitted_by_black")
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private MatchResult resultSubmittedByBlack;
+
 }
