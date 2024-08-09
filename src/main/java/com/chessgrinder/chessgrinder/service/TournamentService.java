@@ -8,6 +8,7 @@ import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,10 +21,12 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
     private final TournamentMapper tournamentMapper;
+    private final RoundService roundService;
     private static final int DEFAULT_ROUNDS_NUMBER = 6;
     private static final int MIN_ROUNDS_NUMBER = 0;
     private static final int MAX_ROUNDS_NUMBER = 99;
@@ -67,6 +70,38 @@ public class TournamentService {
     }
 
     public void finishTournament(UUID tournamentId) {
+
+        List<RoundEntity> rounds = roundRepository.findByTournamentId(tournamentId);
+        boolean allRoundsFinished = true;
+
+        for (RoundEntity round : rounds) {
+            if (!round.isFinished()) {
+                boolean allMatchesHaveResults = round.getMatches().stream()
+                        .allMatch(match -> match.getResult() != null);
+
+
+                if (allMatchesHaveResults) {
+                    round.setFinished(true);
+                    roundRepository.save(round);
+                }
+                else {
+                    allRoundsFinished = false;
+                    break;
+                }
+            }
+        }
+
+        if (!allRoundsFinished) {
+
+            throw new IllegalStateException("There are open rounds with unknown match results.");
+        }
+
+        try {
+            roundService.updateResults(tournamentId);
+        } catch (Exception e) {
+            log.error("Could not update results", e);
+        }
+
         tournamentRepository.findById(tournamentId).ifPresent(tournament -> {
             tournament.setStatus(TournamentStatus.FINISHED);
             tournamentRepository.save(tournament);

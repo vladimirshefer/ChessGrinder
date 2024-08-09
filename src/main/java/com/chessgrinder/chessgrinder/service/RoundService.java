@@ -43,9 +43,10 @@ public class RoundService {
     private final ParticipantRepository participantRepository;
     private final JavafoPairingStrategyImpl javafoPairingStrategy;
     private final RoundRobinPairingStrategyImpl roundRobinPairingStrategy;
-    private PairingStrategy getPairingStrategy (String name) {
 
-        Map <String, PairingStrategy> pairingStrategyMap = Map.of(
+    private PairingStrategy getPairingStrategy(String name) {
+
+        Map<String, PairingStrategy> pairingStrategyMap = Map.of(
                 "SWISS", javafoPairingStrategy,
                 "ROUND_ROBIN", roundRobinPairingStrategy
         );
