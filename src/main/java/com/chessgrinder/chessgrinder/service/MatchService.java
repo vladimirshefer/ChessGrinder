@@ -27,24 +27,41 @@ public class MatchService {
     public void submitMatchResult(UserEntity user, UUID matchId, SubmitMatchResultRequestDto submitMatchResultDto) {
         MatchEntity match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No match with id " + matchId));
+
         MatchResult result = submitMatchResultDto.getMatchResult();
         if (tournamentPermissionEvaluator.hasPermission(user, match.getRound().getTournament().getId().toString(), "MODERATOR")) {
             match.setResult(result);
             matchRepository.save(match);
             return;
         }
+
+        if (match.getResult() != null) { // Do not allow override results submitted by arbiter.
+            return;
+        }
+
         ParticipantEntity participant1 = match.getParticipant1();
         if (participant1 != null) {
             UserEntity user1 = participant1.getUser();
             if (user1 != null && user1.getId().equals(user.getId())) {
                 match.setResultSubmittedByParticipant1(result);
+                if (result != null && result.equals(match.getResultSubmittedByParticipant2())) {
+                    match.setResult(result);
+                }
+                matchRepository.save(match);
+                return;
             }
         }
+
         ParticipantEntity participant2 = match.getParticipant2();
         if (participant2 != null) {
             UserEntity user2 = participant2.getUser();
             if (user2 != null && user2.getId().equals(user.getId())) {
                 match.setResultSubmittedByParticipant2(result);
+                if (result != null && result.equals(match.getResultSubmittedByParticipant1())) {
+                    match.setResult(result);
+                }
+                matchRepository.save(match);
+                return;
             }
         }
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to change result");
