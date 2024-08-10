@@ -231,14 +231,6 @@ function MyActiveTournamentPaneImpl(
         <div className={"btn-light text-sm"}>
             {loc(getResultStr(match.result, isMeWhite))}
         </div>
-        {/*<div className={"p-1"}></div>*/}
-        {/*<div className={"btn-light text-sm"}>*/}
-        {/*    {loc("Wait for administrator")}*/}
-        {/*</div>*/}
-        {/*<small className={"flex items-center gap-1 text-xs text-left pt-1"}>*/}
-        {/*    <IoInformationCircleOutline/>*/}
-        {/*    {loc("The conflict happened with submitted results")}*/}
-        {/*</small>*/}
     </div>;
 }
 
