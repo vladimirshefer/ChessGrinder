@@ -18,6 +18,11 @@ public class UserDto {
      */
     private String username;
     /**
+     * User e-mail hash in MD-5. Unique across all users.
+     * Could be empty string "" for "guest" users.
+     */
+    private String emailHash;
+    /**
      * User full name. E.g. "Vladimir Shefer"
      */
     private String name;

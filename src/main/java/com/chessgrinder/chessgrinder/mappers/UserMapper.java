@@ -6,6 +6,7 @@ import java.util.stream.*;
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.repositories.*;
+import com.chessgrinder.chessgrinder.security.EmailHashImpl;
 import lombok.*;
 import org.springframework.stereotype.*;
 
@@ -27,6 +28,8 @@ public class UserMapper {
         return UserDto.builder()
                 .id(user.getId().toString())
                 .username(user.getUsername())
+                // email has is taken from username field
+                .emailHash(EmailHashImpl.hashEmail(user.getUsername()))
                 .badges(badgeMapper.toDto(userBadges))
                 .name(user.getName())
                 .roles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toList()))
