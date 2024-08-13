@@ -134,6 +134,8 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
 
         participants = new ArrayList<>(participants);
 
+        participants.sort(Comparator.comparing(ParticipantDto::getId));
+
         int participantsNumber = participants.size();
 
         // We do not apply the round-robin format if the number of players is less than 3 or more than 16.
