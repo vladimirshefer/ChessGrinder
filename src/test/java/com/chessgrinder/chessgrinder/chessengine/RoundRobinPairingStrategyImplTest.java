@@ -58,6 +58,18 @@ public class RoundRobinPairingStrategyImplTest {
                             .match(participant("user2", 3, 5), participant("user3", 2, 6), MatchResult.WHITE_WIN)
 
                     )
+                    .show(System.out::println)
+
+                    .thenRound(round -> round
+                            .match(null, participant("user3", 3, 7), MatchResult.BUY)
+                            .match(participant("user1", 4, 6), participant("user2", 3, 7), MatchResult.WHITE_WIN)
+                    )
+                    .show(System.out::println)
+
+                    .thenRound(round -> round
+                            .match(participant("user2", 4, 8), null, MatchResult.BUY)
+                            .match(participant("user3", 4, 8), participant("user1", 4, 8), MatchResult.WHITE_WIN)
+                    )
                     .show(System.out::println);
 
 
