@@ -6,9 +6,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 
-@Nullable
+
 public class HashUtil {
 
+    @Nullable
     public static String getMd5Hash(String value) {
 
         if (value == null) {

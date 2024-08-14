@@ -17,12 +17,14 @@ public class UserDto {
      * User login. Unique across all users. E.g. "vshefer".
      * Could be null for "guest" users.
      */
-    @Nullable
+
     private String username;
     /**
      * User e-mail hash in MD-5. Unique across all users.
      * Could be null for "guest" users.
      */
+
+    @Nullable
     private String emailHash;
     /**
      * User full name. E.g. "Vladimir Shefer"
