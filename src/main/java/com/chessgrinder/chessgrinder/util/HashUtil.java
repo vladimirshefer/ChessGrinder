@@ -1,20 +1,23 @@
-package com.chessgrinder.chessgrinder.security;
+package com.chessgrinder.chessgrinder.util;
+
+import jakarta.annotation.Nullable;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 
-public class EmailHashImpl {
+@Nullable
+public class HashUtil {
 
-    public static String hashEmail(String email) {
+    public static String getMd5Hash(String value) {
 
-        if (email == null) {
-            return "";
+        if (value == null) {
+            return null;
         }
 
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] hashBytes = md.digest(email.getBytes(StandardCharsets.UTF_8));
+            byte[] hashBytes = md.digest(value.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder();
             for (byte b : hashBytes) {
                 sb.append(String.format("%02x", b));
