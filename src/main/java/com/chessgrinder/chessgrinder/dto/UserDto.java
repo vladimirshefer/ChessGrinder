@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.dto;
 import java.math.BigDecimal;
 import java.util.*;
 
+import jakarta.annotation.Nullable;
 import lombok.*;
 
 @Data
@@ -16,7 +17,15 @@ public class UserDto {
      * User login. Unique across all users. E.g. "vshefer".
      * Could be null for "guest" users.
      */
+
     private String username;
+    /**
+     * User e-mail hash in MD-5. Unique across all users.
+     * Could be null for "guest" users.
+     */
+
+    @Nullable
+    private String emailHash;
     /**
      * User full name. E.g. "Vladimir Shefer"
      */
