@@ -56,6 +56,9 @@ export function UserPane(
                     <FaRegHeart className={"inline -mt-[1px] leading-4 align-bottom"}/>
                     <span className={""}>{user.reputation || 0}</span>
                 </div>
+                 <div className={"text-sm text-gray-500"} title={loc("Elo Points")}>
+                                    <span>{loc("Elo Points")}: {user.eloPoints || 1200}</span>
+                 </div>
             </div>
         </div>
     </div>;

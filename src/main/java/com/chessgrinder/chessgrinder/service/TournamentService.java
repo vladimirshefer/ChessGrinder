@@ -5,6 +5,7 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
+import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,10 @@ import java.util.stream.Collectors;
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
+    private final ParticipantRepository participantRepository;
     private final TournamentMapper tournamentMapper;
     private final RoundService roundService;
+    private final EloServiceImpl eloService;
     private static final int DEFAULT_ROUNDS_NUMBER = 6;
     private static final int MIN_ROUNDS_NUMBER = 0;
     private static final int MAX_ROUNDS_NUMBER = 99;
@@ -72,6 +75,8 @@ public class TournamentService {
     public void finishTournament(UUID tournamentId) {
 
         List<RoundEntity> rounds = roundRepository.findByTournamentId(tournamentId);
+        List<ParticipantEntity> participants = participantRepository.findByTournamentId(tournamentId);
+
         boolean allRoundsFinished = true;
 
         for (RoundEntity round : rounds) {
@@ -98,8 +103,16 @@ public class TournamentService {
 
         try {
             roundService.updateResults(tournamentId);
+
         } catch (Exception e) {
             log.error("Could not update results", e);
+        }
+
+            try {
+                eloService.finalizeEloUpdates(participants);
+            }
+            catch (Exception e){
+            log.error("Could not finalize Elo ratings", e);
         }
 
         tournamentRepository.findById(tournamentId).ifPresent(tournament -> {

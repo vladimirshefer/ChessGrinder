@@ -41,6 +41,10 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Column(name = "nickname")
     private String nickname;
 
+    private transient int initialEloPoints; // Временное поле для начального рейтинга
+    private transient int temporaryEloPoints; // Временное поле для временного рейтинга
+
+
     @Nonnull
     @Column(name = "score")
     private BigDecimal score;

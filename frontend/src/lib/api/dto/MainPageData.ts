@@ -20,6 +20,7 @@ export interface UserDto {
     roles?: string[]
     reputation?: number
     globalScore?: number
+    eloPoints?: number; // Добавляем поле для отображения рейтинга пользователя
 }
 
 export interface ListDto<T extends any> {
