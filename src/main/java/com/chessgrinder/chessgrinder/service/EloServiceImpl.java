@@ -4,9 +4,11 @@ import com.chessgrinder.chessgrinder.entities.MatchEntity;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
+import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,10 +20,16 @@ public class EloServiceImpl implements EloService {
     private static final int UNRATED_WIN_POINTS = 5;
     private static final int UNRATED_LOSE_POINTS = -5;
 
+    private final UserRepository userRepository;
+    private final ParticipantRepository participantRepository;
 
 
     @Autowired
-    private UserRepository userRepository;
+    public EloServiceImpl(UserRepository userRepository, ParticipantRepository participantRepository) {
+        this.userRepository = userRepository;
+        this.participantRepository = participantRepository;
+    }
+
 
     @Override
     public void updateElo(MatchEntity match) {
@@ -44,15 +52,18 @@ public class EloServiceImpl implements EloService {
             return; // Оба пользователя неавторизованы, ничего не делаем
         }
 
-        // Инициализируем временные рейтинги только для авторизованных пользователей
-        if (isUser1Authorized && participant1.getInitialEloPoints() == 0) {
-            participant1.setInitialEloPoints(user1.getEloPoints());
-            participant1.setTemporaryEloPoints(user1.getEloPoints());
+        if (isUser1Authorized && participant1.getInitialEloPoints() != user1.getEloPoints()) {
+            participant1.setInitialEloPoints(user1.getEloPoints());  // Устанавливаем начальный рейтинг
+            participant1.setTemporaryEloPoints(participant1.getInitialEloPoints());  // Устанавливаем временный рейтинг
+            participantRepository.save(participant1);  // Сохраняем изменения в базе данных
+            System.out.println("Initialized participant1 Elo: " + participant1.getInitialEloPoints());
         }
 
-        if (isUser2Authorized && participant2.getInitialEloPoints() == 0) {
-            participant2.setInitialEloPoints(user2.getEloPoints());
-            participant2.setTemporaryEloPoints(user2.getEloPoints());
+        if (isUser2Authorized && participant2.getInitialEloPoints() != user2.getEloPoints()) {
+            participant2.setInitialEloPoints(user2.getEloPoints());  // Устанавливаем начальный рейтинг
+            participant2.setTemporaryEloPoints(participant2.getInitialEloPoints());  // Устанавливаем временный рейтинг
+            participantRepository.save(participant2);  // Сохраняем изменения в базе данных
+            System.out.println("Initialized participant2 Elo: " + participant2.getInitialEloPoints());
         }
 
 
@@ -72,17 +83,22 @@ public class EloServiceImpl implements EloService {
         if (isWinnerAuthorized) {
             int newElo = winner.getTemporaryEloPoints() + (isLoserAuthorized ? WIN_POINTS : UNRATED_WIN_POINTS);
             winner.setTemporaryEloPoints(newElo);
+            participantRepository.save(winner);
+            System.out.println("Updated winner's Elo to: " + newElo);
         }
 
         // Если проигравший авторизован, обновляем его рейтинг
         if (isLoserAuthorized) {
             int newElo = loser.getTemporaryEloPoints() + (isWinnerAuthorized ? LOSE_POINTS : UNRATED_LOSE_POINTS);
             loser.setTemporaryEloPoints(newElo);
+            participantRepository.save(loser);
+            System.out.println("Updated loser's Elo to: " + newElo);
         }
     }
 
     // Метод для окончательного обновления рейтинга в базе данных после турнира
     @Override
+    @Transactional
     public void finalizeEloUpdates(List<ParticipantEntity> participants) {
         for (ParticipantEntity participant : participants) {
             UserEntity user = participant.getUser();
@@ -95,6 +111,6 @@ public class EloServiceImpl implements EloService {
             userRepository.save(user);
         }
     }
-    }
+}
 
 

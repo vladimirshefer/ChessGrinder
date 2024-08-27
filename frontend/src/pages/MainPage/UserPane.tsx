@@ -4,7 +4,9 @@ import Gravatar, {GravatarType} from "components/Gravatar";
 import {Link} from "react-router-dom";
 import {AiOutlineTrophy} from "react-icons/ai";
 import {FaRegHeart} from "react-icons/fa";
+import { VscActivateBreakpoints } from "react-icons/vsc";
 import React from "react";
+
 
 export function UserPane(
     {
@@ -57,7 +59,8 @@ export function UserPane(
                     <span className={""}>{user.reputation || 0}</span>
                 </div>
                  <div className={"text-sm text-gray-500"} title={loc("Elo Points")}>
-                                    <span>{loc("Elo Points")}: {user.eloPoints || 1200}</span>
+                   <VscActivateBreakpoints className={"inline -mt-[1px] leading-4 align-bottom"}/>
+                   <span>{loc("Elo Points")}: {user.eloPoints || "?"}</span>
                  </div>
             </div>
         </div>

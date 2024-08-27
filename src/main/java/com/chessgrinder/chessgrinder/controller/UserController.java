@@ -109,6 +109,15 @@ public class UserController {
         return ListDto.<ParticipantDto>builder().values(participantMapper.toDto(participants)).build();
     }
 
+    @GetMapping("/ratings")
+    public List<UserDto> getUserRatings() {
+        List<UserEntity> users = userRepository.findAll();
+        List<UserDto> userDtos = users.stream()
+                .map(user -> userMapper.toDto(user))  // Используем маппер для преобразования в DTO
+                .collect(Collectors.toList());
+        return userDtos;
+    }
+
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping("/{userId}/badge/{badgeId}")
     public void assignBadge(
@@ -120,16 +129,6 @@ public class UserController {
         UserBadgeEntity assignment = UserBadgeEntity.builder().badge(badge).user(user).build();
         userBadgeRepository.save(assignment);
     }
-
-    @GetMapping("/ratings")
-    public List<UserDto> getUserRatings() {
-        List<UserEntity> users = userRepository.findAll();
-        List<UserDto> userDtos = users.stream()
-                .map(user -> userMapper.toDto(user))  // Используем маппер для преобразования в DTO
-                .collect(Collectors.toList());
-        return userDtos;
-    }
-
 
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping("/{userId}/reputation")

@@ -105,8 +105,10 @@ public class RoundService {
             if (match.getResult() == null) {
                 throw new IllegalStateException("Can not finish round with unknown match result");
             }
+            log.info("Updating Elo for match: {} in tournament: {}", match.getId(), tournamentId);
             eloService.updateElo(match);
         }
+
         roundEntity.setFinished(true);
         roundRepository.save(roundEntity);
         try {
