@@ -43,7 +43,6 @@ public class RoundService {
     private final ParticipantRepository participantRepository;
     private final JavafoPairingStrategyImpl javafoPairingStrategy;
     private final RoundRobinPairingStrategyImpl roundRobinPairingStrategy;
-    private final EloServiceImpl eloService;
 
     private PairingStrategy getPairingStrategy(String name) {
 
@@ -105,8 +104,6 @@ public class RoundService {
             if (match.getResult() == null) {
                 throw new IllegalStateException("Can not finish round with unknown match result");
             }
-            log.info("Updating Elo for match: {} in tournament: {}", match.getId(), tournamentId);
-            eloService.updateElo(match);
         }
 
         roundEntity.setFinished(true);
@@ -168,7 +165,7 @@ public class RoundService {
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
-        TournamentEntity tournament = tournamentRepository.findById(tournamentId).get();
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
 
         List<List<MatchEntity>> allMatchesInTheTournament = tournament.getRounds().stream()
                 .filter(RoundEntity::isFinished)

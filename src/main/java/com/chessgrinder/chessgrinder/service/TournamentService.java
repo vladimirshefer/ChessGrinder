@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -76,7 +77,6 @@ public class TournamentService {
         public void finishTournament(UUID tournamentId) {
 
             List<RoundEntity> rounds = roundRepository.findByTournamentId(tournamentId);
-            List<ParticipantEntity> participants = participantRepository.findByTournamentId(tournamentId);
 
             boolean allRoundsFinished = true;
 
@@ -110,7 +110,11 @@ public class TournamentService {
             }
 
                 try {
-                    eloService.finalizeEloUpdates(participants);
+                    List<MatchEntity> matches = rounds.stream()
+                            .flatMap(round -> round.getMatches().stream())
+                            .toList();
+
+                    eloService.finalizeEloUpdates(matches);
                 }
                 catch (Exception e){
                 log.error("Could not finalize Elo ratings", e);

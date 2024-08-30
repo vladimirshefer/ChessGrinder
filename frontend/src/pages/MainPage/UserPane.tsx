@@ -60,7 +60,7 @@ export function UserPane(
                 </div>
                  <div className={"text-sm text-gray-500"} title={loc("Elo Points")}>
                    <VscActivateBreakpoints className={"inline -mt-[1px] leading-4 align-bottom"}/>
-                   <span>{loc("Elo Points")}: {user.eloPoints || "?"}</span>
+                   <span>{loc("Elo Points")}: {user.eloPoints || "unrated"}</span>
                  </div>
             </div>
         </div>
