@@ -6,6 +6,9 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.springframework.stereotype.Component;
 import java.util.*;
 
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
+
 /**
  * RoundRobinPairingStrategyImpl is a class for creating pairings based on Berger tables.
  * In this format, each player competes against every other player exactly once.
@@ -133,6 +136,8 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
     ) {
 
         participants = new ArrayList<>(participants);
+
+        participants.sort(Comparator.comparing(ParticipantDto::getId, nullsLast(naturalOrder())));
 
         int participantsNumber = participants.size();
 
