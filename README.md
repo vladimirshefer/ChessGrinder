@@ -34,6 +34,59 @@ App for chess club.
 
 ## Project setup for developers
 
+### General setup
+
+#### Docker
+Install [Docker](https://docs.docker.com/get-started/get-docker/).
+
+Docker enables setup of other parts with ease. It is required for these instructions. 
+
+#### Postgres
+
+Database for backend.
+
+Run the following command to quickly setup the database with predefined settings.
+
+```sh
+docker compose -f ./deployment/local/docker-compose.yml up -d postgres
+```
+
+#### Nginx
+Nginx is the simplest way to setup reverse proxy (virtual server, unifying frontend and backend).
+The application will be available on `http://localhost:12345/`
+
+```sh
+docker compose -f ./deployment/local/docker-compose.yml up -d nginx
+```
+
+### Frontend
+
+#### Run frontend app in development mode
+You can run the application in development mode to be able
+to rapidly change the behavior. 
+Required for those who want to develop the frontend application.
+
+```sh
+# Install Node JS 16
+# ...
+# Goto frontend directory
+cd frontend
+# Install dependencies
+npm install
+# Run app in development mode
+npm run start
+```
+
+#### Run frontend app in docker
+If you are a backend developer and want
+to just use the frontend as is, then you can run frontend app in docker.
+Both options require nginx to work with backend.
+
+```sh
+docker compose -f ./deployment/local/docker-compose.yml build --progress plain frontend
+```
+
+### Backend
 1. Install Java (17 is recommended)
     ```sh
     curl -s "https://get.sdkman.io" | bash
@@ -42,11 +95,9 @@ App for chess club.
     sdk install java
     ```
 
-1. Install [Docker](https://docs.docker.com/get-started/get-docker/)
-
 1. Setup Backend (Java) App properties
 
-    Create new file `./src/main/resources/application-local.properties`.
+   Create new file `./src/main/resources/application-local.properties`.
     ```properties
     spring.datasource.url=jdbc:postgresql://localhost:9797/postgres
     spring.datasource.username=postgres
@@ -61,24 +112,14 @@ App for chess club.
     chessgrinder.feature.auth.signupWithPasswordEnabled=true
     ```
 
-1. Run docker container with postgres:
+1. Install `javafo` library.
+
+    This library is used to run pairings. Without it the application will not compile. 
+    We need to do this manually because it is unavailable on mavencentral.
     ```sh
-    make local_postgres_run # see Makefile
+    # Install maven dependencies to local repository so that they could be used in the pom.xml
+    mvn install:install-file -Dfile=./lib/javafo-2.2-main.jar -DgroupId=javafo -DartifactId=javafo -Dversion=2.2 -Dpackaging=jar
     ```
 
-1. Run nginx:
-    ```sh
-    make local_nginx_run # see Makefile
-    ```
-6. Start java app with `local` profile
-7. Run frontend app:
-    ```sh
-    # Install Node JS 16
-    # Goto frontend directory
-    cd frontend
-    # Install dependencies
-    npm install
-    # Run app in development mode
-    npm run start
-    ```
+1. Run `ChessGrinderApplication` class with `local` profile.
 
