@@ -34,74 +34,51 @@ App for chess club.
 
 ## Project setup for developers
 
-1. Install Maven and Java 17
+1. Install Java (17 is recommended)
     ```sh
     curl -s "https://get.sdkman.io" | bash
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+    sdk version
+    sdk install java
     ```
-    Then close and open terminal.
-    ```sh
-    sdk install maven
-    ```
-2. Run
-   ````
-   make dev_java_build
-   ````
-   
-3. Setup Backend (Java) App properties 
-    
-    Create new file `./src/main/resources/application-local.properties` directory.
+
+1. Install [Docker](https://docs.docker.com/get-started/get-docker/)
+
+1. Setup Backend (Java) App properties
+
+    Create new file `./src/main/resources/application-local.properties`.
     ```properties
     spring.datasource.url=jdbc:postgresql://localhost:9797/postgres
     spring.datasource.username=postgres
     spring.datasource.password=password
     ## Create yours Google Oauth2 credentials 
     # (https://support.google.com/cloud/answer/6158849?hl=en)
-    spring.security.oauth2.client.registration.google.clientId=CLIENT_ID
-    spring.security.oauth2.client.registration.google.clientSecret=SECRET_ID
+    #spring.security.oauth2.client.registration.google.clientId=<CLIENT ID>
+    #spring.security.oauth2.client.registration.google.clientSecret=<CLIENT SECRET>
+    ## Get admin privileges locally.
+    chessgrinder.security.adminEmail=<YOUR EMAIL>
+    ## Allow login with password.
+    chessgrinder.feature.auth.signupWithPasswordEnabled=true
     ```
 
-4. Run to run docker container with postgres:
+1. Run docker container with postgres:
     ```sh
-    docker run -d \
-      --name chessgrinder_postgres \
-      -e POSTGRES_PASSWORD=password \
-      -p 9797:5432\
-      postgres
+    make local_postgres_run # see Makefile
     ```
 
-5. Setup <i>nginx</i>:
+1. Run nginx:
     ```sh
-    brew install nginx # (command for macOS only)
+    make local_nginx_run # see Makefile
     ```
-    (command for macOS only)
-    ```sh
-    cd deployment/local
-    ```
-    
-    Edit **local_nginx_setup.sh**, change path to nginx conf directory
-  
-    ```sh
-    sudo chmod +x local_nginx_setup.sh
-    ```
-    ```
-    sudo ./local_nginx_setup.sh
-    ```
-    ```sh
-    sudo brew services restart nginx
-    ```
-6. Start java app with local profile
+6. Start java app with `local` profile
 7. Run frontend app:
-   1. Install NodeJS 16
-   2. Frontend App is located in `frontend` directory
-       ```shell
-       cd frontend
-       ```
-   3. Install frontend dependencies
-       ```sh
-       npm install
-       ```
-   4. Run application in development mode
-       ```sh
-       npm start
-       ```
+    ```sh
+    # Install Node JS 16
+    # Goto frontend directory
+    cd frontend
+    # Install dependencies
+    npm install
+    # Run app in development mode
+    npm run start
+    ```
 

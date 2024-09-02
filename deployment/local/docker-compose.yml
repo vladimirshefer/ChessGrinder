@@ -1,0 +1,14 @@
+name: chessgrinder_local
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "12345:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  postgres:
+    image: postgres
+    ports:
+      - "9797:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
