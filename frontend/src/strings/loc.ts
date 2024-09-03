@@ -31,10 +31,11 @@ export function useTransliterate(): (key: string) => string {
 
     return (key: string): string => {
         let result = '';
-
+        let translitedChar;
         for (let i = 0; i < key.length; i++) {
             const char = key[i];
-            result += translit_ru_en[char] || char;
+            translitedChar = translit_ru_en[char];
+            result += (translitedChar === undefined) ? char : translitedChar;
         }
 
         return result;
@@ -44,14 +45,14 @@ export function useTransliterate(): (key: string) => string {
 const translit_ru_en: { [key: string]: string } = {
     'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v',
     'Г': 'G', 'г': 'g', 'Д': 'D', 'д': 'd', 'Е': 'E', 'е': 'e',
-    'Ё': 'YO', 'ё': 'yo', 'Ж': 'ZH', 'ж': 'zh', 'З': 'Z', 'з': 'z',
+    'Ё': 'Yo', 'ё': 'yo', 'Ж': 'Zh', 'ж': 'zh', 'З': 'Z', 'з': 'z',
     'И': 'I', 'и': 'i', 'Й': 'J', 'й': 'j', 'К': 'K', 'к': 'k',
     'Л': 'L', 'л': 'l', 'М': 'M', 'м': 'm', 'Н': 'N', 'н': 'n',
     'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p', 'Р': 'R', 'р': 'r',
     'С': 'S', 'с': 's', 'Т': 'T', 'т': 't', 'У': 'U', 'у': 'u',
     'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
-    'Ч': 'CH', 'ч': 'ch', 'Ш': 'SH', 'ш': 'sh', 'Щ': 'SCH', 'щ': 'sch',
+    'Ч': 'Ch', 'ч': 'ch', 'Ш': 'Sh', 'ш': 'sh', 'Щ': 'Sch', 'щ': 'sch',
     'Ъ': '', 'ъ': '', 'Ы': 'Y', 'ы': 'y', 'Ь': '', 'ь': '',
-    'Э': 'E', 'э': 'e', 'Ю': 'YU', 'ю': 'yu', 'Я': 'YA', 'я': 'ya',
+    'Э': 'E', 'э': 'e', 'Ю': 'Yu', 'ю': 'yu', 'Я': 'Ya', 'я': 'ya',
 }
 
