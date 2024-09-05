@@ -51,6 +51,10 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Enumerated(EnumType. STRING)
     private TournamentStatus status;
 
+    @Nullable
+    @Column(name = "has_elo_calculated")
+    private boolean hasEloCalculated;
+
     /**
      * Number of allowed rounds (not actual number of rounds)
      */

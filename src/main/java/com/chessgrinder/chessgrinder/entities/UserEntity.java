@@ -62,7 +62,7 @@ public class UserEntity extends AbstractAuditingEntity {
     private int reputation = 0;
 
     @Column(name = "elo_points")
-    private int eloPoints = 1200;
+    private int eloPoints = 0;
 
     @Builder.Default
     @Transient //won't be created in DB

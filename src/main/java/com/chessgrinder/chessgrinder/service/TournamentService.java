@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
-    private final ParticipantRepository participantRepository;
     private final TournamentMapper tournamentMapper;
     private final RoundService roundService;
     private final EloServiceImpl eloService;
@@ -68,13 +67,27 @@ public class TournamentService {
     }
 
     public void startTournament(UUID tournamentId) {
+
         tournamentRepository.findById(tournamentId).ifPresent(tournament -> {
+            if (tournament.getStatus() == TournamentStatus.FINISHED && tournament.isHasEloCalculated()) {
+                try {
+                    eloService.rollbackEloChanges(tournament);
+                    tournament.setHasEloCalculated(false);
+                } catch (Exception e) {
+                    log.error("Could not revert Elo changes when reopening the tournament", e);
+                    throw new RuntimeException("Error reverting Elo changes when reopening the tournament", e);
+                }
+            }
             tournament.setStatus(TournamentStatus.ACTIVE);
+
             tournamentRepository.save(tournament);
         });
     }
 
         public void finishTournament(UUID tournamentId) {
+
+            TournamentEntity tournament = tournamentRepository.findById(tournamentId)
+                    .orElseThrow(() -> new IllegalArgumentException("Tournament not found with ID: " + tournamentId));
 
             List<RoundEntity> rounds = roundRepository.findByTournamentId(tournamentId);
 
@@ -110,20 +123,15 @@ public class TournamentService {
             }
 
                 try {
-                    List<MatchEntity> matches = rounds.stream()
-                            .flatMap(round -> round.getMatches().stream())
-                            .toList();
-
-                    eloService.finalizeEloUpdates(matches);
+                    eloService.processTournamentAndUpdateElo(tournament);
                 }
                 catch (Exception e){
                 log.error("Could not finalize Elo ratings", e);
             }
 
-            tournamentRepository.findById(tournamentId).ifPresent(tournament -> {
                 tournament.setStatus(TournamentStatus.FINISHED);
                 tournamentRepository.save(tournament);
-            });
+
         }
 
     public void deleteTournament(UUID tournamentId) {

@@ -1,130 +1,111 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.entities.MatchEntity;
-import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
-import com.chessgrinder.chessgrinder.entities.UserEntity;
-import com.chessgrinder.chessgrinder.enums.MatchResult;
-import com.chessgrinder.chessgrinder.repositories.MatchRepository;
+import com.chessgrinder.chessgrinder.dto.EloUpdateResultDto;
+import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
+import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 
 @Service
 public class EloServiceImpl implements EloService {
-    private static final int WIN_POINTS = 10;
-    private static final int LOSE_POINTS = -10;
-    private static final int UNRATED_WIN_POINTS = 5;
-    private static final int UNRATED_LOSE_POINTS = -5;
-    private static final int DEFAULT_ELO_POINTS = 1200;
 
-    private final UserRepository userRepository;
+    private final UserEloInitializerService userEloInitializerService;
+    private final DefaultEloCalculationStrategy defaultEloCalculationStrategy;
     private final ParticipantRepository participantRepository;
-    private final MatchRepository matchRepository;
+    private final UserRepository userRepository;
+    private final TournamentRepository tournamentRepository;
 
     @Autowired
-    public EloServiceImpl(UserRepository userRepository, ParticipantRepository participantRepository, MatchRepository matchRepository) {
-        this.userRepository = userRepository;
+    public EloServiceImpl(UserEloInitializerService userEloInitializerService,
+                          DefaultEloCalculationStrategy defaultEloCalculationStrategy,
+                          ParticipantRepository participantRepository,
+                          UserRepository userRepository,
+                          TournamentRepository tournamentRepository) {
+        this.userEloInitializerService = userEloInitializerService;
+        this.defaultEloCalculationStrategy = defaultEloCalculationStrategy;
         this.participantRepository = participantRepository;
-        this.matchRepository = matchRepository;
+        this.userRepository = userRepository;
+        this.tournamentRepository = tournamentRepository;
     }
 
-    // Метод для пересчета рейтингов на основе всех матчей
     @Override
     @Transactional
-    public void finalizeEloUpdates(List<MatchEntity> matches) {
-        for (MatchEntity match : matches) {
-            ParticipantEntity participant1 = match.getParticipant1();
-            ParticipantEntity participant2 = match.getParticipant2();
+    public void processTournamentAndUpdateElo(TournamentEntity tournament) {
 
-            if (participant1 == null || participant2 == null) {
-                continue; // Пропускаем, если нет одного из участников
-            }
+        Map<UUID, Integer> currentEloMap = new HashMap<>();
 
-            UserEntity user1 = participant1.getUser();
-            UserEntity user2 = participant2.getUser();
+        // Основной цикл для инициализации ELO и пересчета на основе результатов матчей
+        for (RoundEntity round : tournament.getRounds()) {
+            for (MatchEntity match : round.getMatches()) {
+                ParticipantEntity participant1 = match.getParticipant1();
+                ParticipantEntity participant2 = match.getParticipant2();
 
-            // Пропускаем все итерации для неавторизованных пользователей
-            boolean isUser1Authorized = isAuthorizedUser(user1);
-            boolean isUser2Authorized = isAuthorizedUser(user2);
-
-            if (!isUser1Authorized && !isUser2Authorized) {
-                continue; // Оба пользователя неавторизованы, ничего не делаем
-            }
-
-            // Ставим дефолтный рейтинг для новых пользователей с 0 рейтингом
-            setDefaultEloIfNeeded(user1, isUser1Authorized);
-            setDefaultEloIfNeeded(user2, isUser2Authorized);
-
-            if (isUser1Authorized && participant1.getInitialEloPoints() == 0) {
-                participant1.setInitialEloPoints(user1.getEloPoints());
-                participant1.setTemporaryEloPoints(user1.getEloPoints());
-                participantRepository.save(participant1);
-            }
-
-            if (isUser2Authorized && participant2.getInitialEloPoints() == 0) {
-                participant2.setInitialEloPoints(user2.getEloPoints());
-                participant2.setTemporaryEloPoints(user2.getEloPoints());
-                participantRepository.save(participant2);
-            }
-
-            // Проверяем, был ли уже рассчитан рейтинг для этого матча
-            if (match.getHasEloCalculated() == null || match.getHasEloCalculated() == false) {
-
-                int initialElo1 = isUser1Authorized ? participant1.getTemporaryEloPoints() : 0;
-                int initialElo2 = isUser2Authorized ? participant2.getTemporaryEloPoints() : 0;
-
-
-                // Рассчитываем изменение рейтинга для каждого участника на основе всех матчей
-                if (match.getResult() == MatchResult.WHITE_WIN) {
-                    if (isUser1Authorized) {
-                        initialElo1 += isUser2Authorized ? WIN_POINTS : UNRATED_WIN_POINTS;
-                    }
-                    if (isUser2Authorized) {
-                        initialElo2 += isUser1Authorized ? LOSE_POINTS : UNRATED_LOSE_POINTS;
-                    }
-                } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                    if (isUser2Authorized) {
-                        initialElo2 += isUser1Authorized ? WIN_POINTS : UNRATED_WIN_POINTS;
-                    }
-                    if (isUser1Authorized) {
-                        initialElo1 += isUser2Authorized ? LOSE_POINTS : UNRATED_LOSE_POINTS;
-                    }
+                if (participant1 == null || participant2 == null) {
+                    continue; // Пропускаем, если одного из участников нет
                 }
 
-                // Если ничья, изменения не происходит
+                UserEntity user1 = participant1.getUser();
+                UserEntity user2 = participant2.getUser();
 
-                // Сохраняем обновленные рейтинги
-                if (isUser1Authorized) {
-                    participant1.setTemporaryEloPoints(initialElo1);
+                if (user1 != null) {
+                    currentEloMap.putIfAbsent(participant1.getId(), user1.getEloPoints());
                 }
 
-                if (isUser2Authorized) {
-                    participant2.setTemporaryEloPoints(initialElo2);
+                if (user2 != null) {
+                    currentEloMap.putIfAbsent(participant2.getId(), user2.getEloPoints());
                 }
 
-                updateEloPoints(user1, initialElo1, isUser1Authorized);
-                updateEloPoints(user2, initialElo2, isUser2Authorized);
+                boolean isUser1Authorized = userEloInitializerService.isAuthorizedUser(user1);
+                boolean isUser2Authorized = userEloInitializerService.isAuthorizedUser(user2);
 
-                match.setHasEloCalculated(true);
-                // Здесь нужно сохранить матч, чтобы флаг был сохранен в базе данных.
-                matchRepository.save(match);
+                if (!isUser1Authorized && !isUser2Authorized) {
+                    continue; // Оба пользователя неавторизованы, пропускаем
+                }
+
+                userEloInitializerService.setDefaultEloIfNeeded(user1, isUser1Authorized);
+                userEloInitializerService.setDefaultEloIfNeeded(user2, isUser2Authorized);
+
+                setInitialAndTemporaryElo(participant1, user1, isUser1Authorized, currentEloMap);
+                setInitialAndTemporaryElo(participant2, user2, isUser2Authorized, currentEloMap);
+
+                int player1Elo = currentEloMap.getOrDefault(participant1.getId(), 0);
+                int player2Elo = currentEloMap.getOrDefault(participant2.getId(), 0);
+
+                boolean bothUsersAuthorized = isUser1Authorized && isUser2Authorized;
+
+                EloUpdateResultDto updateResult = defaultEloCalculationStrategy.calculateElo(
+                        player1Elo, player2Elo, match.getResult(), bothUsersAuthorized);
+
+                int updatedEloFirst = updateResult.getPlayerNewElo();
+                int updatedEloSecond = updateResult.getOpponentNewElo();
+
+                currentEloMap.put(participant1.getId(), updatedEloFirst);
+                currentEloMap.put(participant2.getId(), updatedEloSecond);
+
+                updateEloPoints(user1, updatedEloFirst, isUser1Authorized);
+                updateEloPoints(user2, updatedEloSecond, isUser2Authorized);
             }
         }
 
+        // Сохранение состояния турнира после всех расчетов
+        tournament.setHasEloCalculated(true);
+        tournamentRepository.save(tournament);
     }
 
-    private boolean isAuthorizedUser(UserEntity user) {
-        return user != null && user.getId() != null;
-    }
-
-    private void setDefaultEloIfNeeded(UserEntity user, boolean isAuthorized) {
-        if (isAuthorized && user.getEloPoints() == 0) {
-            user.setEloPoints(DEFAULT_ELO_POINTS);
-            userRepository.save(user);
+    private void setInitialAndTemporaryElo(ParticipantEntity participant, UserEntity user, boolean isAuthorized, Map<UUID, Integer> temporaryEloMap) {
+        if (isAuthorized && participant.getInitialEloPoints() == 0) {
+            participant.setInitialEloPoints(user.getEloPoints());
+            temporaryEloMap.put(participant.getId(), user.getEloPoints());
+            participantRepository.save(participant);
         }
     }
 
@@ -134,5 +115,35 @@ public class EloServiceImpl implements EloService {
             userRepository.save(user);
         }
     }
-}
 
+    @Override
+    public void rollbackEloChanges(TournamentEntity tournament) {
+        // Логика для отката изменений Elo, если турнир изменился после подсчета
+        List<MatchEntity> matches = tournament.getRounds().stream()
+                .flatMap(round -> round.getMatches().stream())
+                .toList();
+
+        for (MatchEntity match : matches) {
+            ParticipantEntity participant1 = match.getParticipant1();
+            ParticipantEntity participant2 = match.getParticipant2();
+
+            if (participant1 != null) {
+                UserEntity user1 = participant1.getUser();
+                if (user1 != null && participant1.getInitialEloPoints() > 0) {
+                    user1.setEloPoints(participant1.getInitialEloPoints());
+                    userRepository.save(user1);
+                }
+            }
+            if (participant2 != null) {
+                UserEntity user2 = participant2.getUser();
+                if (user2 != null && participant2.getInitialEloPoints() > 0) {
+                    user2.setEloPoints(participant2.getInitialEloPoints());
+                    userRepository.save(user2);
+                }
+            }
+        }
+
+        tournament.setHasEloCalculated(false);
+        tournamentRepository.save(tournament);
+    }
+}
