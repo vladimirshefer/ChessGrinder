@@ -4,8 +4,6 @@ import com.chessgrinder.chessgrinder.dto.EloUpdateResultDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
 @Component
 public class DefaultEloCalculationStrategy implements EloCalculationStrategy {
 
@@ -19,8 +17,8 @@ public class DefaultEloCalculationStrategy implements EloCalculationStrategy {
 
         if (result == null) {
             return EloUpdateResultDto.builder()
-                    .playerNewElo(whiteElo)
-                    .opponentNewElo(blackElo)
+                    .whiteNewElo(whiteElo)
+                    .blackNewElo(blackElo)
                     .build();
         }
         int playerPoints = 0;
@@ -41,8 +39,8 @@ public class DefaultEloCalculationStrategy implements EloCalculationStrategy {
         int opponentNewElo = blackElo + opponentPoints;
 
         return EloUpdateResultDto.builder()
-                .playerNewElo(playerNewElo)
-                .opponentNewElo(opponentNewElo)
+                .whiteNewElo(playerNewElo)
+                .blackNewElo(opponentNewElo)
                 .build();
     }
 }

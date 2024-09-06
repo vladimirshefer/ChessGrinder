@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class EloUpdateResultDto {
-    private final int playerNewElo;
-    private final int opponentNewElo;
+    private final int whiteNewElo;
+    private final int blackNewElo;
 }

@@ -39,16 +39,16 @@ public class EloServiceImplTest {
             public EloUpdateResultDto calculateElo(int whiteElo, int blackElo, MatchResult result, boolean isOpponentAuthorized) {
                 if (result == MatchResult.DRAW) {
                     return EloUpdateResultDto.builder()
-                            .playerNewElo(whiteElo)
-                            .opponentNewElo(blackElo)
+                            .whiteNewElo(whiteElo)
+                            .blackNewElo(blackElo)
                             .build();
                 }
                 int points = isOpponentAuthorized ? 10 : 5;
                 int playerNewElo = result == MatchResult.WHITE_WIN ? whiteElo + points : whiteElo - points;
                 int opponentNewElo = result == MatchResult.WHITE_WIN ? blackElo - points : blackElo + points;
                 return EloUpdateResultDto.builder()
-                        .playerNewElo(playerNewElo)
-                        .opponentNewElo(opponentNewElo)
+                        .whiteNewElo(playerNewElo)
+                        .blackNewElo(opponentNewElo)
                         .build();
             }
         };

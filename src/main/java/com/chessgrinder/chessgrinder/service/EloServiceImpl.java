@@ -86,8 +86,8 @@ public class EloServiceImpl implements EloService {
                 EloUpdateResultDto updateResult = defaultEloCalculationStrategy.calculateElo(
                         player1Elo, player2Elo, match.getResult(), bothUsersAuthorized);
 
-                int updatedEloFirst = updateResult.getPlayerNewElo();
-                int updatedEloSecond = updateResult.getOpponentNewElo();
+                int updatedEloFirst = updateResult.getWhiteNewElo();
+                int updatedEloSecond = updateResult.getBlackNewElo();
 
                 currentEloMap.put(participant1.getId(), updatedEloFirst);
                 currentEloMap.put(participant2.getId(), updatedEloSecond);
