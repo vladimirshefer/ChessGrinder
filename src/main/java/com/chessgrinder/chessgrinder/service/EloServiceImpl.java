@@ -6,7 +6,7 @@ import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.SecurityUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,28 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-
+@RequiredArgsConstructor
 @Service
 public class EloServiceImpl implements EloService {
 
     private final UserEloInitializerService userEloInitializerService;
-    private final DefaultEloCalculationStrategy defaultEloCalculationStrategy;
+    private final EloCalculationStrategy eloCalculationStrategy;
     private final ParticipantRepository participantRepository;
     private final UserRepository userRepository;
     private final TournamentRepository tournamentRepository;
-
-    @Autowired
-    public EloServiceImpl(UserEloInitializerService userEloInitializerService,
-                          DefaultEloCalculationStrategy defaultEloCalculationStrategy,
-                          ParticipantRepository participantRepository,
-                          UserRepository userRepository,
-                          TournamentRepository tournamentRepository) {
-        this.userEloInitializerService = userEloInitializerService;
-        this.defaultEloCalculationStrategy = defaultEloCalculationStrategy;
-        this.participantRepository = participantRepository;
-        this.userRepository = userRepository;
-        this.tournamentRepository = tournamentRepository;
-    }
 
     @Override
     @Transactional
@@ -44,14 +31,13 @@ public class EloServiceImpl implements EloService {
 
         Map<UUID, Integer> currentEloMap = new HashMap<>();
 
-        // Основной цикл для инициализации ELO и пересчета на основе результатов матчей
         for (RoundEntity round : tournament.getRounds()) {
             for (MatchEntity match : round.getMatches()) {
                 ParticipantEntity participant1 = match.getParticipant1();
                 ParticipantEntity participant2 = match.getParticipant2();
 
                 if (participant1 == null || participant2 == null) {
-                    continue; // Пропускаем, если одного из участников нет
+                    continue;
                 }
 
                 UserEntity user1 = participant1.getUser();
@@ -69,7 +55,7 @@ public class EloServiceImpl implements EloService {
                 boolean isUser2Authorized = SecurityUtil.isAuthorizedUser(user2);
 
                 if (!isUser1Authorized && !isUser2Authorized) {
-                    continue; // Оба пользователя неавторизованы, пропускаем
+                    continue;
                 }
 
                 userEloInitializerService.setDefaultEloIfNeeded(user1, isUser1Authorized);
@@ -83,7 +69,7 @@ public class EloServiceImpl implements EloService {
 
                 boolean bothUsersAuthorized = isUser1Authorized && isUser2Authorized;
 
-                EloUpdateResultDto updateResult = defaultEloCalculationStrategy.calculateElo(
+                EloUpdateResultDto updateResult = eloCalculationStrategy.calculateElo(
                         player1Elo, player2Elo, match.getResult(), bothUsersAuthorized);
 
                 int updatedEloFirst = updateResult.getWhiteNewElo();
@@ -97,7 +83,6 @@ public class EloServiceImpl implements EloService {
             }
         }
 
-        // Сохранение состояния турнира после всех расчетов
         tournament.setHasEloCalculated(true);
         tournamentRepository.save(tournament);
     }
@@ -119,7 +104,6 @@ public class EloServiceImpl implements EloService {
 
     @Override
     public void rollbackEloChanges(TournamentEntity tournament) {
-        // Логика для отката изменений Elo, если турнир изменился после подсчета
         List<MatchEntity> matches = tournament.getRounds().stream()
                 .flatMap(round -> round.getMatches().stream())
                 .toList();
