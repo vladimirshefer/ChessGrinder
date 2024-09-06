@@ -1,15 +1,16 @@
 package com.chessgrinder.chessgrinder.entities;
 
-import java.math.BigDecimal;
-import java.util.*;
-
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.extern.slf4j.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UuidGenerator;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -48,7 +49,7 @@ public class UserEntity extends AbstractAuditingEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @ToString.Exclude
     @JoinTable(
