@@ -36,16 +36,16 @@ public class EloServiceImplTest {
 
         defaultEloCalculationStrategy = new DefaultEloCalculationStrategy() {
             @Override
-            public EloUpdateResultDto calculateElo(int playerElo, int opponentElo, MatchResult result, boolean isOpponentAuthorized) {
+            public EloUpdateResultDto calculateElo(int whiteElo, int blackElo, MatchResult result, boolean isOpponentAuthorized) {
                 if (result == MatchResult.DRAW) {
                     return EloUpdateResultDto.builder()
-                            .playerNewElo(playerElo)
-                            .opponentNewElo(opponentElo)
+                            .playerNewElo(whiteElo)
+                            .opponentNewElo(blackElo)
                             .build();
                 }
                 int points = isOpponentAuthorized ? 10 : 5;
-                int playerNewElo = result == MatchResult.WHITE_WIN ? playerElo + points : playerElo - points;
-                int opponentNewElo = result == MatchResult.WHITE_WIN ? opponentElo - points : opponentElo + points;
+                int playerNewElo = result == MatchResult.WHITE_WIN ? whiteElo + points : whiteElo - points;
+                int opponentNewElo = result == MatchResult.WHITE_WIN ? blackElo - points : blackElo + points;
                 return EloUpdateResultDto.builder()
                         .playerNewElo(playerNewElo)
                         .opponentNewElo(opponentNewElo)

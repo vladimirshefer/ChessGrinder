@@ -13,7 +13,7 @@ public class DefaultEloCalculationStrategy implements EloCalculationStrategy {
     private static final int UNRATED_LOSE_POINTS = -5;
 
     @Override
-    public EloUpdateResultDto calculateElo(int playerElo, int opponentElo, MatchResult result, boolean bothUsersAuthorized) {
+    public EloUpdateResultDto calculateElo(int whiteElo, int blackElo, MatchResult result, boolean bothUsersAuthorized) {
         int playerPoints = 0;
         int opponentPoints = 0;
 
@@ -38,8 +38,8 @@ public class DefaultEloCalculationStrategy implements EloCalculationStrategy {
                 break;
         }
 
-        int playerNewElo = playerElo + playerPoints;
-        int opponentNewElo = opponentElo + opponentPoints;
+        int playerNewElo = whiteElo + playerPoints;
+        int opponentNewElo = blackElo + opponentPoints;
 
         return EloUpdateResultDto.builder()
                 .playerNewElo(playerNewElo)
