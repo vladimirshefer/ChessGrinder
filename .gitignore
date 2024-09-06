@@ -38,3 +38,6 @@ application-production.properties
 ## Production log files
 *.log
 nohup.out
+
+## Local docekr containers files
+/deployment/local/containers/
