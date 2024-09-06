@@ -16,13 +16,20 @@ public class DefaultEloCalculationStrategy implements EloCalculationStrategy {
 
     @Override
     public EloUpdateResultDto calculateElo(int whiteElo, int blackElo, MatchResult result, boolean bothUsersAuthorized) {
+
+        if (result == null) {
+            return EloUpdateResultDto.builder()
+                    .playerNewElo(whiteElo)
+                    .opponentNewElo(blackElo)
+                    .build();
+        }
         int playerPoints = 0;
         int opponentPoints = 0;
 
         int winPoints = bothUsersAuthorized ? WIN_POINTS : UNRATED_WIN_POINTS;
         int losePoints = bothUsersAuthorized ? LOSE_POINTS : UNRATED_LOSE_POINTS;
 
-        if (Objects.requireNonNull(result) == MatchResult.WHITE_WIN) {
+        if (result == MatchResult.WHITE_WIN) {
             playerPoints = winPoints;
             opponentPoints = losePoints;
         } else if (result == MatchResult.BLACK_WIN) {
