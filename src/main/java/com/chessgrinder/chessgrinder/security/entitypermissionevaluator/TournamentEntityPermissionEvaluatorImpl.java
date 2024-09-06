@@ -34,9 +34,9 @@ public class TournamentEntityPermissionEvaluatorImpl implements EntityPermission
             return false;
         }
 
-        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElse(null);
-
-        if (tournamentEntity == null) return false;
+        if (!tournamentRepository.existsById(tournamentId)) {
+            return false;
+        }
 
         UserEntity userEntity = userRepository.findById(userId).orElse(null);
 
