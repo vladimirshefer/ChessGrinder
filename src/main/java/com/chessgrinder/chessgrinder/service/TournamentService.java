@@ -5,7 +5,6 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
-import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import lombok.RequiredArgsConstructor;
@@ -84,55 +83,52 @@ public class TournamentService {
         });
     }
 
-        public void finishTournament(UUID tournamentId) {
+    public void finishTournament(UUID tournamentId) {
 
-            TournamentEntity tournament = tournamentRepository.findById(tournamentId)
-                    .orElseThrow(() -> new IllegalArgumentException("Tournament not found with ID: " + tournamentId));
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new IllegalArgumentException("Tournament not found with ID: " + tournamentId));
 
-            List<RoundEntity> rounds = roundRepository.findByTournamentId(tournamentId);
+        List<RoundEntity> rounds = roundRepository.findByTournamentId(tournamentId);
 
-            boolean allRoundsFinished = true;
+        boolean allRoundsFinished = true;
 
-            for (RoundEntity round : rounds) {
-                if (!round.isFinished()) {
-                    boolean allMatchesHaveResults = round.getMatches().stream()
-                            .allMatch(match -> match.getResult() != null);
+        for (RoundEntity round : rounds) {
+            if (!round.isFinished()) {
+                boolean allMatchesHaveResults = round.getMatches().stream()
+                        .allMatch(match -> match.getResult() != null);
 
-
-                    if (allMatchesHaveResults) {
-                        round.setFinished(true);
-                        roundRepository.save(round);
-                    }
-                    else {
-                        allRoundsFinished = false;
-                        break;
-                    }
+                if (allMatchesHaveResults) {
+                    round.setFinished(true);
+                    roundRepository.save(round);
+                } else {
+                    allRoundsFinished = false;
+                    break;
                 }
             }
-
-            if (!allRoundsFinished) {
-
-                throw new IllegalStateException("There are open rounds with unknown match results.");
-            }
-
-            try {
-                roundService.updateResults(tournamentId);
-
-            } catch (Exception e) {
-                log.error("Could not update results", e);
-            }
-
-                try {
-                    eloService.processTournamentAndUpdateElo(tournament);
-                }
-                catch (Exception e){
-                log.error("Could not finalize Elo ratings", e);
-            }
-
-                tournament.setStatus(TournamentStatus.FINISHED);
-                tournamentRepository.save(tournament);
-
         }
+
+        if (!allRoundsFinished) {
+
+            throw new IllegalStateException("There are open rounds with unknown match results.");
+        }
+
+        try {
+            roundService.updateResults(tournamentId);
+
+        } catch (Exception e) {
+            log.error("Could not update results", e);
+        }
+
+        try {
+            eloService.processTournamentAndUpdateElo(tournament);
+        } catch (Exception e) {
+            log.error("Could not finalize Elo ratings", e);
+        }
+
+        tournament.setStatus(TournamentStatus.FINISHED);
+        tournamentRepository.save(tournament);
+
+    }
 
     public void deleteTournament(UUID tournamentId) {
         tournamentRepository.deleteById(tournamentId);
