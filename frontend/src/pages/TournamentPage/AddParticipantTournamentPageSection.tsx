@@ -42,7 +42,6 @@ export default function AddParticipantTournamentPageSection(
             isMissing: false,
             place: -1,
         };
-        console.log(participant)
         setSelectedValue("")
         return await addParticipant(participant);
     }
