@@ -20,6 +20,8 @@ public class MatchMapper {
                 .white(participantMapper.toDto(matchEntity.getParticipant1()))
                 .black(participantMapper.toDto(matchEntity.getParticipant2()))
                 .result(matchEntity.getResult())
+                .resultSubmittedByParticipant1(matchEntity.getResultSubmittedByParticipant1())
+                .resultSubmittedByParticipant2(matchEntity.getResultSubmittedByParticipant2())
                 .build();
     }
 

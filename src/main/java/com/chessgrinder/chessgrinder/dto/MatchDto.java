@@ -1,8 +1,9 @@
 package com.chessgrinder.chessgrinder.dto;
 
-import com.chessgrinder.chessgrinder.enums.*;
+import com.chessgrinder.chessgrinder.enums.MatchResult;
 import jakarta.annotation.Nullable;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
@@ -14,4 +15,8 @@ public class MatchDto {
     private ParticipantDto black;
     @Nullable
     private MatchResult result;
+    @Nullable
+    private MatchResult resultSubmittedByParticipant1;
+    @Nullable
+    private MatchResult resultSubmittedByParticipant2;
 }
