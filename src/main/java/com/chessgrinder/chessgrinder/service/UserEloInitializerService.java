@@ -13,11 +13,6 @@ public class UserEloInitializerService {
 
     private final UserRepository userRepository;
 
-    public boolean isAuthorizedUser(UserEntity user) {
-        return user != null && user.getId() != null;
-    }
-
-
     public void setDefaultEloIfNeeded(UserEntity user, boolean isAuthorized) {
         if (isAuthorized && user.getEloPoints() == 0) {
             user.setEloPoints(DEFAULT_ELO_POINTS);

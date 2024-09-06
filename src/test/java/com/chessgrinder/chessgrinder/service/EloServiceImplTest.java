@@ -7,6 +7,7 @@ import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.SecurityUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -258,8 +259,8 @@ public class EloServiceImplTest {
         participant2.setId(UUID.randomUUID());
         participant2.setUser(user2);
 
-        boolean isUser1Authorized = userEloInitializerService.isAuthorizedUser(user1);
-        boolean isUser2Authorized = userEloInitializerService.isAuthorizedUser(user2);
+        boolean isUser1Authorized = SecurityUtil.isAuthorizedUser(user1);
+        boolean isUser2Authorized = SecurityUtil.isAuthorizedUser(user2);
 
         assertTrue(isUser1Authorized);
         assertFalse(isUser2Authorized);
@@ -376,10 +377,10 @@ public class EloServiceImplTest {
         participant4.setUser(user4);
 
 
-        boolean isUser1Authorized = userEloInitializerService.isAuthorizedUser(user1);
-        boolean isUser2Authorized = userEloInitializerService.isAuthorizedUser(user2);
-        boolean isUser3Authorized = userEloInitializerService.isAuthorizedUser(user3);
-        boolean isUser4Authorized = userEloInitializerService.isAuthorizedUser(user4);
+        boolean isUser1Authorized = SecurityUtil.isAuthorizedUser(user1);
+        boolean isUser2Authorized = SecurityUtil.isAuthorizedUser(user2);
+        boolean isUser3Authorized = SecurityUtil.isAuthorizedUser(user3);
+        boolean isUser4Authorized = SecurityUtil.isAuthorizedUser(user4);
 
         assertTrue(isUser1Authorized); // user1 авторизован
         assertTrue(isUser2Authorized); // user2 авторизован

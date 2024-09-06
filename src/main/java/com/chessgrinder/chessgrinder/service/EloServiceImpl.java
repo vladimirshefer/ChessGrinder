@@ -5,6 +5,7 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,8 +65,8 @@ public class EloServiceImpl implements EloService {
                     currentEloMap.putIfAbsent(participant2.getId(), user2.getEloPoints());
                 }
 
-                boolean isUser1Authorized = userEloInitializerService.isAuthorizedUser(user1);
-                boolean isUser2Authorized = userEloInitializerService.isAuthorizedUser(user2);
+                boolean isUser1Authorized = SecurityUtil.isAuthorizedUser(user1);
+                boolean isUser2Authorized = SecurityUtil.isAuthorizedUser(user2);
 
                 if (!isUser1Authorized && !isUser2Authorized) {
                     continue; // Оба пользователя неавторизованы, пропускаем
