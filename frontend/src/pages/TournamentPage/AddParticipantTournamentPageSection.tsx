@@ -43,6 +43,7 @@ export default function AddParticipantTournamentPageSection(
             place: -1,
         };
         console.log(participant)
+        setSelectedValue("")
         return await addParticipant(participant);
     }
 
