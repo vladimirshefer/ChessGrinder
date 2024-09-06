@@ -2,7 +2,7 @@ import {ListDto, TournamentDto} from "lib/api/dto/MainPageData";
 import {MatchDto, MatchResult, ParticipantDto, RoundDto} from "lib/api/dto/TournamentPageData";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
-import {useMemo} from "react";
+import {useMemo, useState} from "react";
 import {isNotEmptyArray} from "lib/util/common";
 import {useLoc} from "strings/loc";
 import {FaChessKing, FaRegChessKing} from "react-icons/fa6";
@@ -11,6 +11,10 @@ import {BiSolidChess} from "react-icons/bi";
 import {IconTag} from "pages/MainPage/TournamentPane";
 import userRepository from "lib/api/repository/UserRepository";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
+import config from "config";
+import {useMode} from "lib/api/repository/apiSettings";
+import roundRepository from "lib/api/repository/RoundRepository";
+import {MdInfoOutline} from "react-icons/md";
 
 function MyActiveTournamentPane() {
 
@@ -137,6 +141,9 @@ function MyActiveTournamentPane() {
             roundNumber={currentRoundIndex + 1 || -1}
             opponent={opponent}
             meParticipant={meParticipant}
+            refetchTournament={async () => {
+                await tournamentQuery.refetch()
+            }}
         />
     </div>
 }
@@ -149,6 +156,7 @@ function MyActiveTournamentPaneImpl(
         roundNumber,
         opponent,
         meParticipant,
+        refetchTournament,
     }: {
         tournament: TournamentDto,
         match: MatchDto,
@@ -156,9 +164,13 @@ function MyActiveTournamentPaneImpl(
         roundNumber: number,
         opponent: ParticipantDto | undefined,
         meParticipant: ParticipantDto | undefined,
+        refetchTournament: () => Promise<void>,
     }
 ) {
     let loc = useLoc();
+    let [mode,] = useMode();
+    let [resultSelectorActive, setResultSelectorActive] = useState(false)
+    let ENABLE_PARTICIPANT_SUBMIT_RESULT = mode === "local" || config.features["tournament.submitResultByParticipantsEnabled"]
 
     function getResultStr(result: MatchResult | undefined, isMeWhite: boolean) {
         switch (result) {
@@ -181,11 +193,34 @@ function MyActiveTournamentPaneImpl(
             case "MISS":
                 return loc("Miss")
             default:
-                return loc("Started")
+                return loc("Submit result")
         }
     }
 
     let isMeWhite = match.white?.id === meParticipant?.id;
+
+    async function submitMatchResult(matchResult: MatchResult) {
+        if (!match.result) {
+            try {
+                await roundRepository.postMatchResult(tournament.id, roundNumber, match.id, matchResult)
+                await refetchTournament()
+            } catch (e: any) {
+                alert("Could not set match result " + (e?.response?.data?.message || e?.message))
+            } finally {
+                setResultSelectorActive(false)
+            }
+        }
+    }
+
+    let resultW = match.resultSubmittedByWhite;
+    let resultB = match.resultSubmittedByBlack;
+    let isFinalResult = !!match.result;
+    let isConflict = !isFinalResult && resultW !== resultB && !!resultW && !!resultB;
+    let meSubmittedResult = (isMeWhite && !!resultW) || (!isMeWhite && resultB);
+    let opponentSubmittedResult = (isMeWhite && !!resultB) || (!isMeWhite && resultW);
+
+    let waitingForMyResult = !match.result && opponentSubmittedResult && !isConflict;
+    let waitingForOpponentResult = !match.result && meSubmittedResult && !isConflict;
     return <div className={`grid justify-items-start w-full p-4 overflow-hidden tournament-active`}>
         <div className={"grid w-full justify-items-start"}>
             <Link className={"flex w-full gap-2 text-lg text-left justify-between items-center"}
@@ -193,30 +228,30 @@ function MyActiveTournamentPaneImpl(
             >
                 <div className="flex gap-2 hover:underline font-semibold">
                     <span className={"grow"}>
-                        {`Game ${roundNumber}`}
+                        {`${loc("Game")} ${roundNumber}`}
                     </span>
                 </div>
             </Link>
         </div>
         <div className={"flex gap-1 items-center"}>
-            {(isMeWhite && (
+            {isMeWhite ? (
                 <IconTag
                     icon={<FaChessKing className={"fill-primary-400"}/>}
                     text={"You"}
                 />
-            )) || (
+            ) : (
                 <IconTag
                     icon={<FaChessKing className={"fill-primary-400"}/>}
                     text={opponent?.name || opponent?.userFullName || "—"}
                 />
             )}
             <span> - </span>
-            {((!isMeWhite) && (
+            {(!isMeWhite) ? (
                 <IconTag
                     icon={<FaRegChessKing className={"fill-primary-400"}/>}
                     text={"You"}
                 />
-            )) || (
+            ) : (
                 <IconTag
                     icon={<FaRegChessKing className={"fill-primary-400"}/>}
                     text={opponent?.name || opponent?.userFullName || "—"}
@@ -228,9 +263,57 @@ function MyActiveTournamentPaneImpl(
             text={match.result === "BUY" ? "—" : (loc("Board") + " " + boardNumber)}
         />
         <div className={"p-1"}></div>
-        <div className={"btn-light text-sm"}>
-            {loc(getResultStr(match.result, isMeWhite))}
+        <div className={"btn-light text-sm"} onClick={() => {
+            if (!match.result && match.result !== "BUY" && match.result !== "MISSING" && ENABLE_PARTICIPANT_SUBMIT_RESULT) {
+                setResultSelectorActive(!resultSelectorActive)
+            }
+        }}>
+            {loc(isConflict ? "Conflict" : getResultStr(match.result, isMeWhite))}
         </div>
+        {(resultSelectorActive && (<>
+                <div className={"p-1"}></div>
+                <div className={"flex gap-1"}>
+                    <div className={"btn-light text-sm !bg-primary-400 grow"} onClick={async () => {
+                        await submitMatchResult(isMeWhite ? "WHITE_WIN" : "BLACK_WIN");
+                    }}>
+                        {loc("Win")}
+                    </div>
+                    <div className={"btn-light text-sm !bg-primary-200 grow"} onClick={async () => {
+                        await submitMatchResult("DRAW");
+                    }}>
+                        {loc("Draw")}
+                    </div>
+                    <div className={"btn-light text-sm !bg-gray-200 grow"} onClick={async () => {
+                        await submitMatchResult(isMeWhite ? "BLACK_WIN" : "WHITE_WIN");
+                    }}>
+                        {loc("Loss")}
+                    </div>
+                </div>
+            </>
+        ))}
+
+        <div className={"p-1"}></div>
+        {waitingForMyResult && (
+            <div className={"text-left text-sm flex items-center gap-1"}>
+                <span className={"inline-block"}><MdInfoOutline/></span>
+                {loc("Your opponent have submitted the result. Please, set yours to confirm.")}
+            </div>
+        )}
+
+        {waitingForOpponentResult && (
+            <div className={"text-left text-sm flex items-center gap-1"}>
+                <span className={"inline-block"}><MdInfoOutline/></span>
+                {loc("You have submitted the result. Waiting for opponent confirmation.")}
+            </div>
+        )}
+
+        {isConflict && (
+            <div className={"text-left text-sm flex items-center gap-1"}>
+                <span className={"inline-block"}><MdInfoOutline/></span>
+                {loc("You and your opponent have submitted different results. Please, update results or wait for the moderator.")}
+            </div>
+        )}
+
     </div>;
 }
 
