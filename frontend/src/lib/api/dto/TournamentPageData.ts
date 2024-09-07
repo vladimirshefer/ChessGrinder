@@ -1,10 +1,5 @@
 import {TournamentDto} from "./MainPageData";
 
-export interface MatchParticipantDto {
-    userId: string,
-    name: string
-}
-
 export interface MatchDto {
     id: string
     /**
