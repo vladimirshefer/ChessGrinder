@@ -45,7 +45,7 @@ export function ConditionalOnAuthorized(
         children,
         authorized = true,
     } : {
-        children?: ReactElement | ReactElement[],
+        children?: ReactElement | ReactElement[] | (() => ReactElement),
         authorized?: boolean
     }
 ) {
@@ -55,7 +55,9 @@ export function ConditionalOnAuthorized(
     }, [authenticatedUser, authorized])
 
     return <Conditional on={show}>
-        {children}
+        {
+            typeof children === 'function' ?  children() : children
+        }
     </Conditional>
 }
 

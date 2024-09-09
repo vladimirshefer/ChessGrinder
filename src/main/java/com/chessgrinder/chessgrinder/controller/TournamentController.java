@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.controller;
 
+import com.chessgrinder.chessgrinder.dto.SubmitMatchResultRequestDto;
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
@@ -10,6 +11,7 @@ import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.TournamentService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -116,5 +118,19 @@ public class TournamentController {
         participantRepository.save(participant);
 
         return authentication.getName();
+    }
+
+    @PostMapping("{tournamentId}/action/submitMyResult")
+    public void submitMyResult(
+            @PathVariable
+            UUID tournamentId,
+            @AuthenticatedUser
+            UserEntity authenticatedUser,
+            @RequestBody
+            SubmitMatchResultRequestDto resultRequestDto
+    ) {
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
+        tournamentService.submitMyResult(tournament, authenticatedUser, resultRequestDto.getMatchResult());
     }
 }

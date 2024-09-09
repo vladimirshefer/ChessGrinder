@@ -14,4 +14,8 @@ public class MatchDto {
     private ParticipantDto black;
     @Nullable
     private MatchResult result;
+    @Nullable
+    private MatchResult resultSubmittedByParticipant1;
+    @Nullable
+    private MatchResult resultSubmittedByParticipant2;
 }
