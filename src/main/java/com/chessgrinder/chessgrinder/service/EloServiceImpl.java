@@ -38,77 +38,103 @@ public class EloServiceImpl implements EloService {
             System.out.println("Elo Service is disabled, skipping processing.");
             return;
         }
+
+        Map<UUID, Integer> currentEloMap = initializeAuthorizedParticipantsElo(tournament);
+
+        processMatches(tournament, currentEloMap);
+
+        finalizeTournament(tournament);
+    }
+
+    private Map<UUID, Integer> initializeAuthorizedParticipantsElo(TournamentEntity tournament) {
         Map<UUID, Integer> currentEloMap = new HashMap<>();
 
         for (RoundEntity round : tournament.getRounds()) {
             for (MatchEntity match : round.getMatches()) {
-                ParticipantEntity participant1 = match.getParticipant1();
-                ParticipantEntity participant2 = match.getParticipant2();
-
-                if (participant1 == null || participant2 == null) {
-                    continue;
-                }
-
-                UserEntity user1 = participant1.getUser();
-                UserEntity user2 = participant2.getUser();
-
-                if (user1 != null) {
-                    currentEloMap.putIfAbsent(participant1.getId(), user1.getEloPoints());
-                }
-
-                if (user2 != null) {
-                    currentEloMap.putIfAbsent(participant2.getId(), user2.getEloPoints());
-                }
-
-                boolean isUser1Authorized = SecurityUtil.isAuthorizedUser(user1);
-                boolean isUser2Authorized = SecurityUtil.isAuthorizedUser(user2);
-
-                if (!isUser1Authorized && !isUser2Authorized) {
-                    continue;
-                }
-
-                userEloInitializerService.setDefaultEloIfNeeded(user1, isUser1Authorized);
-                userEloInitializerService.setDefaultEloIfNeeded(user2, isUser2Authorized);
-
-                setInitialAndTemporaryElo(participant1, user1, isUser1Authorized, currentEloMap);
-                setInitialAndTemporaryElo(participant2, user2, isUser2Authorized, currentEloMap);
-
-                int player1Elo = currentEloMap.getOrDefault(participant1.getId(), 0);
-                int player2Elo = currentEloMap.getOrDefault(participant2.getId(), 0);
-
-                boolean bothUsersAuthorized = isUser1Authorized && isUser2Authorized;
-
-                EloUpdateResultDto updateResult = eloCalculationStrategy.calculateElo(
-                        player1Elo, player2Elo, match.getResult(), bothUsersAuthorized);
-
-                int updatedEloFirst = updateResult.getWhiteNewElo();
-                int updatedEloSecond = updateResult.getBlackNewElo();
-
-                currentEloMap.put(participant1.getId(), updatedEloFirst);
-                currentEloMap.put(participant2.getId(), updatedEloSecond);
-
-                updateEloPoints(user1, updatedEloFirst, isUser1Authorized);
-                updateEloPoints(user2, updatedEloSecond, isUser2Authorized);
+                initializeParticipantElo(match.getParticipant1(), currentEloMap);
+                initializeParticipantElo(match.getParticipant2(), currentEloMap);
             }
         }
-
-        tournament.setHasEloCalculated(true);
-        tournamentRepository.save(tournament);
+        return currentEloMap;
     }
 
-    private void setInitialAndTemporaryElo(ParticipantEntity participant, UserEntity user, boolean isAuthorized, Map<UUID, Integer> temporaryEloMap) {
+    private void initializeParticipantElo(ParticipantEntity participant, Map<UUID, Integer> currentEloMap) {
+        if (participant == null || participant.getUser() == null) {
+            return;
+        }
+
+        UserEntity user = participant.getUser();
+
+        userEloInitializerService.setDefaultEloIfNeeded(user, SecurityUtil.isAuthorizedUser(user));
+
+        currentEloMap.putIfAbsent(participant.getId(), user.getEloPoints());
+    }
+
+    private void processMatches(TournamentEntity tournament, Map<UUID, Integer> currentEloMap) {
+        for (RoundEntity round : tournament.getRounds()) {
+            for (MatchEntity match : round.getMatches()) {
+                processSingleMatch(match, currentEloMap);
+            }
+        }
+    }
+
+    private void processSingleMatch(MatchEntity match, Map<UUID, Integer> currentEloMap) {
+        ParticipantEntity participant1 = match.getParticipant1();
+        ParticipantEntity participant2 = match.getParticipant2();
+
+        if (participant1 == null || participant2 == null) {
+            return;
+        }
+
+        UserEntity user1 = participant1.getUser();
+        UserEntity user2 = participant2.getUser();
+
+        boolean isUser1Authorized = SecurityUtil.isAuthorizedUser(user1);
+        boolean isUser2Authorized = SecurityUtil.isAuthorizedUser(user2);
+
+        if (!isUser1Authorized && !isUser2Authorized) {
+            return;
+        }
+
+        setInitialElo(participant1, user1, isUser1Authorized, currentEloMap);
+        setInitialElo(participant2, user2, isUser2Authorized, currentEloMap);
+
+        calculateAndApplyElo(match, participant1, participant2, currentEloMap);
+    }
+
+    private void setInitialElo(ParticipantEntity participant, UserEntity user, boolean isAuthorized, Map<UUID, Integer> currentEloMap) {
         if (isAuthorized && participant.getInitialEloPoints() == 0) {
             participant.setInitialEloPoints(user.getEloPoints());
-            temporaryEloMap.put(participant.getId(), user.getEloPoints());
+            currentEloMap.put(participant.getId(), user.getEloPoints());
             participantRepository.save(participant);
         }
     }
 
-    private void updateEloPoints(UserEntity user, int newElo, boolean isAuthorized) {
-        if (isAuthorized) {
+    private void calculateAndApplyElo(MatchEntity match, ParticipantEntity participant1, ParticipantEntity participant2, Map<UUID, Integer> currentEloMap) {
+        int whiteElo = currentEloMap.getOrDefault(participant1.getId(), 0);
+        int blackElo = currentEloMap.getOrDefault(participant2.getId(), 0);
+
+        boolean bothUsersAuthorized = SecurityUtil.isAuthorizedUser(participant1.getUser()) && SecurityUtil.isAuthorizedUser(participant2.getUser());
+
+        EloUpdateResultDto updateResult = eloCalculationStrategy.calculateElo(whiteElo, blackElo, match.getResult(), bothUsersAuthorized);
+
+        currentEloMap.put(participant1.getId(), updateResult.getWhiteNewElo());
+        currentEloMap.put(participant2.getId(), updateResult.getBlackNewElo());
+
+        updateUserElo(participant1.getUser(), updateResult.getWhiteNewElo());
+        updateUserElo(participant2.getUser(), updateResult.getBlackNewElo());
+    }
+
+    private void updateUserElo(UserEntity user, int newElo) {
+        if (SecurityUtil.isAuthorizedUser(user)) {
             user.setEloPoints(newElo);
             userRepository.save(user);
         }
+    }
+
+    private void finalizeTournament(TournamentEntity tournament) {
+        tournament.setHasEloCalculated(true);
+        tournamentRepository.save(tournament);
     }
 
     @Override
@@ -130,14 +156,23 @@ public class EloServiceImpl implements EloService {
             if (participant1 != null) {
                 UserEntity user1 = participant1.getUser();
                 if (user1 != null && participant1.getInitialEloPoints() > 0) {
-                    user1.setEloPoints(participant1.getInitialEloPoints());
+
+                    int earnedElo1 = user1.getEloPoints() - participant1.getInitialEloPoints();
+                    int newElo1 = user1.getEloPoints() - earnedElo1;
+
+                    user1.setEloPoints(newElo1);
                     userRepository.save(user1);
                 }
             }
+
             if (participant2 != null) {
                 UserEntity user2 = participant2.getUser();
                 if (user2 != null && participant2.getInitialEloPoints() > 0) {
-                    user2.setEloPoints(participant2.getInitialEloPoints());
+                    // Вычитаем заработанное за турнир количество очков
+                    int earnedElo2 = user2.getEloPoints() - participant2.getInitialEloPoints();
+                    int newElo2 = user2.getEloPoints() - earnedElo2;
+
+                    user2.setEloPoints(newElo2);
                     userRepository.save(user2);
                 }
             }
