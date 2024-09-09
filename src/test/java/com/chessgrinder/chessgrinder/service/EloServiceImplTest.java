@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -58,6 +59,7 @@ public class EloServiceImplTest {
         userRepository = new InMemoryUserRepository();
 
         eloService = new EloServiceImpl(userEloInitializerService, defaultEloCalculationStrategy, participantRepository,userRepository, tournamentRepository);
+        ReflectionTestUtils.setField(eloService, "eloServiceEnabled", true);
     }
 
     @Test

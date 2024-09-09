@@ -7,6 +7,7 @@ import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,10 +26,18 @@ public class EloServiceImpl implements EloService {
     private final UserRepository userRepository;
     private final TournamentRepository tournamentRepository;
 
+
+    @Value("${chessgrinder.feature.eloServiceEnabled:true}")
+    private boolean eloServiceEnabled;
+
     @Override
     @Transactional
     public void processTournamentAndUpdateElo(TournamentEntity tournament) {
 
+        if (!eloServiceEnabled) {
+            System.out.println("Elo Service is disabled, skipping processing.");
+            return;
+        }
         Map<UUID, Integer> currentEloMap = new HashMap<>();
 
         for (RoundEntity round : tournament.getRounds()) {
@@ -104,6 +113,12 @@ public class EloServiceImpl implements EloService {
 
     @Override
     public void rollbackEloChanges(TournamentEntity tournament) {
+
+        if (!eloServiceEnabled) {
+            System.out.println("Elo Service is disabled, rollback skipped.");
+            return;
+        }
+
         List<MatchEntity> matches = tournament.getRounds().stream()
                 .flatMap(round -> round.getMatches().stream())
                 .toList();
