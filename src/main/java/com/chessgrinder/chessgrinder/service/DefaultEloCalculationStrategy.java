@@ -4,7 +4,7 @@ import com.chessgrinder.chessgrinder.dto.EloUpdateResultDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class DefaultEloCalculationStrategy implements EloCalculationStrategy {
 
     private static final int WIN_POINTS = 10;
@@ -21,26 +21,26 @@ public class DefaultEloCalculationStrategy implements EloCalculationStrategy {
                     .blackNewElo(blackElo)
                     .build();
         }
-        int playerPoints = 0;
-        int opponentPoints = 0;
+        int whitePoints = 0;
+        int blackPoints = 0;
 
         int winPoints = bothUsersAuthorized ? WIN_POINTS : UNRATED_WIN_POINTS;
         int losePoints = bothUsersAuthorized ? LOSE_POINTS : UNRATED_LOSE_POINTS;
 
         if (result == MatchResult.WHITE_WIN) {
-            playerPoints = winPoints;
-            opponentPoints = losePoints;
+            whitePoints = winPoints;
+            blackPoints = losePoints;
         } else if (result == MatchResult.BLACK_WIN) {
-            playerPoints = losePoints;
-            opponentPoints = winPoints;
+            whitePoints = losePoints;
+            blackPoints = winPoints;
         }
 
-        int playerNewElo = whiteElo + playerPoints;
-        int opponentNewElo = blackElo + opponentPoints;
+        int whiteNewElo = whiteElo + whitePoints;
+        int blackNewElo = blackElo + blackPoints;
 
         return EloUpdateResultDto.builder()
-                .whiteNewElo(playerNewElo)
-                .blackNewElo(opponentNewElo)
+                .whiteNewElo(whiteNewElo)
+                .blackNewElo(blackNewElo)
                 .build();
     }
 }
