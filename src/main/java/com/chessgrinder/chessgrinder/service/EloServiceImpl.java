@@ -11,10 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -43,7 +42,7 @@ public class EloServiceImpl implements EloService {
 
         processMatches(tournament, currentEloMap);
 
-        finalizeTournament(tournament);
+        finalizeTournament(tournament, currentEloMap);
     }
 
     private Map<UUID, Integer> initializeAuthorizedParticipantsElo(TournamentEntity tournament) {
@@ -67,7 +66,12 @@ public class EloServiceImpl implements EloService {
 
         userEloInitializerService.setDefaultEloIfNeeded(user, SecurityUtil.isAuthorizedUser(user));
 
-        currentEloMap.putIfAbsent(participant.getId(), user.getEloPoints());
+        if (participant.getInitialEloPoints() == 0) {
+            participant.setInitialEloPoints(user.getEloPoints());
+            participantRepository.save(participant);
+        }
+
+        currentEloMap.putIfAbsent(participant.getId(), participant.getInitialEloPoints());
     }
 
     private void processMatches(TournamentEntity tournament, Map<UUID, Integer> currentEloMap) {
@@ -111,28 +115,42 @@ public class EloServiceImpl implements EloService {
     }
 
     private void calculateAndApplyElo(MatchEntity match, ParticipantEntity participant1, ParticipantEntity participant2, Map<UUID, Integer> currentEloMap) {
-        int whiteElo = currentEloMap.getOrDefault(participant1.getId(), 0);
-        int blackElo = currentEloMap.getOrDefault(participant2.getId(), 0);
+        int whiteElo = currentEloMap.getOrDefault(participant1.getId(), 1200); // начальный Elo, если не установлен
+        int blackElo = currentEloMap.getOrDefault(participant2.getId(), 1200);
 
         boolean bothUsersAuthorized = SecurityUtil.isAuthorizedUser(participant1.getUser()) && SecurityUtil.isAuthorizedUser(participant2.getUser());
 
         EloUpdateResultDto updateResult = eloCalculationStrategy.calculateElo(whiteElo, blackElo, match.getResult(), bothUsersAuthorized);
 
-        currentEloMap.put(participant1.getId(), updateResult.getWhiteNewElo());
-        currentEloMap.put(participant2.getId(), updateResult.getBlackNewElo());
+        int whiteEloChange = updateResult.getWhiteNewElo() - whiteElo;
+        int blackEloChange = updateResult.getBlackNewElo() - blackElo;
 
-        updateUserElo(participant1.getUser(), updateResult.getWhiteNewElo());
-        updateUserElo(participant2.getUser(), updateResult.getBlackNewElo());
+
+        currentEloMap.put(participant1.getId(), whiteElo + whiteEloChange);
+        currentEloMap.put(participant2.getId(), blackElo + blackEloChange);
+
+        participant1.setFinalEloPoints(participant1.getFinalEloPoints() + whiteEloChange);
+        participant2.setFinalEloPoints(participant2.getFinalEloPoints() + blackEloChange);
+
+        participantRepository.save(participant1);
+        participantRepository.save(participant2);
     }
 
-    private void updateUserElo(UserEntity user, int newElo) {
-        if (SecurityUtil.isAuthorizedUser(user)) {
-            user.setEloPoints(newElo);
-            userRepository.save(user);
+
+    private void finalizeTournament(TournamentEntity tournament, Map<UUID, Integer> currentEloMap) {
+        for (Map.Entry<UUID, Integer> entry : currentEloMap.entrySet()) {
+            ParticipantEntity participant = participantRepository.findById(entry.getKey()).orElse(null);
+            if (participant != null) {
+                UserEntity user = participant.getUser();
+
+                if (SecurityUtil.isAuthorizedUser(user)) {
+                    int newElo = user.getEloPoints() + participant.getFinalEloPoints();
+                    user.setEloPoints(newElo);
+                    userRepository.save(user);
+                }
+            }
         }
-    }
 
-    private void finalizeTournament(TournamentEntity tournament) {
         tournament.setHasEloCalculated(true);
         tournamentRepository.save(tournament);
     }
@@ -145,37 +163,24 @@ public class EloServiceImpl implements EloService {
             return;
         }
 
-        List<MatchEntity> matches = tournament.getRounds().stream()
+        Set<ParticipantEntity> uniqueParticipants = tournament.getRounds().stream()
                 .flatMap(round -> round.getMatches().stream())
-                .toList();
+                .flatMap(match -> Stream.of(match.getParticipant1(), match.getParticipant2()))
+                .filter(participant -> participant != null && participant.getUser() != null)  // Фильтруем только участников с пользователями
+                .collect(Collectors.toSet());
 
-        for (MatchEntity match : matches) {
-            ParticipantEntity participant1 = match.getParticipant1();
-            ParticipantEntity participant2 = match.getParticipant2();
+        for (ParticipantEntity participant : uniqueParticipants) {
+            UserEntity user = participant.getUser();
 
-            if (participant1 != null) {
-                UserEntity user1 = participant1.getUser();
-                if (user1 != null && participant1.getInitialEloPoints() > 0) {
-
-                    int earnedElo1 = user1.getEloPoints() - participant1.getInitialEloPoints();
-                    int newElo1 = user1.getEloPoints() - earnedElo1;
-
-                    user1.setEloPoints(newElo1);
-                    userRepository.save(user1);
-                }
+            if (participant.getFinalEloPoints() != 0) {
+                int originalElo = user.getEloPoints() - participant.getFinalEloPoints();
+                user.setEloPoints(originalElo);
+                userRepository.save(user);
             }
 
-            if (participant2 != null) {
-                UserEntity user2 = participant2.getUser();
-                if (user2 != null && participant2.getInitialEloPoints() > 0) {
-                    // Вычитаем заработанное за турнир количество очков
-                    int earnedElo2 = user2.getEloPoints() - participant2.getInitialEloPoints();
-                    int newElo2 = user2.getEloPoints() - earnedElo2;
+            participant.setFinalEloPoints(0);
+            participantRepository.save(participant);  // Сохраняем изменения для участника
 
-                    user2.setEloPoints(newElo2);
-                    userRepository.save(user2);
-                }
-            }
         }
 
         tournament.setHasEloCalculated(false);
