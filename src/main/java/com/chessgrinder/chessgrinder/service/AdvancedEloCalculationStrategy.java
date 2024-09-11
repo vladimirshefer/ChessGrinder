@@ -35,23 +35,15 @@ public class AdvancedEloCalculationStrategy implements EloCalculationStrategy {
         int whitePoints = 0;
         int blackPoints = 0;
 
-        int whiteWinPoints = bothUsersAuthorized ? (calculateNewElo(whiteElo, blackElo, 1.0) - whiteElo) : UNRATED_WIN_POINTS;
-        int whiteLosePoints = bothUsersAuthorized ? (calculateNewElo(whiteElo, blackElo, 0) - whiteElo) : UNRATED_LOSE_POINTS;
-        int whiteDrawPoints = bothUsersAuthorized ? (calculateNewElo(whiteElo, blackElo, 0.5) - whiteElo) : UNRATED_DRAW_POINTS;
-
-        int blackWinPoints = bothUsersAuthorized ? (calculateNewElo(blackElo, whiteElo, 1.0) - blackElo) : UNRATED_WIN_POINTS;
-        int blackLosePoints = bothUsersAuthorized ? (calculateNewElo(blackElo, whiteElo, 0) - blackElo) : UNRATED_LOSE_POINTS;
-        int blackDrawPoints = bothUsersAuthorized ? (calculateNewElo(blackElo, whiteElo, 0.5) - blackElo) : UNRATED_DRAW_POINTS;
-
         if (result == MatchResult.WHITE_WIN) {
-            whitePoints = whiteWinPoints;
-            blackPoints = blackLosePoints;
+            whitePoints = bothUsersAuthorized ? (calculateNewElo(whiteElo, blackElo, 1.0) - whiteElo) : UNRATED_WIN_POINTS;
+            blackPoints = bothUsersAuthorized ? (calculateNewElo(blackElo, whiteElo, 0) - blackElo) : UNRATED_LOSE_POINTS;
         } else if (result == MatchResult.BLACK_WIN) {
-            whitePoints = whiteLosePoints;
-            blackPoints = blackWinPoints;
+            whitePoints = bothUsersAuthorized ? (calculateNewElo(whiteElo, blackElo, 0) - whiteElo) : UNRATED_LOSE_POINTS;
+            blackPoints = bothUsersAuthorized ? (calculateNewElo(blackElo, whiteElo, 1.0) - blackElo) : UNRATED_WIN_POINTS;
         } else if (result == MatchResult.DRAW) {
-            whitePoints = whiteDrawPoints;
-            blackPoints = blackDrawPoints;
+            whitePoints = bothUsersAuthorized ? (calculateNewElo(whiteElo, blackElo, 0.5) - whiteElo) : UNRATED_DRAW_POINTS;
+            blackPoints = bothUsersAuthorized ? (calculateNewElo(blackElo, whiteElo, 0.5) - blackElo) : UNRATED_DRAW_POINTS;
         }
 
         int whiteNewElo = whiteElo + whitePoints;
