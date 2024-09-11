@@ -36,6 +36,8 @@ public class UserDto {
      */
     private List<BadgeDto> badges;
 
+    private int eloPoints;
+
     private List<String> roles;
 
     private int reputation;

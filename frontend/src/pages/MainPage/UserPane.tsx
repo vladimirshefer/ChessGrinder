@@ -4,7 +4,9 @@ import Gravatar, {GravatarType} from "components/Gravatar";
 import {Link} from "react-router-dom";
 import {AiOutlineTrophy} from "react-icons/ai";
 import {FaRegHeart} from "react-icons/fa";
+import { FaChartLine } from "react-icons/fa6";
 import React from "react";
+
 
 export function UserPane(
     {
@@ -15,6 +17,8 @@ export function UserPane(
 ) {
     let loc = useLoc()
     let transliterate = useTransliterate()
+
+    const eloServiceEnabled = process.env.REACT_APP_eloServiceEnabled === 'true';
 
     return <div key={user.id} className={"col-span-12 flex"}>
         <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
@@ -56,6 +60,13 @@ export function UserPane(
                     <FaRegHeart className={"inline -mt-[1px] leading-4 align-bottom"}/>
                     <span className={""}>{user.reputation || 0}</span>
                 </div>
+
+            {eloServiceEnabled && (
+                <div className={"h-full leading-4 flex block align-bottom gap-1"} title={loc("Elo Points")}>
+                   <FaChartLine className={"inline -mt-[1px] leading-4 align-bottom"}/>
+                   <span>{user.eloPoints || "Unrated"}</span>
+                 </div>
+            )}
             </div>
         </div>
     </div>;

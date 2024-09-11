@@ -41,6 +41,12 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Column(name = "nickname")
     private String nickname;
 
+    @Column(name = "initial_elo_points")
+    private int initialEloPoints;
+
+    @Column (name ="final_elo_points")
+    private int finalEloPoints;
+
     @Nonnull
     @Column(name = "score")
     private BigDecimal score;

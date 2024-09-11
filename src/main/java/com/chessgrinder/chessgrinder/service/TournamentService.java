@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -27,6 +28,7 @@ public class TournamentService {
     private final RoundRepository roundRepository;
     private final TournamentMapper tournamentMapper;
     private final RoundService roundService;
+    private final EloServiceImpl eloService;
     private static final int DEFAULT_ROUNDS_NUMBER = 6;
     private static final int MIN_ROUNDS_NUMBER = 0;
     private static final int MAX_ROUNDS_NUMBER = 99;
@@ -59,19 +61,35 @@ public class TournamentService {
                 .build();
 
         roundRepository.save(firstRoundEntity);
+
         return tournamentMapper.toDto(tournamentEntity);
     }
 
     public void startTournament(UUID tournamentId) {
+
         tournamentRepository.findById(tournamentId).ifPresent(tournament -> {
+            if (tournament.getStatus() == TournamentStatus.FINISHED && tournament.isHasEloCalculated()) {
+                try {
+                    eloService.rollbackEloChanges(tournament);
+                    tournament.setHasEloCalculated(false);
+                } catch (Exception e) {
+                    log.error("Could not revert Elo changes when reopening the tournament", e);
+                    throw new RuntimeException("Error reverting Elo changes when reopening the tournament", e);
+                }
+            }
             tournament.setStatus(TournamentStatus.ACTIVE);
+
             tournamentRepository.save(tournament);
         });
     }
 
     public void finishTournament(UUID tournamentId) {
 
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new IllegalArgumentException("Tournament not found with ID: " + tournamentId));
+
         List<RoundEntity> rounds = roundRepository.findByTournamentId(tournamentId);
+
         boolean allRoundsFinished = true;
 
         for (RoundEntity round : rounds) {
@@ -79,12 +97,10 @@ public class TournamentService {
                 boolean allMatchesHaveResults = round.getMatches().stream()
                         .allMatch(match -> match.getResult() != null);
 
-
                 if (allMatchesHaveResults) {
                     round.setFinished(true);
                     roundRepository.save(round);
-                }
-                else {
+                } else {
                     allRoundsFinished = false;
                     break;
                 }
@@ -98,14 +114,20 @@ public class TournamentService {
 
         try {
             roundService.updateResults(tournamentId);
+
         } catch (Exception e) {
             log.error("Could not update results", e);
         }
 
-        tournamentRepository.findById(tournamentId).ifPresent(tournament -> {
-            tournament.setStatus(TournamentStatus.FINISHED);
-            tournamentRepository.save(tournament);
-        });
+        try {
+            eloService.processTournamentAndUpdateElo(tournament);
+        } catch (Exception e) {
+            log.error("Could not finalize Elo ratings", e);
+        }
+
+        tournament.setStatus(TournamentStatus.FINISHED);
+        tournamentRepository.save(tournament);
+
     }
 
     public void deleteTournament(UUID tournamentId) {

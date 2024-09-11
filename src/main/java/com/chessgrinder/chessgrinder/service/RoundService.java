@@ -105,6 +105,7 @@ public class RoundService {
                 throw new IllegalStateException("Can not finish round with unknown match result");
             }
         }
+
         roundEntity.setFinished(true);
         roundRepository.save(roundEntity);
         try {
@@ -164,7 +165,7 @@ public class RoundService {
         List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
         List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
-        TournamentEntity tournament = tournamentRepository.findById(tournamentId).get();
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
 
         List<List<MatchEntity>> allMatchesInTheTournament = tournament.getRounds().stream()
                 .filter(RoundEntity::isFinished)
@@ -204,6 +205,9 @@ public class RoundService {
 
     public void updateResults(UUID tournamentId) {
         List<MatchEntity> matches = matchRepository.findFinishedByTournamentId(tournamentId);
+
+        matches.forEach(this::reverseEloUpdate);
+
         //<gamer's UUID, points>
         Map<String, Double> pointsMap = new HashMap<>();
         Map<String, Set<String>> enemiesMap = new HashMap<>();
@@ -264,6 +268,11 @@ public class RoundService {
             participant.setPlace(i + 1);
         }
         participantRepository.saveAll(participants);
+    }
+
+    private void reverseEloUpdate(MatchEntity match) {
+
+
     }
 
     private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities) {

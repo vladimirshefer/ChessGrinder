@@ -43,4 +43,7 @@ public final class SecurityUtil {
     private SecurityUtil() {
     }
 
+    public static boolean isAuthorizedUser(UserEntity user) {
+        return user != null && user.getId() != null;
+    }
 }

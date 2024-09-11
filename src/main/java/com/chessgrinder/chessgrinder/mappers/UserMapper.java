@@ -34,6 +34,7 @@ public class UserMapper {
                 .name(user.getName())
                 .roles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toList()))
                 .reputation(user.getReputation())
+                .eloPoints(user.getEloPoints())
                 .globalScore(user.getGlobalScore())
                 .build();
     }

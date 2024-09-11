@@ -20,6 +20,7 @@ export interface UserDto {
     roles?: string[]
     reputation?: number
     globalScore?: number
+    eloPoints?: number;
 }
 
 export interface ListDto<T extends any> {
