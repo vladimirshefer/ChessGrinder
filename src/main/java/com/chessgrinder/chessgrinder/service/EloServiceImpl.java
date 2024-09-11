@@ -26,7 +26,7 @@ public class EloServiceImpl implements EloService {
     private final TournamentRepository tournamentRepository;
 
 
-    @Value("${chessgrinder.feature.eloServiceEnabled:true}")
+    @Value("${chessgrinder.feature.eloServiceEnabled:false}")
     private boolean eloServiceEnabled;
 
     @Override
