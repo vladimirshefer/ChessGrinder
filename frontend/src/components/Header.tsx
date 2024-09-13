@@ -62,7 +62,7 @@ function Header() {
                             </Link>
                         ) : (
                             <Link to={"/user"}>
-                                <Gravatar text={authenticatedUser.username} type={GravatarType.Robohash} size={50}/>
+                                <Gravatar text={authenticatedUser.emailHash} type={GravatarType.Robohash} size={50} inputType={"MD5"}/>
                             </Link>
                         )
                     }
