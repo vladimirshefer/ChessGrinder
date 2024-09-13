@@ -73,8 +73,8 @@ export default function UserProfileEditPage() {
         </div>
         <form className={"grid gap-2"} onSubmit={handleSubmit(saveUserData)}>
             <div className={"grid gap-1"}>
-                <Gravatar text={authenticatedUser.username || authenticatedUser.id} type={GravatarType.Robohash} size={100}
-                          className={"rounded-full"}/>
+                <Gravatar text={authenticatedUser.emailHash} type={GravatarType.Robohash} size={100}
+                          className={"rounded-full"} inputType={"MD5"}/>
                 <div className={"text-left btn btn-light btn-sm text-sm"}>
                     <Link to={"https://gravatar.com/profile/avatars"} target={"_blank"}>
                         <div className={"flex gap-1 items-center"}>

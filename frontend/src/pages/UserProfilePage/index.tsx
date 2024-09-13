@@ -197,7 +197,7 @@ export default function UserProfilePage() {
         <div className={"p-2"}/>
         <div className={"flex gap-2"}>
             <div>
-                <Gravatar text={userProfile.username || userProfile.id} type={GravatarType.Robohash} size={100}
+                <Gravatar text={userProfile.emailHash} type={GravatarType.Robohash} size={100} inputType={"MD5"}
                           className={"rounded-full"}/>
             </div>
             <div className={"grid text-left"}>
