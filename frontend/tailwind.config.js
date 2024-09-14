@@ -1,3 +1,5 @@
+const colors = require("tailwindcss/colors");
+
 let anzac = {
     '50': '#fbf8eb',
     '100': '#f5edcc',
@@ -19,7 +21,8 @@ module.exports = {
         extend: {
             colors: {
                 anzac: anzac,
-                primary: anzac["400"],
+                primary: anzac,
+                danger: colors.red,
             },
         },
     },

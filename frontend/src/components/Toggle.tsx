@@ -31,8 +31,8 @@ export default function Toggle(
                         bg-gray-200
                         peer-focus:outline-none
                         peer-focus:ring-4
-                        peer-focus:ring-anzac-300
-                        dark:peer-focus:ring-anzac-800
+                        peer-focus:ring-primary-300
+                        dark:peer-focus:ring-primary-800
                         rounded-full
                         peer
                         dark:bg-gray-700
@@ -51,7 +51,7 @@ export default function Toggle(
                         after:w-5
                         after:transition-all
                         dark:border-gray-600
-                        peer-checked:bg-anzac-600
+                        peer-checked:bg-primary-600
                         "
              title={title}
         ></div>

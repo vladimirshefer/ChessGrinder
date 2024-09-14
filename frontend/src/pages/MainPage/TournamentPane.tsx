@@ -94,19 +94,19 @@ export function TournamentPane(
         <Conditional on={isPlanned || isActive}>
             <div className={"py-3"}>
                 <IconTag
-                    icon={<AiFillClockCircle className={"text-primary"}/>}
+                    icon={<AiFillClockCircle className={"text-primary-400"}/>}
                     text={dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
                 />
                 {(!!tournament.locationName) && (
                     <IconTag
-                        icon={<IoLocationSharp className={"text-primary"}/>}
+                        icon={<IoLocationSharp className={"text-primary-400"}/>}
                         text={tournament.locationName || ""}
                         link={tournament.locationUrl || undefined}
                     />
                 )}
                 <Conditional on={isMeParticipating}>
                     <IconTag
-                        icon={<BsBookmarkCheckFill className={"text-primary"}/>}
+                        icon={<BsBookmarkCheckFill className={"text-primary-400"}/>}
                         text={loc("Participating")}
                     />
                 </Conditional>

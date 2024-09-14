@@ -147,7 +147,7 @@ function TournamentPage() {
         <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`} replace={true}>
                 <button
-                    className={`w-full h-full py-1 px-3 border border-black uppercase ${!roundId ? "bg-anzac-400 text-white" : "hover:bg-gray-300 text-black"}`}
+                    className={`w-full h-full py-1 px-3 border border-black uppercase ${!roundId ? "bg-primary-400 text-white" : "hover:bg-gray-300 text-black"}`}
                     title={loc("Tournament page")}
                 >
                     <AiOutlineHome/>
@@ -161,7 +161,7 @@ function TournamentPage() {
                 >
                     <div
                         className={`w-full py-1 px-3  border border-black
-                                    ${rid === roundId ? "bg-primary text-white" : "hover:bg-gray-300"}`}>
+                                    ${rid === roundId ? "bg-primary-400 text-white" : "hover:bg-gray-300"}`}>
                         {rid}
                     </div>
                 </Link>
