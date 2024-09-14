@@ -101,10 +101,10 @@ export function MatchRow(
 ) {
     return <Fragment key={idx}>
         <div className={`grid text-xs p-3 
-                        ${match.result === "WHITE_WIN" ? "bg-anzac-400" : ""} 
+                        ${match.result === "WHITE_WIN" ? "bg-primary-400" : ""} 
                         ${match.result === "BLACK_WIN" ? "bg-gray-200" : ""}
-                        ${match.result === "BUY" ? "bg-anzac-400" : ""} 
-                        ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        ${match.result === "BUY" ? "bg-primary-400" : ""} 
+                        ${match.result === "DRAW" ? "bg-primary-200" : ""} 
                         ${match.result === "MISS" ? "bg-gray-200" : ""} 
                         ${!match.result ? "bg-gray-50" : ""} 
                         `}
@@ -119,10 +119,10 @@ export function MatchRow(
             <span className={"text-xs"}>{tableNumber || 0}</span>
         </div>
         <div className={`grid text-xs p-3 
-                        ${match.result === "BLACK_WIN" ? "bg-anzac-400" : ""} 
+                        ${match.result === "BLACK_WIN" ? "bg-primary-400" : ""} 
                         ${match.result === "WHITE_WIN" ? "bg-gray-200" : ""}
-                        ${match.result === "BUY" ? "bg-anzac-400" : ""} 
-                        ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        ${match.result === "BUY" ? "bg-primary-400" : ""} 
+                        ${match.result === "DRAW" ? "bg-primary-200" : ""} 
                         ${match.result === "MISS" ? "bg-gray-200" : ""} 
                         ${!match.result ? "bg-gray-50" : ""} 
                         `}

@@ -95,7 +95,7 @@ export default function BadgesPage() {
                 </div>
                 <button
                     type={"submit"}
-                    className={"btn bg-primary"}
+                    className={"btn bg-primary-400"}
                 >
                     Create badge
                 </button>

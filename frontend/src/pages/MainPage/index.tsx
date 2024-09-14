@@ -52,7 +52,7 @@ function MainPage() {
             <MemberList users={users.slice(0, maxUsers)}/>
             <div className={"grid py-2"}>
                 <Link to={"/users"}>
-                    <button className={"btn bg-primary w-full"}>
+                    <button className={"btn bg-primary-400 w-full"}>
                         {loc("All users")}
                     </button>
                 </Link>
@@ -62,7 +62,7 @@ function MainPage() {
             <TournamentsList tournaments={tournamentsVisible} createTournament={createTournament}/>
             <div className={"grid py-2"}>
                 <Link to={"/tournaments"}>
-                    <button className={"btn bg-primary w-full"}>
+                    <button className={"btn bg-primary-400 w-full"}>
                         {loc("All tournaments")}
                     </button>
                 </Link>

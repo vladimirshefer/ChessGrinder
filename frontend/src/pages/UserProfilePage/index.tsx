@@ -229,16 +229,16 @@ export default function UserProfilePage() {
         <div className={"p-3"}></div>
         <div className={"flex justify-between border-b-2 border-gray-400 mb-3"}>
             <button
-                className={`uppercase font-semibold px-2 py-1 ${activeTab === "history" ? "text-primary" : " "}`}
+                className={`uppercase font-semibold px-2 py-1 ${activeTab === "history" ? "text-primary-400" : " "}`}
                 onClick={() => setActiveTab("history")}>{loc("History")}
             </button>
             <button
-                className={`uppercase font-semibold px-2 py-1 ${activeTab === "achievements" ? "text-primary" : " "}`}
+                className={`uppercase font-semibold px-2 py-1 ${activeTab === "achievements" ? "text-primary-400" : " "}`}
                 onClick={() => setActiveTab("achievements")}>{loc("Achievements")}
             </button>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <button
-                    className={`uppercase font-semibold px-2 py-1 ${activeTab === "admin" ? "text-primary" : " "}`}
+                    className={`uppercase font-semibold px-2 py-1 ${activeTab === "admin" ? "text-primary-400" : " "}`}
                     onClick={() => setActiveTab("admin")}>{loc("Admin")}
                 </button>
             </ConditionalOnUserRole>
