@@ -12,8 +12,8 @@ export interface MatchDto {
      */
     black: ParticipantDto | null
 
-    resultSubmittedByParticipant1?: MatchResult | undefined
-    resultSubmittedByParticipant2?: MatchResult | undefined
+    resultSubmittedByWhite?: MatchResult | undefined
+    resultSubmittedByBlack?: MatchResult | undefined
 }
 
 export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW" | "BUY" | "MISS"
