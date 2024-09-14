@@ -50,3 +50,35 @@
 .input-text {
   @apply border-b;
 }
+
+.bg-stripes-45-primary-400 {
+  background: repeating-linear-gradient(
+          45deg,
+          theme("colors.primary.400"),
+          theme("colors.primary.400") 20px,
+          theme("colors.primary.200") 20px,
+          theme("colors.primary.200") 40px,
+          theme("colors.primary.400") 40px
+  );
+}
+
+.bg-stripes-45-primary-200 {
+  background: repeating-linear-gradient(
+          45deg,
+          theme("colors.primary.200"),
+          theme("colors.primary.200") 20px,
+          theme("colors.primary.100") 20px,
+          theme("colors.primary.100") 40px,
+          theme("colors.primary.200") 40px
+  );
+}
+
+.bg-stripes-45-gray-200 {
+  background: repeating-linear-gradient(
+          45deg,
+          theme("colors.gray.200"),
+          theme("colors.gray.200") 20px,
+          theme("colors.gray.50") 20px,
+          theme("colors.gray.50") 40px
+  );
+}
