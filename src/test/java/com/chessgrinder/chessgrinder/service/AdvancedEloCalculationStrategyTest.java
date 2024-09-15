@@ -1,74 +1,57 @@
 package com.chessgrinder.chessgrinder.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.chessgrinder.chessgrinder.enums.MatchResult;
+import org.junit.jupiter.api.Test;
 
-import org.junit.jupiter.api.*;
+import static com.chessgrinder.chessgrinder.service.AdvancedEloCalculationStrategy.calculateExpectedScore;
+import static com.chessgrinder.chessgrinder.service.AdvancedEloCalculationStrategy.calculateNewElo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class AdvancedEloCalculationStrategyTest {
 
-
     @Test
     public void testCalculateExpectedScore() {
-
-        int whiteElo = 1600;
-        int blackElo = 1600;
-        double expectedScore = AdvancedEloCalculationStrategy.calculateExpectedScore(whiteElo, blackElo);
-        assertEquals(0.5, expectedScore, 0.01);
-
-        whiteElo = 2000;
-        blackElo = 1600;
-        expectedScore = AdvancedEloCalculationStrategy.calculateExpectedScore(whiteElo, blackElo);
-        assertEquals(0.91, expectedScore, 0.01);
-
-        whiteElo = 1600;
-        blackElo = 2000;
-        expectedScore = AdvancedEloCalculationStrategy.calculateExpectedScore(whiteElo, blackElo);
-        assertEquals(0.09, expectedScore, 0.01);
+        assertEquals(0.5, calculateExpectedScore(1600, 1600), 0.01);
+        assertEquals(0.91, calculateExpectedScore(2000, 1600), 0.01);
+        assertEquals(0.09, calculateExpectedScore(1600, 2000), 0.01);
     }
-
 
     @Test
     public void testCalculateNewElo() {
-
-        //same Elo scenario
-        int whiteElo = 1600;
-        int blackElo = 1600;
-        double score = 1; // white won
-
-        int whiteNewElo = AdvancedEloCalculationStrategy.calculateNewElo(whiteElo, blackElo, score);
-        int blackNewElo = AdvancedEloCalculationStrategy.calculateNewElo(blackElo, whiteElo, 0); // black lost
-
-        assertEquals(1616, whiteNewElo);
-        assertEquals(1584, blackNewElo);
+        // Equal Elo scenario
+        assertEquals(1616, calculateNewElo(1600, 1600, 1 /* white won */));
+        assertEquals(1584, calculateNewElo(1600, 1600, 0 /* black lost */));
 
         // High-rated player won
-        whiteElo = 2000;
-        blackElo = 1600;
-        score = 1; // white won
+        assertEquals(2003, calculateNewElo(2000, 1600, 1 /* white won */));
+        assertEquals(1597, calculateNewElo(1600, 2000, 0 /* black lost */));
 
-        whiteNewElo = AdvancedEloCalculationStrategy.calculateNewElo(whiteElo, blackElo, score);
-        blackNewElo = AdvancedEloCalculationStrategy.calculateNewElo(blackElo, whiteElo, 0); // black lost
-
-        assertEquals(2003, whiteNewElo);
-        assertEquals(1597, blackNewElo);
-
-        // low-rated player won
-        score = 1; // black won
-        blackNewElo = AdvancedEloCalculationStrategy.calculateNewElo(blackElo, whiteElo, score);
-        whiteNewElo = AdvancedEloCalculationStrategy.calculateNewElo(whiteElo, blackElo, 0); // white lost
-
-        assertEquals(1629, blackNewElo);
-        assertEquals(1971, whiteNewElo);
+        // Low-rated player won
+        assertEquals(1629, calculateNewElo(1600, 2000, 1 /* black won */));
+        assertEquals(1971, calculateNewElo(2000, 1600, 0 /* white lost */));
 
         // Draw scenario for big elo diff
-        whiteElo = 2000;
-        blackElo = 1400;
-        score = 0.5; // draw
-        whiteNewElo = AdvancedEloCalculationStrategy.calculateNewElo(whiteElo, blackElo, score);
-        blackNewElo = AdvancedEloCalculationStrategy.calculateNewElo(blackElo, whiteElo, score);
+        assertEquals(1985, calculateNewElo(2000, 1400, 0.5));
+        assertEquals(1415, calculateNewElo(1400, 2000, 0.5));
+    }
 
-        assertEquals(1985, whiteNewElo);
-        assertEquals(1415, blackNewElo);
+    @Test
+    void testCalculateElo() {
+        {
+            var result = new AdvancedEloCalculationStrategy().calculateElo(2000, 2000, MatchResult.WHITE_WIN, true);
+            assertEquals(2016, result.whiteElo());
+            assertEquals(1984, result.blackElo());
+        }
+        {
+            var result = new AdvancedEloCalculationStrategy().calculateElo(2000, 1000, MatchResult.WHITE_WIN, true);
+            assertEquals(2000, result.whiteElo());
+            assertEquals(1000, result.blackElo());
+        }
+        {
+            var result = new AdvancedEloCalculationStrategy().calculateElo(1000, 2000, MatchResult.WHITE_WIN, true);
+            assertEquals(1032, result.whiteElo());
+            assertEquals(1968, result.blackElo());
+        }
     }
 }

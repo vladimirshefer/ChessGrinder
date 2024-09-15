@@ -1,12 +1,12 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.dto.EloUpdateResultDto;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class EloServiceImpl implements EloService {
 
     private final UserEloInitializerService userEloInitializerService;
@@ -32,9 +33,8 @@ public class EloServiceImpl implements EloService {
     @Override
     @Transactional
     public void processTournamentAndUpdateElo(TournamentEntity tournament) {
-
         if (!eloServiceEnabled) {
-            System.out.println("Elo Service is disabled, skipping processing.");
+            log.info("Elo Service is disabled, skipping processing.");
             return;
         }
 
@@ -120,11 +120,10 @@ public class EloServiceImpl implements EloService {
 
         boolean bothUsersAuthorized = SecurityUtil.isAuthorizedUser(participant1.getUser()) && SecurityUtil.isAuthorizedUser(participant2.getUser());
 
-        EloUpdateResultDto updateResult = eloCalculationStrategy.calculateElo(whiteElo, blackElo, match.getResult(), bothUsersAuthorized);
+        var updateResult = eloCalculationStrategy.calculateElo(whiteElo, blackElo, match.getResult(), bothUsersAuthorized);
 
-        int whiteEloChange = updateResult.getWhiteNewElo() - whiteElo;
-        int blackEloChange = updateResult.getBlackNewElo() - blackElo;
-
+        int whiteEloChange = updateResult.whiteElo() - whiteElo;
+        int blackEloChange = updateResult.blackElo() - blackElo;
 
         currentEloMap.put(participant1.getId(), whiteElo + whiteEloChange);
         currentEloMap.put(participant2.getId(), blackElo + blackEloChange);
@@ -157,16 +156,15 @@ public class EloServiceImpl implements EloService {
 
     @Override
     public void rollbackEloChanges(TournamentEntity tournament) {
-
         if (!eloServiceEnabled) {
-            System.out.println("Elo Service is disabled, rollback skipped.");
+            log.info("Elo Service is disabled, rollback skipped.");
             return;
         }
 
         Set<ParticipantEntity> uniqueParticipants = tournament.getRounds().stream()
                 .flatMap(round -> round.getMatches().stream())
                 .flatMap(match -> Stream.of(match.getParticipant1(), match.getParticipant2()))
-                .filter(participant -> participant != null && participant.getUser() != null)  // Фильтруем только участников с пользователями
+                .filter(participant -> participant != null && participant.getUser() != null)
                 .collect(Collectors.toSet());
 
         for (ParticipantEntity participant : uniqueParticipants) {

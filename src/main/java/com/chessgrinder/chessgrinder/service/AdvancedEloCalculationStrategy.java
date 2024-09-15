@@ -1,6 +1,5 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.dto.EloUpdateResultDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.springframework.stereotype.Component;
 
@@ -16,20 +15,22 @@ public class AdvancedEloCalculationStrategy implements EloCalculationStrategy {
         return 1.0 / (1 + Math.pow(10, (blackElo - whiteElo) / 400.0));
     }
 
+    /**
+     *
+     * @param whiteElo rating of the first player
+     * @param blackElo rating of the second player
+     * @param score 1 for win for white, 0.5 for draw, 0 for loss for white
+     * @return new elo of first player
+     */
     public static int calculateNewElo(int whiteElo, int blackElo, double score) {
         double expectedScore = calculateExpectedScore(whiteElo, blackElo);
         return (int) Math.round(whiteElo + K_FACTOR * (score - expectedScore));
     }
 
-
     @Override
-    public EloUpdateResultDto calculateElo(int whiteElo, int blackElo, MatchResult result, boolean bothUsersAuthorized) {
-
+    public EloPair calculateElo(int whiteElo, int blackElo, MatchResult result, boolean bothUsersAuthorized) {
         if (result == null) {
-            return EloUpdateResultDto.builder()
-                    .whiteNewElo(whiteElo)
-                    .blackNewElo(blackElo)
-                    .build();
+            return new EloPair(whiteElo, blackElo);
         }
 
         int whitePoints = 0;
@@ -49,10 +50,7 @@ public class AdvancedEloCalculationStrategy implements EloCalculationStrategy {
         int whiteNewElo = whiteElo + whitePoints;
         int blackNewElo = blackElo + blackPoints;
 
-        return EloUpdateResultDto.builder()
-                .whiteNewElo(whiteNewElo)
-                .blackNewElo(blackNewElo)
-                .build();
+        return new EloPair(whiteNewElo, blackNewElo);
     }
 
 }

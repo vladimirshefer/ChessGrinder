@@ -1,6 +1,5 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.dto.EloUpdateResultDto;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
@@ -8,6 +7,7 @@ import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.SecurityUtil;
+import com.chessgrinder.chessgrinder.testutil.repository.TestJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ public class EloServiceImplTest {
 
     private EloServiceImpl eloService;
     private UserEloInitializerService userEloInitializerService;
-    private DefaultEloCalculationStrategy defaultEloCalculationStrategy;
+    private FixedEloCalculationStrategy defaultEloCalculationStrategy;
     private ParticipantRepository participantRepository;
     private TournamentRepository tournamentRepository;
     private UserRepository userRepository;
@@ -35,28 +35,22 @@ public class EloServiceImplTest {
         userRepository = new InMemoryUserRepository();
         userEloInitializerService = new UserEloInitializerService(userRepository);
 
-        defaultEloCalculationStrategy = new DefaultEloCalculationStrategy() {
+        defaultEloCalculationStrategy = new FixedEloCalculationStrategy() {
             @Override
-            public EloUpdateResultDto calculateElo(int whiteElo, int blackElo, MatchResult result, boolean bothUsersAuthorized) {
+            public EloPair calculateElo(int whiteElo, int blackElo, MatchResult result, boolean bothUsersAuthorized) {
                 if (result == MatchResult.DRAW) {
-                    return EloUpdateResultDto.builder()
-                            .whiteNewElo(whiteElo)
-                            .blackNewElo(blackElo)
-                            .build();
+                    return new EloPair(whiteElo, blackElo);
                 }
                 int points = bothUsersAuthorized ? 10 : 5;
                 int playerNewElo = result == MatchResult.WHITE_WIN ? whiteElo + points : whiteElo - points;
                 int opponentNewElo = result == MatchResult.WHITE_WIN ? blackElo - points : blackElo + points;
-                return EloUpdateResultDto.builder()
-                        .whiteNewElo(playerNewElo)
-                        .blackNewElo(opponentNewElo)
-                        .build();
+                return new EloPair(playerNewElo, opponentNewElo);
             }
         };
 
-        participantRepository = new InMemoryParticipantRepository();
-        tournamentRepository = new InMemoryTournamentRepository();
-        userRepository = new InMemoryUserRepository();
+        participantRepository = TestJpaRepository.of(ParticipantRepository.class);
+        tournamentRepository = TestJpaRepository.of(TournamentRepository.class);
+        userRepository = TestJpaRepository.of(UserRepository.class);
 
         eloService = new EloServiceImpl(userEloInitializerService, defaultEloCalculationStrategy, participantRepository,userRepository, tournamentRepository);
         ReflectionTestUtils.setField(eloService, "eloServiceEnabled", true);
@@ -64,42 +58,46 @@ public class EloServiceImplTest {
 
     @Test
     public void testTwoAuthorizedUsersMatch() {
-        UserEntity user1 = new UserEntity();
-        user1.setId(UUID.randomUUID());
-        user1.setUsername("user1");
-        user1.setEloPoints(1200);
+        UserEntity user1 = UserEntity.builder()
+                .id(UUID.randomUUID())
+                .username("user1")
+                .eloPoints(1200)
+                .build();
 
-        UserEntity user2 = new UserEntity();
-        user2.setId(UUID.randomUUID());
-        user2.setUsername("user2");
-        user2.setEloPoints(1200);
+        UserEntity user2 = UserEntity.builder()
+                .id(UUID.randomUUID())
+                .username("user2")
+                .eloPoints(1200)
+                .build();
 
+        ParticipantEntity participant1 = ParticipantEntity.builder()
+                .id(UUID.randomUUID())
+                .user(user1)
+                .build();
 
-        ParticipantEntity participant1 = new ParticipantEntity();
-        participant1.setId(UUID.randomUUID());
-        participant1.setUser(user1);
+        ParticipantEntity participant2 = ParticipantEntity.builder()
+                .id(UUID.randomUUID())
+                .user(user2)
+                .build();
 
-        ParticipantEntity participant2 = new ParticipantEntity();
-        participant2.setId(UUID.randomUUID());
-        participant2.setUser(user2);
+        MatchEntity match = MatchEntity.builder()
+                .participant1(participant1)
+                .participant2(participant2)
+                .result(MatchResult.WHITE_WIN)
+                .build();
 
-        MatchEntity match = new MatchEntity();
-        match.setParticipant1(participant1);
-        match.setParticipant2(participant2);
-        match.setResult(MatchResult.WHITE_WIN);
-
-
-        RoundEntity round = new RoundEntity();
-        round.setMatches(List.of(match));
-        round.setFinished(true); // помечаем раунд как завершенный
+        RoundEntity round = RoundEntity.builder()
+                .matches(List.of(match))
+                .isFinished(true)
+                .build();
 
         // Создаем турнир и добавляем раунд
-        TournamentEntity tournament = new TournamentEntity();
-        tournament.setId(UUID.randomUUID());
-        tournament.setName("Test Tournament");
-        tournament.setRounds(List.of(round)); // добавляем раунд в турнир
-        tournament.setStatus(TournamentStatus.ACTIVE);
-
+        TournamentEntity tournament = TournamentEntity.builder()
+                .id(UUID.randomUUID())
+                .name("Test Tournament")
+                .rounds(List.of(round)) // добавляем раунд в турнир
+                .status(TournamentStatus.ACTIVE)
+                .build();
 
         eloService.processTournamentAndUpdateElo(tournament);
 
