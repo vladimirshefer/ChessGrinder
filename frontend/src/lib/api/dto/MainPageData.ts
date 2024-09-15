@@ -50,18 +50,8 @@ export interface TournamentListDto {
     tournaments: TournamentDto[]
 }
 
-export interface MainPageData {
-    members: UserDto[]
-    tournaments: TournamentDto[]
-}
-
 export enum UserRoles {
     ADMIN = "ROLE_ADMIN"
-}
-
-export interface UserHistoryRecordDto {
-    tournament: TournamentDto
-    participant: ParticipantDto
 }
 
 export interface UserReputationHistoryRecordDto{
