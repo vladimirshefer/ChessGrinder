@@ -201,30 +201,30 @@ function MyActiveTournamentPaneImpl(
         <div className={"flex gap-1 items-center"}>
             {(isMeWhite && (
                 <IconTag
-                    icon={<FaChessKing className={"fill-primary"}/>}
+                    icon={<FaChessKing className={"fill-primary-400"}/>}
                     text={"You"}
                 />
             )) || (
                 <IconTag
-                    icon={<FaChessKing className={"fill-primary"}/>}
+                    icon={<FaChessKing className={"fill-primary-400"}/>}
                     text={opponent?.name || opponent?.userFullName || "—"}
                 />
             )}
             <span> - </span>
             {((!isMeWhite) && (
                 <IconTag
-                    icon={<FaRegChessKing className={"fill-primary"}/>}
+                    icon={<FaRegChessKing className={"fill-primary-400"}/>}
                     text={"You"}
                 />
             )) || (
                 <IconTag
-                    icon={<FaRegChessKing className={"fill-primary"}/>}
+                    icon={<FaRegChessKing className={"fill-primary-400"}/>}
                     text={opponent?.name || opponent?.userFullName || "—"}
                 />
             )}
         </div>
         <IconTag
-            icon={<BiSolidChess className={"text-primary"}/>}
+            icon={<BiSolidChess className={"text-primary-400"}/>}
             text={match.result === "BUY" ? "—" : (loc("Board") + " " + boardNumber)}
         />
         <div className={"p-1"}></div>
