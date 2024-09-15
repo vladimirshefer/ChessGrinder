@@ -4,7 +4,7 @@ import Gravatar, {GravatarType} from "components/Gravatar";
 import {Link} from "react-router-dom";
 import {AiOutlineTrophy} from "react-icons/ai";
 import {FaRegHeart} from "react-icons/fa";
-import { FaChartLine } from "react-icons/fa6";
+import {FaArrowTrendUp} from "react-icons/fa6";
 import React from "react";
 
 
@@ -53,21 +53,21 @@ export function UserPane(
                         </Link>
                     )}
                 </div>
-                <div className={"h-full leading-4 flex block align-bottom gap-1"} title={loc("Tournament points")}>
-                    <AiOutlineTrophy className={"inline -mt-[1px] leading-4 align-bottom"}/>
+                <div className={"h-full flex items-center gap-1"} title={loc("Tournament points")}>
+                    <AiOutlineTrophy/>
                     <span className={""}>{user.globalScore || 0}</span>
                 </div>
-                <div className={"h-full leading-4 flex block align-bottom gap-1"} title={loc("Reputation")}>
-                    <FaRegHeart className={"inline -mt-[1px] leading-4 align-bottom"}/>
+                {eloServiceEnabled && (
+                    <div className={"h-full flex items-center gap-1"} title={`${loc("Rating")} (${loc("Elo points")})`}>
+                        <FaArrowTrendUp/>
+                        <span>{user.eloPoints || "0"}</span>
+                    </div>
+                )}
+                <div className={"h-full flex items-center gap-1"} title={loc("Reputation")}>
+                    <FaRegHeart/>
                     <span className={""}>{user.reputation || 0}</span>
                 </div>
 
-            {eloServiceEnabled && (
-                <div className={"h-full leading-4 flex block align-bottom gap-1"} title={loc("Elo Points")}>
-                   <FaChartLine className={"inline -mt-[1px] leading-4 align-bottom"}/>
-                   <span>{user.eloPoints || "Unrated"}</span>
-                 </div>
-            )}
             </div>
         </div>
     </div>;
