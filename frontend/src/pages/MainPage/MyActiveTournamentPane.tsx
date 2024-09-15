@@ -14,6 +14,7 @@ import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import config from "config";
 import {useMode} from "lib/api/repository/apiSettings";
 import roundRepository from "lib/api/repository/RoundRepository";
+import {MdInfoOutline} from "react-icons/md";
 
 function MyActiveTournamentPane() {
 
@@ -211,6 +212,15 @@ function MyActiveTournamentPaneImpl(
         }
     }
 
+    let resultW = match.resultSubmittedByWhite;
+    let resultB = match.resultSubmittedByBlack;
+    let isFinalResult = !!match.result;
+    let isConflict = !isFinalResult && resultW !== resultB && !!resultW && !!resultB;
+    let meSubmittedResult = (isMeWhite && !!resultW) || (!isMeWhite && resultB);
+    let opponentSubmittedResult = (isMeWhite && !!resultB) || (!isMeWhite && resultW);
+
+    let waitingForMyResult = !match.result && opponentSubmittedResult && !isConflict;
+    let waitingForOpponentResult = !match.result && meSubmittedResult && !isConflict;
     return <div className={`grid justify-items-start w-full p-4 overflow-hidden tournament-active`}>
         <div className={"grid w-full justify-items-start"}>
             <Link className={"flex w-full gap-2 text-lg text-left justify-between items-center"}
@@ -218,30 +228,30 @@ function MyActiveTournamentPaneImpl(
             >
                 <div className="flex gap-2 hover:underline font-semibold">
                     <span className={"grow"}>
-                        {`Game ${roundNumber}`}
+                        {`${loc("Game")} ${roundNumber}`}
                     </span>
                 </div>
             </Link>
         </div>
         <div className={"flex gap-1 items-center"}>
-            {(isMeWhite && (
+            {isMeWhite ? (
                 <IconTag
                     icon={<FaChessKing className={"fill-primary-400"}/>}
                     text={"You"}
                 />
-            )) || (
+            ) : (
                 <IconTag
                     icon={<FaChessKing className={"fill-primary-400"}/>}
                     text={opponent?.name || opponent?.userFullName || "—"}
                 />
             )}
             <span> - </span>
-            {((!isMeWhite) && (
+            {(!isMeWhite) ? (
                 <IconTag
                     icon={<FaRegChessKing className={"fill-primary-400"}/>}
                     text={"You"}
                 />
-            )) || (
+            ) : (
                 <IconTag
                     icon={<FaRegChessKing className={"fill-primary-400"}/>}
                     text={opponent?.name || opponent?.userFullName || "—"}
@@ -258,7 +268,7 @@ function MyActiveTournamentPaneImpl(
                 setResultSelectorActive(!resultSelectorActive)
             }
         }}>
-            {loc(getResultStr(match.result || match.resultSubmittedByWhite || match.resultSubmittedByBlack, isMeWhite))}
+            {loc(isConflict ? "Conflict" : getResultStr(match.result, isMeWhite))}
         </div>
         {(resultSelectorActive && (<>
                 <div className={"p-1"}></div>
@@ -281,6 +291,28 @@ function MyActiveTournamentPaneImpl(
                 </div>
             </>
         ))}
+
+        <div className={"p-1"}></div>
+        {waitingForMyResult && (
+            <div className={"text-left text-sm flex items-center gap-1"}>
+                <span className={"inline-block"}><MdInfoOutline/></span>
+                {loc("Your opponent have submitted the result. Please, set yours to confirm.")}
+            </div>
+        )}
+
+        {waitingForOpponentResult && (
+            <div className={"text-left text-sm flex items-center gap-1"}>
+                <span className={"inline-block"}><MdInfoOutline/></span>
+                {loc("You have submitted the result. Waiting for opponent confirmation.")}
+            </div>
+        )}
+
+        {isConflict && (
+            <div className={"text-left text-sm flex items-center gap-1"}>
+                <span className={"inline-block"}><MdInfoOutline/></span>
+                {loc("You and your opponent have submitted different results. Please, update results or wait for the moderator.")}
+            </div>
+        )}
 
     </div>;
 }

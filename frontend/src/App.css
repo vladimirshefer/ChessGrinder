@@ -55,10 +55,10 @@
   background: repeating-linear-gradient(
           45deg,
           theme("colors.primary.400"),
-          theme("colors.primary.400") 20px,
-          theme("colors.primary.200") 20px,
-          theme("colors.primary.200") 40px,
-          theme("colors.primary.400") 40px
+          theme("colors.primary.400") 10px,
+          theme("colors.primary.300") 10px,
+          theme("colors.primary.300") 15px,
+          theme("colors.primary.400") 15px
   );
 }
 
@@ -66,10 +66,10 @@
   background: repeating-linear-gradient(
           45deg,
           theme("colors.primary.200"),
-          theme("colors.primary.200") 20px,
-          theme("colors.primary.100") 20px,
-          theme("colors.primary.100") 40px,
-          theme("colors.primary.200") 40px
+          theme("colors.primary.200") 10px,
+          theme("colors.primary.100") 10px,
+          theme("colors.primary.100") 15px,
+          theme("colors.primary.200") 15px
   );
 }
 
@@ -77,8 +77,9 @@
   background: repeating-linear-gradient(
           45deg,
           theme("colors.gray.200"),
-          theme("colors.gray.200") 20px,
-          theme("colors.gray.50") 20px,
-          theme("colors.gray.50") 40px
+          theme("colors.gray.200") 10px,
+          theme("colors.gray.50") 10px,
+          theme("colors.gray.50") 15px,
+          theme("colors.gray.200") 15px
   );
 }
