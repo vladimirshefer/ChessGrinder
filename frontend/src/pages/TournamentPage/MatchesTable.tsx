@@ -119,7 +119,7 @@ export function MatchRow(
                         ${whiteProbablyWin ? "bg-stripes-45-primary-400" : ""} 
                         ${probablyDraw ? "bg-stripes-45-primary-200" : ""} 
                         ${blackProbablyWin ? "bg-stripes-45-gray-200" : ""}
-                        ${isConflict ? "bg-danger-50" : ""}
+                        ${isConflict ? "bg-danger-400" : ""}
                         `}
         >
             <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{match.white?.name || "-"}</span>
@@ -141,7 +141,7 @@ export function MatchRow(
                         ${whiteProbablyWin ? "bg-stripes-45-gray-200" : ""}
                         ${blackProbablyWin ? "bg-stripes-45-primary-400" : ""} 
                         ${probablyDraw ? "bg-stripes-45-primary-200" : ""} 
-                        ${isConflict ? "bg-danger-50" : ""}
+                        ${isConflict ? "bg-danger-400" : ""}
                         `}
         >
             <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{match.black?.name || "-"}</span>
