@@ -23,10 +23,11 @@ export function UserPane(
     return <div key={user.id} className={"col-span-12 flex"}>
         <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
             <Gravatar
-                text={user.username || user.id}
+                text={user.emailHash}
                 type={GravatarType.Robohash}
                 size={150}
                 className={"rounded-full"}
+                inputType={"MD5"}
             />
         </div>
         <div className={"grid w-full content-left items-left"}>

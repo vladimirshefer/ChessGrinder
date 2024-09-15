@@ -53,7 +53,7 @@ public interface EntityPermissionEvaluator<T> {
     }
 
     @Nullable
-    private static <T> Object getIdField(@Nullable T entity) {
+    static <T> Object getIdField(@Nullable T entity) {
         if (entity == null) return null;
         Predicate<Annotation> predicate = (a -> a.annotationType().getSimpleName().equals("Id"));
 

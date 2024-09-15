@@ -20,6 +20,7 @@ export interface UserDto {
     roles?: string[]
     reputation?: number
     globalScore?: number
+    emailHash: string
     eloPoints?: number;
 }
 

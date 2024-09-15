@@ -99,14 +99,27 @@ export function MatchRow(
         setResult: (selectedResult: MatchResult | null) => void
     }
 ) {
+    let resultW = match.resultSubmittedByWhite;
+    let resultB = match.resultSubmittedByBlack;
+    let result = match.result || resultW || resultB;
+    let isFinalResult = !!match.result;
+    let isConflict = !isFinalResult && resultW !== resultB && !!resultW && !!resultB;
+    let whiteProbablyWin = result === "WHITE_WIN" && !isFinalResult && !isConflict;
+    let blackProbablyWin = result === "BLACK_WIN" && !isFinalResult && !isConflict;
+    let probablyDraw = result === "DRAW" && !isFinalResult && !isConflict;
+
     return <Fragment key={idx}>
         <div className={`grid text-xs p-3 
-                        ${match.result === "WHITE_WIN" ? "bg-anzac-400" : ""} 
+                        ${match.result === "WHITE_WIN" ? "bg-primary-400" : ""} 
                         ${match.result === "BLACK_WIN" ? "bg-gray-200" : ""}
-                        ${match.result === "BUY" ? "bg-anzac-400" : ""} 
-                        ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        ${match.result === "BUY" ? "bg-primary-400" : ""} 
+                        ${match.result === "DRAW" ? "bg-primary-200" : ""} 
                         ${match.result === "MISS" ? "bg-gray-200" : ""} 
-                        ${!match.result ? "bg-gray-50" : ""} 
+                        ${!result ? "bg-gray-50" : ""} 
+                        ${whiteProbablyWin ? "bg-stripes-45-primary-400" : ""} 
+                        ${probablyDraw ? "bg-stripes-45-primary-200" : ""} 
+                        ${blackProbablyWin ? "bg-stripes-45-gray-200" : ""}
+                        ${isConflict ? "bg-danger-400" : ""}
                         `}
         >
             <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{match.white?.name || "-"}</span>
@@ -119,12 +132,16 @@ export function MatchRow(
             <span className={"text-xs"}>{tableNumber || 0}</span>
         </div>
         <div className={`grid text-xs p-3 
-                        ${match.result === "BLACK_WIN" ? "bg-anzac-400" : ""} 
+                        ${match.result === "BLACK_WIN" ? "bg-primary-400" : ""} 
                         ${match.result === "WHITE_WIN" ? "bg-gray-200" : ""}
-                        ${match.result === "BUY" ? "bg-anzac-400" : ""} 
-                        ${match.result === "DRAW" ? "bg-anzac-200" : ""} 
+                        ${match.result === "BUY" ? "bg-primary-400" : ""} 
+                        ${match.result === "DRAW" ? "bg-primary-200" : ""} 
                         ${match.result === "MISS" ? "bg-gray-200" : ""} 
-                        ${!match.result ? "bg-gray-50" : ""} 
+                        ${!result ? "bg-gray-50" : ""} 
+                        ${whiteProbablyWin ? "bg-stripes-45-gray-200" : ""}
+                        ${blackProbablyWin ? "bg-stripes-45-primary-400" : ""} 
+                        ${probablyDraw ? "bg-stripes-45-primary-200" : ""} 
+                        ${isConflict ? "bg-danger-400" : ""}
                         `}
         >
             <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{match.black?.name || "-"}</span>

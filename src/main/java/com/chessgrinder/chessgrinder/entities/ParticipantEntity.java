@@ -1,15 +1,13 @@
 package com.chessgrinder.chessgrinder.entities;
 
-import java.math.*;
-import java.util.*;
-
-import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import lombok.*;
-import lombok.extern.slf4j.*;
-import org.hibernate.annotations.*;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.math.BigDecimal;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -37,8 +35,7 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Nullable // Tournament could be deleted from db.
     private TournamentEntity tournament;
 
-    @Nonnull
-    @Column(name = "nickname")
+    @Column(name = "nickname", nullable = false)
     private String nickname;
 
     @Column(name = "initial_elo_points")
@@ -47,12 +44,10 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Column (name ="final_elo_points")
     private int finalEloPoints;
 
-    @Nonnull
-    @Column(name = "score")
+    @Column(name = "score", nullable = false)
     private BigDecimal score;
 
-    @Nonnull
-    @Column(name = "buchholz")
+    @Column(name = "buchholz", nullable = false)
     private BigDecimal buchholz;
 
     @Column(name = "is_missing")
@@ -61,7 +56,6 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Column(name = "is_moderator")
     private boolean isModerator;
 
-    @Nonnull
-    @Column(name = "place")
+    @Column(name = "place", nullable = false)
     private Integer place;
 }

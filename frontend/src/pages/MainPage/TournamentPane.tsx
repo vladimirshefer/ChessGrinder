@@ -94,19 +94,19 @@ export function TournamentPane(
         <Conditional on={isPlanned || isActive}>
             <div className={"py-3"}>
                 <IconTag
-                    icon={<AiFillClockCircle className={"text-primary"}/>}
+                    icon={<AiFillClockCircle className={"text-primary-400"}/>}
                     text={dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")}
                 />
                 {(!!tournament.locationName) && (
                     <IconTag
-                        icon={<IoLocationSharp className={"text-primary"}/>}
+                        icon={<IoLocationSharp className={"text-primary-400"}/>}
                         text={tournament.locationName || ""}
                         link={tournament.locationUrl || undefined}
                     />
                 )}
                 <Conditional on={isMeParticipating}>
                     <IconTag
-                        icon={<BsBookmarkCheckFill className={"text-primary"}/>}
+                        icon={<BsBookmarkCheckFill className={"text-primary-400"}/>}
                         text={loc("Participating")}
                     />
                 </Conditional>
@@ -128,7 +128,7 @@ export function TournamentPane(
         <div className={"p-1"}></div>
         <Conditional on={isPlanned}>
             <div className={"w-full flex"}>
-                <ConditionalOnAuthorized>{
+                <ConditionalOnAuthorized>{() =>
                     !isMeParticipating ? (
                         <button className={"btn-primary w-full uppercase"}
                                 onClick={async () => {
@@ -151,12 +151,13 @@ export function TournamentPane(
                     )
                 }
                 </ConditionalOnAuthorized>
-                <ConditionalOnAuthorized authorized={false}>
+                <ConditionalOnAuthorized authorized={false}>{() =>
                     <Link to={loginPageLink} className={"w-full"}>
                         <button className={"btn-primary w-full uppercase"}>
                             {loc("Participate")}
                         </button>
                     </Link>
+                }
                 </ConditionalOnAuthorized>
             </div>
         </Conditional>

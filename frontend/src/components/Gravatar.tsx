@@ -16,19 +16,22 @@ export default function Gravatar(
         alt = "",
         className = "",
         size,
-        type
+        type,
+        inputType = "TEXT",
     }: {
-        text: string,
+        text: string | undefined,
         alt?: string,
         className?: string,
         size?: number,
-        type: GravatarType
+        type: GravatarType,
+        inputType?: "TEXT" | "MD5",
     }
 ) {
+    let hash = inputType === "MD5" && !!text ? text : Md5.hashStr(text || "");
     return <img
         className={className}
         alt={alt}
-        src={`https://gravatar.com/avatar/${Md5.hashStr(text)}?d=${type}${size ? `&s=${size}` : ""}`}
+        src={`https://gravatar.com/avatar/${hash}?d=${type}${size ? `&s=${size}` : ""}`}
     />
 }
 

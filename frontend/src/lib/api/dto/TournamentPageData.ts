@@ -1,10 +1,5 @@
 import {TournamentDto} from "./MainPageData";
 
-export interface MatchParticipantDto {
-    userId: string,
-    name: string
-}
-
 export interface MatchDto {
     id: string
     /**
@@ -16,11 +11,15 @@ export interface MatchDto {
      * Null if the match is buy
      */
     black: ParticipantDto | null
+
+    resultSubmittedByWhite?: MatchResult | undefined
+    resultSubmittedByBlack?: MatchResult | undefined
 }
 
 export type MatchResult = "WHITE_WIN" | "BLACK_WIN" | "DRAW" | "BUY" | "MISS"
 
 export interface RoundDto {
+    number: number
     isFinished: boolean
     matches: MatchDto[]
 }
