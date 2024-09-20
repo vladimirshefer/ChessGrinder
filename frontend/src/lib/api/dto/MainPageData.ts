@@ -1,5 +1,3 @@
-import {ParticipantDto} from "./TournamentPageData";
-
 export interface BadgeDto {
     id: string
     title: string
