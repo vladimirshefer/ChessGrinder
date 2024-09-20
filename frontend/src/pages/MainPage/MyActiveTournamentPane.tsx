@@ -32,7 +32,8 @@ function MyActiveTournamentPane() {
     let meParticipant = useMemo(() => {
         if (meParticipantsQuery.isSuccess && !!meParticipantsQuery.data) {
             let participantDtos = meParticipantsQuery?.data?.values
-                ?.filter(it => it.tournament?.status === "ACTIVE");
+                ?.filter(it => it.tournament?.status === "ACTIVE")
+                ?.filter(it => !it.isMissing);
             if (participantDtos !== undefined && participantDtos.length !== 0) {
                 return participantDtos[0]
             }
