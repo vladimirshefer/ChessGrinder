@@ -16,7 +16,16 @@ import {useMode} from "lib/api/repository/apiSettings";
 import roundRepository from "lib/api/repository/RoundRepository";
 import {MdInfoOutline} from "react-icons/md";
 
-function MyActiveTournamentPane() {
+function MyActiveTournamentPane(
+    {
+        tournamentId
+    }: {
+        /**
+         * If not defined, then active tournament where authenticated user participates is used.
+         */
+        tournamentId?: string | undefined
+    }
+) {
 
     let [authenticatedUser] = useAuthenticatedUser()
 
@@ -24,8 +33,16 @@ function MyActiveTournamentPane() {
         queryKey: ["meParticipants", authenticatedUser?.id],
         queryFn: async (): Promise<ListDto<ParticipantDto>> => {
             let emptyList = {values: []} as ListDto<ParticipantDto>;
-            if (!authenticatedUser?.id) return emptyList
-            return await userRepository.getParticipant(authenticatedUser.id) || emptyList;
+            let userId = authenticatedUser?.id;
+            if (!userId) return emptyList
+
+            if (!tournamentId) {
+                return await userRepository.getParticipant(userId) || emptyList;
+            }
+
+            let tournament = await tournamentPageRepository.getData(tournamentId);
+            let meParticipant1 = tournament?.participants?.find(it => it.userId === userId);
+            return !!meParticipant1 ? {values: [meParticipant1]} : emptyList;
         }
     })
 

@@ -15,6 +15,7 @@ import roundRepository from "lib/api/repository/RoundRepository";
 import AddParticipantTournamentPageSection from "./AddParticipantTournamentPageSection";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
+import MyActiveTournamentPane from "../MainPage/MyActiveTournamentPane";
 
 function TournamentPage() {
     let loc = useLoc()
@@ -153,6 +154,9 @@ function TournamentPage() {
                     <AiOutlineHome/>
                 </button>
             </Link>
+            {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && !roundId && (
+                <MyActiveTournamentPane tournamentId={tournament.id}/>
+            )}
             {roundNumbers.map(rid => {
                 return <Link
                     to={`/tournament/${id}/round/${rid}`} title={loc(`Open round`) + " " + rid}
