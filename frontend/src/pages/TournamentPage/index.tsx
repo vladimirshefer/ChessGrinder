@@ -207,7 +207,7 @@ function TournamentPage(
                 </div>
             </div>
         </div>
-        {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && (isMain || isCurrentTabIsActiveRound) && (
+        {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && (
             <MyActiveTournamentPane tournamentId={tournament.id}/>
         )}
         <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
