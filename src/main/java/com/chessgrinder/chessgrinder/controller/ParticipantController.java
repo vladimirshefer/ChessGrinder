@@ -31,6 +31,13 @@ public class ParticipantController {
     private final ParticipantMapper participantMapper;
     private final TournamentRepository tournamentRepository;
 
+    @GetMapping
+    public ListDto<ParticipantDto> getParticipants(
+            @PathVariable UUID tournamentId
+    ) {
+        return ListDto.of(participantMapper.toDto(participantRepository.findByTournamentId(tournamentId)));
+    }
+
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PostMapping
     public void addParticipantToTournament(

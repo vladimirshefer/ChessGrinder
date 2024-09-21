@@ -1,6 +1,7 @@
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
 import {useLoc} from "strings/loc";
 import {useQuery} from "@tanstack/react-query";
+import {useMemo} from "react";
 import {Link} from "react-router-dom";
 import {BsBookmarkCheckFill, BsFillRecordFill} from "react-icons/bs";
 import dayjs from "dayjs";
@@ -10,6 +11,7 @@ import {IoLocationSharp} from "react-icons/io5";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
+import {FaUserCheck, FaUsers} from "react-icons/fa6";
 
 export function TournamentPane(
     {
@@ -37,6 +39,15 @@ export function TournamentPane(
         }
     })
 
+    let participantsQuery = useQuery({
+        queryKey: ["participants", tournament.id],
+        queryFn: async () => {
+            return await participantRepository.getParticipants(tournament.id)
+                .catch(() => null);
+        },
+        enabled: tournament.status !== "FINISHED"
+    })
+
     let isPlanned = tournament.status === "PLANNED"
     let isFinished = tournament.status === "FINISHED"
     let isActive = tournament.status === "ACTIVE"
@@ -57,6 +68,10 @@ export function TournamentPane(
     }
 
     let isMeParticipating = !!meParticipantQuery?.data?.id;
+
+    const participantsCount = useMemo(() => {
+        return participantsQuery.data?.values?.length ?? null;
+    }, [participantsQuery.data]);
 
     let locationGeneratedUrl = !!tournament.locationName
         ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tournament.locationName + " " + (tournament.city || ""))}`
@@ -99,12 +114,20 @@ export function TournamentPane(
                         link={tournament.locationUrl || locationGeneratedUrl}
                     />
                 )}
-                <Conditional on={isMeParticipating}>
+                {isMeParticipating ? (
                     <IconTag
-                        icon={<BsBookmarkCheckFill className={"text-primary-400"}/>}
+                        icon={<FaUserCheck className={"text-primary-400"}/>}
                         text={loc("Participating")}
                     />
-                </Conditional>
+                ) : (
+                    <Conditional on={participantsCount != null}>
+                        <IconTag
+                            icon={<FaUsers className={"text-primary-400"}/>}
+                            text={<span>{participantsCount}{!!tournament.registrationLimit ?
+                                <small>/{tournament.registrationLimit}</small> : null}</span>}
+                        />
+                    </Conditional>
+                )}
             </div>
         </Conditional>
         <Conditional on={isFinished}>

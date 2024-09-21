@@ -7,6 +7,7 @@ import {ListDto, UserDto} from "lib/api/dto/MainPageData";
 import authService from "lib/auth/AuthService";
 
 export interface ParticipantRepository {
+    getParticipants(tournamentId: string): Promise<ListDto<ParticipantDto>>;
     postParticipant(tournamentId: string, participant: ParticipantDto): Promise<void>
     deleteParticipant(tournamentId: string, participantId: string): Promise<void>
     getParticipant(tournamentId: string, participantId: string): Promise<ParticipantDto>
@@ -19,6 +20,11 @@ export interface ParticipantRepository {
 }
 
 class LocalStorageParticipantRepository implements ParticipantRepository {
+    async getParticipants(tournamentId: string): Promise<ListDto<ParticipantDto>> {
+        let tournament = requirePresent(localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`), `No tournament with id ${tournamentId}`)
+        return {values: tournament.participants || []}
+    }
+
     async postParticipant(tournamentId: string, participant: ParticipantDto) {
         let tournament =  localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`) || null;
         if (!tournament) throw new Error(`No tournament with id ${tournamentId}`)
@@ -87,6 +93,10 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
 }
 
 class RestApiParticipantRepository implements ParticipantRepository {
+    async getParticipants(tournamentId: string): Promise<ListDto<ParticipantDto>> {
+        return await restApiClient.get<ListDto<ParticipantDto>>(`/tournament/${tournamentId}/participant`);
+    }
+
     async postParticipant(tournamentId: string, participant: ParticipantDto) {
         await restApiClient.post(`/tournament/${tournamentId}/participant`, participant,)
     }
