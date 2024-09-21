@@ -173,13 +173,15 @@ public class TournamentController {
     ) {
         TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
 
-        if (!tournament.getStatus().equals(TournamentStatus.PLANNED)) {
-            throw new ResponseStatusException(400, "Tournament already started. Ask administrator for help.", null);
+        if (tournament.getStatus().equals(TournamentStatus.FINISHED)) {
+            throw new ResponseStatusException(400, "Tournament already finished.", null);
         }
 
-        if (tournament.getRegistrationLimit() != null && tournament.getRegistrationLimit() > 0 && tournament.getRegistrationLimit() <= participantRepository.countByTournament(tournamentId)) {
-            throw new ResponseStatusException(400, "Participant limit is full.", null);
-        }
+        long participantsCount = participantRepository.countByTournament(tournamentId);
+        boolean limitReached = tournament.getRegistrationLimit() != null
+                && tournament.getRegistrationLimit() > 0
+                && tournament.getRegistrationLimit() <= participantsCount;
+        boolean shouldStartMissing = !tournament.getStatus().equals(TournamentStatus.PLANNED) || limitReached;
 
         ParticipantEntity participant = ParticipantEntity.builder()
                 .tournament(tournament)
@@ -187,7 +189,8 @@ public class TournamentController {
                 .nickname(nickname)
                 .score(BigDecimal.ZERO)
                 .buchholz(BigDecimal.ZERO)
-                .place(0)
+                .isMissing(shouldStartMissing)
+                .place(-1)
                 .build();
 
         if (SecurityUtil.hasRole(user, RoleEntity.Roles.ADMIN)) {

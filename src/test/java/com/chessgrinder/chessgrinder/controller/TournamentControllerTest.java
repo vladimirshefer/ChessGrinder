@@ -26,6 +26,7 @@ import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver;
 import java.util.Objects;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -121,6 +122,14 @@ class TournamentControllerTest {
 
         // Verify save is called
         verify(participantRepository).save(any(ParticipantEntity.class));
+
+        ParticipantEntity savedParticipant = TestJpaRepository.getData(participantRepository)
+                .values()
+                .stream()
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(savedParticipant.isMissing()).isFalse();
     }
 
     @Test
@@ -139,7 +148,7 @@ class TournamentControllerTest {
     }
 
     @Test
-    void participate_shouldThrowException_whenTournamentAlreadyStarted() throws Exception {
+    void participate_shouldMarkMissing_whenTournamentAlreadyStarted() throws Exception {
         String username = "user@user.user";
 
         TournamentEntity tournament = tournamentRepository.save(
@@ -154,11 +163,19 @@ class TournamentControllerTest {
 
         mockMvc.perform(post("/tournament/{tournamentId}/action/participate", tournament.getId())
                         .principal(mockAuth(username, true)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
+
+        ParticipantEntity savedParticipant = TestJpaRepository.getData(participantRepository)
+                .values()
+                .stream()
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(savedParticipant.isMissing()).isTrue();
     }
 
     @Test
-    void participate_shouldThrowException_whenParticipantLimitReached() throws Exception {
+    void participate_shouldMarkMissing_whenParticipantLimitReached() throws Exception {
         String username = "user@user.user";
 
         Authentication authentication = mockAuth(username, true);
@@ -180,6 +197,34 @@ class TournamentControllerTest {
 
         mockMvc.perform(post("/tournament/{tournamentId}/action/participate", tournament.getId())
                         .principal(authentication))
+                .andExpect(status().isOk());
+
+        ParticipantEntity savedParticipant = TestJpaRepository.getData(participantRepository)
+                .values()
+                .stream()
+                .filter(ParticipantEntity::isMissing)
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(savedParticipant.isMissing()).isTrue();
+    }
+
+    @Test
+    void participate_shouldThrowException_whenTournamentAlreadyFinished() throws Exception {
+        String username = "user@user.user";
+
+        TournamentEntity tournament = tournamentRepository.save(
+                TournamentEntity.builder()
+                        .status(TournamentStatus.FINISHED)
+                        .build()
+        );
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
+        when(userRepository.findByUsername(username)).thenReturn(userEntity);
+
+        mockMvc.perform(post("/tournament/{tournamentId}/action/participate", tournament.getId())
+                        .principal(mockAuth(username, true)))
                 .andExpect(status().isBadRequest());
     }
 
