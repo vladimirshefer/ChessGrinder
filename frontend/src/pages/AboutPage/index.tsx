@@ -1,4 +1,4 @@
-import {BsCloudLightning, BsLightning, BsStars} from "react-icons/bs";
+import {BsLightning, BsStars} from "react-icons/bs";
 
 export default function AboutPage() {
     return <div className={"p-5 text-left grid gap-5"}>

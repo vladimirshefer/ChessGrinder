@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import ClockComponent from "pages/ChessClockPage/ClockComponent";
 import ClockSettingsComponent from "pages/ChessClockPage/ClockSettingsComponent";
 import {Conditional} from "components/Conditional";
@@ -32,6 +32,15 @@ function ChessClockPage() {
     let [time2, setTime2] = useState(lastTime2 || explicitTime || DEFAULT_TIME_LIMIT);
     let [bonusTime, setBonusTime] = useState(lastBonus || explicitBonus || DEFAULT_BONUS);
 
+    const resetTime = useCallback(() => {
+        localStorage.removeItem("chessclock.time_left_1");
+        localStorage.removeItem("chessclock.time_left_2");
+        localStorage.removeItem("chessclock.last_bonus");
+        setTime1(explicitTime || DEFAULT_TIME_LIMIT);
+        setTime2(explicitTime || DEFAULT_TIME_LIMIT);
+        setBonusTime(explicitBonus || DEFAULT_BONUS);
+    }, [explicitTime, explicitBonus]);
+
     useEffect(() => {
         if (
             (!!lastTime1 && !!explicitTime && lastTime1 !== explicitTime) ||
@@ -41,16 +50,7 @@ function ChessClockPage() {
                 resetTime();
             }
         }
-    }, [lastTime1, lastTime2, explicitTime])
-
-    function resetTime() {
-        localStorage.removeItem("chessclock.time_left_1");
-        localStorage.removeItem("chessclock.time_left_2");
-        localStorage.removeItem("chessclock.last_bonus");
-        setTime1(explicitTime || DEFAULT_TIME_LIMIT);
-        setTime2(explicitTime || DEFAULT_TIME_LIMIT);
-        setBonusTime(explicitBonus || DEFAULT_BONUS);
-    }
+    }, [lastTime1, lastTime2, explicitTime, resetTime])
 
     return <>
         <Conditional on={isSettingsOpen}>

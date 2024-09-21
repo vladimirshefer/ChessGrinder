@@ -14,7 +14,6 @@ import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import Gravatar, {GravatarType} from "components/Gravatar";
-import {AiOutlineTrophy} from "react-icons/ai";
 import {BsPencilFill} from "react-icons/bs";
 import {FiLogOut} from "react-icons/fi";
 import useSearchParam from "lib/react/hooks/useSearchParam";

@@ -7,8 +7,6 @@ import MemberList from "pages/MainPage/MemberList";
 
 export default function UsersPage() {
     let loc = useLoc();
-    const [globalScoreFromDate] = useSearchParam("startSeason");
-    const [globalScoreToDate] = useSearchParam("endSeason");
     const [sort] = useSearchParam("sort");
 
     let usersQuery = useQuery({

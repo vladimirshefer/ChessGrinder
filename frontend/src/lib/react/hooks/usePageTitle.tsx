@@ -1,10 +1,14 @@
-import React, {useEffect} from 'react';
+import {useEffect} from 'react';
 
-export function usePageTitle(title: string, dependencies: React.DependencyList = [title]): void {
-    useEffect(() => {
-        document.title = title;
-        return () => {
-            document.title = "ChessGrinder - International Chess Club";
-        };
-    }, dependencies)
+export function usePageTitle(title: string, dependencies: any[] = [title]): void {
+    useEffect(
+        () => {
+            document.title = title;
+            return () => {
+                document.title = "ChessGrinder - International Chess Club";
+            };
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        dependencies
+    )
 }
