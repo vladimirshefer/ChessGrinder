@@ -289,9 +289,14 @@ function TournamentPage(
                 </div>
             </Conditional>
             <Conditional on={tab === "SHARE"}>
-                <div className={"w-full p-1 grid justify-items-center"}>
+                <div className={"w-full p-1 grid justify-items-center gap-2"}>
                     <div className={"w-1/2 md:w-1/3 lg:w-1/4"}>
                         <QrCode text={(new URL(`/tournament/${tournament.id}`, document.location.href)).href}></QrCode>
+                    </div>
+                    <div>
+                        <Link target={"_blank"} to={`/api/tournament/${tournament.id}/export/trf`}>
+                            <button className={"btn-dark"}>{"Export as TRF"}</button>
+                        </Link>
                     </div>
                 </div>
             </Conditional>
