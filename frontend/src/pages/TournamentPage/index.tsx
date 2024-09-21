@@ -210,6 +210,31 @@ function TournamentPage(
         {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && (
             <MyActiveTournamentPane tournamentId={tournament.id}/>
         )}
+
+        {!hideParticipateButton && tournament.status === "PLANNED" && (
+            <div className={"px-2"}>
+                {isAuthenticatedUser ?
+                    (
+                        <button className={"btn-primary w-full uppercase"} onClick={participate}>
+                            {loc("Participate")}
+                        </button>
+                    ) : (
+                        <Link to={loginPageLink} className={"w-full"}>
+                            <button className={"btn-primary w-full uppercase"}>
+                                {loc("Participate")}
+                            </button>
+                        </Link>
+                    )
+                }
+            </div>
+        )}
+
+        <Conditional on={isMeModerator}>
+            <Conditional on={tournament?.status !== "FINISHED"}>
+                <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
+            </Conditional>
+        </Conditional>
+
         <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`} replace={true}>
                 <button
@@ -248,31 +273,6 @@ function TournamentPage(
         </div>
         <>
             <Conditional on={isMain}>
-                <>
-                    {!hideParticipateButton && tournament.status === "PLANNED" && (
-                        <div className={"px-2"}>
-                            {isAuthenticatedUser ?
-                                (
-                                    <button className={"btn-primary w-full uppercase"} onClick={participate}>
-                                        {loc("Participate")}
-                                    </button>
-                                ) : (
-                                    <Link to={loginPageLink} className={"w-full"}>
-                                        <button className={"btn-primary w-full uppercase"}>
-                                            {loc("Participate")}
-                                        </button>
-                                    </Link>
-                                )
-                            }
-                        </div>
-                    )}
-                </>
-                <Conditional on={isMeModerator}>
-                    <Conditional on={tournament?.status !== "FINISHED"}>
-                        <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
-                    </Conditional>
-                </Conditional>
-                <div className={"p-2"}>{/*Just padding*/}</div>
                 <ResultsTable participants={participants} openParticipant={openParticipant}/>
             </Conditional>
             <Conditional on={!!roundId}>
@@ -309,7 +309,8 @@ function TournamentPage(
                         </button>
                     </div>
                 </Conditional>
-            </Conditional></Conditional>
+            </Conditional>
+        </Conditional>
         <Conditional on={isMain && isMeModerator}>
             <ControlButtons
                 copyNicknames={copyNicknamesToClipboard}
