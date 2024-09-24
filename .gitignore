@@ -41,3 +41,5 @@ nohup.out
 
 ## Local docekr containers files
 /deployment/local/containers/
+## Local H2 database file
+database.h2.mv.db
