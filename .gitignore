@@ -38,3 +38,6 @@ application-production.properties
 ## Production log files
 *.log
 nohup.out
+
+## Local H2 database file
+database.h2.mv.db
