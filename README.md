@@ -1,18 +1,15 @@
 # Chess Grinder
 App for chess club.
 
-## Backend
-
-### Tech stack
+### Backend Tech stack
 - Java 17
 - Spring 6
 - Spring Boot 3
 
-## Frontend
-
-### Tech stack
+### Frontend Tech stack
 - React
-
+- React Query
+- Tailwind
 
 ## Project tasks
 - EPIC: User profiles
@@ -34,74 +31,12 @@ App for chess club.
 
 ## Project setup for developers
 
-1. Install Maven and Java 17
-    ```sh
-    curl -s "https://get.sdkman.io" | bash
-    ```
-    Then close and open terminal.
-    ```sh
-    sdk install maven
-    ```
-2. Run
-   ````
-   make dev_java_build
-   ````
-   
-3. Setup Backend (Java) App properties 
-    
-    Create new file `./src/main/resources/application-local.properties` directory.
-    ```properties
-    spring.datasource.url=jdbc:postgresql://localhost:9797/postgres
-    spring.datasource.username=postgres
-    spring.datasource.password=password
-    ## Create yours Google Oauth2 credentials 
-    # (https://support.google.com/cloud/answer/6158849?hl=en)
-    spring.security.oauth2.client.registration.google.clientId=CLIENT_ID
-    spring.security.oauth2.client.registration.google.clientSecret=SECRET_ID
-    ```
+1. Install Java (17 is recommended)
 
-4. Run to run docker container with postgres:
-    ```sh
-    docker run -d \
-      --name chessgrinder_postgres \
-      -e POSTGRES_PASSWORD=password \
-      -p 9797:5432\
-      postgres
-    ```
+1. Install Node.JS 16.x and NPM 8.x
 
-5. Setup <i>nginx</i>:
-    ```sh
-    brew install nginx # (command for macOS only)
-    ```
-    (command for macOS only)
-    ```sh
-    cd deployment/local
-    ```
-    
-    Edit **local_nginx_setup.sh**, change path to nginx conf directory
-  
-    ```sh
-    sudo chmod +x local_nginx_setup.sh
-    ```
-    ```
-    sudo ./local_nginx_setup.sh
-    ```
-    ```sh
-    sudo brew services restart nginx
-    ```
-6. Start java app with local profile
-7. Run frontend app:
-   1. Install NodeJS 16
-   2. Frontend App is located in `frontend` directory
-       ```shell
-       cd frontend
-       ```
-   3. Install frontend dependencies
-       ```sh
-       npm install
-       ```
-   4. Run application in development mode
-       ```sh
-       npm start
-       ```
+1. (Optional) Install Docker.
 
+   Docker enables setup of other parts with ease. It is required for these instructions.
+
+1. Run `ChessGrinder` Run configuration.
