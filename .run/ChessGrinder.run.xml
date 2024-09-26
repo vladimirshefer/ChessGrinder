@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ChessGrinder" type="CompoundRunConfigurationType">
+    <toRun name="Backend" type="Application" />
+    <toRun name="Frontend" type="js.build_tools.npm" />
+    <toRun name="Proxy" type="js.build_tools.npm" />
+    <method v="2" />
+  </configuration>
+</component>
