@@ -1,0 +1,9 @@
+name: chessgrinder
+services:
+  chessgrinder:
+    image: chessgrinder
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./deployment/production/config/:/app/config:ro
