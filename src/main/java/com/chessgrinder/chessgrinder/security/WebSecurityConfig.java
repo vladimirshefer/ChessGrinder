@@ -4,6 +4,8 @@ import com.chessgrinder.chessgrinder.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -108,5 +110,13 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @ConditionalOnProperty(name = "spring.flyway.repair", havingValue = "true")
+    @Bean
+    public static FlywayMigrationStrategy cleanMigrateStrategy() {
+        return flyway -> {
+            flyway.repair();
+            flyway.migrate();
+        };
+    }
 
 }
