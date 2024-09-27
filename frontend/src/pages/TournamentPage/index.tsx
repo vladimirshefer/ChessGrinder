@@ -145,6 +145,9 @@ function TournamentPage() {
                 </div>
             </div>
         </div>
+        {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && !roundId && (
+            <MyActiveTournamentPane tournamentId={tournament.id}/>
+        )}
         <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`} replace={true}>
                 <button
@@ -154,9 +157,6 @@ function TournamentPage() {
                     <AiOutlineHome/>
                 </button>
             </Link>
-            {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && !roundId && (
-                <MyActiveTournamentPane tournamentId={tournament.id}/>
-            )}
             {roundNumbers.map(rid => {
                 return <Link
                     to={`/tournament/${id}/round/${rid}`} title={loc(`Open round`) + " " + rid}
