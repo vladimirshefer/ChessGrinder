@@ -4,7 +4,7 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
-import com.chessgrinder.chessgrinder.security.SecurityUtil;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,12 +15,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.chessgrinder.chessgrinder.service.UserEloInitializerService.DEFAULT_ELO_POINTS;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class EloServiceImpl implements EloService {
 
-    private final UserEloInitializerService userEloInitializerService;
     private final EloCalculationStrategy eloCalculationStrategy;
     private final ParticipantRepository participantRepository;
     private final UserRepository userRepository;
@@ -38,51 +39,30 @@ public class EloServiceImpl implements EloService {
             return;
         }
 
-        Map<UUID, Integer> currentEloMap = initializeAuthorizedParticipantsElo(tournament);
+        EloHolder eloHolder = new EloHolder();
 
-        processMatches(tournament, currentEloMap);
-
-        finalizeTournament(tournament, currentEloMap);
-    }
-
-    private Map<UUID, Integer> initializeAuthorizedParticipantsElo(TournamentEntity tournament) {
-        Map<UUID, Integer> currentEloMap = new HashMap<>();
+        for (RoundEntity round1 : tournament.getRounds()) {
+            for (MatchEntity match1 : round1.getMatches()) {
+                eloHolder.putInitial(match1.getParticipant1());
+                eloHolder.putInitial(match1.getParticipant2());
+            }
+        }
 
         for (RoundEntity round : tournament.getRounds()) {
             for (MatchEntity match : round.getMatches()) {
-                initializeParticipantElo(match.getParticipant1(), currentEloMap);
-                initializeParticipantElo(match.getParticipant2(), currentEloMap);
+                processSingleMatch(match, eloHolder);
             }
         }
-        return currentEloMap;
-    }
 
-    private void initializeParticipantElo(ParticipantEntity participant, Map<UUID, Integer> currentEloMap) {
-        if (participant == null || participant.getUser() == null) {
-            return;
+        for (Map.Entry<UUID, Integer> entry : eloHolder.getResult().entrySet()) {
+            updateParticipantElo(entry.getKey(), eloHolder);
         }
 
-        UserEntity user = participant.getUser();
-
-        userEloInitializerService.setDefaultEloIfNeeded(user, SecurityUtil.isAuthorizedUser(user));
-
-        if (participant.getInitialEloPoints() == 0) {
-            participant.setInitialEloPoints(user.getEloPoints());
-            participantRepository.save(participant);
-        }
-
-        currentEloMap.putIfAbsent(participant.getId(), participant.getInitialEloPoints());
+        tournament.setHasEloCalculated(true);
+        tournamentRepository.save(tournament);
     }
 
-    private void processMatches(TournamentEntity tournament, Map<UUID, Integer> currentEloMap) {
-        for (RoundEntity round : tournament.getRounds()) {
-            for (MatchEntity match : round.getMatches()) {
-                processSingleMatch(match, currentEloMap);
-            }
-        }
-    }
-
-    private void processSingleMatch(MatchEntity match, Map<UUID, Integer> currentEloMap) {
+    private void processSingleMatch(MatchEntity match, EloHolder eloHolder) {
         ParticipantEntity participant1 = match.getParticipant1();
         ParticipantEntity participant2 = match.getParticipant2();
 
@@ -93,65 +73,48 @@ public class EloServiceImpl implements EloService {
         UserEntity user1 = participant1.getUser();
         UserEntity user2 = participant2.getUser();
 
-        boolean isUser1Authorized = SecurityUtil.isAuthorizedUser(user1);
-        boolean isUser2Authorized = SecurityUtil.isAuthorizedUser(user2);
-
-        if (!isUser1Authorized && !isUser2Authorized) {
+        if (user1 == null && user2 == null) {
             return;
         }
 
-        setInitialElo(participant1, user1, isUser1Authorized, currentEloMap);
-        setInitialElo(participant2, user2, isUser2Authorized, currentEloMap);
+        int whiteElo = eloHolder.getResultOr(participant1.getId(), DEFAULT_ELO_POINTS);
+        int blackElo = eloHolder.getResultOr(participant2.getId(), DEFAULT_ELO_POINTS);
 
-        calculateAndApplyElo(match, participant1, participant2, currentEloMap);
-    }
-
-    private void setInitialElo(ParticipantEntity participant, UserEntity user, boolean isAuthorized, Map<UUID, Integer> currentEloMap) {
-        if (isAuthorized && participant.getInitialEloPoints() == 0) {
-            participant.setInitialEloPoints(user.getEloPoints());
-            currentEloMap.put(participant.getId(), user.getEloPoints());
-            participantRepository.save(participant);
-        }
-    }
-
-    private void calculateAndApplyElo(MatchEntity match, ParticipantEntity participant1, ParticipantEntity participant2, Map<UUID, Integer> currentEloMap) {
-        int whiteElo = currentEloMap.getOrDefault(participant1.getId(), 1200); // начальный Elo, если не установлен
-        int blackElo = currentEloMap.getOrDefault(participant2.getId(), 1200);
-
-        boolean bothUsersAuthorized = SecurityUtil.isAuthorizedUser(participant1.getUser()) && SecurityUtil.isAuthorizedUser(participant2.getUser());
-
+        boolean bothUsersAuthorized = participant1.getUser() != null && participant2.getUser() != null;
         var updateResult = eloCalculationStrategy.calculateElo(whiteElo, blackElo, match.getResult(), bothUsersAuthorized);
 
-        int whiteEloChange = updateResult.whiteElo() - whiteElo;
-        int blackEloChange = updateResult.blackElo() - blackElo;
-
-        currentEloMap.put(participant1.getId(), whiteElo + whiteEloChange);
-        currentEloMap.put(participant2.getId(), blackElo + blackEloChange);
-
-        participant1.setFinalEloPoints(participant1.getFinalEloPoints() + whiteEloChange);
-        participant2.setFinalEloPoints(participant2.getFinalEloPoints() + blackEloChange);
-
-        participantRepository.save(participant1);
-        participantRepository.save(participant2);
+        eloHolder.putResult(participant1.getId(), updateResult.whiteElo());
+        eloHolder.putResult(participant2.getId(), updateResult.blackElo());
     }
 
+    private void saveParticipantInitialElo(ParticipantEntity participant, int elo) {
+        participant.setInitialEloPoints(elo);
+        participantRepository.save(participant);
+    }
 
-    private void finalizeTournament(TournamentEntity tournament, Map<UUID, Integer> currentEloMap) {
-        for (Map.Entry<UUID, Integer> entry : currentEloMap.entrySet()) {
-            ParticipantEntity participant = participantRepository.findById(entry.getKey()).orElse(null);
-            if (participant != null) {
-                UserEntity user = participant.getUser();
+    private void saveParticipantFinalElo(ParticipantEntity participant, int elo) {
+        participant.setFinalEloPoints(elo);
+        participantRepository.save(participant);
+    }
 
-                if (SecurityUtil.isAuthorizedUser(user)) {
-                    int newElo = user.getEloPoints() + participant.getFinalEloPoints();
-                    user.setEloPoints(newElo);
-                    userRepository.save(user);
-                }
-            }
+    private void updateParticipantElo(UUID participantId, EloHolder eloHolder) {
+        ParticipantEntity participant = participantRepository.findById(participantId).orElse(null);
+        if (participant == null) {
+            return;
         }
+        int initialElo = eloHolder.getInitial(participantId);
+        saveParticipantInitialElo(participant, initialElo);
+        Integer result = eloHolder.getResult(participantId);
+        saveParticipantFinalElo(participant, result != null ? result - initialElo : DEFAULT_ELO_POINTS);
+        UserEntity user = participant.getUser();
+        if (user != null) {
+            saveUserElo(user, result != null ? result : 0);
+        }
+    }
 
-        tournament.setHasEloCalculated(true);
-        tournamentRepository.save(tournament);
+    private void saveUserElo(UserEntity user, int newElo) {
+        user.setEloPoints(newElo);
+        userRepository.save(user);
     }
 
     @Override
@@ -170,18 +133,68 @@ public class EloServiceImpl implements EloService {
         for (ParticipantEntity participant : uniqueParticipants) {
             UserEntity user = participant.getUser();
 
-            if (participant.getFinalEloPoints() != 0) {
-                int originalElo = user.getEloPoints() - participant.getFinalEloPoints();
-                user.setEloPoints(originalElo);
-                userRepository.save(user);
+            if (participant.getFinalEloPoints() != 0 && user != null) {
+                int originalElo = Math.max(user.getEloPoints() - participant.getFinalEloPoints(), 0);
+                saveUserElo(user, originalElo);
             }
 
-            participant.setFinalEloPoints(0);
-            participantRepository.save(participant);  // Сохраняем изменения для участника
+            saveParticipantFinalElo(participant, 0);
 
         }
 
         tournament.setHasEloCalculated(false);
         tournamentRepository.save(tournament);
+    }
+
+    public static class EloHolder {
+        private final Map<UUID, Integer> participantId2InitialElo = new HashMap<>();
+        private final Map<UUID, Integer> participantId2ResultElo = new HashMap<>();
+
+        public void putInitial(UUID participantId, int elo) {
+            participantId2InitialElo.put(participantId, elo);
+        }
+
+        public void putResult(UUID participantId, int elo) {
+            participantId2ResultElo.put(participantId, elo);
+        }
+
+        public int getInitial(UUID participantId) {
+            return participantId2InitialElo.getOrDefault(participantId, DEFAULT_ELO_POINTS);
+        }
+
+        @Nullable
+        public Integer getResult(UUID participantId) {
+            return participantId2ResultElo.get(participantId);
+        }
+
+
+        private Integer getResultOr(UUID participantId, int defaultEloPoints) {
+            Integer orDefault = this.getResult(participantId);
+            if (orDefault == null || orDefault == 0) return defaultEloPoints;
+            else return orDefault;
+        }
+
+        public void putInitial(ParticipantEntity participant) {
+            if (participant == null) {
+                return;
+            }
+
+            UUID pid = participant.getId();
+            if (participant.getInitialEloPoints() != 0) {
+                putInitial(pid, participant.getInitialEloPoints());
+            } else if (participant.getUser() != null && participant.getUser().getEloPoints() != 0) {
+                putInitial(pid, participant.getUser().getEloPoints());
+            } else {
+                putInitial(pid, DEFAULT_ELO_POINTS);
+            }
+        }
+
+        public Map<UUID, Integer> getInitial() {
+            return participantId2InitialElo;
+        }
+
+        public Map<UUID, Integer> getResult() {
+            return participantId2ResultElo;
+        }
     }
 }
