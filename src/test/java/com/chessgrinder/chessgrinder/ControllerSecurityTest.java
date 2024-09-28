@@ -6,6 +6,7 @@ import com.chessgrinder.chessgrinder.security.CustomPermissionEvaluator;
 import com.chessgrinder.chessgrinder.security.MyUserDetails;
 import com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
@@ -163,6 +164,7 @@ public class ControllerSecurityTest {
     @Getter
     @Entity
     public static class FooEntity {
+        @Id
         private int value;
     }
 
@@ -170,6 +172,7 @@ public class ControllerSecurityTest {
     @Getter
     @Entity
     public static class BarEntity {
+        @Id
         private int value;
     }
 
