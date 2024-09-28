@@ -64,4 +64,6 @@ public class ParticipantDto {
 
     @Nullable
     private TournamentDto tournament;
+
+    private Integer initialElo;
 }

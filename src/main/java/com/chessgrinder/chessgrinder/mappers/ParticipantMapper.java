@@ -29,6 +29,7 @@ public class ParticipantMapper {
                 .isModerator(participant.isModerator())
                 .place(participant.getPlace())
                 .tournament(Optional.ofNullable(participant.getTournament()).map(tournamentMapper::toDto).orElse(null))
+                .initialElo(participant.getInitialEloPoints())
                 .build();
     }
 
