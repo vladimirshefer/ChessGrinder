@@ -1,9 +1,16 @@
 const proxy = require('express-http-proxy');
 const app = require('express')();
-const express = require('express')
 const request = require('request');
+app.use('/api/', proxy('http://localhost:8080', {
+    proxyReqPathResolver: function (req) {
+        const parts = req.url.split('?');
+        console.log(parts);
+        const queryString = parts[1];
+        const updatedPath = "/api" + parts[0];
+        return updatedPath + (queryString ? '?' + queryString : '');
+    }
+}));
 app.use('/', proxy('http://localhost:3000'));
-app.use('/api', proxy('http://localhost:8080/api'));
 
 function check(service) {
     return function (err, res, body) {
