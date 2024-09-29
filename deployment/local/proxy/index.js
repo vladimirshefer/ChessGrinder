@@ -8,6 +8,10 @@ app.use('/api/', proxy('http://localhost:8080', {
         const queryString = parts[1];
         const updatedPath = "/api" + parts[0];
         return updatedPath + (queryString ? '?' + queryString : '');
+    },
+    proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
+        proxyReqOpts.headers['Host'] = srcReq.headers.host;
+        return proxyReqOpts;
     }
 }));
 app.use('/', proxy('http://localhost:3000'));
