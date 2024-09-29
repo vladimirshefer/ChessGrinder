@@ -120,7 +120,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
         PlayerTrfLineDto playerTrfLineDto = PlayerTrfLineDto.builder()
                 .startingRank(playerId)
                 .name(participant.getUserFullName() != null ? participant.getUserFullName() : participant.getName())
-                .rating(participant.getInitialElo() > 0 ? participant.getInitialElo() : DEFAULT_RATING)
+                .rating(participant.getInitialElo() != null && participant.getInitialElo() > 0 ? participant.getInitialElo() : DEFAULT_RATING)
                 .points(participant.getScore().floatValue())
                 .matches(matches.stream()
                         .map(match -> {
