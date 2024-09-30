@@ -44,7 +44,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlayerTrfLineDto {
+public class Player001TrfLine implements TrfLine {
 
     private int startingRank;
 

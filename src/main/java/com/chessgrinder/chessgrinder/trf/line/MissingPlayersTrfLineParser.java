@@ -1,15 +1,22 @@
 package com.chessgrinder.chessgrinder.trf.line;
 
-import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersTrfLine;
+import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersXxzTrfLine;
+import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class MissingPlayersTrfLineParser implements TrfLineParser<MissingPlayersTrfLine> {
+public class MissingPlayersTrfLineParser implements TrfLineParser<MissingPlayersXxzTrfLine> {
+
     @Override
-    public MissingPlayersTrfLine tryParse(String line) {
+    public boolean canWrite(TrfLine lineDto) {
+        return lineDto instanceof MissingPlayersXxzTrfLine;
+    }
+
+    @Override
+    public MissingPlayersXxzTrfLine tryParse(String line) {
         if (!line.startsWith("XXZ ")) {
             return null;
         }
@@ -21,16 +28,20 @@ public class MissingPlayersTrfLineParser implements TrfLineParser<MissingPlayers
                 .map(Integer::valueOf)
                 .toList();
 
-        return MissingPlayersTrfLine.builder().playerIds(playerIds).build();
+        return MissingPlayersXxzTrfLine.builder().playerIds(playerIds).build();
     }
 
     @Override
-    public void tryWrite(Consumer<String> trfConsumer, MissingPlayersTrfLine line) {
-        if (line == null || line.getPlayerIds() == null || line.getPlayerIds().isEmpty()) {
+    public void tryWrite(Consumer<String> trfConsumer, TrfLine line) {
+        if (!(line instanceof MissingPlayersXxzTrfLine trfLine)) {
+            return;
+        }
+
+        if (trfLine.getPlayerIds() == null || trfLine.getPlayerIds().isEmpty()) {
             return;
         }
 
         trfConsumer.accept("XXZ ");
-        trfConsumer.accept(line.getPlayerIds().stream().map(Object::toString).collect(Collectors.joining(" ")));
+        trfConsumer.accept(trfLine.getPlayerIds().stream().map(Object::toString).collect(Collectors.joining(" ")));
     }
 }

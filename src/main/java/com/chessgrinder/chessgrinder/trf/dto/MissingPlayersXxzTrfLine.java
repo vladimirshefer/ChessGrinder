@@ -18,6 +18,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MissingPlayersTrfLine {
+public class MissingPlayersXxzTrfLine implements TrfLine {
     List<Integer> playerIds;
 }

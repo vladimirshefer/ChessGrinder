@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.trf.line;
 
-import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto;
+import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +32,7 @@ class PlayerTrfLineParserTest {
     void testOverflow() {
         var parser = new PlayerTrfLineParser();
         String trfLine = "001    0      abcdefghijklmnopqrttuwwxyzabcdefg                                            ";
-        var result = PlayerTrfLineDto.builder()
+        var result = Player001TrfLine.builder()
                 .name("abcdefghijklmnopqrttuwwxyzabcdefghijklmnopqrttuwwxyz")
                 .build();
         StringBuilder trf = new StringBuilder();

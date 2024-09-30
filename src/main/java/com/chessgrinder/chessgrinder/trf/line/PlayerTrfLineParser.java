@@ -1,16 +1,22 @@
 package com.chessgrinder.chessgrinder.trf.line;
 
-import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto;
+import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine;
+import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
 import jakarta.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
+public class PlayerTrfLineParser implements TrfLineParser<Player001TrfLine> {
 
     @Override
-    public PlayerTrfLineDto tryParse(String line) {
+    public boolean canWrite(TrfLine lineDto) {
+        return lineDto instanceof Player001TrfLine;
+    }
+
+    @Override
+    public Player001TrfLine tryParse(String line) {
         if (!line.startsWith("001 ")) {
             return null;
         }
@@ -20,7 +26,7 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
         String pointsPart = line.substring(80, 84);
         String rankPart = line.substring(85, 89);
 
-        PlayerTrfLineDto result = PlayerTrfLineDto.builder()
+        Player001TrfLine result = Player001TrfLine.builder()
                 .startingRank(Integer.parseInt(pairingIdPart.trim()))
                 .name(namePart.trim())
                 .rating(parseInteger(ratingPart))
@@ -28,13 +34,13 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
                 .rank(parseInteger(rankPart))
                 .build();
 
-        List<PlayerTrfLineDto.Match> matches = new ArrayList<>();
+        List<Player001TrfLine.Match> matches = new ArrayList<>();
         int nextRoundPosition = 91;
         while (line.trim().length() >= nextRoundPosition + 8) {
             String matchPart = line.substring(nextRoundPosition, nextRoundPosition + 8);
             //noinspection DataFlowIssue
             matches.add(
-                    PlayerTrfLineDto.Match.builder()
+                    Player001TrfLine.Match.builder()
                             .opponentPlayerId(parseInteger(matchPart.substring(0, 4), 0))
                             .color(matchPart.substring(5, 6).charAt(0))
                             .result(matchPart.substring(7, 8).charAt(0))
@@ -49,25 +55,28 @@ public class PlayerTrfLineParser implements TrfLineParser<PlayerTrfLineDto> {
     }
 
     @Override
-    public void tryWrite(Consumer<String> trfConsumer, PlayerTrfLineDto line) {
+    public void tryWrite(Consumer<String> trfConsumer, TrfLine line) {
+        if (!(line instanceof Player001TrfLine playerLine)) {
+            return;
+        }
         trfConsumer.accept("001 ");
-        trfConsumer.accept(toFixedLengthRight(line.getStartingRank(), 4, ' '));
+        trfConsumer.accept(toFixedLengthRight(playerLine.getStartingRank(), 4, ' '));
         trfConsumer.accept(" ");
-        trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(line.getSex()), 1, ' '));
-        trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(line.getTitle()), 3, ' '));
+        trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(playerLine.getSex()), 1, ' '));
+        trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(playerLine.getTitle()), 3, ' '));
         trfConsumer.accept(" ");
-        String name = line.getName() != null ? line.getName() : line.getStartingRank() + "";
+        String name = playerLine.getName() != null ? playerLine.getName() : playerLine.getStartingRank() + "";
         trfConsumer.accept(toFixedLengthLeft(name, 33, ' '));
         trfConsumer.accept(" ");
-        trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(line.getRating()), 4, ' '));
+        trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(playerLine.getRating()), 4, ' '));
         trfConsumer.accept(toFixedLengthLeft("", 29, ' ')); // TODO insert federation, FIDE number, birthday
-        trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(line.getPoints()), 4, ' '));
+        trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(playerLine.getPoints()), 4, ' '));
         trfConsumer.accept(" ");
-        trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(line.getRank()), 3, ' '));
+        trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(playerLine.getRank()), 3, ' '));
         trfConsumer.accept("  ");
 
-        if (line.getMatches() != null && !line.getMatches().isEmpty()) {
-            for (PlayerTrfLineDto.Match match : line.getMatches()) {
+        if (playerLine.getMatches() != null && !playerLine.getMatches().isEmpty()) {
+            for (Player001TrfLine.Match match : playerLine.getMatches()) {
                 trfConsumer.accept(toFixedLengthRight(match.getOpponentPlayerId() != 0 ? match.getOpponentPlayerId() : "0000", 4, ' '));
                 trfConsumer.accept(" " + match.getColor() + " " + match.getResult() + "  ");
             }

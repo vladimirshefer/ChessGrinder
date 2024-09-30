@@ -3,17 +3,22 @@ package com.chessgrinder.chessgrinder.chessengine;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
-import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersTrfLine;
-import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto;
-import com.chessgrinder.chessgrinder.trf.dto.PlayerTrfLineDto.TrfMatchResult;
-import com.chessgrinder.chessgrinder.trf.line.MissingPlayersTrfLineParser;
-import com.chessgrinder.chessgrinder.trf.line.PlayerTrfLineParser;
+import com.chessgrinder.chessgrinder.trf.TrfUtil;
+import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersXxzTrfLine;
+import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine;
+import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine.TrfMatchResult;
+import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
+import com.chessgrinder.chessgrinder.trf.dto.RoundsNumberXxrTrfLine;
 import javafo.api.JaVaFoApi;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.chessgrinder.chessgrinder.comparator.ParticipantDtoComparators.COMPARE_PARTICIPANT_DTO_BY_NICKNAME_NULLS_LAST;
 
@@ -25,8 +30,6 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
      */
     private static final Object JAVAFO_MONITOR = new Object();
 
-    private final PlayerTrfLineParser playerTrfLineParser = new PlayerTrfLineParser();
-    private final MissingPlayersTrfLineParser missingPlayersTrfLineParser = new MissingPlayersTrfLineParser();
     private static final int DEFAULT_RATING = 1000;
     private static final String NEWLINE_REGEX = "\\r?\\n|\\r";
     private static final int STANDARD_PAIRING_CODE = 1000;
@@ -40,32 +43,31 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
                 .sorted(COMPARE_PARTICIPANT_DTO_BY_NICKNAME_NULLS_LAST)
                 .map(ParticipantDto::getId).toList();
 
-        StringBuilder stringBuilder = new StringBuilder();
+        List<TrfLine> trfLines = new ArrayList<>();
         // XXR - number of rounds. required for pairing.
-        stringBuilder.append(String.format("XXR %d", roundsNumber));
-        stringBuilder.append("\n");
-        Consumer<String> trfCollector = stringBuilder::append;
+        trfLines.add(RoundsNumberXxrTrfLine.builder().roundsNumber(roundsNumber).build());
 
-        List<ParticipantDto> missingParticipants = participants.stream().filter(ParticipantDto::getIsMissing)
+        List<ParticipantDto> missingParticipants = participants.stream().filter(ParticipantDto::getIsMissing).toList();
+        trfLines.add(
+                MissingPlayersXxzTrfLine.builder()
+                        .playerIds(missingParticipants.stream().map(it1 -> playerIds.indexOf(it1.getId()) + 1).toList())
+                        .build()
+        );
+
+        List<Player001TrfLine> playerTrfLines = participantsMatches.entrySet()
+                .stream()
+                .map(entry -> toTrfDto(entry.getKey(), entry.getValue(), playerIds))
                 .toList();
 
-        missingPlayersTrfLineParser.tryWrite(trfCollector, MissingPlayersTrfLine.builder()
-                .playerIds(missingParticipants.stream().map(it -> playerIds.indexOf(it.getId()) + 1).toList())
-                .build()
-        );
-        stringBuilder.append("\n");
-        participantsMatches.forEach((participant, matches) -> {
-            PlayerTrfLineDto playerTrfLineDto = toTrfDto(participant, matches, playerIds);
-            playerTrfLineParser.tryWrite(trfCollector, playerTrfLineDto);
-            trfCollector.accept("\n");
-        });
+        trfLines.addAll(playerTrfLines);
 
+        String tournamentTrf = TrfUtil.writeTrfLines(trfLines);
         String pairingsFileContent;
         synchronized (JAVAFO_MONITOR) {
             try {
-                pairingsFileContent = JaVaFoApi.exec(STANDARD_PAIRING_CODE, new ByteArrayInputStream(stringBuilder.toString().getBytes()));
+                pairingsFileContent = JaVaFoApi.exec(STANDARD_PAIRING_CODE, new ByteArrayInputStream(tournamentTrf.getBytes()));
             } catch (Exception e) {
-                throw new RuntimeException("Could not do pairing via javafo. \n" + stringBuilder, e);
+                throw new RuntimeException("Could not do pairing via javafo. \n" + tournamentTrf, e);
             }
         }
 
@@ -85,7 +87,9 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
                 )
                 .toList();
 
-        List<MatchDto> missingMatches = missingParticipants.stream()
+        List<MatchDto> missingMatches = participants
+                .stream()
+                .filter(ParticipantDto::getIsMissing)
                 .map(it -> MatchDto.builder()
                         .white(it)
                         .black(null)
@@ -111,13 +115,13 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
                 .get();
     }
 
-    private static PlayerTrfLineDto toTrfDto(
+    public static Player001TrfLine toTrfDto(
             ParticipantDto participant,
             List<MatchDto> matches,
             List<String> playerIds
     ) {
         int playerId = playerIds.indexOf(participant.getId()) + 1;
-        PlayerTrfLineDto playerTrfLineDto = PlayerTrfLineDto.builder()
+        Player001TrfLine playerTrfLineDto = Player001TrfLine.builder()
                 .startingRank(playerId)
                 .name(participant.getUserFullName() != null ? participant.getUserFullName() : participant.getName())
                 .rating(participant.getInitialElo() != null && participant.getInitialElo() > 0 ? participant.getInitialElo() : DEFAULT_RATING)
@@ -125,18 +129,21 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
                 .matches(matches.stream()
                         .map(match -> {
                             if (match == null) {
-                                return PlayerTrfLineDto.Match.builder()
+                                return Player001TrfLine.Match.builder()
                                         .opponentPlayerId(0)
                                         .result(TrfMatchResult.ZERO_POINT_BYE.getCharCode())
                                         .color('-')
                                         .build();
                             }
-                            boolean isWhite = match.getWhite().getId().equals(participant.getId());
+                            boolean isWhite = false;
+                            if (match.getWhite() != null) {
+                                isWhite = match.getWhite().getId().equals(participant.getId());
+                            }
                             ParticipantDto opponent = isWhite
                                     ? match.getBlack() : match.getWhite();
                             char result = getResultChar(isWhite, match.getResult());
 
-                            return PlayerTrfLineDto.Match.builder()
+                            return Player001TrfLine.Match.builder()
                                     .opponentPlayerId(opponent != null ? playerIds.indexOf(opponent.getId()) + 1 : 0)
                                     .result(result)
                                     .color(isWhite ? 'w' : 'b')
@@ -159,7 +166,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
         throw new IllegalStateException("Could not decide the match result");
     }
 
-    private static Map<ParticipantDto, List<MatchDto>> getParticipantsMatches(
+    public static Map<ParticipantDto, List<MatchDto>> getParticipantsMatches(
             List<ParticipantDto> participants,
             List<List<MatchDto>> matchHistory
     ) {
