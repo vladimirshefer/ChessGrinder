@@ -11,10 +11,10 @@ import {BiSolidChess} from "react-icons/bi";
 import {IconTag} from "pages/MainPage/TournamentPane";
 import userRepository from "lib/api/repository/UserRepository";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
-import config from "config";
 import {useMode} from "lib/api/repository/apiSettings";
 import roundRepository from "lib/api/repository/RoundRepository";
 import {MdInfoOutline} from "react-icons/md";
+import {useConfigurationPropertyEnabled} from "contexts/ConfigurationContext";
 
 function MyActiveTournamentPane(
     {
@@ -188,7 +188,7 @@ function MyActiveTournamentPaneImpl(
     let loc = useLoc();
     let [mode,] = useMode();
     let [resultSelectorActive, setResultSelectorActive] = useState(false)
-    let ENABLE_PARTICIPANT_SUBMIT_RESULT = mode === "local" || config.features["tournament.submitResultByParticipantsEnabled"]
+    let [ENABLE_PARTICIPANT_SUBMIT_RESULT] =  useConfigurationPropertyEnabled("submitResultByParticipantsEnabled", mode === "local")
 
     function getResultStr(result: MatchResult | undefined, isMeWhite: boolean) {
         switch (result) {

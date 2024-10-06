@@ -7,9 +7,9 @@ import {useMode} from "lib/api/repository/apiSettings";
 import {useLoc} from "strings/loc";
 import {useForm} from "react-hook-form";
 import {UserSignUpRequest} from "lib/api/dto";
-import config from "config";
 import GoogleLoginButton from "./GoogleLoginButton";
 import useSearchParam from "lib/react/hooks/useSearchParam";
+import {useConfigurationPropertyEnabled} from "contexts/ConfigurationContext";
 
 
 const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9]+$/g
@@ -23,8 +23,8 @@ export default function LoginPage() {
     let signUpForm = useForm()
     let [referer] = useSearchParam("referer", "")
 
-    let ENABLE_LOGIN_USERNAME_PASSWORD = mode === "local" || config.features["auth.signupWithPasswordEnabled"]
-    let ENABLE_REGISTRATION_USERNAME_PASSWORD = mode === "local" || config.features["auth.signupWithPasswordEnabled"]
+    let [ENABLE_LOGIN_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("signupWithPasswordEnabled", mode === "local")
+    let [ENABLE_REGISTRATION_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("signupWithPasswordEnabled", mode === "local")
 
     useEffect(() => {
         if (!!authenticatedUser) {

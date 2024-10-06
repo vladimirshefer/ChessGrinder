@@ -19,6 +19,7 @@ import {AuthenticatedUserContextProvider} from "contexts/AuthenticatedUserContex
 import {LanguageContextProvider} from "contexts/LanguageContext";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import NotFoundPage from "pages/NotFoundPage";
+import {ConfigurationContextProvider} from "contexts/ConfigurationContext";
 
 const queryClient = new QueryClient()
 
@@ -28,6 +29,7 @@ function App() {
 
     return (
         <LanguageContextProvider>
+            <ConfigurationContextProvider>
             <AuthenticatedUserContextProvider>
                 <div className='App'>
                     <QueryClientProvider client={queryClient}>
@@ -60,6 +62,7 @@ function App() {
                     </QueryClientProvider>
                 </div>
             </AuthenticatedUserContextProvider>
+            </ConfigurationContextProvider>
         </LanguageContextProvider>
     );
 }
