@@ -1,4 +1,3 @@
-name: chessgrinder
 services:
   chessgrinder:
     image: chessgrinder
@@ -6,4 +5,4 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - ./deployment/production/config/:/app/config:ro
+      - ./app/config:/app/config:ro
