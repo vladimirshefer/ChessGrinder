@@ -4,8 +4,8 @@
     <module name="ChessGrinder" />
     <option name="PROGRAM_PARAMETERS" value="--spring.profiles.active=local" />
     <method v="2">
-      <option name="Make" enabled="true" />
       <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="install:install-file -Dfile=./lib/javafo-2.2-main.jar -DgroupId=javafo -DartifactId=javafo -Dversion=2.2 -Dpackaging=jar" />
+      <option name="Make" enabled="true" />
     </method>
   </configuration>
 </component>
