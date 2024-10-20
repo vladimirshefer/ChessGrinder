@@ -1,4 +1,4 @@
-# [Chess Grinder](chessgrinder.com)
+# [Chess Grinder](https://chessgrinder.com)
 App for chess club.
 
 ### Backend Tech stack
