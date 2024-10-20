@@ -54,8 +54,18 @@ public class EloServiceImpl implements EloService {
             }
         }
 
-        for (Map.Entry<UUID, Integer> entry : eloHolder.getResult().entrySet()) {
-            updateParticipantElo(entry.getKey(), eloHolder);
+        for (UUID participantId : eloHolder.getResult().keySet()) {
+            ParticipantEntity participant = participantRepository.findById(participantId).orElse(null);
+            if (participant == null) {
+                continue;
+            }
+            saveParticipantInitialElo(participant, eloHolder.getInitial(participantId));
+            saveParticipantFinalElo(participant, eloHolder.getDiff(participantId));
+            UserEntity user = participant.getUser();
+            Integer result = eloHolder.getResult(participantId);
+            if (user != null && result != null) {
+                saveUserElo(user, result);
+            }
         }
 
         tournament.setHasEloCalculated(true);
@@ -95,21 +105,6 @@ public class EloServiceImpl implements EloService {
     private void saveParticipantFinalElo(ParticipantEntity participant, int elo) {
         participant.setFinalEloPoints(elo);
         participantRepository.save(participant);
-    }
-
-    private void updateParticipantElo(UUID participantId, EloHolder eloHolder) {
-        ParticipantEntity participant = participantRepository.findById(participantId).orElse(null);
-        if (participant == null) {
-            return;
-        }
-        int initialElo = eloHolder.getInitial(participantId);
-        saveParticipantInitialElo(participant, initialElo);
-        Integer result = eloHolder.getResult(participantId);
-        saveParticipantFinalElo(participant, result != null ? result - initialElo : DEFAULT_ELO_POINTS);
-        UserEntity user = participant.getUser();
-        if (user != null) {
-            saveUserElo(user, result != null ? result : 0);
-        }
     }
 
     private void saveUserElo(UserEntity user, int newElo) {
@@ -160,6 +155,12 @@ public class EloServiceImpl implements EloService {
 
         public int getInitial(UUID participantId) {
             return participantId2InitialElo.getOrDefault(participantId, DEFAULT_ELO_POINTS);
+        }
+
+        public int getDiff(UUID participantId) {
+            Integer result = getResult(participantId);
+            if (result == null) throw new IllegalArgumentException("Result is null for participant: " + participantId);
+            return result - getInitial(participantId);
         }
 
         @Nullable

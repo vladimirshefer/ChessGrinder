@@ -46,6 +46,10 @@ public class UserEntity extends AbstractAuditingEntity {
     @Nullable
     private String password;
 
+    @Column(name = "email")
+    @Nullable
+    private String email;
+
     @Enumerated(EnumType.STRING)
     private Provider provider;
 

@@ -68,9 +68,6 @@ function MainPage() {
                 </Link>
             </div>
         </div>
-        <div className={"w-full mt-5 text-sm"}>
-            <Link className={"underline"} to={'/privacyPolicy'}>Privacy Policy</Link>
-        </div>
     </>
 }
 

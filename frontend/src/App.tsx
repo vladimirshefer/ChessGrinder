@@ -20,6 +20,7 @@ import {LanguageContextProvider} from "contexts/LanguageContext";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
 import NotFoundPage from "pages/NotFoundPage";
 import {ConfigurationContextProvider} from "contexts/ConfigurationContext";
+import Footer from "components/Footer";
 
 const queryClient = new QueryClient()
 
@@ -31,11 +32,12 @@ function App() {
         <LanguageContextProvider>
             <ConfigurationContextProvider>
             <AuthenticatedUserContextProvider>
-                <div className='App'>
+                <div className='App flex flex-col min-h-screen'>
                     <QueryClientProvider client={queryClient}>
                         <ApplicationRouter>
                             <React.StrictMode>
                                 <Header/>
+                                <div className="grow">
                                 <Routes>
                                     <Route path="/" element={<MainPage/>}/>
                                     <Route path="/tournament/:id" element={<TournamentPage/>}/>
@@ -57,6 +59,8 @@ function App() {
                                     <Route path="/privacyPolicy" element={<PrivacyPolicyPage/>}/>
                                     <Route path='*' element={<NotFoundPage />}/>
                                 </Routes>
+                                </div>
+                                <Footer/>
                             </React.StrictMode>
                         </ApplicationRouter>
                     </QueryClientProvider>

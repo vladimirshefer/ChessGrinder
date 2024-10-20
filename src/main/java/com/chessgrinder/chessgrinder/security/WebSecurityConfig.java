@@ -90,7 +90,7 @@ public class WebSecurityConfig {
                                     response.sendRedirect(redirectTo);
                                 })
                                 .failureHandler((request, response, exception) -> {
-                                    log.warn("Could not login user vis oauth2", exception);
+                                    log.warn("Could not login user via oauth2", exception);
                                     response.sendRedirect(HOME_PAGE);
                                 })
                 )
