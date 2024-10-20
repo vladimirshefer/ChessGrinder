@@ -20,3 +20,11 @@ App for chess club.
 1. (Optional) Install Docker.
 
 1. Run `ChessGrinder` Run configuration.
+
+
+## Kudos
+- [Alexander Boldyrev](https://github.com/AlBoldyrev)
+- [Simon Dubenkov](https://github.com/sedub01)
+- [Umar Shabazov](https://github.com/UmarShabazov)
+- [Yana Shefer](https://github.com/yshefer)
+
