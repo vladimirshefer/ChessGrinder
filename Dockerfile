@@ -22,10 +22,10 @@ COPY frontend/tailwind.config.js ./
 RUN ls
 RUN npm run build
 
-FROM ubuntu as serve-app
+# Use java + ubuntu docker image.
+FROM eclipse-temurin:17-noble as serve-app
 RUN apt update
 RUN apt install -y nginx
-RUN apt install -y openjdk-17-jre
 COPY --from=build-frontend /app/build/ /usr/share/nginx/html/
 COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
