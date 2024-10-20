@@ -1,6 +1,6 @@
 import {MatchDto, MatchResult} from "lib/api/dto/TournamentPageData";
 import {Conditional} from "components/Conditional";
-import {useLoc} from "strings/loc";
+import {useLoc, useTransliterate} from "strings/loc";
 import {Fragment, useRef, useState} from "react";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {IoMdArrowDropdown} from "react-icons/io";
@@ -99,6 +99,7 @@ export function MatchRow(
         setResult: (selectedResult: MatchResult | null) => void
     }
 ) {
+    let transliterate = useTransliterate()
     let resultW = match.resultSubmittedByWhite;
     let resultB = match.resultSubmittedByBlack;
     let result = match.result || resultW || resultB;
@@ -122,9 +123,9 @@ export function MatchRow(
                         ${isConflict ? "bg-danger-400" : ""}
                         `}
         >
-            <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{match.white?.name || "-"}</span>
+            <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(match.white?.name || "-")}</span>
             {match.white?.userFullName &&
-                <span className={"text-ellipsis overflow-hidden"}>{match.white?.userFullName}</span>
+                <span className={"text-ellipsis overflow-hidden"}>{transliterate(match.white?.userFullName)}</span>
             }
         </div>
         <div className={"text-xl text-center grid"}>
@@ -144,9 +145,9 @@ export function MatchRow(
                         ${isConflict ? "bg-danger-400" : ""}
                         `}
         >
-            <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{match.black?.name || "-"}</span>
+            <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(match.black?.name || "-")}</span>
             {match.black?.userFullName &&
-                <span className={"text-ellipsis overflow-hidden"}>{match.black?.userFullName}</span>
+                <span className={"text-ellipsis overflow-hidden"}>{transliterate(match.black?.userFullName)}</span>
             }
         </div>
     </Fragment>;

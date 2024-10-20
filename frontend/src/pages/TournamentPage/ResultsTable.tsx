@@ -1,6 +1,6 @@
 import React from "react";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
-import {useLoc} from "strings/loc";
+import {useLoc, useTransliterate} from "strings/loc";
 
 function ResultsTable(
     {
@@ -12,6 +12,7 @@ function ResultsTable(
     }
 ) {
     let loc = useLoc();
+    let transliterate = useTransliterate();
 
     return <>
         <div className={"w-full grid grid-cols-12 text-left p-2"}>
@@ -29,9 +30,9 @@ function ResultsTable(
                             <div className={"col-span-7"}>
                                 <button onClick={() => openParticipant(participant)}>
                                     <div className={"grid text-left"}>
-                                        <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-3"}>{participant.name || "No nickname"}</span>
+                                        <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-3"}>{transliterate(participant.name) || "No nickname"}</span>
                                         {participant.userFullName &&
-                                            <span className={"text-ellipsis overflow-hidden line-clamp-2"}>{participant.userFullName}</span>
+                                            <span className={"text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(participant.userFullName)}</span>
                                         }
                                     </div>
                                 </button>
