@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {useNavigate} from "react-router-dom";
 import {Conditional, ConditionalOnMode} from "components/Conditional";
@@ -9,8 +9,8 @@ import {useForm} from "react-hook-form";
 import {UserSignUpRequest} from "lib/api/dto";
 import GoogleLoginButton from "./GoogleLoginButton";
 import useSearchParam from "lib/react/hooks/useSearchParam";
-import {useConfigurationPropertyEnabled} from "contexts/ConfigurationContext";
-
+import {useConfigurationProperty, useConfigurationPropertyEnabled} from "contexts/ConfigurationContext";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9]+$/g
 
@@ -22,9 +22,12 @@ export default function LoginPage() {
     let signInForm = useForm()
     let signUpForm = useForm()
     let [referer] = useSearchParam("referer", "")
+    const captchaRef = useRef<ReCAPTCHA>(null);
 
     let [ENABLE_LOGIN_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
+    let [ENABLE_REGISTRATION_EMAIL_LINK] = useConfigurationPropertyEnabled("auth.password", mode === "local")
     let [ENABLE_REGISTRATION_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
+    let [CAPTCHA_PUBLIC_KEY] = useConfigurationProperty("captcha.site", process.env.REACT_APP_CAPTCHA_PUBLIC_KEY || "placeholder")
 
     useEffect(() => {
         if (!!authenticatedUser) {
@@ -34,18 +37,36 @@ export default function LoginPage() {
 
     async function signIn(username: string, password: string) {
         await loginPageRepository.signIn(username, password)
-        await authenticatedUserRefresh()
-        await signInForm.reset()
+        authenticatedUserRefresh()
+        signInForm.reset()
+        signUpForm.reset()
+    }
+
+    async function instantSignIn(email: string) {
+        let token = await captchaRef!!.current!!.executeAsync();
+        if (!token) {
+            alert("Captcha is required");
+            navigate("/login")
+            throw new Error("Captcha is required")
+        }
+        await loginPageRepository.authInstantInit(email, token)
+        authenticatedUserRefresh()
+        signInForm.reset()
+        signUpForm.reset()
     }
 
     async function signUp(data: UserSignUpRequest) {
         await loginPageRepository.signUp(data)
             .catch(it => alert(it?.response?.data?.message || it?.message || "SignUp failed"))
-        await authenticatedUserRefresh()
+        authenticatedUserRefresh()
     }
 
     async function handleSignInSubmit(data: any) {
         await signIn(data["username"], data["password"])
+    }
+
+    async function handleInstantSignInSubmit(data: any) {
+        await instantSignIn(data["email"])
     }
 
     async function handleSignUpSubmit(data: any) {
@@ -90,6 +111,22 @@ export default function LoginPage() {
         </div>
 
         <Conditional on={ENABLE_LOGIN_USERNAME_PASSWORD}>
+            <form className={"grid gap-1"} onSubmit={signInForm.handleSubmit(handleInstantSignInSubmit)}>
+                <h3 className={"font-semibold uppercase"}>{loc("Instant Sign In")}</h3>
+                <input className={"border-b-2 outline-none"} placeholder={loc("Email")}
+                       {...signInForm.register("email")}
+                />
+                <button className={"btn-primary uppercase"} type={"submit"}>
+                    {loc("Sign in")}
+                </button>
+                <ReCAPTCHA
+                    ref={captchaRef}
+                    size="invisible"
+                    sitekey={CAPTCHA_PUBLIC_KEY!!}
+                />
+            </form>
+        </Conditional>
+        <Conditional on={ENABLE_REGISTRATION_EMAIL_LINK}>
             <form className={"grid gap-1"} onSubmit={signInForm.handleSubmit(handleSignInSubmit)}>
                 <h3 className={"font-semibold uppercase"}>{loc("Sign in")}</h3>
                 <input className={"border-b-2 outline-none"} placeholder={loc("Username")}

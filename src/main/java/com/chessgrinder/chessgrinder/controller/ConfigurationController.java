@@ -23,6 +23,8 @@ public class ConfigurationController {
     private boolean chessRating;
     @Value("${chessgrinder.feature.chess.results.submit:false}")
     private boolean chessResultsSubmit;
+    @Value("${chessgrinder.captcha.site:}")
+    private String captchaPublicKey;
     @Autowired(required = false)
     @Nullable
     private BuildProperties buildProperties;
@@ -33,6 +35,7 @@ public class ConfigurationController {
             put("auth.password", String.valueOf(authPassword));
             put("chess.rating", String.valueOf(chessRating));
             put("chess.results.submit", String.valueOf(chessResultsSubmit));
+            put("captcha.site", captchaPublicKey);
             put("build.time", (buildProperties!=null && buildProperties.getTime() != null)
                     ? DateTimeFormatter.ofPattern("yyyy.MM.dd")
                     .format(LocalDateTime.ofInstant(buildProperties.getTime(), ZoneOffset.UTC))

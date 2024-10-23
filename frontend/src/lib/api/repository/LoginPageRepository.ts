@@ -12,6 +12,9 @@ export interface LoginPageRepository {
     signOut(): Promise<void>
 
     signUp(data: UserSignUpRequest): Promise<void>
+
+    authInstantInit(email: string, captchaToken: string): Promise<void>
+
 }
 
 class LocalStorageLoginPageRepository implements LoginPageRepository {
@@ -43,6 +46,12 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
     async signUp(data: UserSignUpRequest): Promise<void> {
         return Promise.reject();
     }
+
+    async authInstantInit(email: string, captchaToken: string): Promise<void> {
+        await this.signIn(email, email);
+        alert("Signed in as " + email);
+        window.location.reload()
+    }
 }
 
 class RestApiLoginPageRepository implements LoginPageRepository {
@@ -65,6 +74,14 @@ class RestApiLoginPageRepository implements LoginPageRepository {
     async signUp(data: UserSignUpRequest): Promise<void> {
         await restApiClient.post("/user/signUp", data)
     }
+
+    async authInstantInit(email: string, captchaToken: string): Promise<void> {
+        return restApiClient.get("/auth/instant/init", {
+            email: email,
+            CAPTCHA_TOKEN: captchaToken,
+        })
+    }
+
 }
 
 let loginPageRepository: LoginPageRepository = qualifiedService({
