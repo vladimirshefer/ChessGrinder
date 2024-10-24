@@ -1,6 +1,6 @@
 services:
   chessgrinder:
-    image: chessgrinder
+    build: .
     restart: unless-stopped
     ports:
       - "8000:80"
