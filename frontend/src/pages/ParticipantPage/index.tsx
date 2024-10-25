@@ -110,26 +110,18 @@ export default function ParticipantPage() {
             {userQuery.isLoading ? <>Loading user data</> : null}
             {userQuery.isError ? <>Error loading user data</> : null}
         </div>
-
         <div></div>
-
         <Conditional on={isMeModerator}>
-            <form onSubmit={editForm.handleSubmit(changeNickname)} className={"grid p-2 gap-2 border my-2"}>
-                <h3 className={"uppercase text-start"}>
-                    {loc("Change nickname")}
-                </h3>
-                <div className={"flex gap-2"}>
-                    <input
-                        className={"input-text grow"}
-                        type={"text"}
-                        defaultValue={participantQuery.data?.name || ""}
-                        placeholder={loc("Nickname")}
-                        {...editForm.register("nickname")}
-                    />
-                    <button className={"btn-light"} type={"submit"}>{loc("Save")}</button>
-                </div>
+            <form onSubmit={editForm.handleSubmit(changeNickname)}>
+                <input
+                    className={"input-text w-full"}
+                    type={"text"}
+                    defaultValue={participantQuery.data?.name || ""}
+                    placeholder={loc("Nickname")}
+                    {...editForm.register("nickname")}
+                />
+                <input type="submit" hidden/>
             </form>
-
             <div className={"grid gap-2 text-left py-3"}>
                 <div className={"flex justify-bottom gap-2"}>
                     <span className="">{loc("Missing")}</span>
