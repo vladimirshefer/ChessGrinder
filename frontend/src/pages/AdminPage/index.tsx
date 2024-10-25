@@ -12,7 +12,8 @@ export default function AdminPage() {
             <span>Mode</span>
             <select defaultValue={mode}
                     onChange={async (e) => {
-                        await loginPageRepository.signOut();
+                        await loginPageRepository.signOut()
+                            .catch((e: unknown) => console.error(e));
                         setMode(e.target.value);
                         authenticatedUserReload();
                     }}
