@@ -16,8 +16,16 @@ import AddParticipantTournamentPageSection from "./AddParticipantTournamentPageS
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "../MainPage/MyActiveTournamentPane";
+import QrCode from "components/QrCode";
+import {IoMdShare} from "react-icons/io";
 
-function TournamentPage() {
+function TournamentPage(
+    {
+        tab = undefined
+    }: {
+        tab?: "SHARE" | undefined
+    }
+) {
     let loc = useLoc()
     let loginPageLink = useLoginPageLink();
     let {id, roundId: roundIdStr} = useParams();
@@ -26,6 +34,7 @@ function TournamentPage() {
         queryKey: ["tournamentPageData", id],
         queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
     })
+    let isMain = !roundId && !tab
 
     let [authenticatedUser] = useAuthenticatedUser()
     let isAuthenticatedUser = !!authenticatedUser
@@ -145,13 +154,13 @@ function TournamentPage() {
                 </div>
             </div>
         </div>
-        {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && !roundId && (
+        {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && isMain && (
             <MyActiveTournamentPane tournamentId={tournament.id}/>
         )}
         <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
             <Link className={"lg:col-span-1"} to={`/tournament/${id}`} replace={true}>
                 <button
-                    className={`w-full h-full py-1 px-3 border border-black uppercase ${!roundId ? "bg-primary-400 text-white" : "hover:bg-gray-300 text-black"}`}
+                    className={`w-full h-full py-1 px-3 border border-black uppercase ${isMain ? "bg-primary-400 text-white" : "hover:bg-gray-300 text-black"}`}
                     title={loc("Tournament page")}
                 >
                     <AiOutlineHome/>
@@ -179,9 +188,13 @@ function TournamentPage() {
                     </button>
                 </Conditional>
             </Conditional>
+            <div className={"grow"}></div>
+            <Link to={`/tournament/${id}/share`} title={loc("Share")}>
+                <button className={"w-full h-full py-1 px-3"}><IoMdShare/></button>
+            </Link>
         </div>
         <>
-            <Conditional on={!roundId}>
+            <Conditional on={isMain}>
                 <>
                     {!hideParticipateButton && tournamentData?.tournament?.status === "PLANNED" && (
                         <div className={"px-2"}>
@@ -237,8 +250,15 @@ function TournamentPage() {
                     reopenRound={() => reopenRound()}
                 />
             </Conditional>
+            <Conditional on={tab === "SHARE"}>
+                <div className={"w-full p-1 grid justify-items-center"}>
+                    <div className={"w-1/2 md:w-1/3 lg:w-1/4"}>
+                        <QrCode text={(new URL(`/tournament/${tournament.id}`, document.location.href)).href}></QrCode>
+                    </div>
+                </div>
+            </Conditional>
         </>
-        <Conditional on={!roundId}>
+        <Conditional on={isMain}>
             <Conditional on={isMeModerator}>
                 <div className={"flex p-2 items-top content-center"}>
                     <div className={"flex gap-1 justify-start p-2 grow"}>
