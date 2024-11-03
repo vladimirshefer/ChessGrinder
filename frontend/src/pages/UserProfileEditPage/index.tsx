@@ -8,6 +8,7 @@ import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import {UserDto} from "lib/api/dto/MainPageData";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {FiExternalLink} from "react-icons/fi";
+import {MdInfoOutline} from "react-icons/md";
 
 export default function UserProfileEditPage() {
     let [authenticatedUser, refresh] = useAuthenticatedUser();
@@ -100,18 +101,25 @@ export default function UserProfileEditPage() {
                 <div className={"hidden"}>
                     <h3 className={"text-sm uppercase font-semibold"}>{loc("Change password")}</h3>
                     <div className={"grid gap-2 p-2 border"}>
-                        <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
-                               defaultValue={"*********"}
-                               title={loc("Old password")}
-                               placeholder={loc("Old password")}
-                        />
-                        <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
+                        <div className={"grid"}>
+                            <input type={"password"} className={"font-semibold truncate border-b-2"}
+                                   title={loc("Old password")}
+                                   placeholder={loc("Old password")}
+                                   {...register("oldPassword")}
+                            />
+                            <p className={"text-sm text-gray-500 flex items-center gap-1"}>
+                                <MdInfoOutline/>{"If you have no password set, you can leave this field empty."}
+                            </p>
+                        </div>
+                        <input type={"password"} className={"font-semibold truncate border-b-2"}
                                title={loc("New password")}
                                placeholder={loc("New password")}
+                               {...register("newPassword")}
                         />
-                        <input type={"password"} className={"font-semibold uppercase truncate border-b-2"}
+                        <input type={"password"} className={"font-semibold truncate border-b-2"}
                                title={loc("Confirm new password")}
                                placeholder={loc("Confirm new password")}
+                               {...register("newPasswordConfirm")}
                         />
                     </div>
                 </div>
