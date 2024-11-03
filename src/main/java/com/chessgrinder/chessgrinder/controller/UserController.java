@@ -45,7 +45,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final CustomPermissionEvaluator permissionEvaluator;
 
-    @Value("${chessgrinder.feature.auth.signupWithPasswordEnabled:false}")
+    @Value("${chessgrinder.feature.auth.password:false}")
     private boolean isSignupWithPasswordEnabled;
 
     private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";

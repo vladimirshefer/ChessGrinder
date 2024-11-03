@@ -23,8 +23,8 @@ export default function LoginPage() {
     let signUpForm = useForm()
     let [referer] = useSearchParam("referer", "")
 
-    let [ENABLE_LOGIN_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("signupWithPasswordEnabled", mode === "local")
-    let [ENABLE_REGISTRATION_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("signupWithPasswordEnabled", mode === "local")
+    let [ENABLE_LOGIN_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
+    let [ENABLE_REGISTRATION_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
 
     useEffect(() => {
         if (!!authenticatedUser) {

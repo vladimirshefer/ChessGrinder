@@ -18,7 +18,7 @@ export function UserPane(
     let loc = useLoc()
     let transliterate = useTransliterate()
 
-    const [eloServiceEnabled] = useConfigurationPropertyEnabled("eloServiceEnabled", false);
+    const [eloServiceEnabled] = useConfigurationPropertyEnabled("chess.rating", false);
 
     return <div key={user.id} className={"col-span-12 flex"}>
         <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
