@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
         personal data, the website’s administration will permanently delete by request
         from the user.
         To access your personal data, you can contact the administration
-        on: quameu+chessgrinder@gmail.com.
+        on: info@chessgrinder.com.
         We will be able to pass your data to a third party only with your willing consent.
         If the data was transferred to a third party, which is not associated with
         our organization, we cannot perform any changes to that data.
@@ -43,28 +43,32 @@ export default function PrivacyPolicyPage() {
         Inability to receive cookie files may limit the functionality of the website.
         <h2 className={"text-lg font-semibold"}>Processing of personal data by other services</h2>
         This website uses third-party online services, which perform data collecting,
-        independent from us. Such services include: Google Analytics.
+        independent from us. Such services include: Google Analytics, ReCaptcha, etc.
         Data collected by these services may be provided to other services within
         those organizations.
         They can use the data for advertising personalization of their own advertising network.
         You can learn about user agreements of those organizations on their websites.
         You can also refuse their collection of your personal data.
-        For example, Google Analytics Opt-out Browser Add-on can be found here.
+        For example, Google Analytics Opt-out Browser Add-on can be found
+        <a href={"https://tools.google.com/dlpage/gaoptout"} target={"_blank"}>here</a>.
         We do not plan to pass any personal data to other organizations or services,
         which are not listed in this privacy policy.
         As an exception, the collected data may be provided on a lawful
         request of state authorities that are authorized to request such information.
         <h2 className={"text-lg font-semibold"}>Links to other websites</h2>
-        Our website chessgrinder.com may contain links to other websites, which are not under our control. We are not responsible for the content of these websites. We recommend you familiarize yourself with the privacy policy of every website that you visit, if such policy exists.
+        Our website chessgrinder.com may contain links to other websites, which are not under our control.
+        We are not responsible for the content of these websites.
+        We recommend you familiarize yourself with the privacy policy of every website that you visit,
+        if such policy exists.
         Changes to the privacy policy
-        From time to time, our website chessgrinder.com may update our privacy policy. The latest privacy policy will be available on the website.
+        From time to time, our website chessgrinder.com may update our privacy policy.
+        The latest privacy policy will be available on the website.
         <h2 className={"text-lg font-semibold"}>Feedback and final clauses</h2>
         You can contact the administration of chessgrinder.com
         regarding any questions related to privacy policy on:
-        quameu+chessgrinder@gmail.com.
+        info@chessgrinder.com.
         If you do not agree with this privacy policy,
         you cannot use the services of chessgrinder.com.
         In this case you should avoid visiting our website.
-
     </div>
 }
