@@ -1,10 +1,16 @@
 package com.chessgrinder.chessgrinder.controller;
 
+import jakarta.annotation.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,13 +23,21 @@ public class ConfigurationController {
     private boolean chessRating;
     @Value("${chessgrinder.feature.chess.results.submit:false}")
     private boolean chessResultsSubmit;
+    @Autowired(required = false)
+    @Nullable
+    private BuildProperties buildProperties;
 
     @GetMapping
     public Map<String, String> getConfiguration() {
-        return new HashMap<>(){{
+        return new HashMap<>() {{
             put("auth.password", String.valueOf(authPassword));
             put("chess.rating", String.valueOf(chessRating));
             put("chess.results.submit", String.valueOf(chessResultsSubmit));
+            put("build.time", (buildProperties!=null && buildProperties.getTime() != null)
+                    ? DateTimeFormatter.ofPattern("yyyy.MM.dd")
+                    .format(LocalDateTime.ofInstant(buildProperties.getTime(), ZoneOffset.UTC))
+                    : null
+            );
         }};
     }
 }

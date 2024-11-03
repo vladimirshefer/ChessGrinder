@@ -7,6 +7,7 @@ COPY pom.xml pom.xml
 RUN mvn install:install-file -Dfile=./lib/javafo-2.2-main.jar -DgroupId=javafo -DartifactId=javafo -Dversion=2.2 -Dpackaging=jar
 RUN mvn dependency:resolve
 COPY src/main src/main
+RUN mvn spring-boot:build-info
 RUN mvn install -DskipTests
 
 FROM node:16-slim as build-frontend
