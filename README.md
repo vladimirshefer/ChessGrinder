@@ -11,6 +11,13 @@ App for chess club.
 - React Query
 - Tailwind
 
+## Run fast via docker compose
+```sh
+git clone https://github.com/vladimirshefer/ChessGrinder.git
+cd ChessGrinder
+docker compose up -d --build
+```
+
 ## Project setup for developers
 
 1. Install Java 17+
