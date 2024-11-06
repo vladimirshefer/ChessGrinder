@@ -4,6 +4,8 @@ import com.chessgrinder.chessgrinder.ChessGrinderApplication;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator;
+import com.chessgrinder.chessgrinder.util.EntityScanner;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

@@ -1,6 +1,7 @@
-package com.chessgrinder.chessgrinder.security;
+package com.chessgrinder.chessgrinder.security.util;
 
 import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.security.principal.AuthorizedUserEntityProvider;
 import jakarta.annotation.Nullable;
 import org.springframework.security.core.Authentication;
 

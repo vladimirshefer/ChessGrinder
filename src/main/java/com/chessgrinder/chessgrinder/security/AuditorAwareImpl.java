@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.security;
 
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.context.SecurityContextHolder;

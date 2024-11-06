@@ -3,7 +3,7 @@ package com.chessgrinder.chessgrinder;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.CustomPermissionEvaluator;
-import com.chessgrinder.chessgrinder.security.MyUserDetails;
+import com.chessgrinder.chessgrinder.security.principal.MyUserDetails;
 import com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

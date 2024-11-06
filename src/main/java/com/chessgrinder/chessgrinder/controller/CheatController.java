@@ -6,7 +6,7 @@ import com.chessgrinder.chessgrinder.entities.UserRoleEntity;
 import com.chessgrinder.chessgrinder.repositories.RoleRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRoleRepository;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
-import com.chessgrinder.chessgrinder.security.SecurityUtil;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

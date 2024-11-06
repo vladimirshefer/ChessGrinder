@@ -1,4 +1,4 @@
-package com.chessgrinder.chessgrinder.security;
+package com.chessgrinder.chessgrinder.util;
 
 import jakarta.persistence.Entity;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
