@@ -9,7 +9,7 @@ import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.security.CustomPermissionEvaluator;
-import com.chessgrinder.chessgrinder.security.SecurityUtil;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import com.chessgrinder.chessgrinder.service.UserService;
 import com.chessgrinder.chessgrinder.util.DateUtil;
 import jakarta.annotation.Nullable;

@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.security;
 
+import com.chessgrinder.chessgrinder.security.principal.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

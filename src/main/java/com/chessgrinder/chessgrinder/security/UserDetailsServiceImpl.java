@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.security;
 
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.principal.MyUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

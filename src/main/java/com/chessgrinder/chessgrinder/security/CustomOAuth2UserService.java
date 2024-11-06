@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.security;
 
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.principal.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

@@ -1,4 +1,4 @@
-package com.chessgrinder.chessgrinder.security;
+package com.chessgrinder.chessgrinder.security.principal;
 
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
