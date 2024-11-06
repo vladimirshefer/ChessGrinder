@@ -26,8 +26,6 @@ import java.lang.annotation.Target;
 @RequiredArgsConstructor
 public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthenticatedUserArgumentResolver.class);
-
     private final UserRepository userRepository;
 
     @Override
