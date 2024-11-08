@@ -9,6 +9,7 @@ import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine;
 import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine.TrfMatchResult;
 import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
 import com.chessgrinder.chessgrinder.trf.dto.RoundsNumberXxrTrfLine;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import javafo.api.JaVaFoApi;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
     private static final int STANDARD_PAIRING_CODE = 1000;
 
     @Override
+    @WithSpan
     public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber, boolean recalculateResults) {
         if (participants.isEmpty()) return Collections.emptyList();
 
