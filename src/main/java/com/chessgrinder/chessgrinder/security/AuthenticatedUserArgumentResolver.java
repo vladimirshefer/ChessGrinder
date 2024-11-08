@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.security;
 
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ public class AuthenticatedUserArgumentResolver implements HandlerMethodArgumentR
     }
 
     @Override
+    @WithSpan
     public Object resolveArgument(
             MethodParameter parameter,
             ModelAndViewContainer mavContainer,
