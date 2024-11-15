@@ -188,7 +188,7 @@ function MyActiveTournamentPaneImpl(
     let loc = useLoc();
     let [mode,] = useMode();
     let [resultSelectorActive, setResultSelectorActive] = useState(false)
-    let [ENABLE_PARTICIPANT_SUBMIT_RESULT] =  useConfigurationPropertyEnabled("submitResultByParticipantsEnabled", mode === "local")
+    let [ENABLE_PARTICIPANT_SUBMIT_RESULT] =  useConfigurationPropertyEnabled("chess.results.submit", mode === "local")
 
     function getResultStr(result: MatchResult | undefined, isMeWhite: boolean) {
         switch (result) {
