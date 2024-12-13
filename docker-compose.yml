@@ -6,3 +6,43 @@ services:
       - "8000:80"
     volumes:
       - ./app/config:/app/config:ro
+    environment:
+      "chessgrinder.feature.chess.rating": "true"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./app/prometeus/:/etc/prometheus/
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3442:3000"
+    volumes:
+      - ./app/grafana/provisioning/datasources/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    profiles:
+      - monitoring
+
+  grafana-tempo:
+    image: grafana/tempo
+    ports:
+      - "3200:3200"   # tempo
+      - "4317:4317"  # otlp grpc
+      - "4318:4318"  # otlp http
+    volumes:
+      - ./app/tempo/tempo.yaml:/etc/tempo.yaml
+      - ./app/tempo/data:/var/tempo
+    profiles:
+      - monitoring
+

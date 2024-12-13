@@ -5,8 +5,6 @@ import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
