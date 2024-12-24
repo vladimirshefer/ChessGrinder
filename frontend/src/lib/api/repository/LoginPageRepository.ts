@@ -22,7 +22,7 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
         let roles = username.toLowerCase().includes("admin") ? [UserRoles.ADMIN] : [];
         let memberDto = (await userRepository.getUsers()).values.find(it => it.id === username);
         if (!memberDto) {
-            await localStorageUtil.setObject(`cgd.user.${username}`, {
+            localStorageUtil.setObject(`cgd.user.${username}`, {
                 id: username,
                 username: username,
                 name: username,
