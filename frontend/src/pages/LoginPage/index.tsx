@@ -20,6 +20,7 @@ export default function LoginPage() {
     let loc = useLoc();
     let [mode,] = useMode();
     let signInForm = useForm()
+    let instantSignInForm = useForm()
     let signUpForm = useForm()
     let [referer] = useSearchParam("referer", "")
     const captchaRef = useRef<ReCAPTCHA>(null);
@@ -40,6 +41,7 @@ export default function LoginPage() {
         authenticatedUserRefresh()
         signInForm.reset()
         signUpForm.reset()
+        instantSignInForm.reset()
     }
 
     async function instantSignIn(email: string) {
@@ -47,12 +49,19 @@ export default function LoginPage() {
         if (!token) {
             alert("Captcha is required");
             navigate("/login")
-            throw new Error("Captcha is required")
+            return
         }
-        await loginPageRepository.authInstantInit(email, token)
+        try {
+            await loginPageRepository.authInstantInit(email, token)
+        } catch (e: any) {
+            alert("Login failed! " + (e?.response?.data?.message || ""))
+            return
+        }
+
         authenticatedUserRefresh()
         signInForm.reset()
         signUpForm.reset()
+        instantSignInForm.reset()
     }
 
     async function signUp(data: UserSignUpRequest) {
@@ -85,7 +94,9 @@ export default function LoginPage() {
         } as UserSignUpRequest;
 
         await signUp(userSignupRequest)
-        await signUpForm.reset()
+        signInForm.reset()
+        signUpForm.reset()
+        instantSignInForm.reset()
         alert("Success")
     }
 
@@ -111,10 +122,10 @@ export default function LoginPage() {
         </div>
 
         <Conditional on={ENABLE_LOGIN_USERNAME_PASSWORD}>
-            <form className={"grid gap-1"} onSubmit={signInForm.handleSubmit(handleInstantSignInSubmit)}>
+            <form className={"grid gap-1"} onSubmit={instantSignInForm.handleSubmit(handleInstantSignInSubmit)}>
                 <h3 className={"font-semibold uppercase"}>{loc("Instant Sign In")}</h3>
                 <input className={"border-b-2 outline-none"} placeholder={loc("Email")}
-                       {...signInForm.register("email")}
+                       {...instantSignInForm.register("email")}
                 />
                 <button className={"btn-primary uppercase"} type={"submit"}>
                     {loc("Sign in")}
