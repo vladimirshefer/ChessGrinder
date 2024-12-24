@@ -147,7 +147,6 @@ function MyActiveTournamentPane(
         (!currentRoundIndex && currentRoundIndex !== 0) ||
         (!currentMatchIndex && currentMatchIndex !== 0)
     ) {
-        console.log(meParticipant, meParticipant?.tournament, currentMatch, currentRoundIndex, currentMatchIndex)
         return <div className={"hidden"}>No current tournament</div>
     }
 
