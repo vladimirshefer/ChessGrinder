@@ -19,6 +19,8 @@ import java.util.Map;
 public class ConfigurationController {
     @Value("${chessgrinder.feature.auth.password:false}")
     private boolean authPassword;
+    @Value("${chessgrinder.feature.auth.instant:false}")
+    private boolean authInstant;
     @Value("${chessgrinder.feature.chess.rating:false}")
     private boolean chessRating;
     @Value("${chessgrinder.feature.chess.results.submit:false}")
@@ -33,6 +35,7 @@ public class ConfigurationController {
     public Map<String, String> getConfiguration() {
         return new HashMap<>() {{
             put("auth.password", String.valueOf(authPassword));
+            put("auth.instant", String.valueOf(authInstant));
             put("chess.rating", String.valueOf(chessRating));
             put("chess.results.submit", String.valueOf(chessResultsSubmit));
             put("captcha.site", captchaPublicKey);

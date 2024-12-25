@@ -38,8 +38,8 @@ public class AuthController {
     private final UserRepository userRepository;
     private final EmailService emailService;
 
-    @Value("${chessgrinder.feature.auth.password:false}")
-    private boolean isSignupWithPasswordEnabled;
+    @Value("${chessgrinder.feature.auth.instant:false}")
+    private boolean isInstantLoginEnabled;
 
     @Value("${chessgrinder.server.http.url}")
     private String serverUrl;
@@ -62,6 +62,9 @@ public class AuthController {
     public void instant(
             @PathVariable("authId") String authId
     ) {
+        if (!isInstantLoginEnabled) {
+            throw new UnsupportedOperationException("This api is disabled");
+        }
         if (!ott2email.containsKey(authId)) {
             throw new ResponseStatusException(NOT_FOUND, "Auth ID not found");
         }
@@ -91,6 +94,9 @@ public class AuthController {
     public void instantInit(
             @RequestParam("email") String email
     ) {
+        if (!isInstantLoginEnabled) {
+            throw new UnsupportedOperationException("This api is disabled");
+        }
         if (!email.matches(EMAIL_REGEX)) {
             throw new IllegalArgumentException("Invalid email: " + email);
         }
@@ -103,6 +109,11 @@ public class AuthController {
         ott2email.put(ott, email);
         ott2date.put(ott, LocalDateTime.now());
         emailService.sendSimpleMessage(email, "Login link", serverUrl + "/auth/instant/" + ott);
+    }
+
+    @VisibleForTesting
+    void setIsInstantLoginEnabled(boolean isInstantLoginEnabled) {
+        this.isInstantLoginEnabled = isInstantLoginEnabled;
     }
 
 }

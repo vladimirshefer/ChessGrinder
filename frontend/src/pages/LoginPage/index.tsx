@@ -26,7 +26,7 @@ export default function LoginPage() {
     const captchaRef = useRef<ReCAPTCHA>(null);
 
     let [ENABLE_LOGIN_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
-    let [ENABLE_REGISTRATION_EMAIL_LINK] = useConfigurationPropertyEnabled("auth.password", mode === "local")
+    let [ENABLE_REGISTRATION_EMAIL_LINK] = useConfigurationPropertyEnabled("auth.instant", mode === "local")
     let [ENABLE_REGISTRATION_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
     let [CAPTCHA_PUBLIC_KEY] = useConfigurationProperty("captcha.site", process.env.REACT_APP_CAPTCHA_PUBLIC_KEY || "placeholder")
 

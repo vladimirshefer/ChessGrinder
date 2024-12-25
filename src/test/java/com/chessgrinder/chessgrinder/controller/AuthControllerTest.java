@@ -47,6 +47,7 @@ class AuthControllerTest {
         user = new UserEntity();
         user.setUsername(VALID_EMAIL);
         user.setRoles(List.of());
+        authController.setIsInstantLoginEnabled(true);
     }
 
     @Test
