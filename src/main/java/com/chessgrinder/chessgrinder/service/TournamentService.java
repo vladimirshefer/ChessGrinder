@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
+    private final List<TournamentListener> tournamentListeners;
     private final TournamentMapper tournamentMapper;
     private final RoundService roundService;
     private final EloServiceImpl eloService;
@@ -67,6 +68,7 @@ public class TournamentService {
 
     public void startTournament(UUID tournamentId) {
         var tournament = tournamentRepository.findById(tournamentId).orElseThrow();
+        var tournamentReopened = TournamentStatus.FINISHED.equals(tournament.getStatus());
         if (tournament.getStatus() == TournamentStatus.FINISHED && tournament.isHasEloCalculated()) {
             try {
                 eloService.rollbackEloChanges(tournament);
@@ -76,9 +78,19 @@ public class TournamentService {
                 throw new RuntimeException("Error reverting Elo changes when reopening the tournament", e);
             }
         }
-        tournament.setStatus(TournamentStatus.ACTIVE);
 
-        tournamentRepository.save(tournament);
+        tournament.setStatus(TournamentStatus.ACTIVE);
+        TournamentEntity updatedTournament = tournamentRepository.save(tournament);
+
+        if (tournamentReopened) {
+            for (TournamentListener tournamentListener : tournamentListeners) {
+                try {
+                    tournamentListener.tournamentReopened(updatedTournament);
+                } catch (Exception e) {
+                    log.error("Could not apply tournament listener on tournament {} reopened {}", updatedTournament.getId(), tournamentListener.getClass().getName(), e);
+                }
+            }
+        }
     }
 
     public void finishTournament(UUID tournamentId) {
@@ -124,7 +136,16 @@ public class TournamentService {
         }
 
         tournament.setStatus(TournamentStatus.FINISHED);
-        tournamentRepository.save(tournament);
+        TournamentEntity updatedTournament = tournamentRepository.save(tournament);
+
+        for (TournamentListener tournamentListener : tournamentListeners) {
+            try {
+                tournamentListener.tournamentFinished(updatedTournament);
+            } catch (Exception e) {
+                log.error("Could not apply tournament listener on tournament finish {}", tournamentListener.getClass().getName(), e);
+            }
+        }
+
 
     }
 
@@ -150,4 +171,35 @@ public class TournamentService {
         tournament.setRoundsNumber(roundsNum);
         tournamentRepository.save(tournament);
     }
+
+    /**
+     * Interface to be extended by components. Is used as a callback on tournament state change.
+     * Could be used by ratings, achievements,
+     */
+    public interface TournamentListener {
+
+        /**
+         * Do something right after the tournament is marked as finished.
+         */
+        default void tournamentFinished(TournamentEntity tournamentEntity) {
+        }
+
+        /**
+         * Do something when already finished tournament was reopened.
+         */
+        default void tournamentReopened(TournamentEntity tournamentEntity) {
+
+        }
+
+        /**
+         * Optional. Rollback all changes done by this listener for all entities.
+         * For instance: remove all achievements or reset all ratings.
+         * Used when we want to reapply this listener for all data.
+         */
+        default void totalReset() {
+
+        }
+
+    }
+
 }
