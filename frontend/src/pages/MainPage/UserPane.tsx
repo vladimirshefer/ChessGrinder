@@ -57,16 +57,18 @@ export function UserPane(
                     <AiOutlineTrophy/>
                     <span className={""}>{user.globalScore || 0}</span>
                 </div>
-                {eloServiceEnabled && (
+                {eloServiceEnabled && !!user.eloPoints && (
                     <div className={"h-full flex items-center gap-1"} title={`${loc("Rating")} (${loc("Elo points")})`}>
                         <FaArrowTrendUp/>
                         <span>{user.eloPoints || "0"}</span>
                     </div>
                 )}
-                <div className={"h-full flex items-center gap-1"} title={loc("Reputation")}>
-                    <FaRegHeart/>
-                    <span className={""}>{user.reputation || 0}</span>
-                </div>
+                {!!user.reputation && (
+                    <div className={"h-full flex items-center gap-1"} title={loc("Reputation")}>
+                        <FaRegHeart/>
+                        <span className={""}>{user.reputation || 0}</span>
+                    </div>
+                )}
 
             </div>
         </div>
