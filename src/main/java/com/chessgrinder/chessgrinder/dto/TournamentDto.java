@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class TournamentDto {
+    public static final String API_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm";
 
     private String id;
 
@@ -23,7 +24,7 @@ public class TournamentDto {
     @Nullable
     private String pairingStrategy;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = API_DATETIME_FORMAT)
     private LocalDateTime date;
 
     private TournamentStatus status;
