@@ -1,4 +1,4 @@
-package com.chessgrinder.chessgrinder.chessengine;
+package com.chessgrinder.chessgrinder.chessengine.pairings;
 
 import java.util.*;
 

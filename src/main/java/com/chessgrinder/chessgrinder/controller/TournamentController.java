@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.chessengine.JavafoPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.pairings.JavafoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.dto.TournamentDto;

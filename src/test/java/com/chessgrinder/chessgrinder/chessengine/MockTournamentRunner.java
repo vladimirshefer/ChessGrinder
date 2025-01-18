@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.chessengine;
 
+import com.chessgrinder.chessgrinder.chessengine.pairings.PairingStrategy;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.enums.MatchResult;

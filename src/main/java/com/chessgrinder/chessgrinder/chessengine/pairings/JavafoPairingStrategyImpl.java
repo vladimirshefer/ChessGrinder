@@ -1,4 +1,4 @@
-package com.chessgrinder.chessgrinder.chessengine;
+package com.chessgrinder.chessgrinder.chessengine.pairings;
 
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;

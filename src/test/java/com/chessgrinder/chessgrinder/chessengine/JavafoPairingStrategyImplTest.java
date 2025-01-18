@@ -1,5 +1,7 @@
 package com.chessgrinder.chessgrinder.chessengine;
 
+import com.chessgrinder.chessgrinder.chessengine.pairings.JavafoPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.pairings.PairingStrategy;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.junit.jupiter.api.Test;
 

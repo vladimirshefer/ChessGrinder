@@ -1,8 +1,8 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.chessengine.JavafoPairingStrategyImpl;
-import com.chessgrinder.chessgrinder.chessengine.PairingStrategy;
-import com.chessgrinder.chessgrinder.chessengine.RoundRobinPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.pairings.JavafoPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.pairings.PairingStrategy;
+import com.chessgrinder.chessgrinder.chessengine.pairings.RoundRobinPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
