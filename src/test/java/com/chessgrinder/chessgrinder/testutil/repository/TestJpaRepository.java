@@ -186,29 +186,6 @@ public class TestJpaRepository<T, ID> implements JpaRepository<T, ID>, DataHolde
     }
 
     public static <R extends CrudRepository<T, ID>, T, ID> R of(Class<R> repositoryType){
-
-        class CUR extends TestJpaRepository<ParticipantEntity, UUID> implements ParticipantRepository {
-            @Override
-            public List<ParticipantEntity> findByTournamentId(UUID tournamentId) {
-                return getData().values().stream()
-                        .filter(it -> it.getTournament() != null && it.getTournament().getId().equals(tournamentId))
-                        .toList();
-            }
-
-            @Override
-            public ParticipantEntity findByTournamentIdAndUserId(UUID tournamentId, UUID userId) {
-                return findByTournamentId(tournamentId).stream()
-                        .filter(it -> it.getUser() != null && it.getUser().getId().equals(userId))
-                        .findFirst()
-                        .orElse(null);
-            }
-
-            @Override
-            public List<ParticipantEntity> findAllByUserId(UUID userId) {
-                return List.of();
-            }
-        }
-
         TestJpaRepository<T, ID> target = new TestJpaRepository<>();
         R proxy1 = (R) Proxy.newProxyInstance(
                 TestJpaRepository.class.getClassLoader(),
