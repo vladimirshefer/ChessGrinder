@@ -59,6 +59,9 @@ function TournamentPage(
     let roundNumbers = tournamentQuery.data?.rounds?.map((e, idx) => idx + 1) || [];
     let participants: ParticipantDto[] = tournamentQuery.data?.participants || [];
 
+    // If current tab is a round (not main tab and not share tab) and is not finished yet.
+    let isCurrentTabIsActiveRound = !!roundId && (tournamentData?.rounds[roundId - 1]?.isFinished === false);
+
     async function addParticipant(participant: ParticipantDto) {
         await participantRepository.postParticipant(id!!, participant)
             .catch(e => alert("Could not add participant. " +
@@ -154,7 +157,7 @@ function TournamentPage(
                 </div>
             </div>
         </div>
-        {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && isMain && (
+        {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && (isMain || isCurrentTabIsActiveRound) && (
             <MyActiveTournamentPane tournamentId={tournament.id}/>
         )}
         <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
