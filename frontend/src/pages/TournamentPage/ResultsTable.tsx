@@ -1,6 +1,7 @@
 import React from "react";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import {useLoc, useTransliterate} from "strings/loc";
+import {RiAdminLine} from "react-icons/ri";
 
 function ResultsTable(
     {
@@ -32,7 +33,12 @@ function ResultsTable(
                                     <div className={"grid text-left"}>
                                         <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-3"}>{transliterate(participant.name) || "No nickname"}</span>
                                         {participant.userFullName &&
-                                            <span className={"text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(participant.userFullName)}</span>
+                                            <div className={"flex items-center gap-1"}>
+                                                {participant.isModerator === true && (
+                                                    <RiAdminLine className={"inline"} title={"Moderator"}/>
+                                                )}
+                                                <span className={"text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(participant.userFullName)}</span>
+                                            </div>
                                         }
                                     </div>
                                 </button>
