@@ -88,7 +88,7 @@ function MyActiveTournamentPane(
         if (!isNotEmptyArray(rounds)) {
             return undefined
         }
-        let result: any = (rounds as any).findLastIndex((it: RoundDto) => isNotEmptyArray(it.matches));
+        let result: any = (rounds as any).findLastIndex((it: RoundDto) => isNotEmptyArray(it.matches) && !it.isFinished);
 
         if (result < 0) {
             return undefined
