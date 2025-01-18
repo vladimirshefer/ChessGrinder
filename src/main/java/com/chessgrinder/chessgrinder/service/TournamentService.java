@@ -66,21 +66,19 @@ public class TournamentService {
     }
 
     public void startTournament(UUID tournamentId) {
-
-        tournamentRepository.findById(tournamentId).ifPresent(tournament -> {
-            if (tournament.getStatus() == TournamentStatus.FINISHED && tournament.isHasEloCalculated()) {
-                try {
-                    eloService.rollbackEloChanges(tournament);
-                    tournament.setHasEloCalculated(false);
-                } catch (Exception e) {
-                    log.error("Could not revert Elo changes when reopening the tournament", e);
-                    throw new RuntimeException("Error reverting Elo changes when reopening the tournament", e);
-                }
+        var tournament = tournamentRepository.findById(tournamentId).orElseThrow();
+        if (tournament.getStatus() == TournamentStatus.FINISHED && tournament.isHasEloCalculated()) {
+            try {
+                eloService.rollbackEloChanges(tournament);
+                tournament.setHasEloCalculated(false);
+            } catch (Exception e) {
+                log.error("Could not revert Elo changes when reopening the tournament", e);
+                throw new RuntimeException("Error reverting Elo changes when reopening the tournament", e);
             }
-            tournament.setStatus(TournamentStatus.ACTIVE);
+        }
+        tournament.setStatus(TournamentStatus.ACTIVE);
 
-            tournamentRepository.save(tournament);
-        });
+        tournamentRepository.save(tournament);
     }
 
     public void finishTournament(UUID tournamentId) {
