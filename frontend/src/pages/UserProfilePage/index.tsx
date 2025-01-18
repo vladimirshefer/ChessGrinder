@@ -25,6 +25,7 @@ import {useForm} from "react-hook-form";
 import {propagate} from "lib/util/misc";
 import {FaRegHeart} from "react-icons/fa";
 import dayjs from "dayjs";
+import {FaArrowTrendUp} from "react-icons/fa6";
 
 function AssignAchievementPane(
     {
@@ -219,10 +220,18 @@ export default function UserProfilePage() {
                         <AiOutlineTrophy/>
                         <span>{globalScore}</span>
                     </div>
-                    <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
-                        <FaRegHeart/>
-                        <span>{userProfile.reputation || 0}</span>
-                    </div>
+                    {!!userProfile.reputation && (
+                        <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
+                            <FaRegHeart/>
+                            <span>{userProfile.reputation || "0"}</span>
+                        </div>
+                    )}
+                    {!!userProfile.eloPoints && (
+                        <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
+                            <FaArrowTrendUp/>
+                            <span>{userProfile.eloPoints || "0"}</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
