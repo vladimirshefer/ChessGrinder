@@ -1,4 +1,4 @@
-package com.chessgrinder.chessgrinder.service;
+package com.chessgrinder.chessgrinder.chessengine.ratings;
 
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 

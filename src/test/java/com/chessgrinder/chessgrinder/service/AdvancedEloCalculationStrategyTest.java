@@ -1,10 +1,11 @@
 package com.chessgrinder.chessgrinder.service;
 
+import com.chessgrinder.chessgrinder.chessengine.ratings.AdvancedEloCalculationStrategy;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.junit.jupiter.api.Test;
 
-import static com.chessgrinder.chessgrinder.service.AdvancedEloCalculationStrategy.calculateExpectedScore;
-import static com.chessgrinder.chessgrinder.service.AdvancedEloCalculationStrategy.calculateNewElo;
+import static com.chessgrinder.chessgrinder.chessengine.ratings.AdvancedEloCalculationStrategy.calculateExpectedScore;
+import static com.chessgrinder.chessgrinder.chessengine.ratings.AdvancedEloCalculationStrategy.calculateNewElo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 

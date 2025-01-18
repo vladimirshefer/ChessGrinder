@@ -29,7 +29,6 @@ public class TournamentService {
     private final List<TournamentListener> tournamentListeners;
     private final TournamentMapper tournamentMapper;
     private final RoundService roundService;
-    private final EloServiceImpl eloService;
     private static final int DEFAULT_ROUNDS_NUMBER = 6;
     private static final int MIN_ROUNDS_NUMBER = 0;
     private static final int MAX_ROUNDS_NUMBER = 99;
@@ -69,16 +68,6 @@ public class TournamentService {
     public void startTournament(UUID tournamentId) {
         var tournament = tournamentRepository.findById(tournamentId).orElseThrow();
         var tournamentReopened = TournamentStatus.FINISHED.equals(tournament.getStatus());
-        if (tournament.getStatus() == TournamentStatus.FINISHED && tournament.isHasEloCalculated()) {
-            try {
-                eloService.rollbackEloChanges(tournament);
-                tournament.setHasEloCalculated(false);
-            } catch (Exception e) {
-                log.error("Could not revert Elo changes when reopening the tournament", e);
-                throw new RuntimeException("Error reverting Elo changes when reopening the tournament", e);
-            }
-        }
-
         tournament.setStatus(TournamentStatus.ACTIVE);
         TournamentEntity updatedTournament = tournamentRepository.save(tournament);
 
@@ -127,12 +116,6 @@ public class TournamentService {
 
         } catch (Exception e) {
             log.error("Could not update results", e);
-        }
-
-        try {
-            eloService.processTournamentAndUpdateElo(tournament);
-        } catch (Exception e) {
-            log.error("Could not finalize Elo ratings", e);
         }
 
         tournament.setStatus(TournamentStatus.FINISHED);

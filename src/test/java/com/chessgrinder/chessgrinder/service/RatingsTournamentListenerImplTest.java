@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.service;
 
+import com.chessgrinder.chessgrinder.chessengine.ratings.EloCalculationStrategy;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
@@ -16,9 +17,9 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class EloServiceImplTest {
+public class RatingsTournamentListenerImplTest {
 
-    private EloServiceImpl eloService;
+    private RatingsTournamentListenerImpl eloService;
     private EloCalculationStrategy defaultEloCalculationStrategy;
     private ParticipantRepository participantRepository;
     private TournamentRepository tournamentRepository;
@@ -42,7 +43,7 @@ public class EloServiceImplTest {
         tournamentRepository = TestJpaRepository.of(TournamentRepository.class);
         userRepository = TestJpaRepository.of(UserRepository.class);
 
-        eloService = new EloServiceImpl(defaultEloCalculationStrategy, participantRepository, userRepository, tournamentRepository);
+        eloService = new RatingsTournamentListenerImpl(defaultEloCalculationStrategy, participantRepository, userRepository, tournamentRepository);
         ReflectionTestUtils.setField(eloService, "eloServiceEnabled", true);
     }
 
@@ -53,7 +54,7 @@ public class EloServiceImplTest {
         MatchEntity match = createMatch(participant1, participant2, MatchResult.WHITE_WIN);
         RoundEntity round = createRound(List.of(match));
         TournamentEntity tournament = createTournament(List.of(round));
-        eloService.processTournamentAndUpdateElo(tournament);
+        eloService.tournamentFinished(tournament);
         assertElo(participant1, 1200, 10, 1210);
         assertElo(participant2, 1200, -10, 1190);
     }
@@ -66,16 +67,16 @@ public class EloServiceImplTest {
         var round = createRound(List.of(match));
         var tournament = createTournament(List.of(round));
 
-        eloService.processTournamentAndUpdateElo(tournament);
+        eloService.tournamentFinished(tournament);
         assertElo(participant1, 1200, 10, 1210);
         assertElo(participant2, 1200, -10, 1190);
 
-        eloService.rollbackEloChanges(tournament);
+        eloService.tournamentReopened(tournament);
         assertElo(participant1, 1200, 0, 1200);
         assertElo(participant2, 1200, 0, 1200);
 
         match.setResult(MatchResult.BLACK_WIN);
-        eloService.processTournamentAndUpdateElo(tournament);
+        eloService.tournamentFinished(tournament);
         assertElo(participant1, 1200, -10, 1190);
         assertElo(participant2, 1200, 10, 1210);
     }
@@ -88,18 +89,18 @@ public class EloServiceImplTest {
         RoundEntity round = createRound(List.of(match));
         TournamentEntity tournament = createTournament(List.of(round));
 
-        eloService.processTournamentAndUpdateElo(tournament);
+        eloService.tournamentFinished(tournament);
 
         assertElo(participant1, 1200, 10, 1210);
         assertElo(participant2, 1200, -10, 1190);
 
-        eloService.rollbackEloChanges(tournament);
+        eloService.tournamentReopened(tournament);
 
         assertElo(participant1, 1200, 0, 1200);
         assertElo(participant2, 1200, 0, 1200);
 
         match.setResult(MatchResult.WHITE_WIN);
-        eloService.processTournamentAndUpdateElo(tournament);
+        eloService.tournamentFinished(tournament);
 
         assertElo(participant1, 1200, 10, 1210);
         assertElo(participant2, 1200, -10, 1190);
@@ -115,7 +116,7 @@ public class EloServiceImplTest {
                 ))
         ));
 
-        eloService.processTournamentAndUpdateElo(tournament);
+        eloService.tournamentFinished(tournament);
         assertElo(participant1, 1200, 5, 1205);
     }
 
@@ -128,7 +129,7 @@ public class EloServiceImplTest {
         ));
         TournamentEntity tournament = createTournament(List.of(round));
 
-        eloService.processTournamentAndUpdateElo(tournament);
+        eloService.tournamentFinished(tournament);
         assertElo(participant1, 1200, 0, 1200);
         assertElo(participant2, 1200, 0, 1200);
     }
@@ -149,7 +150,7 @@ public class EloServiceImplTest {
         ));
         TournamentEntity tournament = createTournament(List.of(round1, round2));
 
-        eloService.processTournamentAndUpdateElo(tournament);
+        eloService.tournamentFinished(tournament);
 
         assertElo(participant1, 1200, 15, 1215);
         assertElo(participant2, 1200, -10, 1190);

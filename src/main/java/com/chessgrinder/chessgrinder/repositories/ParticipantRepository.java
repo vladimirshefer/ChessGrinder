@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.repositories;
 
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -18,5 +19,9 @@ public interface ParticipantRepository extends PagingAndSortingRepository<Partic
 
     @Query("SELECT p FROM ParticipantEntity p WHERE p.user.id = :userId ORDER BY p.tournament.date DESC")
     List<ParticipantEntity> findAllByUserId(UUID userId);
+
+    @Modifying
+    @Query("UPDATE ParticipantEntity p SET p.initialEloPoints = 0, p.finalEloPoints = 0")
+    void clearAllEloPoints();
 
 }

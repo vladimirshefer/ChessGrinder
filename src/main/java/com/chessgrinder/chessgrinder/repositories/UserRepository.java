@@ -38,4 +38,8 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
             LocalDateTime globalScoreToDate
     );
 
+    @Modifying
+    @Query("UPDATE UserEntity u SET u.eloPoints = 0")
+    void clearAllEloPoints();
+
 }

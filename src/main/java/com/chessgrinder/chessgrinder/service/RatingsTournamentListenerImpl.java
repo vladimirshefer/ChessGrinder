@@ -1,10 +1,12 @@
 package com.chessgrinder.chessgrinder.service;
 
+import com.chessgrinder.chessgrinder.chessengine.ratings.EloCalculationStrategy;
+import com.chessgrinder.chessgrinder.chessengine.ratings.EloHolder;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
-import jakarta.annotation.Nullable;
+import com.chessgrinder.chessgrinder.service.TournamentService.TournamentListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,20 +22,19 @@ import static com.chessgrinder.chessgrinder.service.UserEloInitializerService.DE
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class EloServiceImpl implements EloService {
+public class RatingsTournamentListenerImpl implements TournamentListener {
 
     private final EloCalculationStrategy eloCalculationStrategy;
     private final ParticipantRepository participantRepository;
     private final UserRepository userRepository;
     private final TournamentRepository tournamentRepository;
 
-
     @Value("${chessgrinder.feature.chess.rating:false}")
     private boolean eloServiceEnabled;
 
     @Override
     @Transactional
-    public void processTournamentAndUpdateElo(TournamentEntity tournament) {
+    public void tournamentFinished(TournamentEntity tournament) {
         if (!eloServiceEnabled) {
             log.info("Elo Service is disabled, skipping processing.");
             return;
@@ -113,9 +114,8 @@ public class EloServiceImpl implements EloService {
     }
 
     @Override
-    public void rollbackEloChanges(TournamentEntity tournament) {
-        if (!eloServiceEnabled) {
-            log.info("Elo Service is disabled, rollback skipped.");
+    public void tournamentReopened(TournamentEntity tournament) {
+        if (!tournament.isHasEloCalculated()) {
             return;
         }
 
@@ -141,61 +141,11 @@ public class EloServiceImpl implements EloService {
         tournamentRepository.save(tournament);
     }
 
-    public static class EloHolder {
-        private final Map<UUID, Integer> participantId2InitialElo = new HashMap<>();
-        private final Map<UUID, Integer> participantId2ResultElo = new HashMap<>();
-
-        public void putInitial(UUID participantId, int elo) {
-            participantId2InitialElo.put(participantId, elo);
-        }
-
-        public void putResult(UUID participantId, int elo) {
-            participantId2ResultElo.put(participantId, elo);
-        }
-
-        public int getInitial(UUID participantId) {
-            return participantId2InitialElo.getOrDefault(participantId, DEFAULT_ELO_POINTS);
-        }
-
-        public int getDiff(UUID participantId) {
-            Integer result = getResult(participantId);
-            if (result == null) throw new IllegalArgumentException("Result is null for participant: " + participantId);
-            return result - getInitial(participantId);
-        }
-
-        @Nullable
-        public Integer getResult(UUID participantId) {
-            return participantId2ResultElo.get(participantId);
-        }
-
-
-        private Integer getResultOr(UUID participantId, int defaultEloPoints) {
-            Integer orDefault = this.getResult(participantId);
-            if (orDefault == null || orDefault == 0) return defaultEloPoints;
-            else return orDefault;
-        }
-
-        public void putInitial(ParticipantEntity participant) {
-            if (participant == null) {
-                return;
-            }
-
-            UUID pid = participant.getId();
-            if (participant.getInitialEloPoints() != 0) {
-                putInitial(pid, participant.getInitialEloPoints());
-            } else if (participant.getUser() != null && participant.getUser().getEloPoints() != 0) {
-                putInitial(pid, participant.getUser().getEloPoints());
-            } else {
-                putInitial(pid, DEFAULT_ELO_POINTS);
-            }
-        }
-
-        public Map<UUID, Integer> getInitial() {
-            return participantId2InitialElo;
-        }
-
-        public Map<UUID, Integer> getResult() {
-            return participantId2ResultElo;
-        }
+    @Override
+    @Transactional
+    public void totalReset() {
+        userRepository.clearAllEloPoints();
+        participantRepository.clearAllEloPoints();
+        tournamentRepository.clearAllEloPoints();
     }
 }
