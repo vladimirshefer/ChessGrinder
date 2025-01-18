@@ -30,6 +30,7 @@ public class ParticipantMapper {
                 .place(participant.getPlace())
                 .tournament(Optional.ofNullable(participant.getTournament()).map(tournamentMapper::toDto).orElse(null))
                 .initialElo(participant.getInitialEloPoints())
+                .finalElo(participant.getFinalEloPoints())
                 .build();
     }
 

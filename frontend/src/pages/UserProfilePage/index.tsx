@@ -257,9 +257,10 @@ export default function UserProfilePage() {
                 <div className="p-1"></div>
                 <div className={"grid grid-cols-12 text-left font-semibold border-b-2"}>
                     <span
-                        className={"col-span-8"}>{loc("Tournaments") + (historyQuery?.isSuccess ? ` (${historyQuery.data?.count})` : "")}</span>
+                        className={"col-span-6"}>{loc("Tournaments") + (historyQuery?.isSuccess ? ` (${historyQuery.data?.count})` : "")}</span>
                     <span className={"col-span-2"}>{loc("Place")}</span>
                     <span className={"col-span-2"}>{loc("Points")}</span>
+                    <span className={"col-span-2"}>{loc("Rating")}</span>
                 </div>
                 <div>
                     {historyQuery.isSuccess ? (
@@ -267,7 +268,7 @@ export default function UserProfilePage() {
                             {historyQuery.data?.values?.map(row =>
                                 <div key={row.id}
                                      className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
-                                    <Link to={`/tournament/${row.tournament?.id}`} className={"grid col-span-8"}>
+                                    <Link to={`/tournament/${row.tournament?.id}`} className={"grid col-span-6"}>
                                         {row.tournament?.name || row.tournament?.id || ""}
                                         <span className={"text-xs text-gray-800"}>
                                             {dayjs(row.tournament?.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
@@ -275,6 +276,7 @@ export default function UserProfilePage() {
                                     </Link>
                                     <span className={"col-span-2"}>{row.place}</span>
                                     <span className={"col-span-2"}>{row.score}</span>
+                                    <span className={"col-span-2"}>{(!!row.finalElo) ? (row.finalElo > 0 ? "+" + row.finalElo : row.finalElo) : "-"}</span>
                                 </div>
                             )}
                         </div>

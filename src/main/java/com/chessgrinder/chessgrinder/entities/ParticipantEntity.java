@@ -41,6 +41,9 @@ public class ParticipantEntity extends AbstractAuditingEntity {
     @Column(name = "initial_elo_points")
     private int initialEloPoints;
 
+    /**
+     * Misleading name: Actually it is Elo Diff
+     */
     @Column (name ="final_elo_points")
     private int finalEloPoints;
 

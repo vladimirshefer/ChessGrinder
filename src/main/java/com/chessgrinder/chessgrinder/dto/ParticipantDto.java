@@ -66,4 +66,9 @@ public class ParticipantDto {
     private TournamentDto tournament;
 
     private Integer initialElo;
+
+    /**
+     * Misleading name: Actually it is Elo Diff
+     */
+    private Integer finalElo;
 }

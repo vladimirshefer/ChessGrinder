@@ -35,6 +35,9 @@ export interface ParticipantDto {
     isModerator?: boolean | null | undefined
     place: number
     tournament?: TournamentDto | null | undefined
+    initialElo?: number | null | undefined
+    // misleading name: actually it is elo diff
+    finalElo?: number | null | undefined
 }
 
 export interface TournamentPageData {
