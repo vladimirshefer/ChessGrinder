@@ -1,18 +1,21 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.dto.ClubDto;
+import com.chessgrinder.chessgrinder.dto.ListDto;
+import com.chessgrinder.chessgrinder.entities.ClubEntity;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.mappers.ClubMapper;
 import com.chessgrinder.chessgrinder.repositories.ClubRepository;
-import com.chessgrinder.chessgrinder.service.ClubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/clubs")
@@ -20,14 +23,16 @@ import java.util.UUID;
 public class ClubController {
 
     private final ClubRepository clubRepository;
-
-    private final ClubService clubService;
-
     private final ClubMapper clubMapper;
 
     @GetMapping
     public ListDto<ClubDto> getAllClubs() {
-        List<ClubDto> allClubs = clubService.getAllClubs();
+        List<ClubDto> allClubs = clubRepository.findAll()
+                .stream()
+                .map(clubMapper::toDto)
+                .sorted(Comparator.comparing(ClubDto::getRegistrationDate))
+                .collect(Collectors.toList());
+
         return ListDto.<ClubDto>builder().values(allClubs).build();
     }
 

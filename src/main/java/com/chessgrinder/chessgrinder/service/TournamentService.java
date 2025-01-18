@@ -46,15 +46,12 @@ public class TournamentService {
                 .collect(Collectors.toList());
     }
 
-    //TODO add club Id (TournamentEntity)
     @Transactional
     public TournamentDto createTournament(LocalDateTime date) {
-        ClubEntity club = clubRepository.getById(UUID.fromString(Const.Tournaments.DEFAULT_CLUB_ID));
         TournamentEntity tournamentEntity = TournamentEntity.builder()
                 .date(date)
                 .status(TournamentStatus.PLANNED)
                 .roundsNumber(DEFAULT_ROUNDS_NUMBER)
-                .club(club)
                 .build();
 
         tournamentEntity = tournamentRepository.save(tournamentEntity);

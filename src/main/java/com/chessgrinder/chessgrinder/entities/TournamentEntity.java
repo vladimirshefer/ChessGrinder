@@ -67,5 +67,6 @@ public class TournamentEntity extends AbstractAuditingEntity {
 
     @ManyToOne
     @JoinColumn(name = "club_id")
+    @Nullable
     private ClubEntity club;
 }
