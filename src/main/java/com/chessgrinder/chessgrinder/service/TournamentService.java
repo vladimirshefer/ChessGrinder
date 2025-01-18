@@ -5,6 +5,7 @@ import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
+import com.chessgrinder.chessgrinder.repositories.ClubRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ import java.util.stream.Collectors;
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
+    private final ClubRepository clubRepository;
+
     private final TournamentMapper tournamentMapper;
     private final RoundService roundService;
     private final EloServiceImpl eloService;

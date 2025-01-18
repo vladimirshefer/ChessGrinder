@@ -29,4 +29,7 @@ public class TournamentDto {
     private TournamentStatus status;
 
     private Integer roundsNumber;
+
+    @Nullable
+    private ClubDto clubDto;
 }

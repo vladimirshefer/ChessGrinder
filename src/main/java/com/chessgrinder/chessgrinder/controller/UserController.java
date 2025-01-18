@@ -24,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.annotation.Nullable;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,6 +38,7 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final ClubRepository clubRepository;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
     private final TournamentMapper tournamentMapper;
@@ -223,4 +227,5 @@ public class UserController {
         }
         return permissionEvaluator.hasPermission(authentication, targetId, targetType, permission);
     }
+
 }
