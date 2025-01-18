@@ -19,7 +19,7 @@ class MockTournamentRunner {
 
     public MockTournamentRunner(PairingStrategy pairingStrategy, String... participants) {
         this.pairingStrategy = pairingStrategy;
-        this.participants = new ArrayList<>(Arrays.stream(participants).map(it -> it != null ? SwissPairingStrategyImplTest.participant(it, 0, 0) : null).toList());
+        this.participants = new ArrayList<>(Arrays.stream(participants).map(it -> it != null ? MockTournamentRunnerUtils.participant(it, 0, 0) : null).toList());
     }
 
     public MockTournamentRunner thenRound(Consumer<MockRoundBuilder> round) {
@@ -181,7 +181,7 @@ class MockTournamentRunner {
     }
 
     public MockTournamentRunner newParticipant(String name) {
-        participants.add(SwissPairingStrategyImplTest.participant(name, 0, 0));
+        participants.add(MockTournamentRunnerUtils.participant(name, 0, 0));
         return this;
     }
 
@@ -207,9 +207,9 @@ class MockTournamentRunner {
         }
 
         public MockRoundBuilder match(@Nullable String user1, @Nullable String user2, @Nullable MatchResult matchResult) {
-            matches.add(SwissPairingStrategyImplTest.createMatch(
-                    SwissPairingStrategyImplTest.participant(user1, NO_VALUE, NO_VALUE),
-                    SwissPairingStrategyImplTest.participant(user2, NO_VALUE, NO_VALUE),
+            matches.add(MockTournamentRunnerUtils.createMatch(
+                    MockTournamentRunnerUtils.participant(user1, NO_VALUE, NO_VALUE),
+                    MockTournamentRunnerUtils.participant(user2, NO_VALUE, NO_VALUE),
                     matchResult
             ));
             return this;
@@ -228,7 +228,7 @@ class MockTournamentRunner {
          * @return self
          */
         public MockRoundBuilder match(ParticipantDto user1, ParticipantDto user2, MatchResult matchResult) {
-            matches.add(SwissPairingStrategyImplTest.createMatch(
+            matches.add(MockTournamentRunnerUtils.createMatch(
                     user1,
                     user2,
                     matchResult

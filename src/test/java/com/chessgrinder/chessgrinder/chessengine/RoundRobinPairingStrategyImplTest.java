@@ -3,7 +3,8 @@ package com.chessgrinder.chessgrinder.chessengine;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.junit.jupiter.api.Test;
 
-import static com.chessgrinder.chessgrinder.chessengine.SwissPairingStrategyImplTest.*;
+import static com.chessgrinder.chessgrinder.chessengine.MockTournamentRunnerUtils.participant;
+import static com.chessgrinder.chessgrinder.chessengine.MockTournamentRunnerUtils.runTournament;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RoundRobinPairingStrategyImplTest {
