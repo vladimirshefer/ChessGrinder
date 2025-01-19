@@ -166,7 +166,7 @@ function MatchesTable(
 ) {
     let loc = useLoc()
 
-    return <div className={"grid grid-cols-[1fr_auto_1fr] p-2 gap-y-2 gap-x-2 text-left"}>
+    return <div className={"grid grid-cols-[1fr_auto_1fr] gap-y-2 gap-x-2 text-left"}>
         <div className={"font-semibold uppercase text-left"}>{loc("White")}</div>
         <div className={"font-semibold uppercase text-center"}>{loc("Result")}</div>
         <div className={"font-semibold uppercase text-left"}>{loc("Black")}</div>

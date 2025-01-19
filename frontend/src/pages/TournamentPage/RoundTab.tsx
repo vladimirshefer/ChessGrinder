@@ -38,7 +38,7 @@ export default function RoundTab(
                       }}
         />
         <Conditional on={isMeModerator}>
-            <div className={"mt-2 px-2 w-full flex justify-end gap-2"}>
+            <div className={"mt-2 w-full flex justify-end gap-2"}>
                 <Conditional on={!round.isFinished}>
                     <button className={"btn-dark p-1 px-1"}
                             onClick={() => runPairing()}

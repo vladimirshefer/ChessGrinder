@@ -243,15 +243,17 @@ function TournamentPage(
                 />
             </Conditional>
             <Conditional on={!!roundId}>
-                <RoundTab
-                    tournamentId={tournament.id}
-                    round={tournamentData?.rounds[roundId!! - 1]!!}
-                    submitMatchResult={(match, result) => submitMatchResult(match, result!!)}
-                    submitRoundFinished={() => finishRound()}
-                    deleteRound={() => deleteRound()}
-                    runPairing={() => runPairingForRound()}
-                    reopenRound={() => reopenRound()}
-                />
+                <div className={"p-2"}>
+                    <RoundTab
+                        tournamentId={tournament.id}
+                        round={tournamentData?.rounds[roundId!! - 1]!!}
+                        submitMatchResult={(match, result) => submitMatchResult(match, result!!)}
+                        submitRoundFinished={() => finishRound()}
+                        deleteRound={() => deleteRound()}
+                        runPairing={() => runPairingForRound()}
+                        reopenRound={() => reopenRound()}
+                    />
+                </div>
             </Conditional>
             <Conditional on={tab === "SHARE"}>
                 <div className={"w-full p-1 grid justify-items-center"}>
