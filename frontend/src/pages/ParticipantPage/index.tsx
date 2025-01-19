@@ -91,7 +91,7 @@ export default function ParticipantPage() {
     let moderator = (participantQuery.data && participantQuery.data?.isModerator) || false;
 
     return <div className={"p-3 text-left"}>
-        <div className={"p-3"}>
+        <div className={"py-3"}>
             <Conditional on={participantQuery.isSuccess}>
                 <div className={"flex items-center gap-2"}>
                     <Link to={"/tournament/" + tournamentId} className={"text-xl"} title={loc("Back")}>
