@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ParticipantRepository extends PagingAndSortingRepository<ParticipantEntity, UUID>, CrudRepository<ParticipantEntity, UUID> {
@@ -24,4 +25,7 @@ public interface ParticipantRepository extends PagingAndSortingRepository<Partic
     @Query("UPDATE ParticipantEntity p SET p.initialEloPoints = 0, p.finalEloPoints = 0")
     void clearAllEloPoints();
 
+    @Query("SELECT p FROM ParticipantEntity p WHERE p.tournament.id = :tournamentId AND p.place = 1")
+    Optional<ParticipantEntity> findFirstPlaceByTournamentId(UUID tournamentId);
+    
 }
