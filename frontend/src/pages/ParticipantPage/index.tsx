@@ -6,11 +6,14 @@ import {Conditional, usePermissionGranted} from "components/Conditional";
 import {useForm} from "react-hook-form";
 import {propagate} from "lib/util/misc";
 import {AiOutlineArrowLeft, AiOutlineDelete} from "react-icons/ai";
-import React from "react";
+import React, {useMemo} from "react";
 import {useLoc} from "strings/loc";
 import Toggle from "components/Toggle";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import UserPane from "pages/MainPage/UserPane";
+import MatchesTable from "../TournamentPage/MatchesTable";
+import tournamentPageRepository from "../../lib/api/repository/TournamentPageRepository";
+import {TournamentPageData} from "../../lib/api/dto/TournamentPageData";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
@@ -46,8 +49,22 @@ export default function ParticipantPage() {
         }
     })
 
+    let tournamentPageQuery = useQuery({
+        queryKey: ["tournamentPageData", tournamentId],
+        queryFn: () => tournamentId ? tournamentPageRepository.getData(tournamentId) : Promise.reject<TournamentPageData>()
+    })
+
     let isMeModerator = usePermissionGranted(tournamentId || "", "TournamentEntity", "MODERATOR");
     let isMeOwner = usePermissionGranted(tournamentId || "", "TournamentEntity", "OWNER");
+
+    let matches = useMemo(
+        () => {
+            if (!tournamentPageQuery.isSuccess) {return []}
+            return tournamentPageQuery.data!!.rounds
+                .flatMap(it => it.matches)
+                .filter(it => it.white?.id === participantId || it.black?.id === participantId)
+        }, [tournamentPageQuery]
+    )
 
     if (!tournamentId) {
         return <>
@@ -90,18 +107,21 @@ export default function ParticipantPage() {
     let missing = (participantQuery.data && participantQuery.data?.isMissing) || false;
     let moderator = (participantQuery.data && participantQuery.data?.isModerator) || false;
 
+
     return <div className={"p-3 text-left"}>
-        <div className={"py-3"}>
+        <div className={"py-3 grid gap-3"}>
             <Conditional on={participantQuery.isSuccess}>
-                <div className={"flex items-center gap-2"}>
-                    <Link to={"/tournament/" + tournamentId} className={"text-xl"} title={loc("Back")}>
+                <Link to={"/tournament/" + tournamentId} className={"text-xl"} title={loc("Back")}>
+                    <span className={"flex items-center gap-2"}>
                         <AiOutlineArrowLeft/>
-                    </Link>
-                    <h1 className={"text-xl font-bold flex gap-2"}>
-                        {participantQuery.data?.name}
-                    </h1>
-                </div>
+                        {"Back to tournament"}
+                    </span>
+                </Link>
+                <h1 className={"text-xl font-bold flex gap-2"}>
+                    {participantQuery.data?.name}
+                </h1>
             </Conditional>
+
             <Conditional on={userQuery.isSuccess && userQuery.data}>
                 <div className={"py-3"}>
                     <UserPane user={userQuery.data!!}/>
@@ -109,6 +129,14 @@ export default function ParticipantPage() {
             </Conditional>
             {userQuery.isLoading ? <>Loading user data</> : null}
             {userQuery.isError ? <>Error loading user data</> : null}
+
+            <div>
+                <MatchesTable
+                    matches={matches}
+                    canEditResults={false}
+                    submitMatchResult={() => {}}
+                />
+            </div>
         </div>
         <div></div>
         <Conditional on={isMeModerator}>
