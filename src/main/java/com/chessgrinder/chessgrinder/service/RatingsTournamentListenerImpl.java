@@ -17,8 +17,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.chessgrinder.chessgrinder.service.UserEloInitializerService.DEFAULT_ELO_POINTS;
-
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -88,8 +86,8 @@ public class RatingsTournamentListenerImpl implements TournamentListener {
             return;
         }
 
-        int whiteElo = eloHolder.getResultOr(participant1.getId(), DEFAULT_ELO_POINTS);
-        int blackElo = eloHolder.getResultOr(participant2.getId(), DEFAULT_ELO_POINTS);
+        int whiteElo = eloHolder.getResultOr(participant1.getId(), eloHolder.getInitial(participant1.getId()));
+        int blackElo = eloHolder.getResultOr(participant2.getId(), eloHolder.getInitial(participant2.getId()));
 
         boolean bothUsersAuthorized = participant1.getUser() != null && participant2.getUser() != null;
         var updateResult = eloCalculationStrategy.calculateElo(whiteElo, blackElo, match.getResult(), bothUsersAuthorized);

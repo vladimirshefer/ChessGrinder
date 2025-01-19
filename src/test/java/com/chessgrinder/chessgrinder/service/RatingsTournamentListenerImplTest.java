@@ -61,24 +61,24 @@ public class RatingsTournamentListenerImplTest {
 
     @Test
     public void testEloRecalculationAfterMatchResultChange() {
-        var participant1 = createParticipant(createUser("user1", 1200));
-        var participant2 = createParticipant(createUser("user2", 1200));
+        var participant1 = createParticipant(createUser("user1", 1300));
+        var participant2 = createParticipant(createUser("user2", 1100));
         var match = createMatch(participant1, participant2, MatchResult.WHITE_WIN);
         var round = createRound(List.of(match));
         var tournament = createTournament(List.of(round));
 
         eloService.tournamentFinished(tournament);
-        assertElo(participant1, 1200, 10, 1210);
-        assertElo(participant2, 1200, -10, 1190);
+        assertElo(participant1, 1300, 10, 1310);
+        assertElo(participant2, 1100, -10, 1090);
 
         eloService.tournamentReopened(tournament);
-        assertElo(participant1, 1200, 0, 1200);
-        assertElo(participant2, 1200, 0, 1200);
+        assertElo(participant1, 1300, 0, 1300);
+        assertElo(participant2, 1100, 0, 1100);
 
         match.setResult(MatchResult.BLACK_WIN);
         eloService.tournamentFinished(tournament);
-        assertElo(participant1, 1200, -10, 1190);
-        assertElo(participant2, 1200, 10, 1210);
+        assertElo(participant1, 1300, -10, 1290);
+        assertElo(participant2, 1100, 10, 1110);
     }
 
     @Test
