@@ -112,77 +112,74 @@ export default function ParticipantPage() {
         </div>
         <div></div>
         <Conditional on={isMeModerator}>
-            <form onSubmit={editForm.handleSubmit(changeNickname)}>
-                <input
-                    className={"input-text w-full"}
-                    type={"text"}
-                    defaultValue={participantQuery.data?.name || ""}
-                    placeholder={loc("Nickname")}
-                    {...editForm.register("nickname")}
+            <div className={"grid border-y-2 py-2 grid-cols-[auto_1fr] gap-3 items-center"}>
+                <h3 className={"col-span-2 text-lg font-semibold"}>{loc("Admin")}</h3>
+                <span>{"Change nickname"}</span>
+                <form onSubmit={editForm.handleSubmit(changeNickname)}>
+                    <input
+                        className={"input-text w-full"}
+                        type={"text"}
+                        defaultValue={participantQuery.data?.name || ""}
+                        placeholder={loc("Nickname")}
+                        {...editForm.register("nickname")}
+                    />
+                    <input type="submit" hidden/>
+                </form>
+
+                <span>{loc("Missing")}</span>
+                <Toggle
+                    title={"Set missing"}
+                    checked={missing}
+                    setChecked={async (v) => {
+                        if (missing) {
+                            await participantRepository.unmissParticipant(tournamentId!!, participantId!!)
+                        } else {
+                            await participantRepository.missParticipant(tournamentId!!, participantId!!)
+                        }
+                        await participantQuery.refetch()
+                    }}
                 />
-                <input type="submit" hidden/>
-            </form>
-            <div className={"grid gap-2 text-left py-3"}>
-                <div className={"flex justify-bottom gap-2"}>
-                    <span className="">{loc("Missing")}</span>
+                <Conditional on={isMeOwner}>
+                    <span className="">{loc("Moderator")}</span>
                     <Toggle
-                        title={"Set missing"}
-                        checked={missing}
+                        title={"Set moderator"}
+                        checked={moderator}
                         setChecked={async (v) => {
-                            if (missing) {
-                                await participantRepository.unmissParticipant(tournamentId!!, participantId!!)
-                            } else {
-                                await participantRepository.missParticipant(tournamentId!!, participantId!!)
-                            }
+                            await participantRepository.updateParticipant(tournamentId!!, {
+                                id: participantId,
+                                isModerator: !moderator
+                            })
                             await participantQuery.refetch()
                         }}
                     />
-                </div>
-            </div>
+                </Conditional>
 
-            <Conditional on={isMeOwner}>
-                <div className={"grid gap-2 text-left py-3"}>
-                    <div className={"flex justify-bottom gap-2"}>
-                        <span className="">{loc("Moderator")}</span>
-                        <Toggle
-                            title={"Set moderator"}
-                            checked={moderator}
-                            setChecked={async (v) => {
-                                await participantRepository.updateParticipant(tournamentId!!, {
-                                    id: participantId,
-                                    isModerator: !moderator
-                                })
-                                await participantQuery.refetch()
-                            }}
-                        />
-                    </div>
-                </div>
-            </Conditional>
-
-            <div className={"flex gap-2 justify-end"}>
-                <button className={"btn-danger flex gap-1 items-center"}
-                        title={loc("Delete")}
-                        onClick={async () => {
-                            let participantFriendlyName = userQuery.data?.name || participantQuery.data?.name || participantId;
-                            let tournamentFriendlyName = tournamentQuery.data?.name || tournamentId;
-                            if (!window.confirm(`Do you want to delete user ${participantFriendlyName} from tournament ${tournamentFriendlyName}?`)) {
-                                return;
-                            }
-                            if (tournamentQuery.data?.status !== "PLANNED") {
-                                if (!window.confirm("Tournament already started!\n" +
-                                    "Deleting the participant could break the pairing engine!\n" +
-                                    "Consider \"Missing\" instead.\n" +
-                                    "Are you sure?")) {
-                                    return
+                <span>{loc("Delete participant")}</span>
+                <div>
+                    <button className={"btn-danger flex gap-1 items-center"}
+                            title={loc("Delete")}
+                            onClick={async () => {
+                                let participantFriendlyName = userQuery.data?.name || participantQuery.data?.name || participantId;
+                                let tournamentFriendlyName = tournamentQuery.data?.name || tournamentId;
+                                if (!window.confirm(`Do you want to delete user ${participantFriendlyName} from tournament ${tournamentFriendlyName}?`)) {
+                                    return;
                                 }
-                            }
-                            await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
-                            navigate(`/tournament/${tournamentId}`)
-                        }}
-                >
-                    {loc("Delete")}
-                    <span><AiOutlineDelete/></span>
-                </button>
+                                if (tournamentQuery.data?.status !== "PLANNED") {
+                                    if (!window.confirm("Tournament already started!\n" +
+                                        "Deleting the participant could break the pairing engine!\n" +
+                                        "Consider \"Missing\" instead.\n" +
+                                        "Are you sure?")) {
+                                        return
+                                    }
+                                }
+                                await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
+                                navigate(`/tournament/${tournamentId}`)
+                            }}
+                    >
+                        <span><AiOutlineDelete/></span>
+                        {loc("Delete")}
+                    </button>
+                </div>
             </div>
         </Conditional>
 
