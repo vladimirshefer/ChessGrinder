@@ -45,8 +45,20 @@ public class UserService {
         calculateGlobalScore(users, globalScoreFromDate, globalScoreToDate);
 
         return users.stream().map(userMapper::toDto)
-                .sorted(Comparator.comparing(UserDto::getGlobalScore, Comparator.nullsLast(Comparator.reverseOrder()))
-                        .thenComparing(UserDto::getReputation, Comparator.nullsLast(Comparator.reverseOrder())))
+                .sorted(Comparator
+                        .comparing(
+                                UserDto::getEloPoints,
+                                Comparator.nullsLast(Comparator.reverseOrder())
+                        )
+                        .thenComparing(
+                                UserDto::getGlobalScore,
+                                Comparator.nullsLast(Comparator.reverseOrder())
+                        )
+                        .thenComparing(
+                                UserDto::getReputation,
+                                Comparator.nullsLast(Comparator.reverseOrder())
+                        )
+                )
                 .collect(Collectors.toList());
     }
 
