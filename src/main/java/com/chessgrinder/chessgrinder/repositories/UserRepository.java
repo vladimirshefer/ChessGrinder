@@ -42,4 +42,33 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
     @Query("UPDATE UserEntity u SET u.eloPoints = 0")
     void clearAllEloPoints();
 
+    @Query(value = """
+        WITH user_ids AS (
+            SELECT :comparableUserId AS comparable_user_id,
+                   :opponentUserId AS opponent_user_id
+        ),
+        user_participants AS (
+            SELECT p.id AS participant_id, p.user_id
+            FROM participants_table AS p
+            JOIN user_ids AS u ON p.user_id IN (u.comparable_user_id, u.opponent_user_id)
+        ),
+        matches AS (
+            SELECT
+                m.result,
+                p1.user_id AS user1_id,
+                p2.user_id AS user2_id
+            FROM matches_table AS m
+            JOIN user_participants AS p1 ON m.participant_id_1 = p1.participant_id
+            JOIN user_participants AS p2 ON m.participant_id_2 = p2.participant_id
+            WHERE p1.user_id <> p2.user_id
+        )
+        SELECT
+            COUNT(1) FILTER (WHERE (user1_id = u.comparable_user_id AND result = 'WHITE_WIN') OR
+                                   (user2_id = u.comparable_user_id AND result = 'BLACK_WIN')) AS user1_wins,
+            COUNT(1) FILTER (WHERE (user1_id = u.opponent_user_id AND result = 'WHITE_WIN') OR
+                                   (user2_id = u.opponent_user_id AND result = 'BLACK_WIN')) AS user2_wins,
+            COUNT(1) FILTER (WHERE result = 'DRAW') AS draws
+        FROM matches, user_ids AS u
+        """, nativeQuery = true)
+    List<Integer[]> getStatsAgainstUser(UUID comparableUserId, UUID opponentUserId);
 }
