@@ -47,4 +47,19 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
     @Query("UPDATE UserEntity u SET u.eloPoints = 0")
     void clearAllEloPoints();
 
+    @Query(value = """
+            SELECT
+                COUNT(CASE WHEN (m.participant1.user.id = :comparableUserId AND m.result = 'WHITE_WIN') OR
+                               (m.participant2.user.id = :comparableUserId AND m.result = 'BLACK_WIN') THEN 1 END) AS user1_wins,
+                COUNT(CASE WHEN (m.participant1.user.id = :opponentUserId AND m.result = 'WHITE_WIN') OR
+                               (m.participant2.user.id = :opponentUserId AND m.result = 'BLACK_WIN') THEN 1 END) AS user2_wins,
+                COUNT(CASE WHEN m.result = 'DRAW' THEN 1 END) AS draws
+            FROM MatchEntity m
+            WHERE m.participant1.user.id IN (:comparableUserId, :opponentUserId)
+              AND m.participant2.user.id IN (:comparableUserId, :opponentUserId)
+              AND m.round.isFinished = TRUE
+              AND m.round.tournament.status = 'FINISHED'
+              AND m.participant1.user.id <> m.participant2.user.id
+            """)
+    List<Integer[]> getStatsAgainstUser(UUID comparableUserId, UUID opponentUserId);
 }

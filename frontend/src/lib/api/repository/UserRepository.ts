@@ -1,5 +1,5 @@
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {BadgeDto, ListDto, UserBadgeDto, UserDto, UserReputationHistoryRecordDto} from "lib/api/dto/MainPageData";
+import {BadgeDto, ListDto, UserBadgeDto, UserDto, UserReputationHistoryRecordDto, StatsAgainstUserDTO} from "lib/api/dto/MainPageData";
 import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import authService from "lib/auth/AuthService";
@@ -25,6 +25,8 @@ export interface UserRepository {
     deleteUser(userId: string): Promise<void>
 
     checkPermission(userId: string, targetId: string, targetType: string, permission: string): Promise<boolean>
+
+    getUserStats(userId: string): Promise<StatsAgainstUserDTO | null>
 }
 
 class LocalStorageUserRepository implements UserRepository {
@@ -106,6 +108,11 @@ class LocalStorageUserRepository implements UserRepository {
     async checkPermission(userId: string, targetId: string, targetType: string, permission: string): Promise<boolean> {
         return true;
     }
+
+    async getUserStats(userId: string): Promise<StatsAgainstUserDTO | null> {
+        alert("Unsupported");
+        return null;
+    }
 }
 
 class RestApiUserRepository implements UserRepository {
@@ -149,6 +156,10 @@ class RestApiUserRepository implements UserRepository {
         return restApiClient.get(`/user/${userId}/checkPermission`, {
             targetId, targetType, permission
         });
+    }
+
+    getUserStats(userId: string): Promise<StatsAgainstUserDTO | null> {
+        return restApiClient.get(`/user/${userId}/stats-against-me`);
     }
 }
 

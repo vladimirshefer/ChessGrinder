@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.service;
 
+import com.chessgrinder.chessgrinder.dto.StatsAgainstUserDTO;
 import com.chessgrinder.chessgrinder.dto.UserDto;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
@@ -184,5 +185,17 @@ public class UserService {
         }
 
         oAuth2User.setUser(user);
+    }
+
+    public StatsAgainstUserDTO getStatsAgainstUser(UUID authUserId, UUID opponentUserId) {
+        final var statsAgainstOpponent = userRepository.getStatsAgainstUser(authUserId, opponentUserId);
+        //Getting row in result
+        final var statsRow = statsAgainstOpponent.get(0);
+        //Getting columns in selected row
+        return StatsAgainstUserDTO.builder()
+                .wins(statsRow[0])
+                .losses(statsRow[1])
+                .draws(statsRow[2])
+                .build();
     }
 }
