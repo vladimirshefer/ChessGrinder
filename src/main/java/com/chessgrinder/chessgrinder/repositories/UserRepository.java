@@ -60,6 +60,8 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
             FROM matches_table AS m
             JOIN user_participants AS p1 ON m.participant_id_1 = p1.participant_id
             JOIN user_participants AS p2 ON m.participant_id_2 = p2.participant_id
+            JOIN (SELECT id, tournament_id FROM rounds_table WHERE is_finished = TRUE) AS rt ON rt.id = m.round_id
+            JOIN (SELECT id FROM tournaments_table WHERE status = 'FINISHED') AS tt ON tt.id = rt.tournament_id
             WHERE p1.user_id <> p2.user_id
         )
         SELECT
