@@ -4,11 +4,22 @@ import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.security.principal.AuthorizedUserEntityProvider;
 import jakarta.annotation.Nullable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public final class SecurityUtil {
 
-    public static boolean hasRole(UserEntity user, String role) {
+    public static boolean hasRole(@Nullable UserEntity user, String role) {
+        if (user == null) {
+            return false;
+        }
+
         return user.getRoles().stream().anyMatch(it -> it.getName().equalsIgnoreCase(role));
+    }
+
+    @Nullable
+    public static UserEntity getCurrentUser() {
+        SecurityContextHolder.getContext().getAuthentication();
+        return tryGetUserEntity(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Nullable

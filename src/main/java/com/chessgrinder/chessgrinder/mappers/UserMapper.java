@@ -1,14 +1,18 @@
 package com.chessgrinder.chessgrinder.mappers;
 
-import java.util.*;
-import java.util.stream.*;
-
-import com.chessgrinder.chessgrinder.dto.*;
-import com.chessgrinder.chessgrinder.entities.*;
-import com.chessgrinder.chessgrinder.repositories.*;
+import com.chessgrinder.chessgrinder.dto.UserDto;
+import com.chessgrinder.chessgrinder.entities.BadgeEntity;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
+import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.repositories.BadgeRepository;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import com.chessgrinder.chessgrinder.util.HashUtil;
-import lombok.*;
-import org.springframework.stereotype.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -25,9 +29,11 @@ public class UserMapper {
             userBadges = Collections.emptyList();
         }
 
+        boolean isAdmin = SecurityUtil.hasRole(SecurityUtil.getCurrentUser(), RoleEntity.Roles.ADMIN);
+
         return UserDto.builder()
                 .id(user.getId().toString())
-                .username(user.getUsername())
+                .username(isAdmin ? user.getUsername() : null)
                 // email has is taken from username field
                 .emailHash(HashUtil.getMd5Hash(user.getUsername()))
                 .badges(badgeMapper.toDto(userBadges))
