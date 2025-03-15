@@ -26,7 +26,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -205,6 +204,20 @@ public class UserController {
                 .password(passwordEncoder.encode(password))
                 .build()
         );
+    }
+
+    @GetMapping("/{userId}/stats-against-me")
+    public StatsAgainstUserDTO getStats(
+            @PathVariable UUID userId,
+            @AuthenticatedUser UserEntity authenticatedUser
+    )
+    {
+        final var authUserId = authenticatedUser.getId();
+        if (userId.equals(authUserId)) {
+            throw new ResponseStatusException(403, "Can't compare with the same user", null);
+        }
+
+        return userService.getStatsAgainstUser(authUserId, userId);
     }
 
     @GetMapping("/{userId}/checkPermission")

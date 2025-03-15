@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-class MockTournamentRunner {
+public class MockTournamentRunner {
     private static final double NO_VALUE = -1000;
 
     private final PairingStrategy pairingStrategy;

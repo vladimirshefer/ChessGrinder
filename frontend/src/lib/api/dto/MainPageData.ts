@@ -57,3 +57,9 @@ export interface UserReputationHistoryRecordDto{
     amount: number
     comment: string
 }
+
+export interface StatsAgainstUserDTO {
+    wins: number
+    losses: number
+    draws: number
+}
