@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,26 +33,38 @@ class UserRepositoryTest {
 
     @Test
     void testStatsVsUser() {
-        UUID comparableUserId = UUID.randomUUID();
-        UUID opponentUserId = UUID.randomUUID();
+        UserEntity comparableUser = userRepository.save(createUser("comparable"));
+        UserEntity opponentUser = userRepository.save(createUser("opponent"));
 
-        UserEntity comparableUser = userRepository.save(createUser(comparableUserId, "comparable"));
-        UserEntity opponentUser = userRepository.save(createUser(opponentUserId, "opponent"));
-        TournamentEntity tournamentEntity = tournamentRepository.save(createTournament());
-        ParticipantEntity participant1 = participantRepository.save(createParticipant(comparableUser, tournamentEntity));
-        ParticipantEntity participant2 = participantRepository.save(createParticipant(opponentUser, tournamentEntity));
-        RoundEntity roundEntity = roundRepository.save(createRound(tournamentEntity));
-        matchRepository.save(createMatch(participant1, participant2, roundEntity, MatchResult.WHITE_WIN));
-        matchRepository.save(createMatch(participant1, participant2, roundEntity, MatchResult.DRAW));
-        matchRepository.save(createMatch(participant2, participant1, roundEntity, MatchResult.BLACK_WIN));
+        // First tournament setup
+        TournamentEntity tournamentEntity1 = tournamentRepository.save(createTournament());
+        ParticipantEntity participant1Tournament1 = participantRepository.save(createParticipant(comparableUser, tournamentEntity1));
+        ParticipantEntity participant2Tournament1 = participantRepository.save(createParticipant(opponentUser, tournamentEntity1));
+        RoundEntity roundEntity1Tournament1 = roundRepository.save(createRound(tournamentEntity1));
+        matchRepository.save(createMatch(participant1Tournament1, participant2Tournament1, roundEntity1Tournament1, MatchResult.WHITE_WIN));
+        RoundEntity roundEntity2Tournament1 = roundRepository.save(createRound(tournamentEntity1));
+        matchRepository.save(createMatch(participant1Tournament1, participant2Tournament1, roundEntity2Tournament1, MatchResult.DRAW));
+        RoundEntity roundEntity3Tournament1 = roundRepository.save(createRound(tournamentEntity1));
+        matchRepository.save(createMatch(participant1Tournament1, participant2Tournament1, roundEntity3Tournament1, MatchResult.BLACK_WIN));
+
+        // Second tournament setup
+        TournamentEntity tournamentEntity2 = tournamentRepository.save(createTournament());
+        ParticipantEntity participant1Tournament2 = participantRepository.save(createParticipant(comparableUser, tournamentEntity2));
+        ParticipantEntity participant2Tournament2 = participantRepository.save(createParticipant(opponentUser, tournamentEntity2));
+        RoundEntity roundEntity1Tournament2 = roundRepository.save(createRound(tournamentEntity2));
+        matchRepository.save(createMatch(participant1Tournament2, participant2Tournament2, roundEntity1Tournament2, MatchResult.WHITE_WIN));
+        RoundEntity roundEntity2Tournament2 = roundRepository.save(createRound(tournamentEntity2));
+        matchRepository.save(createMatch(participant2Tournament2, participant1Tournament2, roundEntity2Tournament2, MatchResult.BLACK_WIN));
+        RoundEntity roundEntity3Tournament2 = roundRepository.save(createRound(tournamentEntity2));
+        matchRepository.save(createMatch(participant1Tournament2, participant2Tournament2, roundEntity3Tournament2, MatchResult.DRAW));
 
         // When: Invoke the repository method
-        List<Integer[]> stats = userRepository.getStatsAgainstUser(comparableUserId, opponentUserId);
+        List<Integer[]> stats = userRepository.getStatsAgainstUser(comparableUser.getId(), opponentUser.getId());
 
         // Then: Verify the stats result
         assertThat(stats).isNotNull();
         assertThat(stats.size()).isGreaterThan(0);
-        assertThat(stats.get(0)).containsExactly(1, 1, 1); // 1 win for each user, 1 draw
+        assertThat(stats.get(0)).containsExactly(3, 1, 2);
     }
 
     private static MatchEntity createMatch(ParticipantEntity comparableUserParticipant, ParticipantEntity opponentUserParticipant, RoundEntity roundEntity, MatchResult matchResult) {
@@ -94,9 +105,8 @@ class UserRepositoryTest {
                 .build();
     }
 
-    private static UserEntity createUser(UUID comparableUserId, String username) {
+    private static UserEntity createUser(String username) {
         return UserEntity.builder()
-                .id(comparableUserId)
                 .name(username)
                 .build();
     }
