@@ -18,8 +18,8 @@ function MainPage() {
             values: users = [] as UserDto[],
         } = {} as ListDto<UserDto>
     } = useQuery({
-        queryKey: ["members"],
-        queryFn: () => userRepository.getUsers(),
+        queryKey: ["members10"],
+        queryFn: () => userRepository.getUsers(10),
     })
 
     let {

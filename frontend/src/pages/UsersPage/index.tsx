@@ -17,7 +17,7 @@ export default function UsersPage() {
                 if (!globalScoreFromDate && !globalScoreToDate) {
                     return await userRepository.getUsers();
                 }
-                return await userRepository.getUsers(globalScoreFromDate || undefined, globalScoreToDate || undefined);
+                return await userRepository.getUsers(0, globalScoreFromDate || undefined, globalScoreToDate || undefined);
             }
             catch (error: any) {
                 alert(loc(error.response.data.message));

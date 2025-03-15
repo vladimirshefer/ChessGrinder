@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,8 +41,17 @@ public class UserService {
     @Value("${chessgrinder.security.adminEmail:}")
     private String adminEmail = "";
 
-    public List<UserDto> getAllUsers(LocalDateTime globalScoreFromDate, LocalDateTime globalScoreToDate) {
-        List<UserEntity> users = userRepository.findAll();
+    public List<UserDto> getAllUsers(
+            Integer limit,
+            LocalDateTime globalScoreFromDate,
+            LocalDateTime globalScoreToDate
+    ) {
+        List<UserEntity> users;
+        if (limit != null && limit > 0) {
+            users = userRepository.findAllOrdered(Pageable.ofSize(limit).withPage(0)).getContent();
+        } else {
+            users = userRepository.findAllOrdered();
+        }
         calculateGlobalScore(users, globalScoreFromDate, globalScoreToDate);
 
         return users.stream().map(userMapper::toDto)

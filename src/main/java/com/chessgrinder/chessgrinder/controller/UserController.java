@@ -55,6 +55,9 @@ public class UserController {
     public ListDto<UserDto> getUsers(
             @Nullable
             @RequestParam(required = false)
+            Integer limit,
+            @Nullable
+            @RequestParam(required = false)
             @DateTimeFormat(pattern = DATE_FORMAT_STRING)
             LocalDate globalScoreFromDate,
             @Nullable
@@ -66,6 +69,7 @@ public class UserController {
             throw new ResponseStatusException(400, "End date can't be before start date", null);
         }
         final List<UserDto> allUsers = userService.getAllUsers(
+                limit,
                 DateUtil.atStartOfDay(globalScoreFromDate),
                 DateUtil.atStartOfDay(globalScoreToDate)
         );
