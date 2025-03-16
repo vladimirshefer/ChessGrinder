@@ -173,6 +173,13 @@ export default function UserProfilePage() {
         // enabled: activeTab === "history"
     })
 
+    let statsAgainstUser = useQuery({
+        queryKey: ["statsAgainstUser", username],
+        queryFn: async () => {
+            return userRepository.getUserStats(username!!);
+        },
+    });
+
     async function logout() {
         await loginPageRepository.signOut()
         await authenticatedUserReload()

@@ -64,4 +64,11 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "tournament")
     private List<RoundEntity> rounds;
+
+    public void addRound(RoundEntity round) {
+        if (rounds == null) {
+            rounds = new ArrayList<>();
+        }
+        rounds.add(round);
+    }
 }

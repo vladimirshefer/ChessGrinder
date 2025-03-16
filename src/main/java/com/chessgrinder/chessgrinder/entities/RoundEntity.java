@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.entities;
 
 import java.util.*;
 
+import com.chessgrinder.chessgrinder.enums.MatchResult;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
@@ -38,4 +39,11 @@ public class RoundEntity extends AbstractAuditingEntity {
 
     @Column(name = "is_finished")
     private boolean isFinished;
+
+    public void addMatch(MatchEntity match) {
+        if (matches == null) {
+            matches = new ArrayList<>();
+        }
+        matches.add(match);
+    }
 }
