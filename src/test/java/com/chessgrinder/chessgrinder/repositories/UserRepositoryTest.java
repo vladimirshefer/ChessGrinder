@@ -41,6 +41,7 @@ class UserRepositoryTest {
     UserEntity thirdWheelUser;
 
     List<TournamentEntity> allTournaments = new ArrayList<>();
+
     @BeforeEach
     void setUp() {
         comparableUser = userRepository.save(createUser("comparable"));

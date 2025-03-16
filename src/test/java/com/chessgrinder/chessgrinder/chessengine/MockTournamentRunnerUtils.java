@@ -22,10 +22,6 @@ public class MockTournamentRunnerUtils {
                 .build();
     }
 
-    public static ParticipantDto participant(String name) {
-        return participant(name, 0, 0);
-    }
-
     public static MatchDto createMatch(@Nullable ParticipantDto white, @Nullable ParticipantDto black, @Nullable MatchResult result) {
         return MatchDto.builder()
                 .white(white)
