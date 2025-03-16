@@ -29,7 +29,7 @@ public class TournamentService {
     private final List<TournamentListener> tournamentListeners;
     private final TournamentMapper tournamentMapper;
     private final RoundService roundService;
-    private static final int DEFAULT_ROUNDS_NUMBER = 6;
+    public static final int DEFAULT_ROUNDS_NUMBER = 6;
     private static final int MIN_ROUNDS_NUMBER = 0;
     private static final int MAX_ROUNDS_NUMBER = 99;
 
