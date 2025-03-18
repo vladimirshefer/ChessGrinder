@@ -160,7 +160,7 @@ public class TournamentController {
             Authentication authentication
     ) {
         if (!authentication.isAuthenticated()) {
-            throw new ResponseStatusException(401, "", null);
+            throw new ResponseStatusException(401, "Not Authenticated", null);
         }
 
         UserEntity user = userRepository.findByUsername(authentication.getName());
@@ -168,6 +168,10 @@ public class TournamentController {
 
         if (!tournament.getStatus().equals(TournamentStatus.PLANNED)) {
             throw new ResponseStatusException(400, "Tournament already started. Ask administrator for help.", null);
+        }
+
+        if (tournament.getRegistrationLimit() != null && tournament.getRegistrationLimit() <= participantRepository.countByTournament(tournamentId)) {
+            throw new ResponseStatusException(400, "Participant limit is full.", null);
         }
 
         ParticipantEntity participant = ParticipantEntity.builder()

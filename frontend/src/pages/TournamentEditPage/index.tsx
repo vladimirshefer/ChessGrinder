@@ -31,6 +31,7 @@ export default function TournamentEditPage() {
         tournament.locationName = data.locationName
         tournament.roundsNumber = parseInt(data.roundsNumber, 10);
         tournament.pairingStrategy = data.pairingStrategy as PairingStrategy;
+        tournament.registrationLimit = !!data.registrationLimit ? parseInt(data.registrationLimit, 10) : undefined;
         let startTime: string = data.startTime || "20:00";
         let startDate: string = data.startDate || "2023-10-11"
         tournament.date = dayjs(startDate + "T" + startTime, DEFAULT_DATETIME_FORMAT).format(DEFAULT_DATETIME_FORMAT)
@@ -59,6 +60,7 @@ export default function TournamentEditPage() {
     let tournamentStartDate = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("YYYY-MM-DD")
     let tournamentStartTime = dayjs(tournament.tournament.date, DEFAULT_DATETIME_FORMAT).format("HH:mm")
     const tournamentRoundsNumber: number = tournament.tournament.roundsNumber;
+    const tournamentRegistrationLimit: number | undefined = tournament.tournament.registrationLimit;
     const tournamentPairingSystem: PairingStrategy = tournament.tournament.pairingStrategy || "SWISS"; // Added - Default value
 
     return <>
@@ -84,6 +86,9 @@ export default function TournamentEditPage() {
             <input type={"number"} id={"roundsNumber"} placeholder={loc("Rounds number")}
                     {...register("roundsNumber")}
                     defaultValue={tournamentRoundsNumber}/>
+            <input type={"number"} id={"registrationLimit"} placeholder={loc("Registration limit")}
+                    {...register("registrationLimit")}
+                    defaultValue={tournamentRegistrationLimit}/>
 
             <label htmlFor={"pairingStrategy"}>{loc("Pairing Strategy")}</label>
                    <select id={"pairingStrategy"} {...register("pairingStrategy")} defaultValue={tournamentPairingSystem} className={"border-b"}>

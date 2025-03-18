@@ -31,7 +31,7 @@ public interface EntityPermissionEvaluator<T> {
     }
 
     default boolean hasPermission(@Nullable UUID userId, @Nullable T entity, @Nullable String permission){
-        Object id = getIdField(entity);
+        Object id = getId(entity);
         return hasPermission(userId, id != null ? String.valueOf(id) : null, permission);
     }
 
@@ -53,32 +53,42 @@ public interface EntityPermissionEvaluator<T> {
     }
 
     @Nullable
-    static <T> Object getIdField(@Nullable T entity) {
+    static <T> Field getIdField(@Nullable T entity) {
         if (entity == null) return null;
         Predicate<Annotation> predicate = (a -> a.annotationType().getSimpleName().equals("Id"));
-
-        try {
-            Field[] fields = entity.getClass().getDeclaredFields();
-            Field idField = null;
-            for (Field field : fields) {
-                Annotation[] annotations = field.getDeclaredAnnotations();
-                for (Annotation annotation : annotations) {
-                    if (predicate.test(annotation)) {
-                        idField = field;
-                        break;
-                    }
-                }
-                if (idField != null) {
+        Field[] fields = entity.getClass().getDeclaredFields();
+        Field idField = null;
+        for (Field field : fields) {
+            Annotation[] annotations = field.getDeclaredAnnotations();
+            for (Annotation annotation : annotations) {
+                if (predicate.test(annotation)) {
+                    idField = field;
                     break;
                 }
             }
-            if (idField == null) {
-                throw new UnsupportedOperationException("Entity does not have a field annotated with @Id " + entity.getClass().getName());
+            if (idField != null) {
+                break;
             }
-            idField.setAccessible(true);
-            return idField.get(entity);
-        } catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException("Access not allowed to read entity's @Id field value", e);
+        }
+        if (idField == null) {
+            throw new UnsupportedOperationException("Entity does not have a field annotated with @Id " + entity.getClass().getName());
+        }
+        idField.setAccessible(true);
+        return idField;
+    }
+
+    @Nullable
+    static <T> Object getId(@Nullable T entity) {
+        Field idField = getIdField(entity);
+        if (idField == null) {
+            return null;
+        } else {
+            try {
+                return idField.get(entity);
+            } catch (IllegalAccessException e) {
+                throw new UnsupportedOperationException("Access not allowed to read entity's @Id field value", e);
+            }
         }
     }
+
 }

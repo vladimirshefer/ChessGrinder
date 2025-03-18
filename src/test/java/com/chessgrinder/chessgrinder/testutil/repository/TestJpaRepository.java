@@ -1,9 +1,8 @@
 package com.chessgrinder.chessgrinder.testutil.repository;
 
-import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
-import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
+import com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator;
+import lombok.SneakyThrows;
 import org.assertj.core.util.Streams;
-import org.mockito.Mockito;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,15 +11,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.FluentQuery;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
-import static com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator.getIdField;
+import static com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator.getId;
 
 public class TestJpaRepository<T, ID> implements JpaRepository<T, ID>, DataHolder<T, ID> {
     private final Map<ID, T> data = new HashMap<>();
@@ -81,7 +77,7 @@ public class TestJpaRepository<T, ID> implements JpaRepository<T, ID>, DataHolde
     }
 
     private ID guessId(Object entity) {
-        return (ID) getIdField(entity);
+        return (ID) getId(entity);
     }
 
     @Override
@@ -114,9 +110,21 @@ public class TestJpaRepository<T, ID> implements JpaRepository<T, ID>, DataHolde
         throw new UnsupportedOperationException();
     }
 
+    @SneakyThrows
     @Override
     public <S extends T> S save(S entity) {
-        data.put(guessId(entity), entity);
+        Field idField = Objects.requireNonNull(EntityPermissionEvaluator.getIdField(entity), "Entity must have @Id field");
+        Object idVal = idField.get(entity);
+
+        if (idVal == null) { // should generate new id.
+            if (idField.getType().equals(UUID.class)) {
+                idVal = UUID.randomUUID();
+            }
+            idField.setAccessible(true);
+            idField.set(entity, idVal);
+        }
+
+        data.put((ID) idVal, entity);
         return entity;
     }
 
