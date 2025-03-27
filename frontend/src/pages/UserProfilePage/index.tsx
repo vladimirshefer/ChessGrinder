@@ -25,6 +25,7 @@ import {propagate} from "lib/util/misc";
 import {FaRegHeart} from "react-icons/fa";
 import dayjs from "dayjs";
 import {FaArrowTrendUp} from "react-icons/fa6";
+import {LuSwords} from "react-icons/lu";
 
 function AssignAchievementPane(
     {
@@ -172,12 +173,14 @@ export default function UserProfilePage() {
         // enabled: activeTab === "history"
     })
 
-    let statsAgainstUser = useQuery({
-        queryKey: ["statsAgainstUser", username],
+    let statsAgainstMeQuery = useQuery({
+        queryKey: ["stats-against-me", username, authenticatedUser?.id],
         queryFn: async () => {
+            if (!username) return null;
             return userRepository.getUserStats(username!!);
         },
-    });
+        enabled: !!username && username !== "me" && username !== authenticatedUser?.id,
+    })
 
     async function logout() {
         await loginPageRepository.signOut()
@@ -234,6 +237,18 @@ export default function UserProfilePage() {
                         <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
                             <FaArrowTrendUp/>
                             <span>{userProfile.eloPoints || "0"}</span>
+                        </div>
+                    )}
+                    {!!statsAgainstMeQuery.data && (
+                        <div className={"flex gap-2 items-center font-semibold"}>
+                            <LuSwords/>
+                            <Gravatar className={"rounded-full"} size={20} text={authenticatedUser?.emailHash || ""}
+                                      type={GravatarType.Robohash} inputType={"MD5"}></Gravatar>
+                            <span className={"text-green-900"} title={"Wins"}>{statsAgainstMeQuery.data.wins}</span>
+                            {"/"}
+                            <span className={"text-gray-700"}>{statsAgainstMeQuery.data.draws}</span>
+                            {"/"}
+                            <span className={"text-danger-900"}>{statsAgainstMeQuery.data.losses}</span>
                         </div>
                     )}
                 </div>
