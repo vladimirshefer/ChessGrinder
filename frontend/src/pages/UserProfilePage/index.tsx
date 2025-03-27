@@ -15,7 +15,6 @@ import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {AiOutlineTrophy} from "react-icons/ai";
-import {BiSolidChess} from "react-icons/bi";
 import {BsPencilFill} from "react-icons/bs";
 import {FiLogOut} from "react-icons/fi";
 import useSearchParam from "lib/react/hooks/useSearchParam";
@@ -212,14 +211,12 @@ export default function UserProfilePage() {
                     </span>
                 </ConditionalOnUserRole>
                 <div className={"flex font-semibold gap-4 items-center"}>
-                    <div className={"flex gap-1 items-center"} title={loc("Tournaments")}>
-                        <BiSolidChess/>
-                        <span>{historyQuery.data?.count || "?"}</span>
-                    </div>
-                    <div className={"flex gap-1 items-center"} title={loc("Points")}>
-                        <AiOutlineTrophy/>
-                        <span>{globalScore}</span>
-                    </div>
+                    {!!userProfile.globalScore && (
+                        <div className={"flex gap-1 items-center"} title={loc("Points")}>
+                            <AiOutlineTrophy/>
+                            <span>{globalScore}</span>
+                        </div>
+                    )}
                     {!!userProfile.reputation && (
                         <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
                             <FaRegHeart/>
