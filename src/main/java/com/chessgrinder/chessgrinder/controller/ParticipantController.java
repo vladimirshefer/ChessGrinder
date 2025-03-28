@@ -66,7 +66,7 @@ public class ParticipantController {
 
         ParticipantEntity participantEntity = participantRepository.findByTournamentIdAndUserId(tournamentId, authenticatedUser.getId());
         if (participantEntity == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not participating");
+            return null;
         }
         return participantMapper.toDto(participantEntity);
     }
