@@ -4,6 +4,7 @@ import {useLoc, useTransliterate} from "strings/loc";
 import {Fragment, useRef, useState} from "react";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {IoMdArrowDropdown} from "react-icons/io";
+import { useAuthenticatedUser } from "contexts/AuthenticatedUserContext";
 
 function MatchResultSelector(
     {
@@ -99,7 +100,9 @@ export function MatchRow(
         setResult: (selectedResult: MatchResult | null) => void
     }
 ) {
-    let transliterate = useTransliterate()
+    let transliterate = useTransliterate();
+    let [authenticatedUser] = useAuthenticatedUser();
+
     let resultW = match.resultSubmittedByWhite;
     let resultB = match.resultSubmittedByBlack;
     let result = match.result || resultW || resultB;
@@ -108,6 +111,9 @@ export function MatchRow(
     let whiteProbablyWin = result === "WHITE_WIN" && !isFinalResult && !isConflict;
     let blackProbablyWin = result === "BLACK_WIN" && !isFinalResult && !isConflict;
     let probablyDraw = result === "DRAW" && !isFinalResult && !isConflict;
+
+    const iAmWhite = match?.white?.userId === authenticatedUser?.id;
+    const iAmBlack = match?.black?.userId === authenticatedUser?.id;
 
     return <Fragment key={idx}>
         <div className={`grid text-xs p-3 
@@ -121,6 +127,7 @@ export function MatchRow(
                         ${probablyDraw ? "bg-stripes-45-primary-200" : ""} 
                         ${blackProbablyWin ? "bg-stripes-45-gray-200" : ""}
                         ${isConflict ? "bg-danger-400" : ""}
+                        ${iAmWhite ? "border border-r-4 border-r-gray-700" : ""}
                         `}
         >
             <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(match.white?.name || "-")}</span>
@@ -143,6 +150,7 @@ export function MatchRow(
                         ${blackProbablyWin ? "bg-stripes-45-primary-400" : ""} 
                         ${probablyDraw ? "bg-stripes-45-primary-200" : ""} 
                         ${isConflict ? "bg-danger-400" : ""}
+                        ${iAmBlack ? "border border-l-4 border-l-gray-700" : ""}
                         `}
         >
             <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(match.black?.name || "-")}</span>
