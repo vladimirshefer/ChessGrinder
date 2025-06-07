@@ -251,18 +251,33 @@ public class RoundService {
         }
 
         List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
-        participants.sort(COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST
-                .thenComparing(compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities))
-                .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
-                .thenComparing(ParticipantEntity::isMissing)
-                .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
-        );
-        final int size = participants.size();
-        for (int i = 0; i < size; ++i) {
-            final var participant = participants.get(i);
-            participant.setPlace(i + 1);
+
+        // Grouping participants by score
+        Map<BigDecimal, List<ParticipantEntity>> scoreGroups = new HashMap<>();
+        for (ParticipantEntity participant : participants) {
+            scoreGroups.computeIfAbsent(participant.getScore(), k -> new ArrayList<>()).add(participant);
         }
-        participantRepository.saveAll(participants);
+
+        List<ParticipantEntity> sortedParticipants = new ArrayList<>();
+
+        for (BigDecimal score : scoreGroups.keySet().stream().sorted(Comparator.reverseOrder()).toList()) {
+            List<ParticipantEntity> group = scoreGroups.get(score);
+            final var components = groupParticipantsByMutualEncounters(group, tournamentRoundEntities);
+            for (List<ParticipantEntity> component : components) {
+                component.sort(
+                        compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities)
+                                .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
+                                .thenComparing(ParticipantEntity::isMissing)
+                                .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
+                );
+                sortedParticipants.addAll(component);
+            }
+        }
+
+        for (int i = 0; i < sortedParticipants.size(); ++i) {
+            sortedParticipants.get(i).setPlace(i + 1);
+        }
+        participantRepository.saveAll(sortedParticipants);
     }
 
     private void reverseEloUpdate(MatchEntity match) {
@@ -273,34 +288,38 @@ public class RoundService {
     private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities) {
         return (participant1, participant2) -> {
             ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
-            if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
-                return -1;
-            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
-                return 1;
-            } else {
+            if (winnerBetweenTwoParticipants == null) {
                 return 0;
             }
+            if (winnerBetweenTwoParticipants.equals(participant1)) {
+                return -1;
+            } else if (winnerBetweenTwoParticipants.equals(participant2)) {
+                return 1;
+            }
+            return 0;
         };
     }
 
     private static ParticipantEntity findWinnerBetweenTwoParticipants(ParticipantEntity first, ParticipantEntity second, List<RoundEntity> roundsDto) {
         for (RoundEntity round : roundsDto) {
-            if (round.getMatches() != null) {
-                for (MatchEntity match : round.getMatches()) {
-                    if (match.getParticipant1() != null && match.getParticipant2() != null) {
-                        if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getParticipant1();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getParticipant2();
-                            }
-                        } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getParticipant1();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getParticipant2();
-                            }
-                        }
+            if (round.getMatches() == null) {
+                continue;
+            }
+            for (MatchEntity match : round.getMatches()) {
+                if (match.getParticipant1() == null || match.getParticipant2() == null) {
+                    continue;
+                }
+                if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
+                    if (match.getResult() == MatchResult.WHITE_WIN) {
+                        return match.getParticipant1();
+                    } else if (match.getResult() == MatchResult.BLACK_WIN) {
+                        return match.getParticipant2();
+                    }
+                } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
+                    if (match.getResult() == MatchResult.WHITE_WIN) {
+                        return match.getParticipant1();
+                    } else if (match.getResult() == MatchResult.BLACK_WIN) {
+                        return match.getParticipant2();
                     }
                 }
             }
@@ -346,5 +365,61 @@ public class RoundService {
         } catch (Exception e) {
             log.error("Could not update results", e);
         }
+    }
+
+    /**
+     * Finds connectivity components among players with the same score
+     * @param participants - group of participants with the same score
+     * @param rounds - rounds of updatable tournament
+     * @return List of connectivity components (list of participants)
+     * <p>
+     * A ---- B ------ C
+     *         \     /     Here ABCD and EF are single connectivity components with BCD cycle (SCC - group of
+     *    E       D        participants who have had at least one meeting with each other and all have the
+     *     \               same number of points)
+     *      F
+     */
+    private List<List<ParticipantEntity>> groupParticipantsByMutualEncounters(List<ParticipantEntity> participants, List<RoundEntity> rounds) {
+        Map<ParticipantEntity, Set<ParticipantEntity>> graph = new HashMap<>();
+        for (ParticipantEntity p : participants) {
+            graph.put(p, new HashSet<>());
+        }
+
+        for (RoundEntity round : rounds) {
+            for (MatchEntity match : round.getMatches()) {
+                ParticipantEntity p1 = match.getParticipant1();
+                ParticipantEntity p2 = match.getParticipant2();
+                if (p1 != null && p2 != null && graph.containsKey(p1) && graph.containsKey(p2)) {
+                    graph.get(p1).add(p2);
+                    graph.get(p2).add(p1);
+                }
+            }
+        }
+
+        Set<ParticipantEntity> visited = new HashSet<>();
+        List<List<ParticipantEntity>> components = new ArrayList<>();
+
+        for (ParticipantEntity participant : participants) {
+            if (visited.contains(participant)) {
+                continue;
+            }
+            List<ParticipantEntity> component = new ArrayList<>();
+            Queue<ParticipantEntity> queue = new LinkedList<>();
+            queue.add(participant);
+            visited.add(participant);
+            while (!queue.isEmpty()) {
+                ParticipantEntity current = queue.poll();
+                component.add(current);
+                for (ParticipantEntity neighbor : graph.get(current)) {
+                    if (!visited.contains(neighbor)) {
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+            }
+            components.add(component);
+        }
+
+        return components;
     }
 }
