@@ -123,12 +123,8 @@ function TournamentPage(
         await tournamentQuery.refetch();
     }
 
-    const [setFullResponse] = useState<any>(null);
-
     async function createStrawpoll() {
-
-        const response = await restApiClient.get(`/strawpoll/${id}`, { responseType: 'text' });
-        setFullResponse(response);
+        await restApiClient.get(`/strawpoll/${id}`, { responseType: 'text' });
     }
 
     async function copyToClipboard(textToCopy: string) {
