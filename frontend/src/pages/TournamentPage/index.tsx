@@ -1,5 +1,5 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import React, {useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import ResultsTable from "pages/TournamentPage/ResultsTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
@@ -16,6 +16,9 @@ import AddParticipantTournamentPageSection from "pages/TournamentPage/AddPartici
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
+import QrCode from "components/QrCode";
+import {IoMdShare} from "react-icons/io";
+import restApiClient from "../../lib/api/RestApiClient";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
 import {copyToClipboard} from "lib/util/clipboard";
@@ -118,14 +121,12 @@ function TournamentPage() {
         await tournamentQuery.refetch();
     }
 
-    async function copyNicknamesToClipboard() {
-        const allNicknames: string = participants
-            .filter(participant => !participant.isMissing || participant.score > 0)
-            .map(p => p.name)
-            .map(name => transliterate(name))
-            .join("\n");
-        await copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
-        alert(loc('Nicknames have been copied to clipboard'));
+    const [setFullResponse] = useState<any>(null);
+
+    async function createStrawpoll() {
+        console.log("createStrawpoll called");
+        const response = await restApiClient.get(`/strawpoll/${id}`, { responseType: 'text' });        console.log("Full response:", response);
+        setFullResponse(response);
     }
 
     if (tournamentQuery.isError) return <>Error!</>
@@ -311,10 +312,28 @@ function ControlButtons(props: {
     finishTournament: () => Promise<void>,
     deleteTournament: () => Promise<void>,
     copyNicknames: () => Promise<void>,
+    createStrawpoll: () => Promise<void>,
 }) {
     let loc = useLoc()
 
     return <div className={"flex p-2 items-top content-center"}>
+        <div className="flex flex-col gap-2 justify-start p-2 grow">
+            <div
+                className="cursor-pointer"
+                onClick={props.createStrawpoll}
+                style={{
+                    width: "50px",
+                    height: "30px",
+                    backgroundColor: "#d2b058",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "6px"
+                }}
+            >
+                <img src="/telegramPoll.png" alt="Send Poll" style={{height: "100%", width: "auto"}}/>
+            </div>
+        </div>
         <div className={"flex gap-1 justify-start p-2 grow"}>
             <button className={"btn-light h-full !px-4"}
                     onClick={props.copyNicknames}
