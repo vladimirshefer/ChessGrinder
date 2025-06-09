@@ -126,8 +126,8 @@ function TournamentPage(
     const [setFullResponse] = useState<any>(null);
 
     async function createStrawpoll() {
-        console.log("createStrawpoll called");
-        const response = await restApiClient.get(`/strawpoll/${id}`, { responseType: 'text' });        console.log("Full response:", response);
+
+        const response = await restApiClient.get(`/strawpoll/${id}`, { responseType: 'text' });
         setFullResponse(response);
     }
 
