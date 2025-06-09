@@ -1,5 +1,5 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import React, {useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import ResultsTable from "pages/TournamentPage/ResultsTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
@@ -18,6 +18,7 @@ import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "../MainPage/MyActiveTournamentPane";
 import QrCode from "components/QrCode";
 import {IoMdShare} from "react-icons/io";
+import restApiClient from "../../lib/api/RestApiClient";
 
 function TournamentPage(
     {
@@ -122,10 +123,8 @@ function TournamentPage(
         await tournamentQuery.refetch();
     }
 
-    async function copyNicknamesToClipboard() {
-        const allNicknames: string = participants.map(p => p.name).join("\n");
-        await copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
-        alert(loc('Nicknames have been copied to clipboard'));
+    async function createStrawpoll() {
+        await restApiClient.get(`/strawpoll/${id}`, { responseType: 'text' });
     }
 
     async function copyToClipboard(textToCopy: string) {
@@ -266,12 +265,22 @@ function TournamentPage(
         <Conditional on={isMain}>
             <Conditional on={isMeModerator}>
                 <div className={"flex p-2 items-top content-center"}>
-                    <div className={"flex gap-1 justify-start p-2 grow"}>
-                        <button className={"btn-light h-full !px-4"}
-                            onClick={copyNicknamesToClipboard}
+                    <div className="flex flex-col gap-2 justify-start p-2 grow">
+                        <div
+                            className="cursor-pointer"
+                            onClick={createStrawpoll}
+                            style={{
+                                width: "50px",
+                                height: "30px",
+                                backgroundColor: "#d2b058",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: "6px"
+                            }}
                         >
-                            <AiOutlineCopy/>
-                        </button>
+                            <img src="/telegramPoll.png" alt="Send Poll" style={{height: "100%", width: "auto"}}/>
+                        </div>
                     </div>
 
                     <div className={"flex gap-1 justify-end p-2"}>
