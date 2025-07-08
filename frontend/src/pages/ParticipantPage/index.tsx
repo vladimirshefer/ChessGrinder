@@ -63,7 +63,7 @@ export default function ParticipantPage() {
             return tournamentPageQuery.data!!.rounds
                 .flatMap(it => it.matches)
                 .filter(it => it.white?.id === participantId || it.black?.id === participantId)
-        }, [tournamentPageQuery]
+        }, [tournamentPageQuery, participantId]
     )
 
     if (!tournamentId) {
