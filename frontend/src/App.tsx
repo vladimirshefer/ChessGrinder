@@ -1,3 +1,4 @@
+import ChessClockPage from "pages/ChessClockPage";
 import React from 'react';
 import 'App.css';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
@@ -58,6 +59,8 @@ function App() {
                                     <Route path="/badge/:badgeId" element={<BadgePage/>}/>
                                     <Route path="/privacyPolicy" element={<PrivacyPolicyPage/>}/>
                                     <Route path='*' element={<NotFoundPage/>}/>
+                                    </Route>
+                                    <Route path="/clock" element={<ChessClockPage/>}/>
                                 </Routes>
                             </React.StrictMode>
                         </ApplicationRouter>
