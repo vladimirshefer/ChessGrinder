@@ -1,7 +1,7 @@
 import React from 'react';
 import 'App.css';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import MainPage from "pages/MainPage"
 import TournamentPage from "pages/TournamentPage"
 import Header from "components/Header";
@@ -36,9 +36,8 @@ function App() {
                     <QueryClientProvider client={queryClient}>
                         <ApplicationRouter>
                             <React.StrictMode>
-                                <Header/>
-                                <div className="grow">
                                 <Routes>
+                                <Route element={<DefaultLayout/>}>
                                     <Route path="/" element={<MainPage/>}/>
                                     <Route path="/tournament/:id" element={<TournamentPage/>}/>
                                     <Route path="/tournament/:id/round/:roundId" element={<TournamentPage />}/>
@@ -58,10 +57,8 @@ function App() {
                                     <Route path="/badges" element={<BadgesPage/>}/>
                                     <Route path="/badge/:badgeId" element={<BadgePage/>}/>
                                     <Route path="/privacyPolicy" element={<PrivacyPolicyPage/>}/>
-                                    <Route path='*' element={<NotFoundPage />}/>
+                                    <Route path='*' element={<NotFoundPage/>}/>
                                 </Routes>
-                                </div>
-                                <Footer/>
                             </React.StrictMode>
                         </ApplicationRouter>
                     </QueryClientProvider>
@@ -70,6 +67,16 @@ function App() {
             </ConfigurationContextProvider>
         </LanguageContextProvider>
     );
+}
+
+function DefaultLayout() {
+    return <>
+                <Header/>
+                <div className="grow">
+                    <Outlet/>
+                </div>
+                <Footer/>
+    </>;
 }
 
 export default App;
