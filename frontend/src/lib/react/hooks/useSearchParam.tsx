@@ -5,13 +5,14 @@ export default function useSearchParam(name: string, defaultValue: string | null
     return [
         searchParams.get(name) || defaultValue,
         (value: string) => {
-            let newSearchParams: any = {...searchParams};
-            if (!value) {
-                delete newSearchParams[name];
-            } else {
-                newSearchParams[name] = value;
-            }
-            setSearchParams(newSearchParams, {replace: true})
+            setSearchParams((searchParams) => {
+                if (!value) {
+                    searchParams.delete(name)
+                } else {
+                    searchParams.set(name, value);
+                }
+                return searchParams;
+            });
         }
     ]
 }
