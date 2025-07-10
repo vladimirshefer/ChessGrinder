@@ -88,9 +88,11 @@ const ClockComponent = (
     return (
         <div className="flex flex-col h-screen">
             <button
-                className={`text-6xl font-bold flex items-center justify-center transition-all duration-300 rotate-180 
-                    ${!isFirstActive && !isPaused ? `bg-primary-400 text-white h-2/3` : isPaused ? 'bg-white text-primary-600 h-1/2' : 'bg-white text-primary-600 h-1/3'}
-                    ${timeLeft2 === 0 ? 'bg-red-500' : ''}`}
+                className={`
+                    text-6xl font-bold flex items-center justify-center transition-all duration-300 rotate-180
+                    ${timeLeft2 === 0 ? 'bg-red-500' : !isFirstActive && !isPaused ? 'bg-primary-400 text-white' : 'bg-white text-primary-600'} 
+                    ${!isFirstActive && !isPaused ? 'h-2/3' : isPaused ? 'h-1/2' : 'h-1/3'}
+                `}
                 onClick={() => handleClick(false)}
             >
                 {formatTime(timeLeft2)}
@@ -119,8 +121,8 @@ const ClockComponent = (
             <button
                 className={`
                     text-6xl font-bold flex items-center justify-center transition-all duration-300
-                    ${isFirstActive && !isPaused ? 'bg-primary-400 text-white h-2/3' : isPaused ? 'bg-white text-primary-600 h-1/2' : 'bg-white text-primary-600 h-1/3'}
-                    ${timeLeft1 === 0 ? 'bg-red-500 text-white' : ''}
+                    ${timeLeft1 === 0 ? 'bg-red-500' : isFirstActive && !isPaused ? 'bg-primary-400 text-white' : 'bg-white text-primary-600'} 
+                    ${isFirstActive && !isPaused ? 'h-2/3' : isPaused ? 'h-1/2' : 'h-1/3'}
                 `}
                 onClick={() => handleClick(true)}
             >
