@@ -1,12 +1,11 @@
 name: Deploy to Development
 
 on:
-  # Trigger on successful Docker image build/push
   workflow_run:
-    workflows: ["Build and Push Docker Image to Docker Hub"]
+    workflows: ["Build and Push Dev Docker Image"]
     types:
       - completed
-    branches: [main]
+    branches: [master]
 
   # Optional: Allow manual triggering
   workflow_dispatch:
@@ -25,6 +24,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /root/chessgrinder/dev-docker
-            docker pull vshefer/chessgrinder
+            docker pull vshefer/chessgrinder:dev
             docker compose down
             docker compose up -d

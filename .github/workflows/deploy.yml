@@ -1,0 +1,22 @@
+name: Deploy to Production
+
+on:
+  # Only manual triggering
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/chessgrinder/prod-docker
+            docker pull vshefer/chessgrinder
+            docker compose down
+            docker compose up -d
