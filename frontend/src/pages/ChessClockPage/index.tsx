@@ -31,8 +31,8 @@ function ChessClockPage() {
 
     useEffect(() => {
         if (
-            (lastTime1 !== undefined && lastTime1 !== (explicitTime || DEFAULT_TIME_LIMIT)) ||
-            (lastTime2 !== undefined && lastTime2 !== (explicitTime || DEFAULT_TIME_LIMIT))
+            (!!lastTime1 && lastTime1 !== (explicitTime || DEFAULT_TIME_LIMIT)) ||
+            (!!lastTime2 && lastTime2 !== (explicitTime || DEFAULT_TIME_LIMIT))
         ) {
             if (!window.confirm("You have unfinished game. OK - Resume, Cancel - Reset game?")) {
                 resetTime();
