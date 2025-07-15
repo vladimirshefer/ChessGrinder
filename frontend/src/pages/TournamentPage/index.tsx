@@ -123,7 +123,10 @@ function TournamentPage(
     }
 
     async function copyNicknamesToClipboard() {
-        const allNicknames: string = participants.map(p => p.name).join("\n");
+        const allNicknames: string = participants
+            .filter(participant => !participant.isMissing || participant.score > 0)
+            .map(p => p.name)
+            .join("\n");
         await copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
         alert(loc('Nicknames have been copied to clipboard'));
     }
