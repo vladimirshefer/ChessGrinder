@@ -25,4 +25,4 @@ jobs:
         with:
           context: ./
           push: true
-          tags: vshefer/chessgrinder
+          tags: vshefer/chessgrinder:dev
