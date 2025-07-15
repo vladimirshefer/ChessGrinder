@@ -1,0 +1,30 @@
+name: Deploy to Development
+
+on:
+  # Trigger on successful Docker image build/push
+  workflow_run:
+    workflows: ["Build and Push Docker Image to Docker Hub"]
+    types:
+      - completed
+    branches: [main]
+
+  # Optional: Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/chessgrinder/dev-docker
+            docker pull vshefer/chessgrinder
+            docker compose down
+            docker compose up -d
