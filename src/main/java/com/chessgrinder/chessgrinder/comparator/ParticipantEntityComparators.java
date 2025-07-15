@@ -10,12 +10,6 @@ import static java.util.Comparator.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParticipantEntityComparators {
-    public static final Comparator<ParticipantEntity> COMPARE_PARTICIPANT_ENTITY_BY_PLACE_NULLSLAST = nullsLast( // If participant is null then low precedence
-            Comparator.comparing(
-                    ParticipantEntity::getPlace,
-                    nullsLast(naturalOrder()) // if the score is null (should not happen) then participant is low precedence
-            )
-    );
 
     public static final Comparator<ParticipantEntity> COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST = nullsLast( // If participant is null then low precedence
             Comparator.comparing(
