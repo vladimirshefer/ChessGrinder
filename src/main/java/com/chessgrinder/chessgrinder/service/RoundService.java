@@ -252,32 +252,63 @@ public class RoundService {
 
         List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
 
+        participants.sort(COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST
+                .thenComparing(compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities))
+                .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
+                .thenComparing(ParticipantEntity::isMissing)
+                .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
+        );
+
         // Grouping participants by score
         Map<BigDecimal, List<ParticipantEntity>> scoreGroups = new HashMap<>();
         for (ParticipantEntity participant : participants) {
             scoreGroups.computeIfAbsent(participant.getScore(), k -> new ArrayList<>()).add(participant);
         }
+        //А что если оставить оригинальную сортировку (сверху), но добавить свою поверх нее? См.
+        // комментарии в телеге
+        //И если размер компоненты больше 1, тогда надо сортировать subList!
 
-        List<ParticipantEntity> sortedParticipants = new ArrayList<>();
-
+        //Между этими двумя линиями - мой код
+        //-----------------------------------------
         for (BigDecimal score : scoreGroups.keySet().stream().sorted(Comparator.reverseOrder()).toList()) {
             List<ParticipantEntity> group = scoreGroups.get(score);
-            final var components = groupParticipantsByMutualEncounters(group, tournamentRoundEntities);
+            GraphComponents result = findWinningComponentsAndGraph(group, tournamentRoundEntities);
+            Map<ParticipantEntity, Set<ParticipantEntity>> graph = result.graph;
+            List<List<ParticipantEntity>> components = result.components;
+
             for (List<ParticipantEntity> component : components) {
-                component.sort(
-                        compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities)
-                                .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
-                                .thenComparing(ParticipantEntity::isMissing)
-                                .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
-                );
-                sortedParticipants.addAll(component);
+                if (component.size() <= 1 || !hasWinningCycle(component, graph)) {
+                    continue; // либо одиночная вершина, либо нет цикла побед — не пересортировываем
+                }
+
+                // Найти индексную подгруппу в списке participants и отсортировать subList
+                List<UUID> ids = component.stream().map(ParticipantEntity::getId).toList();
+                int fromIndex = -1;
+                int toIndex = -1;
+                for (int i = 0; i < participants.size(); ++i) {
+                    if (ids.contains(participants.get(i).getId())) {
+                        if (fromIndex == -1) {
+                            fromIndex = i;
+                        }
+                        toIndex = i;
+                    }
+                }
+                //Найден компонент связности, который надо отсортировать по Бухгольцу
+                if (fromIndex != -1 && toIndex != -1 && fromIndex <= toIndex) {
+                    participants.subList(fromIndex, toIndex + 1).sort(
+                            COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST
+                                    .thenComparing(ParticipantEntity::isMissing)
+                                    .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
+                    );
+                }
             }
         }
+        // -------------------------------------------------
 
-        for (int i = 0; i < sortedParticipants.size(); ++i) {
-            sortedParticipants.get(i).setPlace(i + 1);
+        for (int i = 0; i < participants.size(); ++i) {
+            participants.get(i).setPlace(i + 1);
         }
-        participantRepository.saveAll(sortedParticipants);
+        participantRepository.saveAll(participants);
     }
 
     private void reverseEloUpdate(MatchEntity match) {
@@ -293,7 +324,8 @@ public class RoundService {
             }
             if (winnerBetweenTwoParticipants.equals(participant1)) {
                 return -1;
-            } else if (winnerBetweenTwoParticipants.equals(participant2)) {
+            }
+            if (winnerBetweenTwoParticipants.equals(participant2)) {
                 return 1;
             }
             return 0;
@@ -379,30 +411,35 @@ public class RoundService {
      *     \               same number of points)
      *      F
      */
-    private List<List<ParticipantEntity>> groupParticipantsByMutualEncounters(List<ParticipantEntity> participants, List<RoundEntity> rounds) {
+    private GraphComponents findWinningComponentsAndGraph(List<ParticipantEntity> participants, List<RoundEntity> rounds) {
         Map<ParticipantEntity, Set<ParticipantEntity>> graph = new HashMap<>();
         for (ParticipantEntity p : participants) {
             graph.put(p, new HashSet<>());
         }
 
+        // Строим ориентированный граф побед (A -> B, если A победил B)
         for (RoundEntity round : rounds) {
             for (MatchEntity match : round.getMatches()) {
                 ParticipantEntity p1 = match.getParticipant1();
                 ParticipantEntity p2 = match.getParticipant2();
-                if (p1 != null && p2 != null && graph.containsKey(p1) && graph.containsKey(p2)) {
+                if (p1 == null || p2 == null || !graph.containsKey(p1) || !graph.containsKey(p2)) {
+                    continue;
+                }
+
+                if (match.getResult() == MatchResult.WHITE_WIN) {
                     graph.get(p1).add(p2);
+                } else if (match.getResult() == MatchResult.BLACK_WIN) {
                     graph.get(p2).add(p1);
                 }
             }
         }
 
+        // Поиск компонент связности (по достижимости)
         Set<ParticipantEntity> visited = new HashSet<>();
         List<List<ParticipantEntity>> components = new ArrayList<>();
 
         for (ParticipantEntity participant : participants) {
-            if (visited.contains(participant)) {
-                continue;
-            }
+            if (visited.contains(participant)) continue;
             List<ParticipantEntity> component = new ArrayList<>();
             Queue<ParticipantEntity> queue = new LinkedList<>();
             queue.add(participant);
@@ -420,6 +457,41 @@ public class RoundService {
             components.add(component);
         }
 
-        return components;
+        GraphComponents result = new GraphComponents();
+        result.graph = graph;
+        result.components = components;
+        return result;
+    }
+
+    private boolean hasWinningCycle(List<ParticipantEntity> component,
+                                    Map<ParticipantEntity, Set<ParticipantEntity>> graph) {
+        Set<ParticipantEntity> visited = new HashSet<>();
+        Set<ParticipantEntity> stack = new HashSet<>();
+        for (ParticipantEntity p : component) {
+            if (dfsCycleDetect(p, graph, visited, stack)) return true;
+        }
+        return false;
+    }
+
+    private boolean dfsCycleDetect(ParticipantEntity current,
+                                   Map<ParticipantEntity, Set<ParticipantEntity>> graph,
+                                   Set<ParticipantEntity> visited,
+                                   Set<ParticipantEntity> stack) {
+        if (stack.contains(current)) return true;
+        if (visited.contains(current)) return false;
+
+        visited.add(current);
+        stack.add(current);
+        for (ParticipantEntity neighbor : graph.get(current)) {
+            if (dfsCycleDetect(neighbor, graph, visited, stack)) return true;
+        }
+        stack.remove(current);
+        return false;
+    }
+
+    // Вспомогательный класс для возврата графа и компонент
+    private static class GraphComponents {
+        Map<ParticipantEntity, Set<ParticipantEntity>> graph;
+        List<List<ParticipantEntity>> components;
     }
 }
