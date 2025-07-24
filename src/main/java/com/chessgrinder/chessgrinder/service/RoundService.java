@@ -258,18 +258,14 @@ public class RoundService {
                 .thenComparing(ParticipantEntity::isMissing)
                 .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
         );
+        final int size = participants.size();
 
         // Grouping participants by score
         Map<BigDecimal, List<ParticipantEntity>> scoreGroups = new HashMap<>();
         for (ParticipantEntity participant : participants) {
             scoreGroups.computeIfAbsent(participant.getScore(), k -> new ArrayList<>()).add(participant);
         }
-        //А что если оставить оригинальную сортировку (сверху), но добавить свою поверх нее? См.
-        // комментарии в телеге
-        //И если размер компоненты больше 1, тогда надо сортировать subList!
 
-        //Между этими двумя линиями - мой код
-        //-----------------------------------------
         for (BigDecimal score : scoreGroups.keySet().stream().sorted(Comparator.reverseOrder()).toList()) {
             List<ParticipantEntity> group = scoreGroups.get(score);
             GraphComponents result = findWinningComponentsAndGraph(group, tournamentRoundEntities);
@@ -278,14 +274,14 @@ public class RoundService {
 
             for (List<ParticipantEntity> component : components) {
                 if (component.size() <= 1 || !hasWinningCycle(component, graph)) {
-                    continue; // либо одиночная вершина, либо нет цикла побед — не пересортировываем
+                    continue; // either a single vertex or no cycle of wins - do not re-sort
                 }
 
-                // Найти индексную подгруппу в списке participants и отсортировать subList
+                // Find index subgroup in participants list and sort subList
                 List<UUID> ids = component.stream().map(ParticipantEntity::getId).toList();
                 int fromIndex = -1;
                 int toIndex = -1;
-                for (int i = 0; i < participants.size(); ++i) {
+                for (int i = 0; i < size; ++i) {
                     if (ids.contains(participants.get(i).getId())) {
                         if (fromIndex == -1) {
                             fromIndex = i;
@@ -293,8 +289,8 @@ public class RoundService {
                         toIndex = i;
                     }
                 }
-                //Найден компонент связности, который надо отсортировать по Бухгольцу
-                if (fromIndex != -1 && toIndex != -1 && fromIndex <= toIndex) {
+                //A connected component has been found that needs to be sorted by Buchholz
+                if (fromIndex != -1 && fromIndex <= toIndex) {
                     participants.subList(fromIndex, toIndex + 1).sort(
                             COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST
                                     .thenComparing(ParticipantEntity::isMissing)
@@ -303,10 +299,11 @@ public class RoundService {
                 }
             }
         }
-        // -------------------------------------------------
 
-        for (int i = 0; i < participants.size(); ++i) {
-            participants.get(i).setPlace(i + 1);
+
+        for (int i = 0; i < size; ++i) {
+            final var participant = participants.get(i);
+            participant.setPlace(i + 1);
         }
         participantRepository.saveAll(participants);
     }
@@ -344,13 +341,15 @@ public class RoundService {
                 if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
                     if (match.getResult() == MatchResult.WHITE_WIN) {
                         return match.getParticipant1();
-                    } else if (match.getResult() == MatchResult.BLACK_WIN) {
+                    }
+                    if (match.getResult() == MatchResult.BLACK_WIN) {
                         return match.getParticipant2();
                     }
                 } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
                     if (match.getResult() == MatchResult.WHITE_WIN) {
                         return match.getParticipant1();
-                    } else if (match.getResult() == MatchResult.BLACK_WIN) {
+                    }
+                    if (match.getResult() == MatchResult.BLACK_WIN) {
                         return match.getParticipant2();
                     }
                 }
@@ -417,7 +416,7 @@ public class RoundService {
             graph.put(p, new HashSet<>());
         }
 
-        // Строим ориентированный граф побед (A -> B, если A победил B)
+        // Build a directed graph of wins (A -> B if A beats B)
         for (RoundEntity round : rounds) {
             for (MatchEntity match : round.getMatches()) {
                 ParticipantEntity p1 = match.getParticipant1();
@@ -434,7 +433,7 @@ public class RoundService {
             }
         }
 
-        // Поиск компонент связности (по достижимости)
+        // Search for connectivity components (by reachability)
         Set<ParticipantEntity> visited = new HashSet<>();
         List<List<ParticipantEntity>> components = new ArrayList<>();
 
@@ -489,7 +488,7 @@ public class RoundService {
         return false;
     }
 
-    // Вспомогательный класс для возврата графа и компонент
+    // Helper class for returning graph and components
     private static class GraphComponents {
         Map<ParticipantEntity, Set<ParticipantEntity>> graph;
         List<List<ParticipantEntity>> components;
