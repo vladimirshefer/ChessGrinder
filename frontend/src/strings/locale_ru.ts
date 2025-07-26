@@ -75,6 +75,7 @@ let locale_ru: { [key: string]: string } = {
     "Conflict": "Конфликт",
     "You won": "Вы победили",
     "You lost": "Вы проиграли",
+    "Clock": "Часы",
 }
 
 export default locale_ru
