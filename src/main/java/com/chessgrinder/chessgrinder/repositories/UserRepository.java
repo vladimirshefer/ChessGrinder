@@ -23,7 +23,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
 
     UserEntity findByUsername(String userName);
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserEntity u SET u.reputation = u.reputation + :amount WHERE u.id = :userId")
     void addReputation(UUID userId, Integer amount);
 
@@ -43,7 +43,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
             LocalDateTime globalScoreToDate
     );
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserEntity u SET u.eloPoints = 0")
     void clearAllEloPoints();
 
