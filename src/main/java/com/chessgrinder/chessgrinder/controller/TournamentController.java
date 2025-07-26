@@ -17,6 +17,8 @@ import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver;
+import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.service.TournamentService;
 import com.chessgrinder.chessgrinder.trf.TrfUtil;
 import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersXxzTrfLine;
@@ -152,6 +154,8 @@ public class TournamentController {
 
     @PostMapping("{tournamentId}/action/participate")
     public Object participate(
+            @AuthenticatedUser
+            UserEntity authenticatedUser,
             @PathVariable
             UUID tournamentId,
             @RequestParam(required = false)
@@ -163,7 +167,6 @@ public class TournamentController {
             throw new ResponseStatusException(401, "Not Authenticated", null);
         }
 
-        UserEntity user = userRepository.findByUsername(authentication.getName());
         TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
 
         if (!tournament.getStatus().equals(TournamentStatus.PLANNED)) {
@@ -176,7 +179,7 @@ public class TournamentController {
 
         ParticipantEntity participant = ParticipantEntity.builder()
                 .tournament(tournament)
-                .user(user)
+                .user(authenticatedUser)
                 .nickname(nickname)
                 .score(BigDecimal.ZERO)
                 .buchholz(BigDecimal.ZERO)
