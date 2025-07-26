@@ -97,7 +97,7 @@ const ClockComponent = (
         <div className="flex flex-col h-screen">
             <button
                 className={`
-                    text-6xl font-bold flex items-center justify-center transition-all duration-300 rotate-180
+                    text-9xl font-bold flex items-center justify-center transition-all duration-300 rotate-180
                     ${timeLeft2 === 0 ? 'bg-red-500' : !isFirstActive && !isPaused ? 'bg-primary-400 text-white' : 'bg-white text-primary-600'} 
                     ${!isFirstActive && !isPaused ? 'h-2/3' : isPaused ? 'h-1/2' : 'h-1/3'}
                 `}
@@ -129,7 +129,7 @@ const ClockComponent = (
             </button>
             <button
                 className={`
-                    text-6xl font-bold flex items-center justify-center transition-all duration-300
+                    text-9xl font-bold flex items-center justify-center transition-all duration-300
                     ${timeLeft1 === 0 ? 'bg-red-500' : isFirstActive && !isPaused ? 'bg-primary-400 text-white' : 'bg-white text-primary-600'} 
                     ${isFirstActive && !isPaused ? 'h-2/3' : isPaused ? 'h-1/2' : 'h-1/3'}
                 `}
