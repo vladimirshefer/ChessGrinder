@@ -9,6 +9,7 @@ import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -130,6 +131,26 @@ public class TournamentService {
         }
 
 
+    }
+
+    /**
+     * This method will find all tournaments that are running for more than a day and close them
+     */
+    @Scheduled(cron = "0 0 * * * ?")
+    public void cleanup() {
+        List<TournamentEntity> tournaments = tournamentRepository.findAllByStatus(TournamentStatus.ACTIVE);
+        for (TournamentEntity tournament : tournaments) {
+            if (tournament.getStatus().equals(TournamentStatus.ACTIVE)) {
+                LocalDateTime date = tournament.getDate();
+                if (date.isBefore(LocalDateTime.now().minusDays(1))) {
+                    try {
+                        finishTournament(tournament.getId());
+                    } catch (Exception e) {
+                        log.error("Could not finish tournament with ID {} during cleanup", tournament.getId(), e);
+                    }
+                }
+            }
+        }
     }
 
     public void deleteTournament(UUID tournamentId) {
