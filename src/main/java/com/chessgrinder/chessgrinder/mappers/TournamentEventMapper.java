@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import lombok.*;
 import org.springframework.stereotype.*;
 
@@ -13,6 +14,7 @@ public class TournamentEventMapper {
 
     private final TournamentMapper tournamentMapper;
     private final ParticipantMapper participantMapper;
+    private final ParticipantRepository participantRepository;
 
     public TournamentEventDto toDto(TournamentEventEntity eventEntity) {
         return TournamentEventDto.builder()
@@ -25,7 +27,7 @@ public class TournamentEventMapper {
                 .roundsNumber(eventEntity.getRoundsNumber())
                 .registrationLimit(eventEntity.getRegistrationLimit())
                 .tournaments(tournamentMapper.toDto(eventEntity.getTournaments()))
-                .participants(participantMapper.toDto(eventEntity.getParticipants()))
+                .participants(participantMapper.toDto(participantRepository.findByEventId(eventEntity.getId())))
                 .build();
     }
 

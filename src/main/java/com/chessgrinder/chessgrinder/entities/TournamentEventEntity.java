@@ -76,11 +76,4 @@ public class TournamentEventEntity extends AbstractAuditingEntity {
     @OneToMany(mappedBy = "event", cascade = jakarta.persistence.CascadeType.ALL)
     private List<TournamentEntity> tournaments;
 
-    /**
-     * The participants registered for this event.
-     * They will be distributed across tournaments when the event begins.
-     */
-    @ToString.Exclude
-    @OneToMany(mappedBy = "event", cascade = jakarta.persistence.CascadeType.ALL)
-    private List<ParticipantEntity> participants;
 }

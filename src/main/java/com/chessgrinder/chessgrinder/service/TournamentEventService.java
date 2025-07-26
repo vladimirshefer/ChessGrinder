@@ -118,38 +118,25 @@ public class TournamentEventService {
                 .roundsNumber(roundsNumber)
                 .registrationLimit(registrationLimit)
                 .tournaments(new ArrayList<>())
-                .participants(new ArrayList<>())
                 .build();
 
         return tournamentEventRepository.save(event);
     }
 
-    /**
-     * Register a participant for a tournament event.
-     *
-     * @param eventId The ID of the event
-     * @param userId The ID of the user
-     * @param nickname The nickname of the participant
-     * @param initialEloPoints The initial ELO points of the participant
-     * @return The created participant
-     */
     @Transactional
     public ParticipantEntity registerParticipant(
             UUID eventId,
-            UserEntity userId,
+            UserEntity user,
             String nickname,
             int initialEloPoints
     ) {
         TournamentEventEntity event = tournamentEventRepository.findById(eventId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
 
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
         // Check if the participant is already registered for this event
         List<ParticipantEntity> existingParticipants = participantRepository.findByEventId(eventId);
         for (ParticipantEntity existingParticipant : existingParticipants) {
-            if (existingParticipant.getUser().getId().equals(userId)) {
+            if (existingParticipant.getUser().getId().equals(user.getId())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already registered for this event");
             }
         }

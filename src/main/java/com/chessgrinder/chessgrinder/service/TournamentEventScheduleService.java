@@ -173,7 +173,6 @@ public class TournamentEventScheduleService {
                 .registrationLimit(registrationLimit)
                 .schedule(schedule)
                 .tournaments(new ArrayList<>())
-                .participants(new ArrayList<>())
                 .build();
 
         event = eventRepository.save(event);
