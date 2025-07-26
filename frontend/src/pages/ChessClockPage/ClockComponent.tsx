@@ -20,7 +20,7 @@ const ClockComponent = (
         resetTime: () => void,
     }
 ) => {
-    const [timeLeft1, setTimeLeft1] = useState(time1); // 10 minutes in seconds
+    const [timeLeft1, setTimeLeft1] = useState(time1);
     const [timeLeft2, setTimeLeft2] = useState(time2);
     const [isFirstActive, setIsFirstActive] = useState(true);
     const [isPaused, setIsPaused] = useState(true);
@@ -121,7 +121,6 @@ const ClockComponent = (
                         <LuSettings onClick={openSettings}/>
                         <LuTimerReset onClick={() => {
                             if (window.confirm("Reset the clock?")) {
-                                console.log("Resetting clock");
                                 resetClock();
                             }
                         }}/>
