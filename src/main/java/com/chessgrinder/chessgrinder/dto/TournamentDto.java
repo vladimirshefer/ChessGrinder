@@ -30,4 +30,6 @@ public class TournamentDto {
     private TournamentStatus status;
 
     private Integer roundsNumber;
+
+    private Integer registrationLimit;
 }
