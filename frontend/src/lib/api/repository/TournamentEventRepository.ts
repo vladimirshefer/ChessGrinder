@@ -90,11 +90,11 @@ class LocalStorageTournamentEventRepository implements TournamentEventRepository
         if (event.participants?.find(p => p.userId === username)) {
             throw new Error("You are already registered for this event");
         }
-        
+
         if (!event.participants) {
             event.participants = [];
         }
-        
+
         event.participants.push({
             id: username,
             userId: username,
@@ -104,7 +104,7 @@ class LocalStorageTournamentEventRepository implements TournamentEventRepository
             isMissing: false,
             place: -1
         });
-        
+
         localStorageUtil.setObject(`cgd.event.${eventId}`, event);
     }
 }
