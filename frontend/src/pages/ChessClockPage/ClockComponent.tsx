@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {FaPause} from "react-icons/fa6";
-import {LuPlay, LuSettings, LuTimerReset} from "react-icons/lu";
+import {LuHome, LuPlay, LuSettings, LuTimerReset} from "react-icons/lu";
 import useCaffeinate from "./useCaffeinate";
+import {Link} from "react-router-dom";
 
 const ClockComponent = (
     {
@@ -124,6 +125,9 @@ const ClockComponent = (
                                 resetClock();
                             }
                         }}/>
+                        <Link to={"/"}>
+                            <LuHome/>
+                        </Link>
                     </div>
                 )}
             </button>
