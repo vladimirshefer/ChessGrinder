@@ -31,6 +31,14 @@ const ClockComponent = (
         setTimeLeft2(time2);
     }, [time1, time2]);
 
+    function resetClock() {
+        resetTime();
+        setTimeLeft1(time1)
+        setTimeLeft2(time2)
+        setIsPaused(true)
+        setIsFirstActive(true)
+    }
+
     useEffect(() => localStorage.setItem("chessclock.time_left_1", timeLeft1.toString()), [timeLeft1]);
     useEffect(() => localStorage.setItem("chessclock.time_left_2", timeLeft2.toString()), [timeLeft2]);
     useEffect(() => localStorage.setItem("chessclock.last_bonus", bonusTime.toString()), [bonusTime]);
@@ -112,7 +120,8 @@ const ClockComponent = (
                         <LuSettings onClick={openSettings}/>
                         <LuTimerReset onClick={() => {
                             if (window.confirm("Reset the clock?")) {
-                                resetTime();
+                                console.log("Resetting clock");
+                                resetClock();
                             }
                         }}/>
                     </div>
