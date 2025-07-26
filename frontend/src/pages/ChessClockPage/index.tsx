@@ -31,14 +31,14 @@ function ChessClockPage() {
 
     useEffect(() => {
         if (
-            (!!lastTime1 && lastTime1 !== (explicitTime || DEFAULT_TIME_LIMIT)) ||
-            (!!lastTime2 && lastTime2 !== (explicitTime || DEFAULT_TIME_LIMIT))
+            (!!lastTime1 && !!explicitTime && lastTime1 !== explicitTime) ||
+            (!!lastTime2 && !!explicitTime &&  lastTime2 !== explicitTime)
         ) {
             if (!window.confirm("You have unfinished game. OK - Resume, Cancel - Reset game?")) {
                 resetTime();
             }
         }
-    }, [])
+    }, [lastTime1, lastTime2, explicitTime])
 
     function resetTime() {
         localStorage.removeItem("chessclock.time_left_1");
