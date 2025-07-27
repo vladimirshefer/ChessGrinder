@@ -11,7 +11,6 @@ import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRoleRepository;
 import com.chessgrinder.chessgrinder.security.principal.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
-import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -133,22 +132,6 @@ public class UserService {
         }
         calculateGlobalScore(user);
         return userMapper.toDto(user);
-    }
-
-    @Nonnull
-    public UserEntity findUserByIdOrUsername(String userIdOrUsername) {
-        UserEntity user = userRepository.findByUsername(userIdOrUsername);
-        if (user == null) {
-            UUID userId;
-            try {
-                userId = UUID.fromString(userIdOrUsername);
-            } catch (IllegalArgumentException e) {
-                throw new UserNotFoundException("No user with id " + userIdOrUsername, e);
-            }
-            user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("No user with id " + userIdOrUsername));
-        }
-        return user;
     }
 
     public void processOAuthPostLogin(CustomOAuth2User oAuth2User) {
