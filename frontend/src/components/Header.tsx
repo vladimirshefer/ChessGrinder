@@ -87,6 +87,7 @@ function Header() {
                 <NavLink to={"/admin"} text={loc("Admin")}/>
             </ConditionalOnUserRole>
             <NavLink to={"/clock"} text={loc("Clock")}/>
+            <NavLink to={"/users"} text={loc("Users")}/>
             <ConditionalOnAuthorized>
                 <NavLink onClick={async () => {
                     await loginPageRepository.signOut()

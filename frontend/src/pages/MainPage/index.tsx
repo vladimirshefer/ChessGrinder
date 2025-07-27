@@ -1,10 +1,8 @@
 import React from "react";
-import {MemberList} from "pages/MainPage/MemberList";
 import {TournamentsList} from "./TournamentsList";
 import {useQuery} from "@tanstack/react-query";
-import {ListDto, UserDto, TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
+import {TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
-import userRepository from "lib/api/repository/UserRepository";
 import {useLoc} from "strings/loc";
 import {Link, useNavigate} from "react-router-dom";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
@@ -12,15 +10,6 @@ import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
 function MainPage() {
     let loc = useLoc()
     let navigate = useNavigate()
-
-    let {
-        data: {
-            values: users = [] as UserDto[],
-        } = {} as ListDto<UserDto>
-    } = useQuery({
-        queryKey: ["members10"],
-        queryFn: () => userRepository.getUsers(10),
-    })
 
     let {
         data: {
@@ -45,19 +34,8 @@ function MainPage() {
         tournamentsVisible = tournaments.slice(0, maxTourNumber);
     }
 
-    const maxUsers: number = 8;
     return <>
         <MyActiveTournamentPane/>
-        <div className={"p-3"}>
-            <MemberList users={users.slice(0, maxUsers)}/>
-            <div className={"grid py-2"}>
-                <Link to={"/users"}>
-                    <button className={"btn bg-primary-400 w-full"}>
-                        {loc("All users")}
-                    </button>
-                </Link>
-            </div>
-        </div>
         <div className={"p-3"}>
             <TournamentsList tournaments={tournamentsVisible} createTournament={createTournament}/>
             <div className={"grid py-2"}>
