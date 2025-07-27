@@ -7,7 +7,7 @@ import {requirePresent} from "lib/util/common";
 import dayjs from "dayjs";
 import {TournamentPageData} from "../../lib/api/dto/TournamentPageData";
 import tournamentRepository from "../../lib/api/repository/TournamentRepository";
-import {DEFAULT_DATETIME_FORMAT, PairingStrategy} from "../../lib/api/dto/MainPageData";
+import {DEFAULT_DATETIME_FORMAT, PairingStrategy, RepeatableType} from "../../lib/api/dto/MainPageData";
 
 
 export default function TournamentEditPage() {
@@ -32,6 +32,7 @@ export default function TournamentEditPage() {
         tournament.roundsNumber = parseInt(data.roundsNumber, 10);
         tournament.pairingStrategy = data.pairingStrategy as PairingStrategy;
         tournament.registrationLimit = !!data.registrationLimit ? parseInt(data.registrationLimit, 10) : undefined;
+        tournament.repeatable = data.repeatable as RepeatableType || null;
         let startTime: string = data.startTime || "20:00";
         let startDate: string = data.startDate || "2023-10-11"
         tournament.date = dayjs(startDate + "T" + startTime, DEFAULT_DATETIME_FORMAT).format(DEFAULT_DATETIME_FORMAT)
@@ -62,6 +63,7 @@ export default function TournamentEditPage() {
     const tournamentRoundsNumber: number = tournament.tournament.roundsNumber;
     const tournamentRegistrationLimit: number | undefined = tournament.tournament.registrationLimit;
     const tournamentPairingSystem: PairingStrategy = tournament.tournament.pairingStrategy || "SWISS"; // Added - Default value
+    const tournamentRepeatable: RepeatableType = tournament.tournament.repeatable || null;
 
     return <>
         <h1 className={"text-left text-lg uppercase font-semibold p-2"}>{loc("Edit tournament")}</h1>
@@ -94,6 +96,12 @@ export default function TournamentEditPage() {
                    <select id={"pairingStrategy"} {...register("pairingStrategy")} defaultValue={tournamentPairingSystem} className={"border-b"}>
                        <option value="SWISS">{loc("Swiss")}</option>
                        <option value="ROUND_ROBIN">{loc("Round Robin")}</option>
+                   </select>
+
+            <label htmlFor={"repeatable"}>{loc("Repeatable")}</label>
+                   <select id={"repeatable"} {...register("repeatable")} defaultValue={tournamentRepeatable || ""} className={"border-b"}>
+                       <option value="">{loc("None")}</option>
+                       <option value="WEEKLY">{loc("Weekly")}</option>
                    </select>
 
             <div className={"flex gap-2 justify-end"}>

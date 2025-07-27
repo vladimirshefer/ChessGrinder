@@ -65,6 +65,10 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Column(name = "registration_limit")
     private Integer registrationLimit;
 
+    @Nullable
+    @Column(name = "repeatable")
+    private String repeatable;
+
     @ToString.Exclude
     @OneToMany(mappedBy = "tournament")
     private List<RoundEntity> rounds;

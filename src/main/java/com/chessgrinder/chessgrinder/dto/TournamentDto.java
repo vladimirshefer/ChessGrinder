@@ -32,4 +32,7 @@ public class TournamentDto {
     private Integer roundsNumber;
 
     private Integer registrationLimit;
+
+    @Nullable
+    private String repeatable;
 }

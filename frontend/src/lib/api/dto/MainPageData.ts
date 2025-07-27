@@ -31,6 +31,8 @@ export type TournamentStatus = "FINISHED" | "ACTIVE" | "PLANNED"
 
 export type PairingStrategy = "SWISS" | "ROUND_ROBIN"
 
+export type RepeatableType = "WEEKLY" | null
+
 export let DEFAULT_DATETIME_FORMAT = "YYYY-MM-DDTHH:mm"
 
 export interface TournamentDto {
@@ -43,6 +45,7 @@ export interface TournamentDto {
     roundsNumber: number
     registrationLimit?: number
     pairingStrategy: PairingStrategy
+    repeatable?: RepeatableType
 }
 
 export interface TournamentListDto {
