@@ -155,12 +155,7 @@ public class UserService {
 
             if (adminEmails.contains(email)) {
                 if (!SecurityUtil.hasRole(user, RoleEntity.Roles.ADMIN)) {
-                    RoleEntity adminRole = roleService.getOrCreate(RoleEntity.Roles.ADMIN);
-                    userRoleRepository.save(UserRoleEntity.builder()
-                            .user(user)
-                            .role(adminRole)
-                            .build()
-                    );
+                    roleService.assignRole(user, RoleEntity.Roles.ADMIN);
                 }
 
                 user = userRepository.findById(user.getId()).orElseThrow();
