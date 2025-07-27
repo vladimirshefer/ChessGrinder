@@ -35,32 +35,26 @@ class LocalStorageTournamentEventRepository implements TournamentEventRepository
         return { events: filteredEvents };
     }
 
-    async createTournamentEvent(name: string, date: string, locationName?: string, locationUrl?: string, roundsNumber: number = 5, registrationLimit?: number): Promise<TournamentEventDto> {
-        const id = `${Math.trunc(Math.random() * 1000000) + 1000000}`;
+    async createTournamentEvent(tournamentEventDto: TournamentEventDto): Promise<TournamentEventDto> {
+        const id = tournamentEventDto.id || `${Math.trunc(Math.random() * 1000000) + 1000000}`;
         const event: TournamentEventDto = {
+            ...tournamentEventDto,
             id,
-            name,
-            date,
-            locationName,
-            locationUrl,
-            status: "PLANNED",
-            roundsNumber,
-            registrationLimit,
-            tournaments: [],
-            participants: []
+            tournaments: tournamentEventDto.tournaments || [],
+            participants: tournamentEventDto.participants || []
         };
         localStorageUtil.setObject(`cgd.event.${id}`, event);
         return event;
     }
 
-    async updateTournamentEvent(eventId: string, name: string, date: string, locationName?: string, locationUrl?: string, roundsNumber?: number, registrationLimit?: number): Promise<TournamentEventDto> {
+    async updateTournamentEvent(eventId: string, tournamentEventDto: TournamentEventDto): Promise<TournamentEventDto> {
         const event = await this.getTournamentEvent(eventId);
-        event.name = name;
-        event.date = date;
-        event.locationName = locationName;
-        event.locationUrl = locationUrl;
-        if (roundsNumber) event.roundsNumber = roundsNumber;
-        event.registrationLimit = registrationLimit;
+        event.name = tournamentEventDto.name;
+        event.date = tournamentEventDto.date;
+        event.locationName = tournamentEventDto.locationName;
+        event.locationUrl = tournamentEventDto.locationUrl;
+        if (tournamentEventDto.roundsNumber) event.roundsNumber = tournamentEventDto.roundsNumber;
+        event.registrationLimit = tournamentEventDto.registrationLimit;
         localStorageUtil.setObject(`cgd.event.${eventId}`, event);
         return event;
     }
