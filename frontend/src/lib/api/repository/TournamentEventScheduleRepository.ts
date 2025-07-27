@@ -77,15 +77,15 @@ class LocalStorageTournamentEventScheduleRepository implements TournamentEventSc
             tournaments: [],
             participants: []
         };
-        
+
         localStorageUtil.setObject(`cgd.event.${id}`, event);
-        
+
         if (!schedule.events) {
             schedule.events = [];
         }
         schedule.events.push(event);
         localStorageUtil.setObject(`cgd.schedule.${scheduleId}`, schedule);
-        
+
         return event;
     }
 
