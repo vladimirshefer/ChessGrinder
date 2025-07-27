@@ -80,7 +80,7 @@ class LocalStorageTournamentEventRepository implements TournamentEventRepository
         const authData = requirePresent(localStorageUtil.getObject<AuthData>("cgd.auth"), "Not logged in");
         const username = authData?.username;
         if (!authData || !username) throw new Error("Not logged in");
-        
+
         if (event.participants?.find(p => p.userId === username)) {
             throw new Error("You are already registered for this event");
         }
