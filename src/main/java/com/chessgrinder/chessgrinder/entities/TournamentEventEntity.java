@@ -11,16 +11,21 @@ import lombok.*;
 import lombok.extern.slf4j.*;
 import org.hibernate.annotations.*;
 
+/**
+ * Represents a tournament event that can contain multiple tournaments (brackets).
+ * Users register for the event, and the system distributes them across tournaments
+ * based on their ratings.
+ */
 @Getter
 @Setter
 @ToString
 @Entity
-@Table(name = "tournaments_table")
+@Table(name = "tournament_events_table")
 @Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TournamentEntity extends AbstractAuditingEntity {
+public class TournamentEventEntity extends AbstractAuditingEntity {
 
     @Id
     @Column(name = "id")
@@ -42,21 +47,12 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Column(name = "date")
     private LocalDateTime date;
 
-    // For new two-pairing system
-    @Nullable
-    @Column(name = "pairing_strategy")
-    private String pairingStrategy;
-
     @Column(name = "status")
-    @Enumerated(EnumType. STRING)
+    @Enumerated(EnumType.STRING)
     private TournamentStatus status;
 
-    @Nullable
-    @Column(name = "has_elo_calculated")
-    private boolean hasEloCalculated;
-
     /**
-     * Number of allowed rounds (not actual number of rounds)
+     * Number of planned rounds (not actual number of rounds)
      */
     @Column(name = "rounds_number")
     private Integer roundsNumber;
@@ -65,12 +61,19 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Column(name = "registration_limit")
     private Integer registrationLimit;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "tournament")
-    private List<RoundEntity> rounds;
-
+    /**
+     * The schedule this event belongs to (optional).
+     */
     @ManyToOne
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "schedule_id")
     @Nullable
-    private TournamentEventEntity event;
+    private TournamentEventScheduleEntity schedule;
+
+    /**
+     * The tournaments (brackets) that are part of this event.
+     */
+    @ToString.Exclude
+    @OneToMany(mappedBy = "event", cascade = jakarta.persistence.CascadeType.ALL)
+    private List<TournamentEntity> tournaments;
+
 }

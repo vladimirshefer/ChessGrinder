@@ -15,6 +15,9 @@ public interface ParticipantRepository extends PagingAndSortingRepository<Partic
     @Query("SELECT p FROM ParticipantEntity p WHERE p.tournament.id = :tournamentId")
     List<ParticipantEntity> findByTournamentId(UUID tournamentId);
 
+    @Query("SELECT p FROM ParticipantEntity p WHERE p.tournament.event.id = :eventId")
+    List<ParticipantEntity> findByEventId(UUID eventId);
+
     @Query("SELECT p FROM ParticipantEntity p WHERE p.tournament.id = :tournamentId AND p.user.id = :userId")
     ParticipantEntity findByTournamentIdAndUserId(UUID tournamentId, UUID userId);
 
@@ -27,7 +30,7 @@ public interface ParticipantRepository extends PagingAndSortingRepository<Partic
 
     @Query("SELECT p FROM ParticipantEntity p WHERE p.tournament.id = :tournamentId AND p.place = 1")
     Optional<ParticipantEntity> findFirstPlaceByTournamentId(UUID tournamentId);
-    
+
     @Query("SELECT COUNT(p) FROM ParticipantEntity p WHERE p.tournament.id = :tournamentId")
     long countByTournament(UUID tournamentId);
 
