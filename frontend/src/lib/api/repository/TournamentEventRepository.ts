@@ -9,8 +9,8 @@ export interface TournamentEventRepository {
     getTournamentEvent(eventId: string): Promise<TournamentEventDto>;
     getTournamentEvents(): Promise<TournamentEventListDto>;
     getTournamentEventsByStatus(status: string): Promise<TournamentEventListDto>;
-    createTournamentEvent(name: string, date: string, locationName?: string, locationUrl?: string, roundsNumber?: number, registrationLimit?: number): Promise<TournamentEventDto>;
-    updateTournamentEvent(eventId: string, name: string, date: string, locationName?: string, locationUrl?: string, roundsNumber?: number, registrationLimit?: number): Promise<TournamentEventDto>;
+    createTournamentEvent(tournamentEventDto: TournamentEventDto): Promise<TournamentEventDto>;
+    updateTournamentEvent(eventId: string, tournamentEventDto: TournamentEventDto): Promise<TournamentEventDto>;
     deleteTournamentEvent(eventId: string): Promise<void>;
     startTournamentEvent(eventId: string, numTournaments: number, ratingThreshold: number): Promise<void>;
     finishTournamentEvent(eventId: string): Promise<void>;
