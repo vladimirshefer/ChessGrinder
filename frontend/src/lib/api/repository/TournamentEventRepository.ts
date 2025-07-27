@@ -12,7 +12,9 @@ export interface TournamentEventRepository {
     createTournamentEvent(tournamentEventDto: TournamentEventDto): Promise<TournamentEventDto>;
     updateTournamentEvent(eventId: string, tournamentEventDto: TournamentEventDto): Promise<TournamentEventDto>;
     deleteTournamentEvent(eventId: string): Promise<void>;
-    startTournamentEvent(eventId: string, numTournaments: number, ratingThreshold: number): Promise<void>;
+
+    startTournamentEvent(eventId: string): Promise<void>;
+
     finishTournamentEvent(eventId: string): Promise<void>;
     registerParticipant(eventId: string, nickname?: string): Promise<void>;
 }
@@ -63,7 +65,7 @@ class LocalStorageTournamentEventRepository implements TournamentEventRepository
         localStorageUtil.removeObject(`cgd.event.${eventId}`);
     }
 
-    async startTournamentEvent(eventId: string, numTournaments: number, ratingThreshold: number): Promise<void> {
+    async startTournamentEvent(eventId: string): Promise<void> {
         const event = await this.getTournamentEvent(eventId);
         event.status = "ACTIVE";
         localStorageUtil.setObject(`cgd.event.${eventId}`, event);
@@ -116,40 +118,20 @@ class RestApiTournamentEventRepository implements TournamentEventRepository {
         return await restApiClient.get<TournamentEventListDto>(`/tournament-event/status/${status}`);
     }
 
-    async createTournamentEvent(name: string, date: string, locationName?: string, locationUrl?: string, roundsNumber: number = 5, registrationLimit?: number): Promise<TournamentEventDto> {
-        const params = new URLSearchParams();
-        params.append("name", name);
-        params.append("date", date);
-        if (locationName) params.append("locationName", locationName);
-        if (locationUrl) params.append("locationUrl", locationUrl);
-        params.append("roundsNumber", roundsNumber.toString());
-        if (registrationLimit) params.append("registrationLimit", registrationLimit.toString());
-        
-        return await restApiClient.post<TournamentEventDto>(`/tournament-event?${params.toString()}`);
+    async createTournamentEvent(tournamentEventDto: TournamentEventDto): Promise<TournamentEventDto> {
+        return await restApiClient.post<TournamentEventDto>("/tournament-event", tournamentEventDto);
     }
 
-    async updateTournamentEvent(eventId: string, name: string, date: string, locationName?: string, locationUrl?: string, roundsNumber?: number, registrationLimit?: number): Promise<TournamentEventDto> {
-        const params = new URLSearchParams();
-        params.append("name", name);
-        params.append("date", date);
-        if (locationName) params.append("locationName", locationName);
-        if (locationUrl) params.append("locationUrl", locationUrl);
-        if (roundsNumber) params.append("roundsNumber", roundsNumber.toString());
-        if (registrationLimit) params.append("registrationLimit", registrationLimit.toString());
-        
-        return await restApiClient.put<TournamentEventDto>(`/tournament-event/${eventId}?${params.toString()}`);
+    async updateTournamentEvent(eventId: string, tournamentEventDto: TournamentEventDto): Promise<TournamentEventDto> {
+        return await restApiClient.put<TournamentEventDto>(`/tournament-event/${eventId}`, tournamentEventDto);
     }
 
     async deleteTournamentEvent(eventId: string): Promise<void> {
         await restApiClient.delete(`/tournament-event/${eventId}`);
     }
 
-    async startTournamentEvent(eventId: string, numTournaments: number, ratingThreshold: number): Promise<void> {
-        const params = new URLSearchParams();
-        params.append("numTournaments", numTournaments.toString());
-        params.append("ratingThreshold", ratingThreshold.toString());
-        
-        await restApiClient.post(`/tournament-event/${eventId}/action/start?${params.toString()}`);
+    async startTournamentEvent(eventId: string): Promise<void> {
+        await restApiClient.post(`/tournament-event/${eventId}/action/start`);
     }
 
     async finishTournamentEvent(eventId: string): Promise<void> {
@@ -158,9 +140,11 @@ class RestApiTournamentEventRepository implements TournamentEventRepository {
 
     async registerParticipant(eventId: string, nickname?: string): Promise<void> {
         const params = new URLSearchParams();
-        if (nickname) params.append("nickname", nickname);
-        
-        await restApiClient.post(`/tournament-event/${eventId}/action/participate?${params.toString()}`);
+        if (nickname) {
+            params.append('nickname', nickname);
+        }
+
+        await restApiClient.post(`/tournament-event/${eventId}/action/participate?${params}`);
     }
 }
 

@@ -108,39 +108,43 @@ class RestApiTournamentEventScheduleRepository implements TournamentEventSchedul
     }
 
     async createSchedule(name: string, dayOfWeek: number, time: string): Promise<TournamentEventScheduleDto> {
-        const params = new URLSearchParams();
-        params.append("name", name);
-        params.append("dayOfWeek", dayOfWeek.toString());
-        params.append("time", time);
-        
-        return await restApiClient.post<TournamentEventScheduleDto>(`/tournament-event-schedule?${params.toString()}`);
+        const body = {
+            name,
+            dayOfWeek,
+            time
+        };
+
+        return await restApiClient.post<TournamentEventScheduleDto>("/tournament-event-schedule", body);
     }
 
     async updateSchedule(scheduleId: string, name: string, dayOfWeek: number, time: string): Promise<TournamentEventScheduleDto> {
-        const params = new URLSearchParams();
-        params.append("name", name);
-        params.append("dayOfWeek", dayOfWeek.toString());
-        params.append("time", time);
-        
-        return await restApiClient.put<TournamentEventScheduleDto>(`/tournament-event-schedule/${scheduleId}?${params.toString()}`);
+        const body = {
+            name,
+            dayOfWeek,
+            time
+        };
+
+        return await restApiClient.put<TournamentEventScheduleDto>(`/tournament-event-schedule/${scheduleId}`, body);
     }
 
     async updateScheduleStatus(scheduleId: string, status: TournamentEventScheduleStatus): Promise<TournamentEventScheduleDto> {
-        const params = new URLSearchParams();
-        params.append("status", status);
-        
-        return await restApiClient.put<TournamentEventScheduleDto>(`/tournament-event-schedule/${scheduleId}/status?${params.toString()}`);
+        const body = {
+            status
+        };
+
+        return await restApiClient.put<TournamentEventScheduleDto>(`/tournament-event-schedule/${scheduleId}/status`, body);
     }
 
     async createEventFromSchedule(scheduleId: string, date: string, locationName?: string, locationUrl?: string, roundsNumber: number = 5, registrationLimit?: number): Promise<TournamentEventDto> {
-        const params = new URLSearchParams();
-        params.append("date", date);
-        if (locationName) params.append("locationName", locationName);
-        if (locationUrl) params.append("locationUrl", locationUrl);
-        params.append("roundsNumber", roundsNumber.toString());
-        if (registrationLimit) params.append("registrationLimit", registrationLimit.toString());
-        
-        return await restApiClient.post<TournamentEventDto>(`/tournament-event-schedule/${scheduleId}/event?${params.toString()}`);
+        const body = {
+            date,
+            locationName,
+            locationUrl,
+            roundsNumber,
+            registrationLimit
+        };
+
+        return await restApiClient.post<TournamentEventDto>(`/tournament-event-schedule/${scheduleId}/event`, body);
     }
 
     async deleteSchedule(scheduleId: string): Promise<void> {

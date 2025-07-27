@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class TournamentDto {
+public class TournamentDto implements EventData {
     public static final String API_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm";
 
     private String id;

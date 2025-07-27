@@ -62,13 +62,14 @@ function MainPage() {
     async function createEvent() {
         const now = new Date();
         const date = now.toISOString().split('T')[0] + 'T18:00';
-        let event = await tournamentEventRepository.createTournamentEvent(
-            "New Event", 
-            date, 
-            undefined, 
-            undefined, 
-            5
-        );
+        const tournamentEventDto: TournamentEventDto = {
+            id: '',
+            name: "New Event",
+            date: date,
+            roundsNumber: 5,
+            status: "PLANNED"
+        };
+        let event = await tournamentEventRepository.createTournamentEvent(tournamentEventDto);
         await navigate(`/tournament-event/${event.id}/edit`)
     }
 

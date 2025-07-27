@@ -11,8 +11,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class TournamentEventDto {
-    public static final String API_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm";
+public class TournamentEventDto implements EventData {
 
     private String id;
 
@@ -25,7 +24,7 @@ public class TournamentEventDto {
     @Nullable
     private String locationUrl;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = API_DATETIME_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TournamentDto.API_DATETIME_FORMAT)
     private LocalDateTime date;
 
     private TournamentStatus status;

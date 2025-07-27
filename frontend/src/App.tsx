@@ -48,6 +48,9 @@ function App() {
                                     <Route path="/tournament/:tournamentId/edit"
                                            element={<TournamentEditPage/>}
                                     />
+                                    <Route path="/tournament-event/:eventId/edit"
+                                           element={<TournamentEditPage/>}
+                                    />
                                     <Route path="/login" element={<LoginPage/>}/>
                                     <Route path="/admin" element={<AdminPage/>}/>
                                     <Route path="/user" element={<UserProfilePage/>}/>
