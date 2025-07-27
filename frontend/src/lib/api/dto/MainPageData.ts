@@ -46,7 +46,7 @@ export interface TournamentDto {
 }
 
 export interface TournamentListDto {
-    tournaments: TournamentDto[]
+    values: TournamentDto[]
 }
 
 export enum UserRoles {

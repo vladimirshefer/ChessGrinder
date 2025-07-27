@@ -51,7 +51,7 @@ class LocalStorageTournamentRepository implements TournamentRepository {
         let tournamentsLocal = localStorageUtil.getAllObjectsByPrefix("cgd.tournament.") as TournamentPageData[];
         let tournaments = tournamentsLocal.map(it => it.tournament).sort(reverse(compareBy(it => it.date)));
         return {
-            tournaments: tournaments
+            values: tournaments
         } as TournamentListDto
     }
 

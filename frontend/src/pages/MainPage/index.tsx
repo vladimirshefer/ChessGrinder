@@ -24,7 +24,7 @@ function MainPage() {
 
     let {
         data: {
-            tournaments = [] as TournamentDto[],
+            values: tournaments = [] as TournamentDto[],
         } = {} as TournamentListDto,
     } = useQuery({
         queryKey: ["tournaments"],

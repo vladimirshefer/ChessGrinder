@@ -13,4 +13,8 @@ public final class ListDto<T> {
     public Integer getCount(){
         return values.size();
     }
+
+    public static <T> ListDto<T> of(List<T> values){
+        return ListDto.<T>builder().values(values).build();
+    }
 }

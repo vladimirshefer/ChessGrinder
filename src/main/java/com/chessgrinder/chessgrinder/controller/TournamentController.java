@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.chessengine.pairings.JavafoPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
@@ -75,7 +76,7 @@ public class TournamentController {
 
     @GetMapping
     public Object getTournaments() {
-        return Map.of("tournaments", tournamentService.findTournaments());
+        return ListDto.of(tournamentService.findTournaments());
     }
 
     @GetMapping("/{tournamentId}")

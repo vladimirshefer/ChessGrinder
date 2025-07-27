@@ -11,7 +11,7 @@ export default function AllTournamentsPage() {
         queryFn: () => tournamentRepository.getTournaments()
     })
 
-    let tournaments = tournamentsQuery.data?.tournaments;
+    let tournaments = tournamentsQuery.data?.values;
     if (!tournaments) {
         return <>Loading...</>
     }
