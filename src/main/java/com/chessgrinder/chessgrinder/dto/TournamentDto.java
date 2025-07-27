@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.dto;
 
+import com.chessgrinder.chessgrinder.enums.RepeatableType;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.annotation.Nullable;
@@ -34,5 +35,5 @@ public class TournamentDto {
     private Integer registrationLimit;
 
     @Nullable
-    private String repeatable;
+    private RepeatableType repeatable;
 }

@@ -67,7 +67,8 @@ public class TournamentEntity extends AbstractAuditingEntity {
 
     @Nullable
     @Column(name = "repeatable")
-    private String repeatable;
+    @Enumerated(EnumType.STRING)
+    private RepeatableType repeatable;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "tournament")
