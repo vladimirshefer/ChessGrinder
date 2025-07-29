@@ -13,20 +13,16 @@ import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.service.RoundService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.AuditorAware;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
-import static com.chessgrinder.chessgrinder.util.DateUtil.nowInstantAtUtc;
 import static org.assertj.core.api.Assertions.assertThat;
 
-//@DataJpaTest -- мб надо вставить, если репозитории не сработают!
+@DataJpaTest //-- мб надо вставить, если репозитории не сработают!
 public class WinningCyclePlacingTest {
 
     private RoundService roundService;
@@ -65,7 +61,6 @@ public class WinningCyclePlacingTest {
         RoundEntity round6 = roundRepository.save(createRound(tournament, 6));
 
         //Пейринги нужны для того чтобы расставить места согласно личным встречам!
-        //TODO исправить: есть неправильные пейринги! (начиная со 2 тура)
         //1 round
         matchRepository.save(createMatch(p1, p11, round1, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p6, p2, round1, MatchResult.BLACK_WIN));
@@ -79,7 +74,7 @@ public class WinningCyclePlacingTest {
         matchRepository.save(createMatch(p2, p14, round2, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p10, p4, round2, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p12, p5, round2, MatchResult.BLACK_WIN));
-        matchRepository.save(createMatch(p13, p7, round2, MatchResult.BLACK_WIN));
+        matchRepository.save(createMatch(p13, p6, round2, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p7, p8, round2, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p11, p9, round2, MatchResult.DRAW));
         //3 round
@@ -114,8 +109,8 @@ public class WinningCyclePlacingTest {
         matchRepository.save(createMatch(p4, p1, round6, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p2, p5, round6, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p6, p3, round6, MatchResult.BLACK_WIN));
-        matchRepository.save(createMatch(p7, p8, round6, MatchResult.BLACK_WIN));
-        matchRepository.save(createMatch(p11, p10, round6, MatchResult.WHITE_WIN));
+        matchRepository.save(createMatch(p11, p7, round6, MatchResult.BLACK_WIN));
+        matchRepository.save(createMatch(p8, p10, round6, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p9, null, round6, MatchResult.BUY));
         matchRepository.save(createMatch(p12, null, round6, MatchResult.MISS));
         matchRepository.save(createMatch(p13, null, round6, MatchResult.MISS));
@@ -185,5 +180,13 @@ public class WinningCyclePlacingTest {
                 .round(round)
                 .result(result)
                 .build();
+    }
+
+    @TestConfiguration
+    static class AuditorAwareTestConfig {
+        @Bean
+        public AuditorAware<String> auditorProvider() {
+            return () -> Optional.of("test_user");
+        }
     }
 }
