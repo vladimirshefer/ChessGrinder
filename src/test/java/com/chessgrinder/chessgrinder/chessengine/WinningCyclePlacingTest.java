@@ -12,9 +12,11 @@ import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.service.RoundService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 
 import java.math.BigDecimal;
@@ -22,15 +24,22 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest //-- мб надо вставить, если репозитории не сработают!
+@DataJpaTest
 public class WinningCyclePlacingTest {
 
-    private RoundService roundService;
+    @Autowired
     private ParticipantRepository participantRepository;
+    @Autowired
     private TournamentRepository tournamentRepository;
+    @Autowired
     private RoundRepository roundRepository;
+    @Autowired
     private MatchRepository matchRepository;
-
+    @Autowired
+    private RoundService roundService;
+    //TODO все остальные объекты класса помечены как NoBeanRepository -
+    //возможно, придется создать объект roundService прямо здесь, т.к. данных он не затрагивает
+    //Но внутри этого сервиса есть репозитории, так что хз как - можно Вове позвонить
 
     @Test
     void shouldCorrectlySetFinalPlacements() {
