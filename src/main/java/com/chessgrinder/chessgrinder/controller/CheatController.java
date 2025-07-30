@@ -2,11 +2,10 @@ package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
-import com.chessgrinder.chessgrinder.entities.UserRoleEntity;
 import com.chessgrinder.chessgrinder.repositories.RoleRepository;
-import com.chessgrinder.chessgrinder.repositories.UserRoleRepository;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
+import com.chessgrinder.chessgrinder.service.RoleService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -25,8 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class CheatController {
 
-    private final RoleRepository roleRepository;
-    private final UserRoleRepository userRoleRepository;
+    private final RoleService roleService;
 
     @GetMapping("/getAdminRole")
     public Object getAdminRole(
@@ -42,14 +40,7 @@ public class CheatController {
             return "User already has ADMIN authority";
         }
 
-        RoleEntity adminRole = roleRepository.findByName(RoleEntity.Roles.ADMIN)
-                .orElseGet(() -> roleRepository.save(RoleEntity.builder().name(RoleEntity.Roles.ADMIN).build()));
-
-        userRoleRepository.save(UserRoleEntity.builder()
-                .user(user)
-                .role(adminRole)
-                .build()
-        );
+        roleService.assignRole(user, RoleEntity.Roles.ADMIN);
 
         return "Admin role granted";
     }
