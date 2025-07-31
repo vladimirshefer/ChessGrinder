@@ -458,7 +458,7 @@ public class RoundService {
     private boolean hasWinningCycle(List<ParticipantEntity> component,
                                     Map<ParticipantEntity, Set<ParticipantEntity>> graph) {
         Set<ParticipantEntity> visited = new HashSet<>();
-        Set<ParticipantEntity> stack = new HashSet<>();
+        Deque<ParticipantEntity> stack = new ArrayDeque<>();
         for (ParticipantEntity p : component) {
             if (dfsCycleDetect(p, graph, visited, stack)) return true;
         }
@@ -468,12 +468,12 @@ public class RoundService {
     private boolean dfsCycleDetect(ParticipantEntity current,
                                    Map<ParticipantEntity, Set<ParticipantEntity>> graph,
                                    Set<ParticipantEntity> visited,
-                                   Set<ParticipantEntity> stack) {
+                                   Deque<ParticipantEntity> stack) {
         if (stack.contains(current)) return true;
         if (visited.contains(current)) return false;
 
         visited.add(current);
-        stack.add(current);
+        stack.push(current);
         for (ParticipantEntity neighbor : graph.get(current)) {
             if (dfsCycleDetect(neighbor, graph, visited, stack)) return true;
         }
@@ -481,7 +481,9 @@ public class RoundService {
         return false;
     }
 
-    // Helper class for returning graph and components
+    /**
+     * Helper class for returning graph and components
+     */
     private static class GraphComponents {
         Map<ParticipantEntity, Set<ParticipantEntity>> graph;
         List<List<ParticipantEntity>> components;

@@ -10,21 +10,20 @@ import com.chessgrinder.chessgrinder.repositories.MatchRepository;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import com.chessgrinder.chessgrinder.security.WithRefererOAuth2AuthorizationRequestResolver;
 import com.chessgrinder.chessgrinder.service.RoundService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.AuditorAware;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
 import java.math.BigDecimal;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@SpringBootTest
 public class WinningCyclePlacingTest {
 
     @Autowired
@@ -37,30 +36,31 @@ public class WinningCyclePlacingTest {
     private MatchRepository matchRepository;
     @Autowired
     private RoundService roundService;
-    //TODO все остальные объекты класса помечены как NoBeanRepository -
-    //возможно, придется создать объект roundService прямо здесь, т.к. данных он не затрагивает
-    //Но внутри этого сервиса есть репозитории, так что хз как - можно Вове позвонить
+
+    //These fields are needed for full SpringBootTest deployment
+    @MockBean
+    WithRefererOAuth2AuthorizationRequestResolver oauth2;
+    @MockBean
+    ClientRegistrationRepository clientReg;
 
     @Test
     void shouldCorrectlySetFinalPlacements() {
-        //TODO хочется использовать существующие create...() методы, чтобы код не дублировать
-        //TODO всё проверить, скорее всего, не будет работать
         TournamentEntity tournament = tournamentRepository.save(createTournament());
 
-        ParticipantEntity p1 = participantRepository.save(createParticipant("Миша буги вуги", tournament, 21.5, 5));
-        ParticipantEntity p2 = participantRepository.save(createParticipant("Непомерное свинство", tournament, 20, 5));
-        ParticipantEntity p3 = participantRepository.save(createParticipant("In chess we trust", tournament, 18, 5));
-        ParticipantEntity p4 = participantRepository.save(createParticipant("The semen arsonist", tournament, 19, 4));
-        ParticipantEntity p5 = participantRepository.save(createParticipant("Alex", tournament, 20.5, 3));
-        ParticipantEntity p6 = participantRepository.save(createParticipant("DmitryAnikeyev", tournament, 20, 3));
-        ParticipantEntity p7 = participantRepository.save(createParticipant("Волк не тот", tournament, 17, 3));
-        ParticipantEntity p8 = participantRepository.save(createParticipant("магадан", tournament, 14, 3));
-        ParticipantEntity p9 = participantRepository.save(createParticipant("Султан", tournament, 9.5, 2.5));
-        ParticipantEntity p10 = participantRepository.save(createParticipant("сэр А'ртур", tournament, 14.5, 2));
-        ParticipantEntity p11 = participantRepository.save(createParticipant("Bob", tournament, 16.5, 1.5));
-        ParticipantEntity p12 = participantRepository.save(createParticipant("milpops", tournament, 9, 1));
-        ParticipantEntity p13 = participantRepository.save(createParticipant("если проиграю то мощно", tournament, 7, 1));
-        ParticipantEntity p14 = participantRepository.save(createParticipant("Страх и ненависть на шахматах", tournament, 11, 0));
+        ParticipantEntity p1 = participantRepository.save(createParticipant("Миша буги вуги", tournament));
+        ParticipantEntity p2 = participantRepository.save(createParticipant("Непомерное свинство", tournament));
+        ParticipantEntity p3 = participantRepository.save(createParticipant("In chess we trust", tournament));
+        ParticipantEntity p4 = participantRepository.save(createParticipant("The semen arsonist", tournament));
+        ParticipantEntity p5 = participantRepository.save(createParticipant("Alex", tournament));
+        ParticipantEntity p6 = participantRepository.save(createParticipant("DmitryAnikeyev", tournament));
+        ParticipantEntity p7 = participantRepository.save(createParticipant("Волк не тот", tournament));
+        ParticipantEntity p8 = participantRepository.save(createParticipant("магадан", tournament));
+        ParticipantEntity p9 = participantRepository.save(createParticipant("Султан", tournament));
+        ParticipantEntity p10 = participantRepository.save(createParticipant("сэр А'ртур", tournament));
+        ParticipantEntity p11 = participantRepository.save(createParticipant("Bob", tournament));
+        ParticipantEntity p12 = participantRepository.save(createParticipant("milpops", tournament));
+        ParticipantEntity p13 = participantRepository.save(createParticipant("если проиграю то мощно", tournament));
+        ParticipantEntity p14 = participantRepository.save(createParticipant("Страх и ненависть на шахматах", tournament));
 
         RoundEntity round1 = roundRepository.save(createRound(tournament, 1));
         RoundEntity round2 = roundRepository.save(createRound(tournament, 2));
@@ -69,7 +69,6 @@ public class WinningCyclePlacingTest {
         RoundEntity round5 = roundRepository.save(createRound(tournament, 5));
         RoundEntity round6 = roundRepository.save(createRound(tournament, 6));
 
-        //Пейринги нужны для того чтобы расставить места согласно личным встречам!
         //1 round
         matchRepository.save(createMatch(p1, p11, round1, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p6, p2, round1, MatchResult.BLACK_WIN));
@@ -78,6 +77,7 @@ public class WinningCyclePlacingTest {
         matchRepository.save(createMatch(p5, p7, round1, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p8, p12, round1, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p10, null, round1, MatchResult.BUY));
+        roundService.finishRound(tournament.getId(), 1);
         //2 round
         matchRepository.save(createMatch(p3, p1, round2, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p2, p14, round2, MatchResult.WHITE_WIN));
@@ -86,6 +86,7 @@ public class WinningCyclePlacingTest {
         matchRepository.save(createMatch(p13, p6, round2, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p7, p8, round2, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p11, p9, round2, MatchResult.DRAW));
+        roundService.finishRound(tournament.getId(), 2);
         //3 round
         matchRepository.save(createMatch(p5, p1, round3, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p4, p2, round3, MatchResult.BLACK_WIN));
@@ -94,6 +95,7 @@ public class WinningCyclePlacingTest {
         matchRepository.save(createMatch(p9, p7, round3, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p8, p11, round3, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p14, p13, round3, MatchResult.BLACK_WIN));
+        roundService.finishRound(tournament.getId(), 3);
         //4 round
         matchRepository.save(createMatch(p1, p2, round4, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p5, p3, round4, MatchResult.BLACK_WIN));
@@ -104,6 +106,7 @@ public class WinningCyclePlacingTest {
         matchRepository.save(createMatch(p12, null, round4, MatchResult.MISS));
         matchRepository.save(createMatch(p13, null, round4, MatchResult.MISS));
         matchRepository.save(createMatch(p14, null, round4, MatchResult.MISS));
+        roundService.finishRound(tournament.getId(), 4);
         //5 round
         matchRepository.save(createMatch(p1, p6, round5, MatchResult.WHITE_WIN));
         matchRepository.save(createMatch(p2, p3, round5, MatchResult.BLACK_WIN));
@@ -114,6 +117,7 @@ public class WinningCyclePlacingTest {
         matchRepository.save(createMatch(p12, null, round5, MatchResult.MISS));
         matchRepository.save(createMatch(p13, null, round5, MatchResult.MISS));
         matchRepository.save(createMatch(p14, null, round5, MatchResult.MISS));
+        roundService.finishRound(tournament.getId(), 5);
         //6 round
         matchRepository.save(createMatch(p4, p1, round6, MatchResult.BLACK_WIN));
         matchRepository.save(createMatch(p2, p5, round6, MatchResult.WHITE_WIN));
@@ -125,8 +129,6 @@ public class WinningCyclePlacingTest {
         matchRepository.save(createMatch(p13, null, round6, MatchResult.MISS));
         matchRepository.save(createMatch(p14, null, round6, MatchResult.MISS));
         //Triggering recalculation method
-        //TODO кажется, надо вызывать каждый тур для пересчета очков?
-        //Возможно, нет, т.к. важны итоговые очки и личные встречи!
         roundService.finishRound(tournament.getId(), 6);
 
         List<ParticipantEntity> sorted = participantRepository.findByTournamentId(tournament.getId()).stream()
@@ -155,17 +157,16 @@ public class WinningCyclePlacingTest {
                 .status(TournamentStatus.ACTIVE)
                 .name("Test Tournament")
                 .roundsNumber(6)
-                //.date(LocalDateTime.ofInstant(nowInstantAtUtc(), ZoneOffset.UTC))
                 .pairingStrategy("SWISS")
                 .build();
     }
 
-    private ParticipantEntity createParticipant(String name, TournamentEntity tournament, double buchholz, double score) {
+    private ParticipantEntity createParticipant(String name, TournamentEntity tournament) {
         return ParticipantEntity.builder()
                 .id(UUID.randomUUID())
                 .nickname(name)
-                .score(BigDecimal.valueOf(score))
-                .buchholz(BigDecimal.valueOf(buchholz))
+                .score(BigDecimal.valueOf(0))
+                .buchholz(BigDecimal.valueOf(0))
                 .tournament(tournament)
                 .isMissing(false)
                 .place(-1)
@@ -189,13 +190,5 @@ public class WinningCyclePlacingTest {
                 .round(round)
                 .result(result)
                 .build();
-    }
-
-    @TestConfiguration
-    static class AuditorAwareTestConfig {
-        @Bean
-        public AuditorAware<String> auditorProvider() {
-            return () -> Optional.of("test_user");
-        }
     }
 }
