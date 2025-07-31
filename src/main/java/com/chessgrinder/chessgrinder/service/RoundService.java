@@ -201,8 +201,6 @@ public class RoundService {
     public void updateResults(UUID tournamentId) {
         List<MatchEntity> matches = matchRepository.findFinishedByTournamentId(tournamentId);
 
-        matches.forEach(this::reverseEloUpdate);
-
         //<gamer's UUID, points>
         Map<String, Double> pointsMap = new HashMap<>();
         Map<String, Set<String>> enemiesMap = new HashMap<>();
@@ -251,6 +249,7 @@ public class RoundService {
         }
 
         List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
+
         participants.sort(COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST
                 .thenComparing(compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities))
                 .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
@@ -258,6 +257,48 @@ public class RoundService {
                 .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
         );
         final int size = participants.size();
+
+        // Grouping participants by score
+        Map<BigDecimal, List<ParticipantEntity>> scoreGroups = new HashMap<>();
+        for (ParticipantEntity participant : participants) {
+            scoreGroups.computeIfAbsent(participant.getScore(), k -> new ArrayList<>()).add(participant);
+        }
+
+        for (BigDecimal score : scoreGroups.keySet().stream().sorted(Comparator.reverseOrder()).toList()) {
+            List<ParticipantEntity> group = scoreGroups.get(score);
+            GraphComponents result = findWinningComponentsAndGraph(group, tournamentRoundEntities);
+            Map<ParticipantEntity, Set<ParticipantEntity>> graph = result.graph;
+            List<List<ParticipantEntity>> components = result.components;
+
+            for (List<ParticipantEntity> component : components) {
+                if (component.size() <= 1 || !hasWinningCycle(component, graph)) {
+                    continue; // either a single vertex or no cycle of wins - do not re-sort
+                }
+
+                // Find index subgroup in participants list and sort subList
+                List<UUID> ids = component.stream().map(ParticipantEntity::getId).toList();
+                int fromIndex = -1;
+                int toIndex = -1;
+                for (int i = 0; i < size; ++i) {
+                    if (ids.contains(participants.get(i).getId())) {
+                        if (fromIndex == -1) {
+                            fromIndex = i;
+                        }
+                        toIndex = i;
+                    }
+                }
+                //A connected component has been found that needs to be sorted by Buchholz
+                if (fromIndex != -1 && fromIndex <= toIndex) {
+                    participants.subList(fromIndex, toIndex + 1).sort(
+                            COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST
+                                    .thenComparing(ParticipantEntity::isMissing)
+                                    .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
+                    );
+                }
+            }
+        }
+
+
         for (int i = 0; i < size; ++i) {
             final var participant = participants.get(i);
             participant.setPlace(i + 1);
@@ -265,42 +306,44 @@ public class RoundService {
         participantRepository.saveAll(participants);
     }
 
-    private void reverseEloUpdate(MatchEntity match) {
-
-
-    }
-
     private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities) {
         return (participant1, participant2) -> {
             ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
-            if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
-                return -1;
-            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
-                return 1;
-            } else {
+            if (winnerBetweenTwoParticipants == null) {
                 return 0;
             }
+            if (winnerBetweenTwoParticipants.equals(participant1)) {
+                return -1;
+            }
+            if (winnerBetweenTwoParticipants.equals(participant2)) {
+                return 1;
+            }
+            return 0;
         };
     }
 
     private static ParticipantEntity findWinnerBetweenTwoParticipants(ParticipantEntity first, ParticipantEntity second, List<RoundEntity> roundsDto) {
         for (RoundEntity round : roundsDto) {
-            if (round.getMatches() != null) {
-                for (MatchEntity match : round.getMatches()) {
-                    if (match.getParticipant1() != null && match.getParticipant2() != null) {
-                        if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getParticipant1();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getParticipant2();
-                            }
-                        } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getParticipant1();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getParticipant2();
-                            }
-                        }
+            if (round.getMatches() == null) {
+                continue;
+            }
+            for (MatchEntity match : round.getMatches()) {
+                if (match.getParticipant1() == null || match.getParticipant2() == null) {
+                    continue;
+                }
+                if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
+                    if (match.getResult() == MatchResult.WHITE_WIN) {
+                        return match.getParticipant1();
+                    }
+                    if (match.getResult() == MatchResult.BLACK_WIN) {
+                        return match.getParticipant2();
+                    }
+                } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
+                    if (match.getResult() == MatchResult.WHITE_WIN) {
+                        return match.getParticipant1();
+                    }
+                    if (match.getResult() == MatchResult.BLACK_WIN) {
+                        return match.getParticipant2();
                     }
                 }
             }
@@ -346,5 +389,103 @@ public class RoundService {
         } catch (Exception e) {
             log.error("Could not update results", e);
         }
+    }
+
+    /**
+     * Finds connectivity components among players with the same score
+     * @param participants - group of participants with the same score
+     * @param rounds - rounds of updatable tournament
+     * @return List of connectivity components (list of participants)
+     * <p>
+     * A ---- B ------ C
+     *         \     /     Here ABCD and EF are single connectivity components with BCD cycle (SCC - group of
+     *    E       D        participants who have had at least one meeting with each other and all have the
+     *     \               same number of points)
+     *      F
+     */
+    private GraphComponents findWinningComponentsAndGraph(List<ParticipantEntity> participants, List<RoundEntity> rounds) {
+        Map<ParticipantEntity, Set<ParticipantEntity>> graph = new HashMap<>();
+        for (ParticipantEntity p : participants) {
+            graph.put(p, new HashSet<>());
+        }
+
+        // Build a directed graph of wins (A -> B if A beats B)
+        for (RoundEntity round : rounds) {
+            for (MatchEntity match : round.getMatches()) {
+                ParticipantEntity p1 = match.getParticipant1();
+                ParticipantEntity p2 = match.getParticipant2();
+                if (p1 == null || p2 == null || !graph.containsKey(p1) || !graph.containsKey(p2)) {
+                    continue;
+                }
+
+                if (match.getResult() == MatchResult.WHITE_WIN) {
+                    graph.get(p1).add(p2);
+                } else if (match.getResult() == MatchResult.BLACK_WIN) {
+                    graph.get(p2).add(p1);
+                }
+            }
+        }
+
+        // Search for connectivity components (by reachability)
+        Set<ParticipantEntity> visited = new HashSet<>();
+        List<List<ParticipantEntity>> components = new ArrayList<>();
+
+        for (ParticipantEntity participant : participants) {
+            if (visited.contains(participant)) continue;
+            List<ParticipantEntity> component = new ArrayList<>();
+            Queue<ParticipantEntity> queue = new LinkedList<>();
+            queue.add(participant);
+            visited.add(participant);
+            while (!queue.isEmpty()) {
+                ParticipantEntity current = queue.poll();
+                component.add(current);
+                for (ParticipantEntity neighbor : graph.get(current)) {
+                    if (!visited.contains(neighbor)) {
+                        visited.add(neighbor);
+                        queue.add(neighbor);
+                    }
+                }
+            }
+            components.add(component);
+        }
+
+        GraphComponents result = new GraphComponents();
+        result.graph = graph;
+        result.components = components;
+        return result;
+    }
+
+    private boolean hasWinningCycle(List<ParticipantEntity> component,
+                                    Map<ParticipantEntity, Set<ParticipantEntity>> graph) {
+        Set<ParticipantEntity> visited = new HashSet<>();
+        Deque<ParticipantEntity> stack = new ArrayDeque<>();
+        for (ParticipantEntity p : component) {
+            if (dfsCycleDetect(p, graph, visited, stack)) return true;
+        }
+        return false;
+    }
+
+    private boolean dfsCycleDetect(ParticipantEntity current,
+                                   Map<ParticipantEntity, Set<ParticipantEntity>> graph,
+                                   Set<ParticipantEntity> visited,
+                                   Deque<ParticipantEntity> stack) {
+        if (stack.contains(current)) return true;
+        if (visited.contains(current)) return false;
+
+        visited.add(current);
+        stack.push(current);
+        for (ParticipantEntity neighbor : graph.get(current)) {
+            if (dfsCycleDetect(neighbor, graph, visited, stack)) return true;
+        }
+        stack.remove(current);
+        return false;
+    }
+
+    /**
+     * Helper class for returning graph and components
+     */
+    private static class GraphComponents {
+        Map<ParticipantEntity, Set<ParticipantEntity>> graph;
+        List<List<ParticipantEntity>> components;
     }
 }

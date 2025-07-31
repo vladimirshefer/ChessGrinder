@@ -74,8 +74,6 @@ public class RoundRobinPairingStrategyImplTest {
                             .match(participant("user3", 4, 8), participant("user1", 4, 8), MatchResult.WHITE_WIN)
                     )
                     .show(System.out::println);
-
-
         }
 
         @Test
@@ -116,11 +114,8 @@ public class RoundRobinPairingStrategyImplTest {
                                 .match(participant("user5", 2, 13), participant("user1", 3, 12), MatchResult.WHITE_WIN)
                         )
                         .show(System.out::println);
-
-
             }
         }
-
 
         @Test
         void test6pRe () {
@@ -167,8 +162,6 @@ public class RoundRobinPairingStrategyImplTest {
                                 .match(participant("user3", 4, 14), participant("user4", 2, 16), MatchResult.WHITE_WIN)
                         )
                         .show(System.out::println);
-
-
             }
         }
 
@@ -187,8 +180,6 @@ public class RoundRobinPairingStrategyImplTest {
             tournamentRunner.thenRound(round -> {
             });
         });
-
-
     }
 
     @Test
@@ -206,6 +197,5 @@ public class RoundRobinPairingStrategyImplTest {
             tournamentRunner.thenRound(round -> {
             });
         });
-
     }
-    }
+}
