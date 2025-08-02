@@ -29,6 +29,7 @@ export default function TournamentEditPage() {
         tournament.name = data.name
         tournament.locationUrl = data.locationUrl
         tournament.locationName = data.locationName
+        tournament.city = data.city
         tournament.roundsNumber = parseInt(data.roundsNumber, 10);
         tournament.pairingStrategy = data.pairingStrategy as PairingStrategy;
         tournament.registrationLimit = !!data.registrationLimit ? parseInt(data.registrationLimit, 10) : undefined;
@@ -84,6 +85,13 @@ export default function TournamentEditPage() {
             <input type={"time"} id={"startTime"} placeholder={"Start Time"} {...register("startTime")}
                    className={"border-b"}
                    defaultValue={tournamentStartTime}/>
+            <label htmlFor={"city"}>{loc("City")}</label>
+            <select id={"city"} {...register("city")} defaultValue={tournament.tournament.city || ""} className={"border-b"}>
+                <option value="Berlin">Berlin</option>
+                <option value="Tbilisi">Tbilisi</option>
+                <option value="Limassol">Limassol</option>
+                <option value="Other">Other</option>
+            </select>
             <label htmlFor={"roundsNumber"}>{loc("Rounds number")}</label>
             <input type={"number"} id={"roundsNumber"} placeholder={loc("Rounds number")}
                     {...register("roundsNumber")}

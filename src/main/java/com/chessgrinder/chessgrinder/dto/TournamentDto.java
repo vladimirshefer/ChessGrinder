@@ -23,6 +23,8 @@ public class TournamentDto {
     @Nullable
     private String locationUrl;
     @Nullable
+    private String city;
+    @Nullable
     private String pairingStrategy;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = API_DATETIME_FORMAT)

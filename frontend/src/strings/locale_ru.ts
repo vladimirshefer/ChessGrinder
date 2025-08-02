@@ -76,6 +76,7 @@ let locale_ru: { [key: string]: string } = {
     "You won": "Вы победили",
     "You lost": "Вы проиграли",
     "Clock": "Часы",
+    "City": "Город",
 }
 
 export default locale_ru

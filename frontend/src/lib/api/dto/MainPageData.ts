@@ -42,6 +42,7 @@ export interface TournamentDto {
     status?: TournamentStatus
     locationName?: string
     locationUrl?: string
+    city?: string
     roundsNumber: number
     registrationLimit?: number
     pairingStrategy: PairingStrategy

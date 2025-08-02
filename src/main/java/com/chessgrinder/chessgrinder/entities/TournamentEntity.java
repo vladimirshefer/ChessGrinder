@@ -39,6 +39,10 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Column(name = "location_url")
     private String locationUrl;
 
+    @Nullable
+    @Column(name = "city")
+    private String city;
+
     @Column(name = "date")
     private LocalDateTime date;
 

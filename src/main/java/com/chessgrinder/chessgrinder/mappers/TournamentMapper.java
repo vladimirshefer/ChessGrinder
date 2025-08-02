@@ -17,10 +17,13 @@ public class TournamentMapper {
                 .name(tournamentEntity.getName())
                 .locationName(tournamentEntity.getLocationName())
                 .locationUrl(tournamentEntity.getLocationUrl())
+                .city(tournamentEntity.getCity())
                 .date(tournamentEntity.getDate())
                 .status(tournamentEntity.getStatus())
                 .roundsNumber(tournamentEntity.getRoundsNumber())
                 .pairingStrategy(tournamentEntity.getPairingStrategy()==null ? "SWISS" : tournamentEntity.getPairingStrategy())
+                .registrationLimit(tournamentEntity.getRegistrationLimit())
+                .repeatable(tournamentEntity.getRepeatable())
                 .build();
     }
 
