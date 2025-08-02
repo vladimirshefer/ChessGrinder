@@ -1,6 +1,11 @@
 # [Chess Grinder](https://chessgrinder.com)
 App for chess club.
 
+Tournament Management Application.
+
+Swiss tournament system, Round-Robin tournament system.
+Mostly chess, but can be used for any game.
+
 ### Backend Tech stack
 - Java 17
 - Spring 6
