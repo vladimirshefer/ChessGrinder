@@ -26,6 +26,7 @@ import {FaRegHeart} from "react-icons/fa";
 import dayjs from "dayjs";
 import {FaArrowTrendUp} from "react-icons/fa6";
 import {LuSwords} from "react-icons/lu";
+import {usePageTitle} from "lib/react/hooks/usePageTitle";
 
 function AssignAchievementPane(
     {
@@ -163,6 +164,8 @@ export default function UserProfilePage() {
             return username ? userRepository.getUser(username) : Promise.reject<UserDto>()
         },
     })
+
+    usePageTitle(`${userProfile?.name || "User"} - User - ChessGrinder`, [userProfile, username])
 
     let historyQuery = useQuery({
         queryKey: ["meParticipants", userProfile],

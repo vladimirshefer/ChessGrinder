@@ -18,6 +18,8 @@ import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "../MainPage/MyActiveTournamentPane";
 import QrCode from "components/QrCode";
 import {IoMdShare} from "react-icons/io";
+import {usePageTitle} from "lib/react/hooks/usePageTitle";
+import {DEFAULT_DATETIME_FORMAT} from "../../lib/api/dto/MainPageData";
 
 function TournamentPage(
     {
@@ -35,6 +37,8 @@ function TournamentPage(
         queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
     })
     let isMain = !roundId && !tab
+
+    usePageTitle(`${tournamentQuery.data?.tournament?.name || "Unnamed"} - ${dayjs(tournamentQuery?.data?.tournament?.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")} - Tournament - ChessGrinder`, [tournamentQuery.data])
 
     let [authenticatedUser] = useAuthenticatedUser()
     let isAuthenticatedUser = !!authenticatedUser
