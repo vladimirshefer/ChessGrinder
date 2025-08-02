@@ -108,7 +108,6 @@ public class TournamentService {
         }
 
         if (!allRoundsFinished) {
-
             throw new IllegalStateException("There are open rounds with unknown match results.");
         }
 
@@ -127,28 +126,6 @@ public class TournamentService {
                 tournamentListener.tournamentFinished(updatedTournament);
             } catch (Exception e) {
                 log.error("Could not apply tournament listener on tournament finish {}", tournamentListener.getClass().getName(), e);
-            }
-        }
-
-
-    }
-
-    /**
-     * This method will find all tournaments that are running for more than a day and close them
-     */
-    @Scheduled(cron = "0 0 * * * ?")
-    public void cleanup() {
-        List<TournamentEntity> tournaments = tournamentRepository.findAllByStatus(TournamentStatus.ACTIVE);
-        for (TournamentEntity tournament : tournaments) {
-            if (tournament.getStatus().equals(TournamentStatus.ACTIVE)) {
-                LocalDateTime date = tournament.getDate();
-                if (date.isBefore(LocalDateTime.now().minusDays(1))) {
-                    try {
-                        finishTournament(tournament.getId());
-                    } catch (Exception e) {
-                        log.error("Could not finish tournament with ID {} during cleanup", tournament.getId(), e);
-                    }
-                }
             }
         }
     }
