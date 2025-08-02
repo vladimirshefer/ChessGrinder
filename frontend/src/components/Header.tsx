@@ -29,13 +29,15 @@ function Header() {
             onClick = () => {
             },
             text,
+            isAdminOnly = false,
         }: {
             to?: string,
             onClick?: () => void,
             text: string,
+            isAdminOnly?: boolean,
         }
     ) {
-        let button = <button onClick={() => onClick()} className={"uppercase"}>{text}</button>;
+        let button = <button onClick={() => onClick()} className={`uppercase ${isAdminOnly ? "text-danger-800" : ""}`}>{text}</button>;
         return <li className={"p-2"}>
             <Conditional on={!!to}>
                 <Link to={to!!}>{button}</Link>
@@ -80,12 +82,6 @@ function Header() {
                                     ${dropdownOpened ? "" : "hidden"}`}
             onClick={() => setDropdownOpened(false)}
         >
-            <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <NavLink to={"/badges"} text={loc("Badges")}/>
-            </ConditionalOnUserRole>
-            <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <NavLink to={"/admin"} text={loc("Admin")}/>
-            </ConditionalOnUserRole>
             <NavLink to={"/clock"} text={loc("Clock")}/>
             <NavLink to={"/users"} text={loc("Users")}/>
             <ConditionalOnAuthorized>
@@ -101,6 +97,12 @@ function Header() {
                 <button onClick={() => setLanguage("ru")}>RU</button>
                 <button onClick={() => setLanguage("en")}>EN</button>
             </li>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <NavLink to={"/badges"} text={loc("Badges")} isAdminOnly={true}/>
+            </ConditionalOnUserRole>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <NavLink to={"/admin"} text={loc("Admin")} isAdminOnly={true}/>
+            </ConditionalOnUserRole>
         </ul>
     </div>
 }
