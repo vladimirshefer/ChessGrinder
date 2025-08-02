@@ -115,10 +115,12 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
         } else {
 
             for (MatchDto match : lastRound) {
-                if (match.getWhite() != null) {
+                ParticipantDto white = match.getWhite();
+                if (white != null && white.getIsMissing() != true) {
                     playersCount++;
                 }
-                if (match.getBlack() != null) {
+                ParticipantDto black = match.getBlack();
+                if (black != null && black.getIsMissing() != true) {
                     playersCount++;
                 }
             }
@@ -135,7 +137,7 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
             boolean recalculateResults
     ) {
 
-        participants = new ArrayList<>(participants);
+        participants = new ArrayList<>(participants.stream().filter(it -> it != null && it.getIsMissing() != true).toList());
 
         participants.sort(Comparator.comparing(ParticipantDto::getId, nullsLast(naturalOrder())));
 

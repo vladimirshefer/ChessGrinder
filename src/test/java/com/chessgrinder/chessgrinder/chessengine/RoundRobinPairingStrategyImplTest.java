@@ -5,8 +5,7 @@ import com.chessgrinder.chessgrinder.chessengine.pairings.RoundRobinPairingStrat
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.junit.jupiter.api.Test;
 
-import static com.chessgrinder.chessgrinder.chessengine.MockTournamentRunnerUtils.participant;
-import static com.chessgrinder.chessgrinder.chessengine.MockTournamentRunnerUtils.runTournament;
+import static com.chessgrinder.chessgrinder.chessengine.MockTournamentRunnerUtils.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RoundRobinPairingStrategyImplTest {
@@ -37,11 +36,16 @@ public class RoundRobinPairingStrategyImplTest {
 
         @Test
         void test3pRe () {
-            runTournament(swissEngine, "user1", "user2", "user3")
+            runTournament(swissEngine,
+                    participant("user1"),
+                    participant("user2"),
+                    participant("user3"),
+                    missingParticipant("user4"),
+                    missingParticipant("user5")
+            )
                     .thenRound(round -> round
                             .match(participant("user1", 1, 0), null, MatchResult.BUY)
                             .match(participant("user2", 1, 0), participant("user3", 0, 1), MatchResult.WHITE_WIN)
-
                     )
                     .show(System.out::println)
                     .thenRound(round -> round
@@ -62,7 +66,7 @@ public class RoundRobinPairingStrategyImplTest {
 
                     )
                     .show(System.out::println)
-
+                    // Second circle
                     .thenRound(round -> round
                             .match(null, participant("user3", 3, 7), MatchResult.BUY)
                             .match(participant("user1", 4, 6), participant("user2", 3, 7), MatchResult.WHITE_WIN)
@@ -74,8 +78,6 @@ public class RoundRobinPairingStrategyImplTest {
                             .match(participant("user3", 4, 8), participant("user1", 4, 8), MatchResult.WHITE_WIN)
                     )
                     .show(System.out::println);
-
-
         }
 
         @Test
@@ -208,4 +210,4 @@ public class RoundRobinPairingStrategyImplTest {
         });
 
     }
-    }
+}

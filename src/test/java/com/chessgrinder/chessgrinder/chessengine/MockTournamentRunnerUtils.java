@@ -7,6 +7,7 @@ import com.chessgrinder.chessgrinder.enums.MatchResult;
 import jakarta.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class MockTournamentRunnerUtils {
 
@@ -26,6 +27,18 @@ public class MockTournamentRunnerUtils {
         return participant(name, 0, 0);
     }
 
+    public static ParticipantDto missingParticipant(String name) {
+        if (name == null) return null;
+        return ParticipantDto.builder()
+                .id(name)
+                .name(name)
+                .score(BigDecimal.valueOf((double) 0))
+                .buchholz(BigDecimal.valueOf((double) 0))
+                .place(-1)
+                .isMissing(true)
+                .build();
+    }
+
     public static MatchDto createMatch(@Nullable ParticipantDto white, @Nullable ParticipantDto black, @Nullable MatchResult result) {
         return MatchDto.builder()
                 .white(white)
@@ -36,6 +49,10 @@ public class MockTournamentRunnerUtils {
 
     public static MockTournamentRunner runTournament(PairingStrategy swissEngine, String... participants) {
         return new MockTournamentRunner(swissEngine, participants);
+    }
+
+    public static MockTournamentRunner runTournament(PairingStrategy swissEngine, ParticipantDto ... participants) {
+        return new MockTournamentRunner(swissEngine, List.of(participants));
     }
 }
 

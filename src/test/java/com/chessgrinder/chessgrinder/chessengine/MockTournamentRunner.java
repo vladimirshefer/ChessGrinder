@@ -23,6 +23,11 @@ public class MockTournamentRunner {
         this.participants = new ArrayList<>(Arrays.stream(participants).map(it -> it != null ? MockTournamentRunnerUtils.participant(it, 0, 0) : null).toList());
     }
 
+    public MockTournamentRunner(PairingStrategy pairingStrategy, List<ParticipantDto> participants) {
+        this.pairingStrategy = pairingStrategy;
+        this.participants = participants;
+    }
+
     public MockTournamentRunner thenRound(Consumer<MockRoundBuilder> round) {
         int newRoundNumber = rounds.size();
         List<MatchDto> actualMatches = pairingStrategy.makePairings(
