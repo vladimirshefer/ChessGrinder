@@ -18,6 +18,7 @@ import com.chessgrinder.chessgrinder.repositories.MatchRepository;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import com.chessgrinder.chessgrinder.util.Graph;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -249,8 +250,10 @@ public class RoundService {
         }
 
         List<RoundEntity> tournamentRoundEntities = roundRepository.findByTournamentId(tournamentId);
+        Graph<ParticipantEntity> graph = buildEncounterGraph(tournamentRoundEntities);
+
         participants.sort(COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST
-                .thenComparing(compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities))
+                .thenComparing(compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities, graph))
                 .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
                 .thenComparing(ParticipantEntity::isMissing)
                 .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
@@ -263,17 +266,29 @@ public class RoundService {
         participantRepository.saveAll(participants);
     }
 
-    private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities, Graph<ParticipantEntity> graph1) {
+    private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities, Graph<ParticipantEntity> directEncounters) {
         return (participant1, participant2) -> {
             ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
-            if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
-                return -1;
-            } else if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant2)) {
-                return 1;
-            } else {
+            if (findCycleBetween(participant1, participant2, directEncounters)) {
                 return 0;
             }
+            if (winnerBetweenTwoParticipants == null) {
+                return 0;
+            }
+            if (winnerBetweenTwoParticipants.equals(participant1)) {
+                return -1;
+            }
+            if (winnerBetweenTwoParticipants.equals(participant2)) {
+                return 1;
+            }
+            return 0;
         };
+    }
+
+    private static boolean findCycleBetween(ParticipantEntity participant1, ParticipantEntity participant2, Graph<ParticipantEntity> directEncounters) {
+        boolean transitivelyWon12 = directEncounters.dfs(participant1, it -> it.getScore().equals(participant1.getScore())).findAny().isPresent();
+        boolean transitivelyWon21 = directEncounters.dfs(participant2, it -> it.getScore().equals(participant2.getScore())).findAny().isPresent();
+        return transitivelyWon12 && transitivelyWon21;
     }
 
     @Nullable
@@ -345,4 +360,26 @@ public class RoundService {
             log.error("Could not update results", e);
         }
     }
+
+    private Graph<ParticipantEntity> buildEncounterGraph(List<RoundEntity> rounds) {
+        Graph<ParticipantEntity> graph = new Graph<>();
+        rounds
+                .stream()
+                .flatMap(round -> round.getMatches().stream())
+                .forEach(match -> {
+                    ParticipantEntity p1 = match.getParticipant1();
+                    ParticipantEntity p2 = match.getParticipant2();
+                    if (p1 == null || p2 == null) {
+                        return;
+                    }
+
+                    if (match.getResult() == MatchResult.WHITE_WIN) {
+                        graph.put(p1, p2);
+                    } else if (match.getResult() == MatchResult.BLACK_WIN) {
+                        graph.put(p2, p1);
+                    }
+                });
+        return graph;
+    }
+
 }
