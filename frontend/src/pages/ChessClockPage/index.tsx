@@ -3,10 +3,13 @@ import ClockComponent from "./ClockComponent";
 import ClockSettingsComponent from "./ClockSettingsComponent";
 import {Conditional} from "../../components/Conditional";
 import {useSearchParams} from "react-router-dom";
+import {usePageTitle} from "lib/react/hooks/usePageTitle";
 
 
 function ChessClockPage() {
     let [isSettingsOpen, setSettingsOpen] = useState(false);
+
+    usePageTitle("Chess Clock - ChessGrinder")
 
     let [searchParams] = useSearchParams()
     let explicitTime = searchParams.has("time") ? parseInt(searchParams.get("time")!!) : undefined;
