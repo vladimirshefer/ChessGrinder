@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {FaPause} from "react-icons/fa6";
-import {LuHome, LuPlay, LuSettings, LuTimerReset} from "react-icons/lu";
+import {LuExpand, LuHome, LuPlay, LuSettings, LuTimerReset} from "react-icons/lu";
+import {MdFullscreen, MdFullscreenExit} from "react-icons/md";
 import useCaffeinate from "./useCaffeinate";
 import {Link} from "react-router-dom";
+import useFullScreen from "./useFullScreen";
 
 const ClockComponent = (
     {
@@ -24,6 +26,7 @@ const ClockComponent = (
     const [timeLeft2, setTimeLeft2] = useState(time2);
     const [isFirstActive, setIsFirstActive] = useState(true);
     const [isPaused, setIsPaused] = useState(true);
+    const [isFullscreen, setIsFullscreen] = useFullScreen();
 
     useCaffeinate(!isPaused);
 
@@ -118,13 +121,18 @@ const ClockComponent = (
                         {timeLeft1 > 0 && timeLeft2 > 0 && (
                             <LuPlay onClick={() => setIsPaused(false)}/>
                         )}
+                        {!isFullscreen ? (
+                            <LuExpand onClick={() => setIsFullscreen(true)}/>
+                        ) : (
+                            <MdFullscreenExit onClick={() => setIsFullscreen(false)}/>
+                        )}
                         <LuSettings onClick={openSettings}/>
                         <LuTimerReset onClick={() => {
                             if (window.confirm("Reset the clock?")) {
                                 resetClock();
                             }
                         }}/>
-                        <Link to={"/"}>
+                        <Link to={"/"} onClick={() => setIsFullscreen(false)}>
                             <LuHome/>
                         </Link>
                     </div>
