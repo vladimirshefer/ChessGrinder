@@ -201,8 +201,6 @@ public class RoundService {
     public void updateResults(UUID tournamentId) {
         List<MatchEntity> matches = matchRepository.findFinishedByTournamentId(tournamentId);
 
-        matches.forEach(this::reverseEloUpdate);
-
         //<gamer's UUID, points>
         Map<String, Double> pointsMap = new HashMap<>();
         Map<String, Set<String>> enemiesMap = new HashMap<>();
@@ -265,12 +263,7 @@ public class RoundService {
         participantRepository.saveAll(participants);
     }
 
-    private void reverseEloUpdate(MatchEntity match) {
-
-
-    }
-
-    private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities) {
+    private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities, Graph<ParticipantEntity> graph1) {
         return (participant1, participant2) -> {
             ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
             if (winnerBetweenTwoParticipants != null && winnerBetweenTwoParticipants.equals(participant1)) {
@@ -283,24 +276,29 @@ public class RoundService {
         };
     }
 
+    @Nullable
     private static ParticipantEntity findWinnerBetweenTwoParticipants(ParticipantEntity first, ParticipantEntity second, List<RoundEntity> roundsDto) {
         for (RoundEntity round : roundsDto) {
-            if (round.getMatches() != null) {
-                for (MatchEntity match : round.getMatches()) {
-                    if (match.getParticipant1() != null && match.getParticipant2() != null) {
-                        if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getParticipant1();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getParticipant2();
-                            }
-                        } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
-                            if (match.getResult() == MatchResult.WHITE_WIN) {
-                                return match.getParticipant1();
-                            } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                                return match.getParticipant2();
-                            }
-                        }
+            if (round.getMatches() == null) {
+                continue;
+            }
+            for (MatchEntity match : round.getMatches()) {
+                if (match.getParticipant1() == null || match.getParticipant2() == null) {
+                    continue;
+                }
+                if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
+                    if (match.getResult() == MatchResult.WHITE_WIN) {
+                        return match.getParticipant1();
+                    }
+                    if (match.getResult() == MatchResult.BLACK_WIN) {
+                        return match.getParticipant2();
+                    }
+                } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
+                    if (match.getResult() == MatchResult.WHITE_WIN) {
+                        return match.getParticipant1();
+                    }
+                    if (match.getResult() == MatchResult.BLACK_WIN) {
+                        return match.getParticipant2();
                     }
                 }
             }

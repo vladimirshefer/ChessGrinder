@@ -102,7 +102,6 @@ class JavafoPairingStrategyImplTest {
                         .match("user4", "user8", MatchResult.DRAW)
                         .match("user6", "user2", MatchResult.DRAW))
                 .show(System.out::println)
-                .showParticipants(System.out::println)
-        ;
+                .showParticipants(System.out::println);
     }
 }
