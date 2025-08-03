@@ -1,4 +1,6 @@
 # [Chess Grinder](https://chessgrinder.com)
+[![codecov](https://codecov.io/github/vladimirshefer/ChessGrinder/graph/badge.svg?token=VMB4TG8EE6)](https://codecov.io/github/vladimirshefer/ChessGrinder)
+
 App for chess club.
 
 Tournament Management Application.
