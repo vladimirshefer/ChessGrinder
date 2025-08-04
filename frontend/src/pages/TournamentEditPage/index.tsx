@@ -29,7 +29,7 @@ export default function TournamentEditPage() {
         tournament.name = data.name
         tournament.locationUrl = data.locationUrl
         tournament.locationName = data.locationName
-        tournament.city = data.city === "Other" ? data.city : undefined;
+        tournament.city = data.city !== "Other" ? data.city : undefined;
         tournament.roundsNumber = parseInt(data.roundsNumber, 10);
         tournament.pairingStrategy = data.pairingStrategy as PairingStrategy;
         tournament.registrationLimit = !!data.registrationLimit ? parseInt(data.registrationLimit, 10) : undefined;

@@ -143,6 +143,7 @@ public class TournamentService {
         tournament.setLocationUrl(tournamentDto.getLocationUrl());
         tournament.setPairingStrategy(tournamentDto.getPairingStrategy());
         tournament.setRegistrationLimit(tournamentDto.getRegistrationLimit());
+        tournament.setCity(tournamentDto.getCity());
         final var roundsNum = tournamentDto.getRoundsNumber();
         if (roundsNum < MIN_ROUNDS_NUMBER || roundsNum > MAX_ROUNDS_NUMBER) {
             throw new ResponseStatusException(400, "Wrong rounds number range", null);
