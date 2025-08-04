@@ -19,6 +19,7 @@ import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.util.Graph;
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.stream.Collectors;
 
 import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST;
 import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST;
@@ -253,7 +256,7 @@ public class RoundService {
         Graph<ParticipantEntity> graph = buildEncounterGraph(tournamentRoundEntities);
 
         participants.sort(COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST
-                .thenComparing(compareParticipantEntityByPersonalEncounterWinnerFirst(tournamentRoundEntities, graph))
+                .thenComparing(compareParticipantEntityByPersonalEncounterWinnerFirst(graph))
                 .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
                 .thenComparing(ParticipantEntity::isMissing)
                 .thenComparing(ParticipantEntity::getNickname, nullsLast(naturalOrder()))
@@ -266,59 +269,22 @@ public class RoundService {
         participantRepository.saveAll(participants);
     }
 
-    private static Comparator<ParticipantEntity> compareParticipantEntityByPersonalEncounterWinnerFirst(List<RoundEntity> tournamentRoundEntities, Graph<ParticipantEntity> directEncounters) {
-        return (participant1, participant2) -> {
-            ParticipantEntity winnerBetweenTwoParticipants = findWinnerBetweenTwoParticipants(participant1, participant2, tournamentRoundEntities);
-            if (findCycleBetween(participant1, participant2, directEncounters)) {
+    @VisibleForTesting
+    static <T> Comparator<T> compareParticipantEntityByPersonalEncounterWinnerFirst(Graph<T> directEncounters) {
+        return (e1, e2) -> {
+            boolean transitivelyWon12 = directEncounters.dfs(e1).anyMatch(e2::equals);
+            boolean transitivelyWon21 = directEncounters.dfs(e2).anyMatch(e1::equals);
+            if (transitivelyWon12 && transitivelyWon21) {
                 return 0;
             }
-            if (winnerBetweenTwoParticipants == null) {
-                return 0;
-            }
-            if (winnerBetweenTwoParticipants.equals(participant1)) {
+            if (transitivelyWon12) {
                 return -1;
             }
-            if (winnerBetweenTwoParticipants.equals(participant2)) {
+            if (transitivelyWon21) {
                 return 1;
             }
             return 0;
         };
-    }
-
-    private static boolean findCycleBetween(ParticipantEntity participant1, ParticipantEntity participant2, Graph<ParticipantEntity> directEncounters) {
-        boolean transitivelyWon12 = directEncounters.dfs(participant1, it -> it.getScore().equals(participant1.getScore())).findAny().isPresent();
-        boolean transitivelyWon21 = directEncounters.dfs(participant2, it -> it.getScore().equals(participant2.getScore())).findAny().isPresent();
-        return transitivelyWon12 && transitivelyWon21;
-    }
-
-    @Nullable
-    private static ParticipantEntity findWinnerBetweenTwoParticipants(ParticipantEntity first, ParticipantEntity second, List<RoundEntity> roundsDto) {
-        for (RoundEntity round : roundsDto) {
-            if (round.getMatches() == null) {
-                continue;
-            }
-            for (MatchEntity match : round.getMatches()) {
-                if (match.getParticipant1() == null || match.getParticipant2() == null) {
-                    continue;
-                }
-                if (match.getParticipant1().equals(first) && match.getParticipant2().equals(second)) {
-                    if (match.getResult() == MatchResult.WHITE_WIN) {
-                        return match.getParticipant1();
-                    }
-                    if (match.getResult() == MatchResult.BLACK_WIN) {
-                        return match.getParticipant2();
-                    }
-                } else if (match.getParticipant1().equals(second) && match.getParticipant2().equals(first)) {
-                    if (match.getResult() == MatchResult.WHITE_WIN) {
-                        return match.getParticipant1();
-                    }
-                    if (match.getResult() == MatchResult.BLACK_WIN) {
-                        return match.getParticipant2();
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     private void addResult(Map<String, Double> points, Map<String, Set<String>> enemies, @Nullable String player, @Nullable String enemy, double pointsToAdd) {
@@ -361,25 +327,33 @@ public class RoundService {
         }
     }
 
-    private Graph<ParticipantEntity> buildEncounterGraph(List<RoundEntity> rounds) {
-        Graph<ParticipantEntity> graph = new Graph<>();
-        rounds
+    @VisibleForTesting
+    static Graph<ParticipantEntity> buildEncounterGraph(List<RoundEntity> rounds) {
+        return new Graph<>(rounds
                 .stream()
                 .flatMap(round -> round.getMatches().stream())
-                .forEach(match -> {
-                    ParticipantEntity p1 = match.getParticipant1();
-                    ParticipantEntity p2 = match.getParticipant2();
-                    if (p1 == null || p2 == null) {
-                        return;
-                    }
+                .filter(match -> match.getResult() != null)
+                .filter(match -> match.getParticipant1() != null && match.getParticipant2() != null)
+                .filter(match -> Objects.equals(match.getParticipant1().getScore(), match.getParticipant2().getScore()))
+                .map(RoundService::toWinnerAndLoser)
+                .filter(Objects::nonNull).toList()
+        );
+    }
 
-                    if (match.getResult() == MatchResult.WHITE_WIN) {
-                        graph.put(p1, p2);
-                    } else if (match.getResult() == MatchResult.BLACK_WIN) {
-                        graph.put(p2, p1);
-                    }
-                });
-        return graph;
+    @Nullable
+    private static SimpleEntry<ParticipantEntity, ParticipantEntity> toWinnerAndLoser(MatchEntity match) {
+        ParticipantEntity p1 = match.getParticipant1();
+        ParticipantEntity p2 = match.getParticipant2();
+        if (p1 == null || p2 == null) {
+            return null;
+        }
+
+        if (match.getResult() == MatchResult.WHITE_WIN) {
+            return new SimpleEntry<>(p1, p2);
+        } else if (match.getResult() == MatchResult.BLACK_WIN) {
+            return new SimpleEntry<>(p2, p1);
+        }
+        return null;
     }
 
 }

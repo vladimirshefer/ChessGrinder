@@ -12,6 +12,15 @@ import java.util.stream.StreamSupport;
 public class Graph<T> {
     private Map<T, Set<T>> graph = new HashMap<>();
 
+    public Graph() {
+    }
+
+    public Graph(Iterable<? extends Map.Entry<T, T>> edges) {
+        for (Map.Entry<T, T> vertex : edges) {
+            put(vertex.getKey(), vertex.getValue());
+        }
+    }
+
     public void put(T from, T to) {
         if (!graph.containsKey(from)) {
             graph.put(from, new HashSet<>());
@@ -20,10 +29,6 @@ public class Graph<T> {
             graph.put(to, new HashSet<>());
         }
         graph.get(from).add(to);
-    }
-
-    public Set<T> elements() {
-        return Collections.unmodifiableSet(graph.keySet());
     }
 
     public Set<T> neighbors(T from) {

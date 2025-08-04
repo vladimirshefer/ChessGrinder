@@ -11,6 +11,7 @@ import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.security.WithRefererOAuth2AuthorizationRequestResolver;
+import com.chessgrinder.chessgrinder.util.Graph;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,9 +19,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
 import java.math.BigDecimal;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class RoundServiceTest {
@@ -148,6 +152,45 @@ public class RoundServiceTest {
         assertThat(sorted.get(11).getNickname()).isEqualTo("milpops");
         assertThat(sorted.get(12).getNickname()).isEqualTo("если проиграю то мощно");
         assertThat(sorted.get(13).getNickname()).isEqualTo("Страх и ненависть на шахматах");
+    }
+
+    /**
+     * example: 1 > 2, 2 > 3, 3 > 1, 1 > 4
+     * result: [1,2,3][4]
+     */
+    @Test
+    void testPersonalEncounters() {
+        ParticipantEntity p1 = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("p1").score(BigDecimal.valueOf(10)).buchholz(BigDecimal.valueOf(4)).build();
+        ParticipantEntity p2 = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("p2").score(BigDecimal.valueOf(10)).buchholz(BigDecimal.valueOf(3)).build();
+        ParticipantEntity p3 = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("p3").score(BigDecimal.valueOf(10)).buchholz(BigDecimal.valueOf(2)).build();
+        ParticipantEntity p4 = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("p4").score(BigDecimal.valueOf(10)).buchholz(BigDecimal.valueOf(1)).build();
+        var encounters = asList(
+                new SimpleEntry<>(p1, p2),
+                new SimpleEntry<>(p2, p3),
+                new SimpleEntry<>(p3, p1),
+                new SimpleEntry<>(p1, p4)
+        );
+        Collections.shuffle(encounters);
+        Graph<ParticipantEntity> directEncounters = new Graph<>(encounters);
+        Comparator<ParticipantEntity> participantEntityComparator = RoundService.compareParticipantEntityByPersonalEncounterWinnerFirst(directEncounters);
+        assertEquals(0, participantEntityComparator.compare(p1, p2));
+        assertEquals(0, participantEntityComparator.compare(p2, p1));
+        assertEquals(0, participantEntityComparator.compare(p3, p1));
+        assertEquals(0, participantEntityComparator.compare(p1, p3));
+        assertEquals(-1, participantEntityComparator.compare(p1, p4));
+        assertEquals(1, participantEntityComparator.compare(p4, p1));
+        assertEquals(1, participantEntityComparator.compare(p4, p2));
+        assertEquals(1, participantEntityComparator.compare(p4, p3));
+        assertEquals(-1, participantEntityComparator.compare(p2, p4));
+        assertEquals(-1, participantEntityComparator.compare(p3, p4));
+
+        var participants = asList(p1, p2, p3, p4);
+        for (int i = 0; i < 10; i++) { // many times to make sure that order does not matter
+            Collections.shuffle(participants);
+            participants.sort(participantEntityComparator);
+            assertEquals(new HashSet<>(asList(p1, p2, p3)), new HashSet<>(participants.subList(0, 3)));
+            assertEquals(new HashSet<>(asList(p4)), new HashSet<>(participants.subList(3,4)));
+        }
     }
 
     private TournamentEntity createTournament() {
