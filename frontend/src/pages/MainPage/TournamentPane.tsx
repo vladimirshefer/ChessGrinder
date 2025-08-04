@@ -68,6 +68,10 @@ export function TournamentPane(
 
     let isMeParticipating = !!meParticipantQuery?.data?.id;
 
+    let locationGeneratedUrl = !!tournament.locationName
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tournament.locationName + " " + (tournament.city || ""))}`
+        : undefined;
+
     return <div className={`grid justify-items-start w-full p-4 
                 ${isPlanned ? "tournament-planned" : isFinished ? "tournament-finished" : "tournament-active"}`}>
         <div className={"grid w-full justify-items-start"}>
@@ -101,7 +105,7 @@ export function TournamentPane(
                     <IconTag
                         icon={<IoLocationSharp className={"text-primary-400"}/>}
                         text={tournament.locationName || ""}
-                        link={tournament.locationUrl || undefined}
+                        link={tournament.locationUrl || locationGeneratedUrl}
                     />
                 )}
                 <Conditional on={isMeParticipating}>
