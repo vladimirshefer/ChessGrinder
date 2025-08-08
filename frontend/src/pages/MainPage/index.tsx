@@ -6,6 +6,7 @@ import tournamentRepository from "lib/api/repository/TournamentRepository";
 import {useLoc} from "strings/loc";
 import {Link, useNavigate} from "react-router-dom";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
+import dayjs from "dayjs";
 
 function MainPage() {
     let loc = useLoc()
@@ -26,7 +27,11 @@ function MainPage() {
     }
 
     let tournamentsVisible = tournaments.filter(
-        it => it.status === "ACTIVE" || it.status === "PLANNED"
+        it => {
+            const oneWeekAgo = dayjs().subtract(1, 'week');
+            const tournamentDate = dayjs(it.date);
+            return it.status === "ACTIVE" || it.status === "PLANNED" || tournamentDate.isAfter(oneWeekAgo) || tournamentDate.isAfter();
+        }
     );
     if (tournamentsVisible.length === 0) {
         const maxTourNumber: number = 2;
