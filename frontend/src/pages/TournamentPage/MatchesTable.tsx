@@ -10,10 +10,12 @@ function MatchResultSelector(
     {
         canSetResult,
         result,
+        submittedResult = undefined,
         setResult,
     }: {
         canSetResult: boolean,
         result: MatchResult | undefined,
+        submittedResult?: MatchResult | undefined,
         setResult: (selectedResult: MatchResult | null) => void,
     }
 ) {
@@ -43,12 +45,16 @@ function MatchResultSelector(
         {
             result,
             onClick,
+            highlighted = false,
         }: {
             result: string,
             onClick: () => void,
+            highlighted?: boolean,
         }
     ) {
-        return <li className={"p-2 cursor-pointer text-lg border-gray-200 border"} onClick={onClick}>
+        return <li
+            className={`p-2 cursor-pointer text-lg border-gray-200 border ${highlighted ? "bg-primary-200" : ""}`}
+            onClick={onClick}>
             {result}
         </li>;
     }
@@ -68,12 +74,17 @@ function MatchResultSelector(
                     <ul className={"absolute t-[100%] z-50 w-full font-semibold bg-white shadow-lg"}
                         onClick={() => setSelectOpened(false)}
                     >
-                        <ResultSelectItem result={"1 - 0"} onClick={() => setResult("WHITE_WIN")}/>
-                        <ResultSelectItem result={"0 - 1"} onClick={() => setResult("BLACK_WIN")}/>
-                        <ResultSelectItem result={"½ - ½"} onClick={() => setResult("DRAW")}/>
-                        <ResultSelectItem result={"? - ?"} onClick={() => setResult(null)}/>
-                        <ResultSelectItem result={"BYE"} onClick={() => setResult("BUY")}/>
-                        <ResultSelectItem result={"MISS"} onClick={() => setResult("MISS")}/>
+                        <ResultSelectItem highlighted={submittedResult === "WHITE_WIN"} result={"1 - 0"}
+                                          onClick={() => setResult("WHITE_WIN")}/>
+                        <ResultSelectItem highlighted={submittedResult === "BLACK_WIN"} result={"0 - 1"}
+                                          onClick={() => setResult("BLACK_WIN")}/>
+                        <ResultSelectItem highlighted={submittedResult === "DRAW"} result={"½ - ½"}
+                                          onClick={() => setResult("DRAW")}/>
+                        <ResultSelectItem highlighted={false} result={"? - ?"} onClick={() => setResult(null)}/>
+                        <ResultSelectItem highlighted={submittedResult === "BUY"} result={"BYE"}
+                                          onClick={() => setResult("BUY")}/>
+                        <ResultSelectItem highlighted={submittedResult === "MISS"} result={"MISS"}
+                                          onClick={() => setResult("MISS")}/>
                     </ul>
                 </Conditional>
             </div>
@@ -136,7 +147,12 @@ export function MatchRow(
             }
         </div>
         <div className={"text-xl text-center grid"}>
-            <MatchResultSelector canSetResult={canEditResults} result={match.result} setResult={setResult}/>
+            <MatchResultSelector
+                canSetResult={canEditResults}
+                result={match.result}
+                submittedResult={match.resultSubmittedByWhite || match.resultSubmittedByBlack || match.result}
+                setResult={setResult}
+            />
             <span className={"text-xs"}>{tableNumber || 0}</span>
         </div>
         <div className={`grid text-xs p-3 
