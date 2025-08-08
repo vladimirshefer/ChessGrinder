@@ -90,8 +90,9 @@ export function TournamentPane(
                     <BsBookmarkCheckFill title={loc("Participating")}/>
                 </Conditional>
             </Link>
-            <small className={"font-bold text-left"}>
-                {dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
+            <small className={"flex gap-1 font-bold text-left"}>
+                {!!tournament.city && <span>{tournament.city},</span>}
+                <span>{dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}</span>
             </small>
         </div>
         <div className={"p-1"}></div>
