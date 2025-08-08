@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.service.RoundService;
+import com.chessgrinder.chessgrinder.service.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.UUID;
 public class RoundController {
 
     private final RoundService roundService;
+    private final TournamentService tournamentService;
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PostMapping()
@@ -24,6 +26,9 @@ public class RoundController {
     @PostMapping("/{roundNumber}/action/finish")
     public void finishRound(@PathVariable UUID tournamentId, @PathVariable Integer roundNumber) {
         roundService.finishRound(tournamentId, roundNumber);
+        if (tournamentService.isReadyToFinish(tournamentId)) {
+            tournamentService.finishTournament(tournamentId);
+        }
     }
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")

@@ -29,9 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST;
 import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST;
@@ -114,6 +113,18 @@ public class RoundService {
         } catch (Exception e) {
             log.error("Could not update results", e);
         }
+    }
+
+    public boolean isReadyToFinish(RoundEntity roundEntity) {
+        if (roundEntity.isFinished()) {
+            return true;
+        }
+        for (MatchEntity match : roundEntity.getMatches()) {
+            if (match.getResult() == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void reopenRound(UUID tournamentId, Integer roundNumber) {

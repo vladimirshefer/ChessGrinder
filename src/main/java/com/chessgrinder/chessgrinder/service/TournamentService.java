@@ -9,7 +9,6 @@ import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -84,38 +83,21 @@ public class TournamentService {
     }
 
     public void finishTournament(UUID tournamentId) {
-
         TournamentEntity tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new IllegalArgumentException("Tournament not found with ID: " + tournamentId));
 
         List<RoundEntity> rounds = roundRepository.findByTournamentId(tournamentId);
 
-        boolean allRoundsFinished = true;
-
         for (RoundEntity round : rounds) {
-            if (!round.isFinished()) {
-                boolean allMatchesHaveResults = round.getMatches().stream()
-                        .allMatch(match -> match.getResult() != null);
-
-                if (allMatchesHaveResults) {
-                    round.setFinished(true);
-                    roundRepository.save(round);
-                } else {
-                    allRoundsFinished = false;
-                    break;
-                }
+            if (round.isFinished()) {
+                continue;
             }
-        }
 
-        if (!allRoundsFinished) {
-            throw new IllegalStateException("There are open rounds with unknown match results.");
-        }
-
-        try {
-            roundService.updateResults(tournamentId);
-
-        } catch (Exception e) {
-            log.error("Could not update results", e);
+            if (roundService.isReadyToFinish(round)) {
+                roundService.finishRound(tournamentId, round.getNumber());
+            } else {
+                throw new IllegalStateException("There are open rounds with unknown match results.");
+            }
         }
 
         tournament.setStatus(TournamentStatus.FINISHED);
@@ -128,6 +110,22 @@ public class TournamentService {
                 log.error("Could not apply tournament listener on tournament finish {}", tournamentListener.getClass().getName(), e);
             }
         }
+    }
+
+    public boolean isReadyToFinish(UUID tournamentId) {
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new IllegalArgumentException("Tournament not found with ID: " + tournamentId));
+
+        List<RoundEntity> rounds = roundRepository.findByTournamentId(tournament.getId());
+        if (tournament.getStatus() == TournamentStatus.FINISHED) {
+            return true;
+        }
+        for (RoundEntity round : rounds) {
+            if (!roundService.isReadyToFinish(round)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void deleteTournament(UUID tournamentId) {
