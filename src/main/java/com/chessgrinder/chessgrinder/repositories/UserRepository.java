@@ -62,4 +62,9 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
               AND m.participant1.user.id <> m.participant2.user.id
             """)
     List<Integer[]> getStatsAgainstUser(UUID comparableUserId, UUID opponentUserId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE UserEntity u SET u.reputation = 0")
+    void clearAllReputation();
+
 }
