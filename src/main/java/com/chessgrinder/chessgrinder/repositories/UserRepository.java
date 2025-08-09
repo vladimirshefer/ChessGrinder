@@ -24,7 +24,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
     UserEntity findByUsername(String userName);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE UserEntity u SET u.reputation = u.reputation + :amount WHERE u.id = :userId")
+    @Query("UPDATE UserEntity u SET u.reputation = CASE WHEN (u.reputation + :amount) < 0 THEN 0 ELSE (u.reputation + :amount) END WHERE u.id = :userId")
     void addReputation(UUID userId, Integer amount);
 
     @Query("SELECT ub.user from UserBadgeEntity ub WHERE ub.badge.id = :badgeId")
@@ -62,4 +62,9 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
               AND m.participant1.user.id <> m.participant2.user.id
             """)
     List<Integer[]> getStatsAgainstUser(UUID comparableUserId, UUID opponentUserId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE UserEntity u SET u.reputation = 0")
+    void clearAllReputation();
+
 }

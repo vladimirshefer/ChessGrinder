@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ClockComponent from "./ClockComponent";
 import ClockSettingsComponent from "./ClockSettingsComponent";
 import {Conditional} from "../../components/Conditional";

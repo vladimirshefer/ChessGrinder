@@ -67,6 +67,26 @@ class UserRepositoryTest {
         assertThat(stats.get(0)).containsExactly(3, 1, 2);
     }
 
+    @Test
+    void testAddReputationCannotBeNegative() {
+        UserEntity user = userRepository.save(createUser("test"));
+        user.setReputation(10);
+        userRepository.save(user);
+
+        {
+            userRepository.addReputation(user.getId(), -10);
+            UserEntity updatedUser = userRepository.findById(user.getId()).orElseThrow();
+            assertThat(updatedUser.getReputation()).isEqualTo(0);
+        }
+
+        { // cannot set less than 0
+            userRepository.addReputation(user.getId(), -10);
+            UserEntity updatedUser = userRepository.findById(user.getId()).orElseThrow();
+            assertThat(updatedUser.getReputation()).isEqualTo(0);
+        }
+
+    }
+
     private static MatchEntity createMatch(ParticipantEntity comparableUserParticipant, ParticipantEntity opponentUserParticipant, RoundEntity roundEntity, MatchResult matchResult) {
         return MatchEntity.builder()
                 .participant1(comparableUserParticipant)

@@ -10,6 +10,7 @@ import com.chessgrinder.chessgrinder.repositories.UserBadgeRepository;
 import com.chessgrinder.chessgrinder.service.TournamentService.TournamentListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class TournamentWinnerBadgeTournamentListenerImpl implements TournamentLi
     private final ParticipantRepository participantRepository;
 
     @Override
+    @Transactional
     public void tournamentFinished(TournamentEntity tournamentEntity) {
         ParticipantEntity winner = participantRepository.findFirstPlaceByTournamentId(tournamentEntity.getId()).orElse(null);
 
@@ -39,11 +41,13 @@ public class TournamentWinnerBadgeTournamentListenerImpl implements TournamentLi
     }
 
     @Override
+    @Transactional
     public void tournamentReopened(TournamentEntity tournamentEntity) {
         // Do nothing
     }
 
     @Override
+    @Transactional
     public void totalReset() {
         BadgeEntity badge = getOrCreateBadge();
         userBadgeRepository.deleteAllByBadgeId(badge.getId());
