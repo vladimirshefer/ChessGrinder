@@ -1,11 +1,22 @@
 import {useMode} from "lib/api/repository/apiSettings";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
-import restApiClient from "../../lib/api/RestApiClient";
+import restApiClient from "lib/api/RestApiClient";
+import {useQuery} from "@tanstack/react-query";
+import {ListDto} from "lib/api/dto/MainPageData";
+import {useState} from "react";
 
 export default function AdminPage() {
     let [mode, setMode] = useMode()
+    let [selectedTournamentListener, setSelectedTournamentListener] = useState("")
     let [, authenticatedUserReload] = useAuthenticatedUser()
+
+    let tournamentListenersQuery = useQuery({
+        queryKey: ["tournamentListeners"],
+        queryFn: async () => {
+            return await restApiClient.get("/admin/tournament-listener") as ListDto<string>
+        }
+    })
 
     return <div className={"grid gap-2 text-left p-1"}>
         <div className={"grid gap-2 py-3 border-b-2"}>
@@ -53,20 +64,32 @@ export default function AdminPage() {
         </div>
 
         <div className={"grid gap-2 py-3 border-b-2"}>
-            <h3 className={"text-lg font-semibold"}>Ratings</h3>
+            <h3 className={"text-lg font-semibold"}>Tournament Listeners</h3>
+            <input
+                id="tournament-listener-selected"
+                name="tournament-listener-selected"
+                list="tournament-listener-choise"
+                placeholder={"Select tournament listener"}
+                onChange={(e) => {setSelectedTournamentListener(e.target.value)}}
+            />
+            <datalist id="tournament-listener-choise">
+                {
+                    tournamentListenersQuery.data?.values.map(it => <option value={it}></option>) || []
+                }
+            </datalist>
             <DangerActionButton
-                actionName={"Reset All Ratings"}
+                actionName={"Reset"}
                 className={"btn-danger"}
-                action={() => {
-                    restApiClient.get("/admin/ratings/reset")
+                action={async () => {
+                    await restApiClient.get(`/admin/tournament-listener/${selectedTournamentListener}/reset`)
                         .catch(e => alert("Could not reset ratings " + e?.response?.data?.message))
                 }}
             />
             <DangerActionButton
-                actionName={"Recalculate All Ratings"}
+                actionName={"Recalculate"}
                 className={"btn-danger"}
-                action={() => {
-                    restApiClient.get("/admin/ratings/recalculate")
+                action={async () => {
+                    await restApiClient.get(`/admin/tournament-listener/${selectedTournamentListener}/recalculate`)
                         .catch(e => alert("Could not recalculate ratings " + e?.response?.data?.message))
                 }}
             />

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {FaPause} from "react-icons/fa6";
 import {LuExpand, LuHome, LuPlay, LuSettings, LuTimerReset} from "react-icons/lu";
-import {MdFullscreen, MdFullscreenExit} from "react-icons/md";
+import {MdFullscreenExit} from "react-icons/md";
 import useCaffeinate from "./useCaffeinate";
 import {Link} from "react-router-dom";
 import useFullScreen from "./useFullScreen";

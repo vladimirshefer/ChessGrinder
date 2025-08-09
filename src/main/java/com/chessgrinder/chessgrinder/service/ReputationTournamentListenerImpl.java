@@ -26,6 +26,7 @@ public class ReputationTournamentListenerImpl implements TournamentListener {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public void totalReset() {
         userRepository.clearAllReputation();
     }
