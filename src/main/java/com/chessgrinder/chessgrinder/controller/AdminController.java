@@ -54,8 +54,8 @@ public class AdminController {
     }
 
     @Secured(RoleEntity.Roles.ADMIN)
-    @GetMapping("tournament-listener/recalculate")
-    public ListDto<String> recalculateListener() {
+    @GetMapping("tournament-listener")
+    public ListDto<String> getListeners() {
         return ListDto.of(tournamentListeners.stream().map(it -> it.getClass().getSimpleName()).toList());
     }
 
