@@ -8,6 +8,7 @@ import com.chessgrinder.chessgrinder.service.TournamentService.TournamentListene
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class AdminController {
 
     @Secured(RoleEntity.Roles.ADMIN)
     @GetMapping("tournament-listener/{name}/reset")
+    @Transactional
     public void resetListener(
             @PathVariable String name
     ) {
@@ -43,6 +45,7 @@ public class AdminController {
 
     @Secured(RoleEntity.Roles.ADMIN)
     @GetMapping("tournament-listener/{name}/recalculate")
+    @Transactional
     public void recalculateListener(
             @PathVariable String name
     ) {
