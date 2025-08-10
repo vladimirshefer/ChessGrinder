@@ -21,7 +21,7 @@ public interface ParticipantRepository extends PagingAndSortingRepository<Partic
     @Query("SELECT p FROM ParticipantEntity p WHERE p.user.id = :userId ORDER BY p.tournament.date DESC")
     List<ParticipantEntity> findAllByUserId(UUID userId);
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying(flushAutomatically = true)
     @Query("UPDATE ParticipantEntity p SET p.initialEloPoints = 0, p.finalEloPoints = 0")
     void clearAllEloPoints();
 

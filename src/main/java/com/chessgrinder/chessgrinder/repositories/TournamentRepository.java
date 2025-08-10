@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface TournamentRepository extends PagingAndSortingRepository<TournamentEntity, UUID>, ListCrudRepository<TournamentEntity, UUID> {
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Modifying(flushAutomatically = true)
     @Query("UPDATE TournamentEntity t SET t.hasEloCalculated = false")
     void clearAllEloPoints();
 
