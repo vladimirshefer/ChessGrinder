@@ -23,12 +23,13 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
 
     UserEntity findByUsername(String userName);
 
-    @Modifying(flushAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserEntity u SET u.reputation = CASE WHEN (u.reputation + :amount) < 0 THEN 0 ELSE (u.reputation + :amount) END WHERE u.id = :userId")
     void addReputation(UUID userId, Integer amount);
 
     @Query("SELECT ub.user from UserBadgeEntity ub WHERE ub.badge.id = :badgeId")
     List<UserEntity> findAllByBadgeId(UUID badgeId);
+
 
     @Query("SELECT SUM(p.score) " +
             "FROM ParticipantEntity p " +
@@ -42,7 +43,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
             LocalDateTime globalScoreToDate
     );
 
-    @Modifying(flushAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserEntity u SET u.eloPoints = 0")
     void clearAllEloPoints();
 
@@ -62,7 +63,7 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, U
             """)
     List<Integer[]> getStatsAgainstUser(UUID comparableUserId, UUID opponentUserId);
 
-    @Modifying(flushAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserEntity u SET u.reputation = 0")
     void clearAllReputation();
 
