@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {useLoc} from "strings/loc";
 import useSearchParam from "lib/react/hooks/useSearchParam";
@@ -9,6 +9,7 @@ export default function UsersPage() {
     let loc = useLoc();
     const [globalScoreFromDate] = useSearchParam("startSeason");
     const [globalScoreToDate] = useSearchParam("endSeason");
+    const [sort] = useSearchParam("sort");
 
     let usersQuery = useQuery({
         queryKey: ["members"],
@@ -26,7 +27,21 @@ export default function UsersPage() {
         },
     })
 
-    let users = usersQuery.data?.values;
+    let users = useMemo(() => {
+        let list = usersQuery.data?.values;
+
+        if (sort === "reputation") {
+            list = list?.sort((a, b) => (b.reputation || 0) - (a.reputation || 0));
+        }
+        if (sort === "score") {
+            list = list?.sort((a, b) => (b.globalScore || 0) - (a.globalScore || 0));
+        }
+        if (sort === "rating") {
+            list = list?.sort((a, b) => (b.eloPoints || 0) - (a.eloPoints || 0));
+        }
+        return list;
+    }, [usersQuery.data, sort]);
+
     if (!users) {
         return <>Loading...</>
     }
