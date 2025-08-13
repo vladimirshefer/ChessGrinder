@@ -3,52 +3,55 @@ package com.chessgrinder.chessgrinder.service;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
-import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
-import com.chessgrinder.chessgrinder.repositories.UserRepository;
-import com.chessgrinder.chessgrinder.testutil.repository.TestJpaRepository;
+import com.chessgrinder.chessgrinder.repositories.*;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityManager;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@DataJpaTest
 public class ReputationTournamentListenerImplTest {
 
     private ReputationTournamentListenerImpl reputationService;
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
     private ParticipantRepository participantRepository;
+    @Autowired
+    private MatchRepository matchRepository;
+    @Autowired
+    private TournamentRepository tournamentRepository;
+    @Autowired
+    private RoundRepository roundRepository;
+    @Autowired
+    private EntityManager entityManager;
+    @Autowired
+    private org.springframework.transaction.PlatformTransactionManager transactionManager;
 
     @BeforeEach
     public void setUp() {
-        userRepository = Mockito.spy(TestJpaRepository.of(UserRepository.class));
-        Mockito.doAnswer(i -> {
-            UUID userId = i.getArgument(0, UUID.class);
-            int reputationChange = i.getArgument(1, Integer.class);
-            Map<UUID, UserEntity> data = TestJpaRepository.getData(userRepository);
-            UserEntity userEntity = data.get(userId);
-            userEntity.setReputation(userEntity.getReputation() + reputationChange);
-            return null;
-        }).when(userRepository).addReputation(any(), any());
-
-        Mockito.doAnswer(i -> {
-            Map<UUID, UserEntity> data = TestJpaRepository.getData(userRepository);
-            for (UserEntity user : data.values()) {
-                user.setReputation(0);
-            }
-            return null;
-        }).when(userRepository).clearAllReputation();
-
-        participantRepository = Mockito.spy(TestJpaRepository.of(ParticipantRepository.class));
         reputationService = new ReputationTournamentListenerImpl(userRepository);
     }
 
     @Test
+    @Transactional
     public void testAll() {
         UserEntity uA = createUser("A");
         UserEntity uB = createUser("B");
@@ -56,119 +59,145 @@ public class ReputationTournamentListenerImplTest {
         UserEntity uD = createUser("D");
         UserEntity uE = createUser("E");
 
+        TournamentEntity tournament1 = withTransaction(() -> {
+            var t = createTournament();
+            var pA = createParticipant(t, uA);
+            var pB = createParticipant(t, uB);
+            var pC = createParticipant(t, uC);
+            var pD = createParticipant(t, uD);
+            var pE = createParticipant(t, uE);
+            var pF = createParticipant(t, null);
+            var t1r1 = createRound(t, 1);
+            createMatch(t1r1, pA, pB, MatchResult.WHITE_WIN);
+            createMatch(t1r1, pC, pD, MatchResult.WHITE_WIN);
+            createMatch(t1r1, pE, pF, MatchResult.WHITE_WIN);
+            var t1r2 = createRound(t, 2);
+            createMatch(t1r2, pB, pA, MatchResult.DRAW);
+            createMatch(t1r2, pD, pC, MatchResult.DRAW);
+            createMatch(t1r2, pF, pE, MatchResult.DRAW);
+            var t1r3 = createRound(t, 3);
+            createMatch(t1r3, pA, null, MatchResult.BUY);
+            createMatch(t1r3, pB, null, MatchResult.MISS);
+            createMatch(t1r3, null, pC, MatchResult.MISS);
+            entityManager.flush();
+            t = tournamentRepository.findById(t.getId()).orElseThrow();
+            return t;
+        });
 
-        TournamentEntity tournament1;
-        {
-            var pA = createParticipant(uA);
-            var pB = createParticipant(uB);
-            var pC = createParticipant(uC);
-            var pD = createParticipant(uD);
-            var pE = createParticipant(uE);
-            var pF = createParticipant(null);
-            var t1r1 = createRound(List.of(
-                    createMatch(pA, pB, MatchResult.WHITE_WIN),
-                    createMatch(pC, pD, MatchResult.WHITE_WIN),
-                    createMatch(pE, pF, MatchResult.WHITE_WIN)
-            ));
-            var t1r2 = createRound(List.of(
-                    createMatch(pB, pA, MatchResult.DRAW),
-                    createMatch(pD, pC, MatchResult.DRAW),
-                    createMatch(pF, pE, MatchResult.DRAW)
-            ));
-            var t1r3 = createRound(List.of(
-                    createMatch(pA, null, MatchResult.BUY),
-                    createMatch(pB, null, MatchResult.MISS),
-                    createMatch(null, pC, MatchResult.MISS)
-            ));
-
-            tournament1 = createTournament(List.of(t1r1, t1r2, t1r3));
-        }
-
-        TournamentEntity tournament2;
-        {
-            var pA = createParticipant(uA);
-            var pB = createParticipant(uB);
-            var pC = createParticipant(uC);
-            var pD = createParticipant(uD);
-            var pE = createParticipant(uE);
-            var pF = createParticipant(null);
+        TournamentEntity tournament2 = withTransaction(() -> {
+            var t = createTournament();
+            var pA = createParticipant(t, uA);
+            var pB = createParticipant(t, uB);
+            var pC = createParticipant(t, uC);
+            var pD = createParticipant(t, uD);
+            var pE = createParticipant(t, uE);
+            var pF = createParticipant(t, null);
             // A - 5 wins. B - 5 losses.
-            var t1r1 = createRound(List.of(
-                    createMatch(pA, pB, MatchResult.WHITE_WIN),
-                    createMatch(pA, pC, MatchResult.WHITE_WIN),
-                    createMatch(pA, pD, MatchResult.WHITE_WIN),
-                    createMatch(pA, pE, MatchResult.WHITE_WIN),
-                    createMatch(pA, pF, MatchResult.WHITE_WIN),
-                    createMatch(pC, pB, MatchResult.WHITE_WIN),
-                    createMatch(pD, pB, MatchResult.WHITE_WIN),
-                    createMatch(pE, pB, MatchResult.WHITE_WIN),
-                    createMatch(pF, pB, MatchResult.WHITE_WIN)
-            ));
-            tournament2 = createTournament(List.of(t1r1));
-        }
+            var t2r1 = createRound(t, 1);
+            createMatch(t2r1, pA, pB, MatchResult.WHITE_WIN);
+            createMatch(t2r1, pA, pC, MatchResult.WHITE_WIN);
+            createMatch(t2r1, pA, pD, MatchResult.WHITE_WIN);
+            createMatch(t2r1, pA, pE, MatchResult.WHITE_WIN);
+            createMatch(t2r1, pA, pF, MatchResult.WHITE_WIN);
+            createMatch(t2r1, pC, pB, MatchResult.WHITE_WIN);
+            createMatch(t2r1, pD, pB, MatchResult.WHITE_WIN);
+            createMatch(t2r1, pE, pB, MatchResult.WHITE_WIN);
+            createMatch(t2r1, pF, pB, MatchResult.WHITE_WIN);
+            entityManager.flush();
+            t = tournamentRepository.findById(t.getId()).orElseThrow();
+            return t;
+        });
+
+        entityManager.refresh(tournament1);
+        entityManager.refresh(tournament2);
 
         reputationService.tournamentFinished(tournament1);
 
-        assertReputation(uA, 3);
-        assertReputation(uB, 1);
-        assertReputation(uC, 2);
-        assertReputation(uD, 1);
-        assertReputation(uE, 2);
+        assertReputation(refresh(uA), 3);
+        assertReputation(refresh(uB), 1);
+        assertReputation(refresh(uC), 2);
+        assertReputation(refresh(uD), 1);
+        assertReputation(refresh(uE), 2);
 
         reputationService.tournamentFinished(tournament2);
 
-        assertReputation(uA, 3 + 6);
-        assertReputation(uB, 1 + 4);
-        assertReputation(uC, 2 + 2);
-        assertReputation(uD, 1 + 2);
-        assertReputation(uE, 2 + 2);
+        assertReputation(refresh(uA), 3 + 6);
+        assertReputation(refresh(uB), 1 + 4);
+        assertReputation(refresh(uC), 2 + 2);
+        assertReputation(refresh(uD), 1 + 2);
+        assertReputation(refresh(uE), 2 + 2);
 
         reputationService.tournamentReopened(tournament1);
-        assertReputation(uA, 6);
-        assertReputation(uB, 4);
-        assertReputation(uC, 2);
-        assertReputation(uD, 2);
-        assertReputation(uE, 2);
+        assertReputation(refresh(uA), 6);
+        assertReputation(refresh(uB), 4);
+        assertReputation(refresh(uC), 2);
+        assertReputation(refresh(uD), 2);
+        assertReputation(refresh(uE), 2);
 
         reputationService.totalReset();
 
-        assertReputation(uA, 0);
-        assertReputation(uB, 0);
-        assertReputation(uC, 0);
-        assertReputation(uD, 0);
-        assertReputation(uE, 0);
+        assertReputation(refresh(uA), 0);
+        assertReputation(refresh(uB), 0);
+        assertReputation(refresh(uC), 0);
+        assertReputation(refresh(uD), 0);
+        assertReputation(refresh(uE), 0);
     }
 
-    private static TournamentEntity createTournament(List<RoundEntity> rounds) {
-        return TournamentEntity.builder()
+    private UserEntity refresh(UserEntity entity) {
+        return userRepository.findById(entity.getId()).orElseThrow();
+    }
+
+    private <T> T refresh(T entity) {
+        entityManager.refresh(entity);
+        return entity;
+    }
+
+    private TournamentEntity createTournament() {
+        return tournamentRepository.save(TournamentEntity.builder()
                 .id(UUID.randomUUID())
                 .name("Test Tournament")
-                .rounds(rounds)
+                .roundsNumber(999)
+                .rounds(new ArrayList<>())
                 .status(TournamentStatus.ACTIVE)
-                .build();
+                .build()
+        );
     }
 
-    private static RoundEntity createRound(List<MatchEntity> matches) {
-        return RoundEntity.builder()
-                .matches(matches)
+    private RoundEntity createRound(TournamentEntity tournament, int number) {
+        RoundEntity round = roundRepository.save(RoundEntity.builder()
+                .tournament(tournament)
+                .number(number)
+                .matches(new ArrayList<>())
                 .isFinished(true)
-                .build();
+                .build()
+        );
+        tournament.getRounds().add(round);
+        return round;
     }
 
-    private static MatchEntity createMatch(@Nullable ParticipantEntity participant1, @Nullable ParticipantEntity participant2, MatchResult result) {
-        return MatchEntity.builder()
+    private MatchEntity createMatch(RoundEntity round, @Nullable ParticipantEntity participant1, @Nullable ParticipantEntity participant2, MatchResult result) {
+        MatchEntity match = matchRepository.save(MatchEntity.builder()
                 .participant1(participant1)
                 .participant2(participant2)
+                .round(round)
                 .result(result)
-                .build();
+                .build()
+        );
+        round.getMatches().add(match);
+        return match;
     }
 
-    private ParticipantEntity createParticipant(@Nullable UserEntity user) {
+    private ParticipantEntity createParticipant(TournamentEntity tournament, @Nullable UserEntity user) {
         return participantRepository.save(ParticipantEntity.builder()
                 .id(UUID.randomUUID())
                 .user(user)
-                .nickname(user != null ? user.getUsername() : null)
-                .build());
+                .score(BigDecimal.ZERO)
+                .buchholz(BigDecimal.ZERO)
+                .tournament(tournament)
+                .place(0)
+                .nickname(user != null ? user.getUsername() : UUID.randomUUID().toString())
+                .build()
+        );
     }
 
     private UserEntity createUser(String username) {
@@ -180,8 +209,29 @@ public class ReputationTournamentListenerImplTest {
         );
     }
 
+    @SneakyThrows
+    private <T> T withTransaction(Callable<T> runnable) {
+        var status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            T result = runnable.call();
+            transactionManager.commit(status);
+            return result;
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw e;
+        }
+    }
+
     private static void assertReputation(UserEntity user, int expected) {
         assertNotNull(user, "User must not be null for reputation assertions");
         assertEquals(expected, user.getReputation(), "Unexpected reputation for user " + user.getUsername());
+    }
+
+    @TestConfiguration
+    static class AuditorAwareTestConfig {
+        @Bean
+        public AuditorAware<String> auditorProvider() {
+            return () -> Optional.of("test_user");
+        }
     }
 }

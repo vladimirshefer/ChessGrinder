@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.chessgrinder.chessgrinder.service.ReputationTournamentListenerImpl.MatchUtils.getUserId;
 
@@ -31,15 +32,6 @@ public class ReputationTournamentListenerImpl implements TournamentListener {
         userRepository.clearAllReputation();
     }
 
-    @Override
-    @Transactional
-    public void tournamentFinished(TournamentEntity tournamentEntity) {
-        Map<UUID, Integer> result = calculateReputationDiff(tournamentEntity);
-
-        //noinspection Convert2MethodRef
-        result.forEach((userId, amount) -> userRepository.addReputation(userId, amount));
-    }
-
     private static Map<UUID, Integer> calculateReputationDiff(TournamentEntity tournamentEntity) {
         Map<UUID, BigDecimal> result = new HashMap<>();
         for (RoundEntity roundEntity : tournamentEntity.getRounds()) {
@@ -53,6 +45,13 @@ public class ReputationTournamentListenerImpl implements TournamentListener {
                 Map.Entry::getKey,
                 it -> it.getValue().intValue()
         ));
+    }
+
+    @Override
+    @Transactional
+    public void tournamentFinished(TournamentEntity tournamentEntity) {
+        Map<UUID, Integer> result = calculateReputationDiff(tournamentEntity);
+        updateReputation(tournamentEntity, result, false);
     }
 
     private static BigDecimal calculateForParticipant(@Nullable MatchEntity match, @Nullable ParticipantEntity participant) {
@@ -89,11 +88,30 @@ public class ReputationTournamentListenerImpl implements TournamentListener {
         }
     }
 
+    private void updateReputation(TournamentEntity tournamentEntity, Map<UUID, Integer> result, boolean minus) {
+        Map<UUID, UserEntity> users = tournamentEntity.getRounds().stream()
+                .flatMap(it -> it.getMatches().stream())
+                .flatMap(it -> Stream.of(it.getParticipant1(), it.getParticipant2()))
+                .filter(Objects::nonNull)
+                .map(ParticipantEntity::getUser)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(UserEntity::getId, it -> it, (u1, u2) -> u1));
+        result.forEach((userId, amount) -> {
+            UserEntity userEntity = users.get(userId);
+            if (minus) {
+                userEntity.setReputation(userEntity.getReputation() - amount);
+            } else {
+                userEntity.setReputation(userEntity.getReputation() + amount);
+            }
+            userRepository.save(userEntity);
+        });
+    }
+
     @Override
     @Transactional
     public void tournamentReopened(TournamentEntity tournamentEntity) {
         Map<UUID, Integer> result = calculateReputationDiff(tournamentEntity);
-        result.forEach((userId, amount) -> userRepository.addReputation(userId, -amount));
+        updateReputation(tournamentEntity, result, true);
     }
 
     public static class MatchUtils {
