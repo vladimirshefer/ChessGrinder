@@ -18,6 +18,7 @@ import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import com.chessgrinder.chessgrinder.service.TournamentService;
 import com.chessgrinder.chessgrinder.trf.TrfUtil;
 import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersXxzTrfLine;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -152,6 +154,7 @@ public class TournamentController {
     }
 
     @PostMapping("{tournamentId}/action/participate")
+    @Transactional
     public Object participate(
             @PathVariable
             UUID tournamentId,
@@ -183,6 +186,10 @@ public class TournamentController {
                 .buchholz(BigDecimal.ZERO)
                 .place(0)
                 .build();
+
+        if (SecurityUtil.hasRole(user, RoleEntity.Roles.ADMIN)) {
+            participant.setModerator(true);
+        }
 
         participantRepository.save(participant);
 
