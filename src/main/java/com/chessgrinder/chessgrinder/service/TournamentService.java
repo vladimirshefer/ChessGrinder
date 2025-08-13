@@ -1,7 +1,7 @@
 package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
-import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.entities.RoundEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
@@ -115,6 +115,10 @@ public class TournamentService {
     public boolean isReadyToFinish(UUID tournamentId) {
         TournamentEntity tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new IllegalArgumentException("Tournament not found with ID: " + tournamentId));
+
+        if (tournament.getRoundsNumber() > tournament.getRounds().size() && tournament.getStatus() == TournamentStatus.ACTIVE) {
+            return false;
+        }
 
         List<RoundEntity> rounds = roundRepository.findByTournamentId(tournament.getId());
         if (tournament.getStatus() == TournamentStatus.FINISHED) {
