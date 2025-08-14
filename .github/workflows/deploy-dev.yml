@@ -5,7 +5,6 @@ on:
     workflows: ["Build and Push Dev Docker Image"]
     types:
       - completed
-    branches: [master]
 
   # Optional: Allow manual triggering
   workflow_dispatch:
