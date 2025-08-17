@@ -229,7 +229,7 @@ export default function UserProfilePage() {
                         </div>
                     )}
                     {!!userProfile.eloPoints && (
-                        <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
+                        <div className={"flex gap-1 items-center"} title={loc("Rating")}>
                             <FaArrowTrendUp/>
                             <span>{userProfile.eloPoints || "0"}</span>
                         </div>

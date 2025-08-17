@@ -16,6 +16,7 @@ let locale_ru: { [key: string]: string } = {
     "More info": "Подробнее",
     "Members": "Участники клуба",
     "All users": "Все пользователи",
+    "Users": "Пользователи",
     "All tournaments": "Все турниры",
     "User": "Пользователь",
     "Edit profile": "Редактировать профиль",
@@ -77,6 +78,11 @@ let locale_ru: { [key: string]: string } = {
     "You lost": "Вы проиграли",
     "Clock": "Часы",
     "City": "Город",
+    "Login": "Войти",
+    "Logout": "Выйти",
+    "Berlin": "Берлин",
+    "Tbilisi": "Тбилиси",
+    "Limassol": "Лимассол",
 }
 
 export default locale_ru
