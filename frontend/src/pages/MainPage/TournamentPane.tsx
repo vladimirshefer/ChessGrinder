@@ -1,8 +1,6 @@
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
 import {useLoc} from "strings/loc";
 import {useQuery} from "@tanstack/react-query";
-import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
-import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import {Link} from "react-router-dom";
 import {BsBookmarkCheckFill, BsFillRecordFill} from "react-icons/bs";
 import dayjs from "dayjs";
@@ -23,19 +21,11 @@ export function TournamentPane(
     let loc = useLoc();
     let loginPageLink = useLoginPageLink();
 
-    /**
-     * TODO migrate to special endpoint instead of tournamentPage
-     */
     let winnerQuery = useQuery({
         queryKey: ["tournamentWinner", tournament.id],
         queryFn: async () => {
-            let tournamentData = await tournamentPageRepository.getData(tournament.id);
-            // sorted on server side
-            let participantsSorted: ParticipantDto[] = tournamentData?.participants || [];
-            if (participantsSorted.length === 0) {
-                return null
-            }
-            return participantsSorted[0]
+            let result = await participantRepository.getWinner(tournament.id);
+            return result.values[0]
         }
     })
 

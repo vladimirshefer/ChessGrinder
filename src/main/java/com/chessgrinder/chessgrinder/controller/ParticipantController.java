@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.controller;
 
+import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoleEntity.Roles;
@@ -51,6 +52,13 @@ public class ParticipantController {
             @PathVariable UUID participantId
     ) {
         return participantService.get(participantId);
+    }
+
+    @GetMapping("/winner")
+    public ListDto<ParticipantDto> getWinner(
+            @PathVariable UUID tournamentId
+    ){
+        return ListDto.of(participantService.getWinner(tournamentId));
     }
 
     @GetMapping("/me")

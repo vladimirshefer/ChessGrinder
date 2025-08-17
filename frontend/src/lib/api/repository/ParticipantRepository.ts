@@ -3,7 +3,7 @@ import {qualifiedService} from "./apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import {requirePresent} from "lib/util/common";
-import {UserDto} from "lib/api/dto/MainPageData";
+import {ListDto, UserDto} from "lib/api/dto/MainPageData";
 import authService from "lib/auth/AuthService";
 
 export interface ParticipantRepository {
@@ -14,6 +14,7 @@ export interface ParticipantRepository {
     updateParticipant(tournamentId: string, participant: Partial<ParticipantDto>): Promise<void>
     missParticipant(tournamentId: string, participantId: string): Promise<void>;
     unmissParticipant(tournamentId: string, participantId: string): Promise<void>;
+    getWinner(tournamentId: string): Promise<ListDto<ParticipantDto>>;
 }
 
 class LocalStorageParticipantRepository implements ParticipantRepository {
@@ -70,6 +71,13 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
         if (!participant) throw new Error(`No participant with userId ${username} in tournament ${tournamentId}`)
         return participant
     }
+
+    async getWinner(tournamentId: string): Promise<ListDto<ParticipantDto>> {
+        let tournament = requirePresent(localStorageUtil.getObject<TournamentPageData>(`cgd.tournament.${tournamentId}`), `No tournament with id ${tournamentId}`)
+        let participant = tournament.participants[0]
+        if (!participant) throw new Error(`No participant in tournament ${tournamentId}`)
+        return {values: [participant]}
+    }
 }
 
 class RestApiParticipantRepository implements ParticipantRepository {
@@ -99,6 +107,10 @@ class RestApiParticipantRepository implements ParticipantRepository {
 
     async unmissParticipant(tournamentId: string, participantId: string): Promise<void> {
         await restApiClient.post(`/tournament/${tournamentId}/participant/${participantId}/action/unmiss`)
+    }
+
+    async getWinner(tournamentId: string): Promise<ListDto<ParticipantDto>> {
+        return await restApiClient.get<ListDto<ParticipantDto>>(`/tournament/${tournamentId}/participant/winner`)
     }
 }
 
