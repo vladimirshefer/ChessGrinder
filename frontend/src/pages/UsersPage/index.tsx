@@ -15,10 +15,7 @@ export default function UsersPage() {
         queryKey: ["members"],
         queryFn: async () => {
             try {
-                if (!globalScoreFromDate && !globalScoreToDate) {
-                    return await userRepository.getUsers();
-                }
-                return await userRepository.getUsers(0, globalScoreFromDate || undefined, globalScoreToDate || undefined);
+                return await userRepository.getUsers();
             }
             catch (error: any) {
                 alert(loc(error.response.data.message));

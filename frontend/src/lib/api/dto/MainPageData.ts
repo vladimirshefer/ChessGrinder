@@ -17,7 +17,6 @@ export interface UserDto {
     badges: BadgeDto[]
     roles?: string[]
     reputation?: number
-    globalScore?: number
     emailHash: string
     eloPoints?: number;
 }

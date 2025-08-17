@@ -29,18 +29,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     @Query("SELECT ub.user from UserBadgeEntity ub WHERE ub.badge.id = :badgeId")
     List<UserEntity> findAllByBadgeId(UUID badgeId);
 
-    @Query("SELECT SUM(p.score) " +
-            "FROM ParticipantEntity p " +
-            "WHERE p.user.id = :userId " +
-            "AND p.tournament.date >= :globalScoreFromDate " +
-            "AND p.tournament.date <= :globalScoreToDate " +
-            "AND p.tournament.status = 'FINISHED'")
-    BigDecimal getGlobalScore(
-            UUID userId,
-            LocalDateTime globalScoreFromDate,
-            LocalDateTime globalScoreToDate
-    );
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserEntity u SET u.eloPoints = 0")
     void clearAllEloPoints();

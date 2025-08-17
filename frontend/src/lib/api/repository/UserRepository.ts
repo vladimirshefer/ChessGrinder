@@ -9,9 +9,7 @@ export interface UserRepository {
     getUser(username: string): Promise<UserDto | null>
 
     getUsers(
-        limit: number | undefined,
-        globalScoreFromDate?: string | undefined,
-        globalScoreToDate?: string | undefined
+        limit: number | undefined
     ): Promise<ListDto<UserDto>>
 
     getMe(): Promise<UserDto | null>
@@ -121,14 +119,10 @@ class RestApiUserRepository implements UserRepository {
     }
 
     async getUsers(
-        limit?: number | undefined,
-        globalScoreFromDate?: string | undefined,
-        globalScoreToDate?: string | undefined
+        limit?: number | undefined
     ): Promise<ListDto<UserDto>> {
         let queryParams: any = {}
         if (!!limit) queryParams.limit = limit
-        if (!!globalScoreFromDate) queryParams.globalScoreFromDate = globalScoreFromDate
-        if (!!globalScoreToDate) queryParams.globalScoreToDate = globalScoreToDate
         return restApiClient.get(`/user`, {...queryParams});
     }
 
