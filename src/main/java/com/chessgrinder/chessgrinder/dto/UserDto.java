@@ -45,6 +45,4 @@ public class UserDto {
 
     private int reputation;
 
-    private BigDecimal globalScore;
-
 }

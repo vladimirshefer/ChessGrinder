@@ -4,14 +4,11 @@ import com.chessgrinder.chessgrinder.dto.StatsAgainstUserDTO;
 import com.chessgrinder.chessgrinder.dto.UserDto;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
-import com.chessgrinder.chessgrinder.entities.UserRoleEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
-import com.chessgrinder.chessgrinder.repositories.UserRoleRepository;
 import com.chessgrinder.chessgrinder.security.principal.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,14 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.chessgrinder.chessgrinder.util.DateUtil.nowInstantAtUtc;
 
 @Service
 @RequiredArgsConstructor
@@ -35,33 +26,23 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final UserRoleRepository userRoleRepository;
     private final RoleService roleService;
 
     @Value("${chessgrinder.security.adminEmail:}")
     private String adminEmail = "";
 
-    public List<UserDto> getAllUsers(
-            Integer limit,
-            LocalDateTime globalScoreFromDate,
-            LocalDateTime globalScoreToDate
-    ) {
+    public List<UserDto> getAllUsers(Integer limit) {
         List<UserEntity> users;
         if (limit != null && limit > 0) {
             users = userRepository.findAllOrdered(Pageable.ofSize(limit).withPage(0)).getContent();
         } else {
             users = userRepository.findAllOrdered();
         }
-        calculateGlobalScore(users, globalScoreFromDate, globalScoreToDate);
 
         return users.stream().map(userMapper::toDto)
                 .sorted(Comparator
                         .comparing(
                                 UserDto::getEloPoints,
-                                Comparator.nullsLast(Comparator.reverseOrder())
-                        )
-                        .thenComparing(
-                                UserDto::getGlobalScore,
                                 Comparator.nullsLast(Comparator.reverseOrder())
                         )
                         .thenComparing(
@@ -72,44 +53,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void calculateGlobalScore(
-            UserEntity user,
-            @Nullable
-            LocalDateTime globalScoreFromDate,
-            @Nullable
-            LocalDateTime globalScoreToDate
-    ) {
-        if (globalScoreFromDate == null) {
-            globalScoreFromDate = LocalDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC);
-        }
-
-        if (globalScoreToDate == null) {
-            globalScoreToDate = LocalDateTime.ofInstant(nowInstantAtUtc(), ZoneOffset.UTC);
-        }
-
-        BigDecimal userGlobalScore = userRepository.getGlobalScore(
-                user.getId(),
-                globalScoreFromDate,
-                globalScoreToDate
-        );
-
-        user.setGlobalScore(userGlobalScore);
-    }
-
-    public void calculateGlobalScore(UserEntity user) {
-        calculateGlobalScore(user, null, null);
-    }
-
-    public void calculateGlobalScore(
-            List<UserEntity> users,
-            @Nullable
-            LocalDateTime startSeasonDate,
-            @Nullable
-            LocalDateTime endSeasonDate
-    ) {
-        users.forEach(u -> calculateGlobalScore(u, startSeasonDate, endSeasonDate));
-    }
-
     public UserDto getUserByUserId(String userId) {
 
         UserEntity user = userRepository.findById(UUID.fromString(userId)).orElse(null);
@@ -118,7 +61,6 @@ public class UserService {
             log.error("There is no such user with id: '" + userId + "'");
             throw new UserNotFoundException("There is no such user with id: '" + userId + "'");
         }
-        calculateGlobalScore(user);
         return userMapper.toDto(user);
 
     }
@@ -130,7 +72,7 @@ public class UserService {
             log.error("There is no such user with username: '" + userName + "'");
             throw new UserNotFoundException("There is no such user with username: '" + userName + "'");
         }
-        calculateGlobalScore(user);
+
         return userMapper.toDto(user);
     }
 

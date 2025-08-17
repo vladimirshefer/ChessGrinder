@@ -53,10 +53,6 @@ export function UserPane(
                         </Link>
                     )}
                 </div>
-                <div className={"h-full flex items-center gap-1"} title={loc("Tournament points")}>
-                    <AiOutlineTrophy/>
-                    <span className={""}>{user.globalScore || 0}</span>
-                </div>
                 {eloServiceEnabled && !!user.eloPoints && (
                     <div className={"h-full flex items-center gap-1"} title={`${loc("Rating")} (${loc("Elo points")})`}>
                         <FaArrowTrendUp/>

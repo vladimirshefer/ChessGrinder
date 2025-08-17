@@ -33,9 +33,6 @@ export default function UsersPage() {
         if (sort === "reputation") {
             list = list?.sort((a, b) => (b.reputation || 0) - (a.reputation || 0));
         }
-        if (sort === "score") {
-            list = list?.sort((a, b) => (b.globalScore || 0) - (a.globalScore || 0));
-        }
         if (sort === "rating") {
             list = list?.sort((a, b) => (b.eloPoints || 0) - (a.eloPoints || 0));
         }

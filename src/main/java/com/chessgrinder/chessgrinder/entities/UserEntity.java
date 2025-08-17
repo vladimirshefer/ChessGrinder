@@ -65,10 +65,6 @@ public class UserEntity extends AbstractAuditingEntity {
     @Column(name = "elo_points")
     private int eloPoints = 0;
 
-    @Builder.Default
-    @Transient //won't be created in DB
-    private BigDecimal globalScore = BigDecimal.valueOf(-1);
-
     public enum Provider {
         GUEST, LOCAL, GOOGLE, GITHUB
     }

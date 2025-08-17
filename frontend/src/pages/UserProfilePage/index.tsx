@@ -194,8 +194,6 @@ export default function UserProfilePage() {
         return <>No such user</>
     }
 
-    let globalScore = userProfile.globalScore;
-
     return <div className={"grid p-4"}>
         <div className={"flex gap-1 items-center"}>
             <span className={"text-left uppercase grow"}>
@@ -224,12 +222,6 @@ export default function UserProfilePage() {
                     </span>
                 </ConditionalOnUserRole>
                 <div className={"flex font-semibold gap-4 items-center"}>
-                    {!!userProfile.globalScore && (
-                        <div className={"flex gap-1 items-center"} title={loc("Points")}>
-                            <AiOutlineTrophy/>
-                            <span>{globalScore}</span>
-                        </div>
-                    )}
                     {!!userProfile.reputation && (
                         <div className={"flex gap-1 items-center"} title={loc("Reputation")}>
                             <FaRegHeart/>

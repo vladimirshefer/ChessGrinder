@@ -11,11 +11,9 @@ import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.
 import com.chessgrinder.chessgrinder.security.CustomPermissionEvaluator;
 import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import com.chessgrinder.chessgrinder.service.UserService;
-import com.chessgrinder.chessgrinder.util.DateUtil;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -24,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -36,7 +33,6 @@ public class UserController {
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
     private final UserBadgeRepository userBadgeRepository;
-    private final TournamentMapper tournamentMapper;
     private final ParticipantRepository participantRepository;
     private final ParticipantMapper participantMapper;
     private final UserReputationHistoryRepository userReputationHistoryRepository;
@@ -48,31 +44,14 @@ public class UserController {
     private boolean isSignupWithPasswordEnabled;
 
     private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
-    private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
     @GetMapping
     public ListDto<UserDto> getUsers(
             @Nullable
             @RequestParam(required = false)
-            Integer limit,
-            @Nullable
-            @RequestParam(required = false)
-            @DateTimeFormat(pattern = DATE_FORMAT_STRING)
-            LocalDate globalScoreFromDate,
-            @Nullable
-            @RequestParam(required = false)
-            @DateTimeFormat(pattern = DATE_FORMAT_STRING)
-            LocalDate globalScoreToDate
+            Integer limit
     ) {
-        if (globalScoreFromDate != null && globalScoreToDate != null && globalScoreToDate.isBefore(globalScoreFromDate)) {
-            throw new ResponseStatusException(400, "End date can't be before start date", null);
-        }
-        final List<UserDto> allUsers = userService.getAllUsers(
-                limit,
-                DateUtil.atStartOfDay(globalScoreFromDate),
-                DateUtil.atStartOfDay(globalScoreToDate)
-        );
-        return ListDto.<UserDto>builder().values(allUsers).build();
+        return ListDto.of(userService.getAllUsers(limit));
     }
 
     @GetMapping("/{userId}")
@@ -98,7 +77,7 @@ public class UserController {
         if (authenticatedUser == null) {
             return null;
         }
-        userService.calculateGlobalScore(authenticatedUser);
+
         return userMapper.toDto(authenticatedUser);
     }
 
