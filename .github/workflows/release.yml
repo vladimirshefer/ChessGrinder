@@ -1,0 +1,33 @@
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - id: release
+        uses: google-github-actions/release-please-action@v4
+        with:
+          release-type: simple
+          include-v-in-tag: true
+          bump-minor-pre-major: true
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+
+  publish:
+    uses: ./.github/workflows/dockerhub-push-release.yml
+    needs: [release]
+    if: needs.release.outputs.release_created == 'true'
+    secrets: inherit
+
+  deploy:
+    uses: ./.github/workflows/deploy-release.yml
+    needs: [release, publish]
+    if: needs.release.outputs.release_created == 'true'
+    secrets: inherit
