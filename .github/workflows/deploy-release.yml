@@ -1,16 +1,19 @@
-name: Deploy to Production
+name: Deploy - Release
 
 on:
   # Only manual triggering
   workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: production
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
+      - uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
