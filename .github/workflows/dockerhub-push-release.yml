@@ -1,5 +1,3 @@
-name: Build and Push Release Docker Image
-
 on:
   workflow_dispatch:
   workflow_call:
