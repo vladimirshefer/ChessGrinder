@@ -18,6 +18,7 @@ import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import com.chessgrinder.chessgrinder.service.TournamentService;
 import com.chessgrinder.chessgrinder.trf.TrfUtil;
@@ -29,7 +30,6 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -58,8 +58,10 @@ public class TournamentController {
 
     @Secured(RoleEntity.Roles.ADMIN)
     @PostMapping
-    public TournamentDto createTournament() {
-        return tournamentService.createTournament(LocalDateTime.now());
+    public TournamentDto createTournament(
+            @AuthenticatedUser UserEntity owner
+    ) {
+        return tournamentService.createTournament(LocalDateTime.now(), owner);
     }
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
@@ -155,19 +157,14 @@ public class TournamentController {
 
     @PostMapping("{tournamentId}/action/participate")
     @Transactional
-    public Object participate(
+    public void participate(
             @PathVariable
             UUID tournamentId,
             @RequestParam(required = false)
             @Nullable
             String nickname,
-            Authentication authentication
+            @AuthenticatedUser UserEntity user
     ) {
-        if (!authentication.isAuthenticated()) {
-            throw new ResponseStatusException(401, "Not Authenticated", null);
-        }
-
-        UserEntity user = userRepository.findByUsername(authentication.getName());
         TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
 
         if (!tournament.getStatus().equals(TournamentStatus.PLANNED)) {
@@ -192,7 +189,5 @@ public class TournamentController {
         }
 
         participantRepository.save(participant);
-
-        return authentication.getName();
     }
 }

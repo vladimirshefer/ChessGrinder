@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.service;
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
 import com.chessgrinder.chessgrinder.entities.RoundEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
+import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
@@ -44,11 +45,12 @@ public class TournamentService {
     }
 
     @Transactional
-    public TournamentDto createTournament(LocalDateTime date) {
+    public TournamentDto createTournament(LocalDateTime date, UserEntity owner) {
         TournamentEntity tournamentEntity = TournamentEntity.builder()
                 .date(date)
                 .status(TournamentStatus.PLANNED)
                 .roundsNumber(DEFAULT_ROUNDS_NUMBER)
+                .owner(owner)
                 .build();
 
         tournamentEntity = tournamentRepository.save(tournamentEntity);

@@ -10,14 +10,18 @@ import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.service.TournamentService;
+import com.chessgrinder.chessgrinder.dto.TournamentDto;
 import com.chessgrinder.chessgrinder.testutil.repository.TestJpaRepository;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -28,6 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class TournamentControllerTest {
+
+    private TournamentService tournamentService;
 
     private TournamentController tournamentController;
 
@@ -54,8 +60,9 @@ class TournamentControllerTest {
 
         TournamentMapper tournamentMapper = new TournamentMapper();
         ParticipantMapper participantMapper = new ParticipantMapper(tournamentMapper);
+        tournamentService = Mockito.mock(TournamentService.class);
         tournamentController = new TournamentController(
-                Mockito.mock(),
+                tournamentService,
                 tournamentRepository,
                 userRepository,
                 participantRepository,
@@ -64,7 +71,32 @@ class TournamentControllerTest {
                 participantMapper
         );
 
-        mockMvc = MockMvcBuilders.standaloneSetup(tournamentController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(tournamentController)
+                .setCustomArgumentResolvers(new AuthenticatedUserArgumentResolver(userRepository))
+                .build();
+    }
+
+    @Test
+    void createTournament_shouldCreateAndReturnTournamentWithOwner() throws Exception {
+        String username = "admin@user.user";
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
+        when(userRepository.findByUsername(username)).thenReturn(userEntity);
+
+        TournamentDto dto = TournamentDto.builder()
+                .id(UUID.randomUUID().toString())
+                .status(TournamentStatus.PLANNED)
+                .roundsNumber(6)
+                .build();
+        when(tournamentService.createTournament(any(), eq(userEntity))).thenReturn(dto);
+
+        mockMvc.perform(post("/tournament")
+                        .principal(mockAuth(username, true)))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":\"" + dto.getId() + "\"}", false));
+
+        verify(tournamentService).createTournament(any(), eq(userEntity));
     }
 
     @Test
@@ -72,7 +104,8 @@ class TournamentControllerTest {
         String username = "user@user.user";
         String nickname = "testNickname";
 
-        UserEntity userEntity = userRepository.save(new UserEntity());
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
         when(userRepository.findByUsername(username)).thenReturn(userEntity);
 
         TournamentEntity tournament = tournamentRepository.save(
@@ -85,8 +118,7 @@ class TournamentControllerTest {
         mockMvc.perform(post("/tournament/{tournamentId}/action/participate", tournament.getId())
                         .param("nickname", nickname)
                         .principal(mockAuth(username, true)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(username));
+                .andExpect(status().isOk());
 
         // Verify save is called
         verify(participantRepository).save(any(ParticipantEntity.class));
@@ -96,9 +128,14 @@ class TournamentControllerTest {
     void participate_shouldThrowException_whenUserNotAuthenticated() throws Exception {
         UUID tournamentId = UUID.randomUUID();
 
+        String username = "user@user.user";
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
+        when(userRepository.findByUsername(username)).thenReturn(userEntity);
+
         // Perform the request
         mockMvc.perform(post("/tournament/{tournamentId}/action/participate", tournamentId)
-                        .principal(mockAuth("user@user.user", false)))
+                        .principal(mockAuth(username, false)))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -111,6 +148,10 @@ class TournamentControllerTest {
                         .status(TournamentStatus.ACTIVE)
                         .build()
         );
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
+        when(userRepository.findByUsername(username)).thenReturn(userEntity);
 
         mockMvc.perform(post("/tournament/{tournamentId}/action/participate", tournament.getId())
                         .principal(mockAuth(username, true)))
@@ -134,6 +175,10 @@ class TournamentControllerTest {
             participantRepository.save(ParticipantEntity.builder().id(UUID.randomUUID()).tournament(tournament).build());
         }
 
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
+        when(userRepository.findByUsername(username)).thenReturn(userEntity);
+
         mockMvc.perform(post("/tournament/{tournamentId}/action/participate", tournament.getId())
                         .principal(authentication))
                 .andExpect(status().isBadRequest());
@@ -144,6 +189,9 @@ class TournamentControllerTest {
         Authentication authentication = mock(Authentication.class);
         when(authentication.isAuthenticated()).thenReturn(isAuthenticated);
         when(authentication.getName()).thenReturn(username);
+        when(authentication.getPrincipal()).thenReturn(username);
+//         Populate SecurityContext so that AuthenticatedUserArgumentResolver can read it
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }
 }
