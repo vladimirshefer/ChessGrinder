@@ -14,6 +14,7 @@ import UserPane from "pages/MainPage/UserPane";
 import MatchesTable from "../TournamentPage/MatchesTable";
 import tournamentPageRepository from "../../lib/api/repository/TournamentPageRepository";
 import {TournamentPageData} from "../../lib/api/dto/TournamentPageData";
+import {usePageTitle} from "../../lib/react/hooks/usePageTitle";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
@@ -32,6 +33,7 @@ export default function ParticipantPage() {
             return await participantRepository.getParticipant(tournamentId!!, participantId)
         }
     })
+    usePageTitle(` ${participantQuery.data?.name || loc("Nickname")} - ${participantQuery.data?.userFullName || loc("Guest")} - ${loc("Participant")} - ChessGrinder`, [participantQuery.data, loc])
 
     let userQuery = useQuery({
         queryKey: ["user", participantQuery.data?.userId],
