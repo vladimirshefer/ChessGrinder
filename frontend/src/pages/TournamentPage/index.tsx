@@ -311,7 +311,7 @@ function TournamentPage(
                         </Link>
                         <button className={"btn-danger uppercase !px-4"}
                                 onClick={async () => {
-                                    let expectedConfirmation = (tournament?.name || tournament?.id || "DELETE");
+                                    let expectedConfirmation = (tournament?.name || "DELETE");
                                     let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
                                     if (confirmation !== expectedConfirmation) {
                                         alert("You entered wrong id. Tournament will not be deleted.");
