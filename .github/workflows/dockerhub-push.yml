@@ -8,6 +8,11 @@ on:
         default: 'latest'
         required: false
         type: string
+      version:
+        description: "A version of the Application"
+        default: "0.0.1"
+        required: false
+        type: string
 
 jobs:
   publish:
@@ -23,3 +28,5 @@ jobs:
           context: ./
           push: true
           tags: vshefer/chessgrinder:${{ inputs.tag }}
+          build-args: |
+            VERSION=${{ inputs.version }}

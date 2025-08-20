@@ -7,6 +7,8 @@ COPY pom.xml pom.xml
 RUN mvn install:install-file -Dfile=./lib/javafo-2.2-main.jar -DgroupId=javafo -DartifactId=javafo -Dversion=2.2 -Dpackaging=jar
 RUN mvn dependency:resolve
 COPY src/main src/main
+ARG VERSION="0.0.1"
+RUN mvn versions:set -DnewVersion=${VERSION}
 RUN mvn spring-boot:build-info
 RUN mvn install -DskipTests
 
