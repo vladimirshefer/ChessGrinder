@@ -44,6 +44,10 @@ public class ConfigurationController {
                     .format(LocalDateTime.ofInstant(buildProperties.getTime(), ZoneOffset.UTC))
                     : null
             );
+            put("build.version", (buildProperties!=null && buildProperties.getVersion() != null)
+                    ? buildProperties.getVersion()
+                    : null
+            );
         }};
     }
 }
