@@ -50,7 +50,7 @@ export default function PrivacyPolicyPage() {
         You can learn about user agreements of those organizations on their websites.
         You can also refuse their collection of your personal data.
         For example, Google Analytics Opt-out Browser Add-on can be found
-        <a href={"https://tools.google.com/dlpage/gaoptout"} target={"_blank"}>here</a>.
+        <a href={"https://tools.google.com/dlpage/gaoptout"} target={"_blank"} rel={"noreferrer"}>here</a>.
         We do not plan to pass any personal data to other organizations or services,
         which are not listed in this privacy policy.
         As an exception, the collected data may be provided on a lawful

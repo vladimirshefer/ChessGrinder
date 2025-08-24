@@ -2,7 +2,6 @@ import {UserDto} from "lib/api/dto/MainPageData";
 import {useLoc, useTransliterate} from "strings/loc";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {Link} from "react-router-dom";
-import {AiOutlineTrophy} from "react-icons/ai";
 import {FaRegHeart} from "react-icons/fa";
 import {FaArrowTrendUp} from "react-icons/fa6";
 import React from "react";
