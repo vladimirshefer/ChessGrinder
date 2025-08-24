@@ -19,7 +19,8 @@ import MyActiveTournamentPane from "../MainPage/MyActiveTournamentPane";
 import QrCode from "components/QrCode";
 import {IoMdShare} from "react-icons/io";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
-import {DEFAULT_DATETIME_FORMAT} from "../../lib/api/dto/MainPageData";
+import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
+import {copyToClipboard} from "lib/util/clipboard";
 
 function TournamentPage(
     {
@@ -135,20 +136,37 @@ function TournamentPage(
         alert(loc('Nicknames have been copied to clipboard'));
     }
 
-    async function copyToClipboard(textToCopy: string) {
-        // method for old browsers (and without exceptions handling)
-        const textArea = document.createElement('textarea');
-        textArea.value = textToCopy;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-    }
-
     if (tournamentQuery.isError) return <>Error!</>
     if (!tournamentQuery.isSuccess || !tournamentQuery.data) return <>Loading</>
     let tournament = tournamentQuery.data.tournament
     let hideParticipateButton = !meParticipantQuery.isSuccess || !!meParticipantQuery.data
+
+    async function startTournament() {
+        await tournamentRepository.startTournament(tournament?.id!!)
+            .catch(e => alert("Could not start tournament. " +
+                (e?.response?.data?.message || "Unknown error")));
+        await tournamentQuery.refetch()
+    }
+
+    async function finishTournament() {
+        await tournamentRepository.finishTournament(tournament?.id!!)
+            .catch(e => alert("Could not finish tournament. " +
+                (e?.response?.data?.message || "Unknown error")));
+        await tournamentQuery.refetch()
+    }
+
+    async function deleteTournament() {
+        let expectedConfirmation = (tournament?.name || "DELETE");
+        let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
+        if (confirmation !== expectedConfirmation) {
+            alert("You entered wrong id. Tournament will not be deleted.");
+            return;
+        }
+        await tournamentRepository.deleteTournament(tournament?.id!!)
+            .catch(e => alert("Could not delete tournament. " +
+                (e?.response?.data?.message || "Unknown error")));
+        await navigate("/");
+    }
 
     return <>
         <div className={"flex mt-4 p-2 items-top content-center"}>
@@ -243,11 +261,7 @@ function TournamentPage(
                     </Conditional>
                 </Conditional>
                 <div className={"p-2"}>{/*Just padding*/}</div>
-                <ResultsTable participants={participants}
-                              openParticipant={async (it) => {
-                                  await openParticipant(it)
-                              }}
-                />
+                <ResultsTable participants={participants} openParticipant={openParticipant}/>
             </Conditional>
             <Conditional on={!!roundId}>
                 <div className={"p-2"}>
@@ -271,65 +285,66 @@ function TournamentPage(
             </Conditional>
         </>
         <Conditional on={isMain}>
-            <Conditional on={isMeModerator}>
-                <div className={"flex p-2 items-top content-center"}>
-                    <div className={"flex gap-1 justify-start p-2 grow"}>
-                        <button className={"btn-light h-full !px-4"}
-                            onClick={copyNicknamesToClipboard}
-                        >
-                            <AiOutlineCopy/>
-                        </button>
-                    </div>
-
-                    <div className={"flex gap-1 justify-end p-2"}>
-                        <Conditional on={tournament.status !== "ACTIVE"}>
-                            <button className={"btn-primary uppercase !px-4"}
-                                    onClick={async () => {
-                                        await tournamentRepository.startTournament(tournament?.id!!)
-                                            .catch(e => alert("Could not start tournament. " +
-                                                (e?.response?.data?.message || "Unknown error")));
-                                        await tournamentQuery.refetch()
-                                    }}
-                            >{loc("Start")}
-                            </button>
-                        </Conditional>
-                        <Conditional on={tournament.status === "ACTIVE"}>
-                            <button className={"btn-primary uppercase"}
-                                    onClick={async () => {
-                                        await tournamentRepository.finishTournament(tournament?.id!!)
-                                            .catch(e => alert("Could not finish tournament. " +
-                                                (e?.response?.data?.message || "Unknown error")));
-                                        await tournamentQuery.refetch()
-                                    }}
-                            >{loc("Finish")}
-                            </button>
-                        </Conditional>
-                        <Link to={`/tournament/${tournament.id}/edit`}>
-                            <button className={"btn-light h-full !px-4"}>
-                                <AiOutlineEdit/>
-                            </button>
-                        </Link>
-                        <button className={"btn-danger uppercase !px-4"}
-                                onClick={async () => {
-                                    let expectedConfirmation = (tournament?.name || "DELETE");
-                                    let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
-                                    if (confirmation !== expectedConfirmation) {
-                                        alert("You entered wrong id. Tournament will not be deleted.");
-                                        return;
-                                    }
-                                    await tournamentRepository.deleteTournament(tournament?.id!!)
-                                        .catch(e => alert("Could not delete tournament. " +
-                                            (e?.response?.data?.message || "Unknown error")));
-                                    await navigate("/");
-                                }}
-                        >
-                            <AiOutlineDelete/>
-                        </button>
-                    </div>
-                </div>
-            </Conditional>
+            <ControlButtons
+                isMeModerator={isMeModerator}
+                copyNicknames={copyNicknamesToClipboard}
+                tournament={tournament}
+                startTournament={startTournament}
+                finishTournament={finishTournament}
+                deleteTournament={deleteTournament}
+            />
         </Conditional>
     </>
+}
+
+function ControlButtons(props: {
+    tournament: TournamentDto,
+    isMeModerator?: boolean
+    startTournament: () => Promise<void>,
+    finishTournament: () => Promise<void>,
+    deleteTournament: () => Promise<void>,
+    copyNicknames: () => Promise<void>,
+}) {
+    let loc = useLoc()
+
+    return <Conditional on={props.isMeModerator || false}>
+        <div className={"flex p-2 items-top content-center"}>
+            <div className={"flex gap-1 justify-start p-2 grow"}>
+                <button className={"btn-light h-full !px-4"}
+                        onClick={props.copyNicknames}
+                >
+                    <AiOutlineCopy/>
+                </button>
+            </div>
+
+            <div className={"flex gap-1 justify-end p-2"}>
+                <Conditional on={props.tournament.status !== "ACTIVE"}>
+                    <button className={"btn-primary uppercase !px-4"}
+                            onClick={props.startTournament}
+                    >{loc("Start")}
+                    </button>
+                </Conditional>
+                <Conditional on={props.tournament.status === "ACTIVE"}>
+                    <button className={"btn-primary uppercase"}
+                            onClick={props.finishTournament}
+                    >{loc("Finish")}
+                    </button>
+                </Conditional>
+                <Link to={`/tournament/${props.tournament.id}/edit`}>
+                    <button className={"btn-light h-full !px-4"}>
+                        <AiOutlineEdit/>
+                    </button>
+                </Link>
+                <button
+                    className={"btn-danger uppercase !px-4"}
+                    onClick={props.deleteTournament}
+                    title={loc("Delete")}
+                >
+                    <AiOutlineDelete/>
+                </button>
+            </div>
+        </div>
+    </Conditional>;
 }
 
 export default TournamentPage;
