@@ -284,9 +284,8 @@ function TournamentPage(
                 </div>
             </Conditional>
         </>
-        <Conditional on={isMain}>
+        <Conditional on={isMain && isMeModerator}>
             <ControlButtons
-                isMeModerator={isMeModerator}
                 copyNicknames={copyNicknamesToClipboard}
                 tournament={tournament}
                 startTournament={startTournament}
@@ -299,7 +298,6 @@ function TournamentPage(
 
 function ControlButtons(props: {
     tournament: TournamentDto,
-    isMeModerator?: boolean
     startTournament: () => Promise<void>,
     finishTournament: () => Promise<void>,
     deleteTournament: () => Promise<void>,
@@ -307,44 +305,42 @@ function ControlButtons(props: {
 }) {
     let loc = useLoc()
 
-    return <Conditional on={props.isMeModerator || false}>
-        <div className={"flex p-2 items-top content-center"}>
-            <div className={"flex gap-1 justify-start p-2 grow"}>
-                <button className={"btn-light h-full !px-4"}
-                        onClick={props.copyNicknames}
-                >
-                    <AiOutlineCopy/>
-                </button>
-            </div>
-
-            <div className={"flex gap-1 justify-end p-2"}>
-                <Conditional on={props.tournament.status !== "ACTIVE"}>
-                    <button className={"btn-primary uppercase !px-4"}
-                            onClick={props.startTournament}
-                    >{loc("Start")}
-                    </button>
-                </Conditional>
-                <Conditional on={props.tournament.status === "ACTIVE"}>
-                    <button className={"btn-primary uppercase"}
-                            onClick={props.finishTournament}
-                    >{loc("Finish")}
-                    </button>
-                </Conditional>
-                <Link to={`/tournament/${props.tournament.id}/edit`}>
-                    <button className={"btn-light h-full !px-4"}>
-                        <AiOutlineEdit/>
-                    </button>
-                </Link>
-                <button
-                    className={"btn-danger uppercase !px-4"}
-                    onClick={props.deleteTournament}
-                    title={loc("Delete")}
-                >
-                    <AiOutlineDelete/>
-                </button>
-            </div>
+    return <div className={"flex p-2 items-top content-center"}>
+        <div className={"flex gap-1 justify-start p-2 grow"}>
+            <button className={"btn-light h-full !px-4"}
+                    onClick={props.copyNicknames}
+            >
+                <AiOutlineCopy/>
+            </button>
         </div>
-    </Conditional>;
+
+        <div className={"flex gap-1 justify-end p-2"}>
+            <Conditional on={props.tournament.status !== "ACTIVE"}>
+                <button className={"btn-primary uppercase !px-4"}
+                        onClick={props.startTournament}
+                >{loc("Start")}
+                </button>
+            </Conditional>
+            <Conditional on={props.tournament.status === "ACTIVE"}>
+                <button className={"btn-primary uppercase"}
+                        onClick={props.finishTournament}
+                >{loc("Finish")}
+                </button>
+            </Conditional>
+            <Link to={`/tournament/${props.tournament.id}/edit`}>
+                <button className={"btn-light h-full !px-4"}>
+                    <AiOutlineEdit/>
+                </button>
+            </Link>
+            <button
+                className={"btn-danger uppercase !px-4"}
+                onClick={props.deleteTournament}
+                title={loc("Delete")}
+            >
+                <AiOutlineDelete/>
+            </button>
+        </div>
+    </div>;
 }
 
 export default TournamentPage;
