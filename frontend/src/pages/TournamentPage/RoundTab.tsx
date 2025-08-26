@@ -1,5 +1,5 @@
 import {MatchDto, MatchResult, RoundDto} from "lib/api/dto/TournamentPageData";
-import MatchesTable from "./MatchesTable";
+import MatchesTable from "pages/TournamentPage/MatchesTable";
 import React from "react";
 import {Conditional, usePermissionGranted} from "components/Conditional";
 import {useLoc} from "strings/loc";

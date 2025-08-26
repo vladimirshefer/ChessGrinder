@@ -2,7 +2,7 @@ import Gravatar, {GravatarType} from "components/Gravatar";
 import {useQuery} from "@tanstack/react-query";
 import {useNavigate, useParams} from "react-router-dom";
 import badgeRepository from "lib/api/repository/BadgeRepository";
-import ConditionalOnUserRole from "../../components/Conditional";
+import ConditionalOnUserRole from "components/Conditional";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {UserPane} from "pages/MainPage/UserPane";
 

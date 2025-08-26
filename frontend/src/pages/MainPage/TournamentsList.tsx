@@ -1,8 +1,8 @@
 import {TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
-import "./TournamentsList.css"
-import {TournamentPane} from "./TournamentPane";
+import "pages/MainPage/TournamentsList.css"
+import {TournamentPane} from "pages/MainPage/TournamentPane";
 
 export function TournamentsList(
     {

@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {UserDto} from "lib/api/dto/MainPageData";
-import userRepository from "../lib/api/repository/UserRepository";
-import authService, {AuthData} from "../lib/auth/AuthService";
+import userRepository from "lib/api/repository/UserRepository";
+import authService, {AuthData} from "lib/auth/AuthService";
 
 export const AuthenticatedUserContext = React.createContext<
     [(UserDto | null), (v: (UserDto | null)) => void, () => void]

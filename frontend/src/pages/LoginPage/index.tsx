@@ -7,7 +7,7 @@ import {useMode} from "lib/api/repository/apiSettings";
 import {useLoc} from "strings/loc";
 import {useForm} from "react-hook-form";
 import {UserSignUpRequest} from "lib/api/dto";
-import GoogleLoginButton from "./GoogleLoginButton";
+import GoogleLoginButton from "pages/LoginPage/GoogleLoginButton";
 import useSearchParam from "lib/react/hooks/useSearchParam";
 import {useConfigurationProperty, useConfigurationPropertyEnabled} from "contexts/ConfigurationContext";
 import ReCAPTCHA from "react-google-recaptcha";

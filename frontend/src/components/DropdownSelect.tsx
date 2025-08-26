@@ -1,8 +1,8 @@
 import {ReactElement, useMemo, useRef, useState} from "react";
-import {useClickOutsideHandler} from "../lib/util/ClickOutside";
+import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {BsTrash} from "react-icons/bs";
 import {AiFillCaretDown, AiOutlineSearch} from "react-icons/ai";
-import {useLoc} from "../strings/loc";
+import {useLoc} from "strings/loc";
 import {RxCross2} from "react-icons/rx";
 
 export default function DropdownSelect<T>(

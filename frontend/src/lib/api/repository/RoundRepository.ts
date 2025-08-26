@@ -1,8 +1,8 @@
 import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
-import {qualifiedService} from "./apiSettings";
+import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import {requirePresent} from "lib/util/common";
-import tournamentPageRepository from "./TournamentPageRepository";
+import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 
 export interface RoundRepository {
     postRound(tournamentId: string): Promise<void>

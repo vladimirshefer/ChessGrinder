@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import ClockComponent from "./ClockComponent";
-import ClockSettingsComponent from "./ClockSettingsComponent";
-import {Conditional} from "../../components/Conditional";
+import ClockComponent from "pages/ChessClockPage/ClockComponent";
+import ClockSettingsComponent from "pages/ChessClockPage/ClockSettingsComponent";
+import {Conditional} from "components/Conditional";
 import {useSearchParams} from "react-router-dom";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
 

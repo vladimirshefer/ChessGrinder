@@ -2,9 +2,9 @@ import React, {useEffect, useState} from 'react';
 import {FaPause} from "react-icons/fa6";
 import {LuExpand, LuHome, LuPlay, LuSettings, LuTimerReset} from "react-icons/lu";
 import {MdFullscreenExit} from "react-icons/md";
-import useCaffeinate from "./useCaffeinate";
+import useCaffeinate from "pages/ChessClockPage/useCaffeinate";
 import {Link} from "react-router-dom";
-import useFullScreen from "./useFullScreen";
+import useFullScreen from "pages/ChessClockPage/useFullScreen";
 
 const ClockComponent = (
     {

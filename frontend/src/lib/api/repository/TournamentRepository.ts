@@ -2,7 +2,7 @@ import {TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
 import {TournamentPageData} from "lib/api/dto/TournamentPageData";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import restApiClient from "lib/api/RestApiClient";
-import {qualifiedServiceProxy} from "./apiSettings";
+import {qualifiedServiceProxy} from "lib/api/repository/apiSettings";
 import {AuthData} from "lib/auth/AuthService";
 import {compareBy, reverse} from "lib/util/Comparator";
 import {requirePresent} from "lib/util/common";

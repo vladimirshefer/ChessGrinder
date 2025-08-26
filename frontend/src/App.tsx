@@ -18,7 +18,7 @@ import BadgePage from "pages/BadgePage";
 import UserProfileEditPage from "pages/UserProfileEditPage";
 import {AuthenticatedUserContextProvider} from "contexts/AuthenticatedUserContext";
 import {LanguageContextProvider} from "contexts/LanguageContext";
-import PrivacyPolicyPage from "./pages/PrivacyPolicy";
+import PrivacyPolicyPage from "pages/PrivacyPolicy";
 import NotFoundPage from "pages/NotFoundPage";
 import {ConfigurationContextProvider} from "contexts/ConfigurationContext";
 import Footer from "components/Footer";

@@ -1,5 +1,5 @@
 import {ParticipantDto, RoundDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
-import {qualifiedService} from "./apiSettings";
+import {qualifiedService} from "lib/api/repository/apiSettings";
 import restApiClient from "lib/api/RestApiClient";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 

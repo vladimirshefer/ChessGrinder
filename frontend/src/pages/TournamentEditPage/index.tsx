@@ -5,9 +5,9 @@ import {useForm} from "react-hook-form";
 import {useLoc} from "strings/loc";
 import {requirePresent} from "lib/util/common";
 import dayjs from "dayjs";
-import {TournamentPageData} from "../../lib/api/dto/TournamentPageData";
-import tournamentRepository from "../../lib/api/repository/TournamentRepository";
-import {DEFAULT_DATETIME_FORMAT, PairingStrategy, RepeatableType} from "../../lib/api/dto/MainPageData";
+import {TournamentPageData} from "lib/api/dto/TournamentPageData";
+import tournamentRepository from "lib/api/repository/TournamentRepository";
+import {DEFAULT_DATETIME_FORMAT, PairingStrategy, RepeatableType} from "lib/api/dto/MainPageData";
 
 
 export default function TournamentEditPage() {

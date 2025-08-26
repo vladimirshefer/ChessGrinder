@@ -4,7 +4,7 @@ import restApiClient from "lib/api/RestApiClient";
 import userRepository from "lib/api/repository/UserRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import localStorageUtil from "lib/util/LocalStorageUtil";
-import {UserSignUpRequest} from "../dto";
+import {UserSignUpRequest} from "lib/api/dto";
 
 export interface LoginPageRepository {
     signIn(username: string, password: string): Promise<string>

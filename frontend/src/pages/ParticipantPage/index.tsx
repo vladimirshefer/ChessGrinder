@@ -11,10 +11,10 @@ import {useLoc} from "strings/loc";
 import Toggle from "components/Toggle";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import UserPane from "pages/MainPage/UserPane";
-import MatchesTable from "../TournamentPage/MatchesTable";
-import tournamentPageRepository from "../../lib/api/repository/TournamentPageRepository";
-import {TournamentPageData} from "../../lib/api/dto/TournamentPageData";
-import {usePageTitle} from "../../lib/react/hooks/usePageTitle";
+import MatchesTable from "pages/TournamentPage/MatchesTable";
+import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
+import {TournamentPageData} from "lib/api/dto/TournamentPageData";
+import {usePageTitle} from "lib/react/hooks/usePageTitle";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()

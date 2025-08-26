@@ -1,5 +1,5 @@
 import React from "react";
-import {TournamentsList} from "./TournamentsList";
+import {TournamentsList} from "pages/MainPage/TournamentsList";
 import {useQuery} from "@tanstack/react-query";
 import {TournamentDto, TournamentListDto} from "lib/api/dto/MainPageData";
 import tournamentRepository from "lib/api/repository/TournamentRepository";

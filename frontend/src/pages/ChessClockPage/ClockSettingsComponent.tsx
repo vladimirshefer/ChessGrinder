@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import NumberWheel from "./NumberWheel";
+import NumberWheel from "pages/ChessClockPage/NumberWheel";
 
 const ClockSettingsComponent = (
     {

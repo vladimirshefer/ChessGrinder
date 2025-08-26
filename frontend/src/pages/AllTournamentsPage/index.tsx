@@ -1,7 +1,7 @@
 import React from "react";
 import {useQuery} from "@tanstack/react-query";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
-import TournamentsList from "../MainPage/TournamentsList";
+import TournamentsList from "pages/MainPage/TournamentsList";
 import {useNavigate} from "react-router-dom";
 
 export default function AllTournamentsPage() {

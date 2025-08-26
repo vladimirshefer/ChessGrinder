@@ -1,5 +1,5 @@
-import locale_default from "./locale_default";
-import locale_ru from "./locale_ru";
+import locale_default from "strings/locale_default";
+import locale_ru from "strings/locale_ru";
 import {useContext} from "react";
 import {LanguageContext} from "contexts/LanguageContext";
 

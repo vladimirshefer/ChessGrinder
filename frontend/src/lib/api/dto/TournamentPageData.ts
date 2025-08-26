@@ -1,4 +1,4 @@
-import {TournamentDto} from "./MainPageData";
+import {TournamentDto} from "lib/api/dto/MainPageData";
 
 export interface MatchDto {
     id: string

@@ -4,7 +4,7 @@ import {useLoc} from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import Gravatar, {GravatarType} from "components/Gravatar";
 import {AiOutlineClose, AiOutlineMenu} from "react-icons/ai";
-import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "./Conditional";
+import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "components/Conditional";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
