@@ -80,6 +80,7 @@ const ClockComponent = (
         if (isPaused) {
             setIsPaused(false);
             setIsFirstActive(!isFirstTimer);
+            setIsFullscreen(true)
         } else if (isFirstTimer === isFirstActive) {
             setIsFirstActive(!isFirstTimer);
             if (isFirstTimer) {
@@ -88,6 +89,7 @@ const ClockComponent = (
                 setTimeLeft2(time => time + bonusTime);
             }
         }
+
     };
 
     // Auto-pause when either timer reaches 0
