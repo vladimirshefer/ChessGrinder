@@ -159,7 +159,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
 
     public static char getResultChar(boolean isWhite, MatchResult result) {
         if (result.equals(MatchResult.DRAW)) return TrfMatchResult.DRAW.getCharCode();
-        if (result.equals(MatchResult.BUY)) return TrfMatchResult.FULL_POINT_BYE.getCharCode();
+        if (result.equals(MatchResult.BUY)) return TrfMatchResult.PAIRING_ALLOCATED_BYE.getCharCode();
         if (result.equals(MatchResult.MISS)) return TrfMatchResult.ZERO_POINT_BYE.getCharCode();
         if (isWhite && result.equals(MatchResult.WHITE_WIN)) return TrfMatchResult.WIN.getCharCode();
         if (isWhite && result.equals(MatchResult.BLACK_WIN)) return TrfMatchResult.LOSS.getCharCode();
