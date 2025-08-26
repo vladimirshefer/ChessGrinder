@@ -297,7 +297,7 @@ function TournamentPage(
             </Conditional>
         </>
         <Conditional on={isMain}>
-            <Conditional on={isAuthenticatedUser && !meParticipantQuery.data?.isMissing}>
+            <Conditional on={isAuthenticatedUser && !!meParticipantQuery.data && !meParticipantQuery.data?.isMissing}>
                 <Conditional on={tournament?.status === "PLANNED"}>
                     <div className={"grid 2-full p-2"}>
                         <button
