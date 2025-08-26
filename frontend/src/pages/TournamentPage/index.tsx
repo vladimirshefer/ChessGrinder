@@ -8,7 +8,7 @@ import RoundTab from "pages/TournamentPage/RoundTab";
 import {Conditional, usePermissionGranted} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus, AiOutlineCopy} from "react-icons/ai";
-import {useLoc} from "strings/loc";
+import {useLoc, useTransliterate} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
 import roundRepository from "lib/api/repository/RoundRepository";
@@ -30,6 +30,7 @@ function TournamentPage(
     }
 ) {
     let loc = useLoc()
+    let transliterate = useTransliterate();
     let loginPageLink = useLoginPageLink();
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
@@ -131,6 +132,7 @@ function TournamentPage(
         const allNicknames: string = participants
             .filter(participant => !participant.isMissing || participant.score > 0)
             .map(p => p.name)
+            .map(name => transliterate(name))
             .join("\n");
         await copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
         alert(loc('Nicknames have been copied to clipboard'));

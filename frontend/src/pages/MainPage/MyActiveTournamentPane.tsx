@@ -69,7 +69,7 @@ function MyActiveTournamentPane(
         }
     })
 
-    let isTournamentDataLoaded = tournamentQuery.isSuccess && tournamentQuery.data
+    let isTournamentDataLoaded = tournamentQuery.isSuccess && !!tournamentQuery.data
 
     let rounds = useMemo(() => {
         if (!isTournamentDataLoaded) {

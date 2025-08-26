@@ -82,6 +82,7 @@ public class ParticipantController {
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PutMapping("/{participantId}")
     public void update(
+            @SuppressWarnings("unused") // Used in PreAuthorize
             @PathVariable UUID tournamentId,
             @PathVariable UUID participantId,
             @AuthenticatedUser UserEntity user,
@@ -106,6 +107,7 @@ public class ParticipantController {
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PostMapping("/{participantId}/action/miss")
     public void miss(
+            @SuppressWarnings("unused") // Used in PreAuthorize
             @PathVariable UUID tournamentId,
             @PathVariable UUID participantId
     ) {
@@ -118,6 +120,7 @@ public class ParticipantController {
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PostMapping("/{participantId}/action/unmiss")
     public void unmiss(
+            @SuppressWarnings("unused") // Used in PreAuthorize
             @PathVariable UUID tournamentId,
             @PathVariable UUID participantId
     ) {

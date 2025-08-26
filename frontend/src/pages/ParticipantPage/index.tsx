@@ -113,7 +113,7 @@ export default function ParticipantPage() {
     return <div className={"p-3 text-left"}>
         <div className={"py-3 grid gap-3"}>
             <Conditional on={participantQuery.isSuccess}>
-                <Link to={"/tournament/" + tournamentId} className={"text-xl"} title={loc("Back")}>
+                <Link to={"/tournament/" + tournamentId} className={"text-xl"} title={loc("Back")} replace={true}>
                     <span className={"flex items-center gap-2"}>
                         <AiOutlineArrowLeft/>
                         {"Back to tournament"}
