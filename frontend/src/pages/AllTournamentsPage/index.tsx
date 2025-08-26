@@ -15,10 +15,10 @@ export default function AllTournamentsPage() {
     if (!tournaments) {
         return <>Loading...</>
     }
-    async function createTournament() {
-        let tournament = await tournamentRepository.postTournament();
-        await navigate(`/tournament/${tournament.id}/edit`)
+    function createTournament() {
+        navigate(`/tournament/create`)
     }
+
     return <div className={"p-2"}>
         <TournamentsList tournaments={tournaments} createTournament={createTournament}/>
     </div>

@@ -22,8 +22,7 @@ function MainPage() {
     })
 
     async function createTournament() {
-        let tournament = await tournamentRepository.postTournament();
-        navigate(`/tournament/${tournament.id}/edit`)
+        navigate(`/tournament/create`)
     }
 
     let tournamentsVisible = tournaments.filter(

@@ -13,7 +13,7 @@ import ParticipantPage from "pages/ParticipantPage";
 import BadgesPage from "pages/BadgesPage";
 import UsersPage from "pages/UsersPage";
 import AllTournamentsPage from "pages/AllTournamentsPage";
-import TournamentEditPage from "pages/TournamentEditPage";
+import TournamentEditPage, {TournamentCreatePage} from "pages/TournamentEditPage";
 import BadgePage from "pages/BadgePage";
 import UserProfileEditPage from "pages/UserProfileEditPage";
 import {AuthenticatedUserContextProvider} from "contexts/AuthenticatedUserContext";
@@ -48,6 +48,7 @@ function App() {
                                     <Route path="/tournament/:tournamentId/edit"
                                            element={<TournamentEditPage/>}
                                     />
+                                    <Route path="/tournament/create" element={<TournamentCreatePage/>}/>
                                     <Route path="/login" element={<LoginPage/>}/>
                                     <Route path="/admin" element={<AdminPage/>}/>
                                     <Route path="/user" element={<UserProfilePage/>}/>
