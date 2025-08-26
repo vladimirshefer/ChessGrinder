@@ -4,9 +4,12 @@ import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoleEntity.Roles;
+import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
+import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import com.chessgrinder.chessgrinder.service.ParticipantService;
@@ -27,6 +30,7 @@ public class ParticipantController {
     private final ParticipantService participantService;
     private final ParticipantRepository participantRepository;
     private final ParticipantMapper participantMapper;
+    private final TournamentRepository tournamentRepository;
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PostMapping
@@ -113,6 +117,22 @@ public class ParticipantController {
     ) {
         ParticipantEntity participant = participantRepository.findById(participantId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No participant with id " + participantId));
+        participant.setMissing(true);
+        participantRepository.save(participant);
+    }
+
+    @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
+    @PostMapping("/me/action/miss")
+    public void miss(
+            @AuthenticatedUser UserEntity user,
+            @SuppressWarnings("unused") // Used in PreAuthorize
+            @PathVariable UUID tournamentId
+    ) {
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
+        if (tournament.getStatus().equals(TournamentStatus.FINISHED)) {
+            throw new ResponseStatusException(400, "Tournament already started. Ask administrator for help.", null);
+        }
+        ParticipantEntity participant = participantRepository.findByTournamentIdAndUserId(tournamentId, user.getId());
         participant.setMissing(true);
         participantRepository.save(participant);
     }

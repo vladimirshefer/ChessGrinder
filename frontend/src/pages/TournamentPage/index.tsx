@@ -7,7 +7,7 @@ import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api
 import RoundTab from "pages/TournamentPage/RoundTab";
 import {Conditional, usePermissionGranted} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
-import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus, AiOutlineCopy} from "react-icons/ai";
+import {AiOutlineCopy, AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
 import {useLoc, useTransliterate} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
@@ -140,26 +140,26 @@ function TournamentPage(
 
     if (tournamentQuery.isError) return <>Error!</>
     if (!tournamentQuery.isSuccess || !tournamentQuery.data) return <>Loading</>
-    let tournament = tournamentQuery.data.tournament
+    let tournament: TournamentDto = tournamentQuery.data.tournament
     let hideParticipateButton = !meParticipantQuery.isSuccess || !!meParticipantQuery.data
 
     async function startTournament() {
-        await tournamentRepository.startTournament(tournament?.id!!)
+        await tournamentRepository.startTournament(tournament.id)
             .catch(e => alert("Could not start tournament. " +
                 (e?.response?.data?.message || "Unknown error")));
         await tournamentQuery.refetch()
     }
 
     async function finishTournament() {
-        await tournamentRepository.finishTournament(tournament?.id!!)
+        await tournamentRepository.finishTournament(tournament.id)
             .catch(e => alert("Could not finish tournament. " +
                 (e?.response?.data?.message || "Unknown error")));
         await tournamentQuery.refetch()
     }
 
     async function deleteTournament() {
-        let expectedConfirmation = (tournament?.name || "DELETE");
-        let confirmation = prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
+        let expectedConfirmation = (tournament.name.substring(0, 10) || "DELETE");
+        let confirmation = window.prompt(`Are you sure?\nTo delete tournament enter \n${expectedConfirmation}`);
         if (confirmation !== expectedConfirmation) {
             alert("You entered wrong id. Tournament will not be deleted.");
             return;
@@ -168,6 +168,29 @@ function TournamentPage(
             .catch(e => alert("Could not delete tournament. " +
                 (e?.response?.data?.message || "Unknown error")));
         await navigate("/");
+    }
+
+    async function participate() {
+        let nickname = prompt("Please enter your nickname");
+        if (!nickname) {
+            alert("Nickname is not provided. Registration is cancelled.")
+        } else {
+            await tournamentRepository.participate(tournament.id, nickname)
+                .catch(() => alert("Could not participate in tournament"));
+            await meParticipantQuery.refetch()
+            await tournamentQuery.refetch()
+        }
+    }
+
+    async function leaveTournament() {
+        if (!window.confirm("You want to be removed from the tournament?")) {
+            alert("You stay in the tournament.")
+        } else {
+            await participantRepository.missMe(tournament.id)
+                .catch(() => alert(`Could not withdraw from tournament`));
+            await meParticipantQuery.refetch()
+            await tournamentQuery.refetch()
+        }
     }
 
     return <>
@@ -180,7 +203,7 @@ function TournamentPage(
                     <small className={"font-semibold text-gray-500"}>{tournament?.status}</small>
                 </div>
                 <div>
-                    <span className={"font-semibold"}>{tournament?.date && dayjs(tournament.date).format("DD.MM.YY")}</span>
+                    <span className={"font-semibold"}>{tournament.date && dayjs(tournament.date).format("DD.MM.YY")}</span>
                 </div>
             </div>
         </div>
@@ -226,23 +249,11 @@ function TournamentPage(
         <>
             <Conditional on={isMain}>
                 <>
-                    {!hideParticipateButton && tournamentData?.tournament?.status === "PLANNED" && (
+                    {!hideParticipateButton && tournament.status === "PLANNED" && (
                         <div className={"px-2"}>
                             {isAuthenticatedUser ?
                                 (
-                                    <button className={"btn-primary w-full uppercase"}
-                                            onClick={async () => {
-                                                let nickname = prompt("Please enter your nickname");
-                                                if (!nickname) {
-                                                    alert("Nickname is not provided. Registration is cancelled.")
-                                                } else {
-                                                    await tournamentRepository.participate(tournament.id, nickname)
-                                                        .catch(() => alert("Could not participate in tournament"));
-                                                    await meParticipantQuery.refetch()
-                                                    await tournamentQuery.refetch()
-                                                }
-                                            }}
-                                    >
+                                    <button className={"btn-primary w-full uppercase"} onClick={participate}>
                                         {loc("Participate")}
                                     </button>
                                 ) : (
@@ -253,12 +264,11 @@ function TournamentPage(
                                     </Link>
                                 )
                             }
-
                         </div>
                     )}
                 </>
                 <Conditional on={isMeModerator}>
-                    <Conditional on={tournamentQuery.data?.tournament?.status !== "FINISHED"}>
+                    <Conditional on={tournament?.status !== "FINISHED"}>
                         <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
                     </Conditional>
                 </Conditional>
@@ -286,6 +296,20 @@ function TournamentPage(
                 </div>
             </Conditional>
         </>
+        <Conditional on={isMain}>
+            <Conditional on={isAuthenticatedUser && !meParticipantQuery.data?.isMissing}>
+                <Conditional on={tournament?.status === "PLANNED"}>
+                    <div className={"grid 2-full p-2"}>
+                        <button
+                            className={"btn-light uppercase w-full"}
+                            onClick={leaveTournament}
+                            title={loc("Leave the tournament")}
+                        >
+                            {loc("Leave the tournament")}
+                        </button>
+                    </div>
+                </Conditional>
+            </Conditional></Conditional>
         <Conditional on={isMain && isMeModerator}>
             <ControlButtons
                 copyNicknames={copyNicknamesToClipboard}

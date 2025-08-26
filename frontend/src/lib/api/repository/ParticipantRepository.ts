@@ -15,6 +15,7 @@ export interface ParticipantRepository {
     missParticipant(tournamentId: string, participantId: string): Promise<void>;
     unmissParticipant(tournamentId: string, participantId: string): Promise<void>;
     getWinner(tournamentId: string): Promise<ListDto<ParticipantDto>>;
+    missMe(tournamentId: string): Promise<void>;
 }
 
 class LocalStorageParticipantRepository implements ParticipantRepository {
@@ -78,6 +79,11 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
         if (!participant) throw new Error(`No participant in tournament ${tournamentId}`)
         return {values: [participant]}
     }
+
+    async missMe(tournamentId: string): Promise<void> {
+        let me = await this.getMe(tournamentId);
+        await this.missParticipant(tournamentId, me.id)
+    }
 }
 
 class RestApiParticipantRepository implements ParticipantRepository {
@@ -111,6 +117,10 @@ class RestApiParticipantRepository implements ParticipantRepository {
 
     async getWinner(tournamentId: string): Promise<ListDto<ParticipantDto>> {
         return await restApiClient.get<ListDto<ParticipantDto>>(`/tournament/${tournamentId}/participant/winner`)
+    }
+
+    async missMe(tournamentId: string): Promise<void> {
+        await restApiClient.post(`/tournament/${tournamentId}/participant/me/action/miss`)
     }
 }
 
