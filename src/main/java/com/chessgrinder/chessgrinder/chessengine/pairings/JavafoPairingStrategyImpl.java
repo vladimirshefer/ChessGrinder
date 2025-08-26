@@ -10,10 +10,8 @@ import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine.TrfMatchResult;
 import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
 import com.chessgrinder.chessgrinder.trf.dto.RoundsNumberXxrTrfLine;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
-import javafo.api.JaVaFoApi;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,15 +23,9 @@ import static com.chessgrinder.chessgrinder.comparator.ParticipantDtoComparators
 
 @Component
 public class JavafoPairingStrategyImpl implements PairingStrategy {
-    /**
-     * JaVaFo is no thread-safe library, therefore to avoid concurrency problems,
-     * the requests to JaVaFo are synchronized on this monitor.
-     */
-    private static final Object JAVAFO_MONITOR = new Object();
 
     private static final int DEFAULT_RATING = 1000;
     private static final String NEWLINE_REGEX = "\\r?\\n|\\r";
-    private static final int STANDARD_PAIRING_CODE = 1000;
 
     @Override
     @WithSpan
@@ -65,12 +57,10 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
 
         String tournamentTrf = TrfUtil.writeTrfLines(trfLines);
         String pairingsFileContent;
-        synchronized (JAVAFO_MONITOR) {
-            try {
-                pairingsFileContent = JaVaFoApi.exec(STANDARD_PAIRING_CODE, new ByteArrayInputStream(tournamentTrf.getBytes()));
-            } catch (Exception e) {
-                throw new RuntimeException("Could not do pairing via javafo. \n" + tournamentTrf, e);
-            }
+        try {
+            pairingsFileContent = JavafoWrapper.exec(JavafoWrapper.ExecutionCodes.PAIRING, tournamentTrf);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not do pairing via javafo. \n" + tournamentTrf, e);
         }
 
         List<MatchDto> result = Arrays.stream(pairingsFileContent.split(NEWLINE_REGEX))
