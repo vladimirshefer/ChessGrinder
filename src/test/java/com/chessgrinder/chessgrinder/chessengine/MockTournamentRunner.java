@@ -33,8 +33,7 @@ public class MockTournamentRunner {
         List<MatchDto> actualMatches = pairingStrategy.makePairings(
                 participants,
                 rounds,
-                1000,
-                true
+                1000
         );
         MockRoundBuilder mockRoundBuilder = new MockRoundBuilder();
         round.accept(mockRoundBuilder);

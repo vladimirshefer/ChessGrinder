@@ -186,7 +186,7 @@ public class RoundService {
 
         String pairingStrategy = tournament.getPairingStrategy();
         PairingStrategy strategy = getPairingStrategy(pairingStrategy);
-        List<MatchDto> matchesDto = strategy.makePairings(participantDtos, allMatches, tournament.getRoundsNumber(), false);
+        List<MatchDto> matchesDto = strategy.makePairings(participantDtos, allMatches, tournament.getRoundsNumber());
         List<MatchEntity> matches = new ArrayList<>();
 
         for (MatchDto matchDto : matchesDto) {

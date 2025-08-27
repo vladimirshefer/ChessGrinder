@@ -133,8 +133,7 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
     public List<MatchDto> makePairings(
             List<ParticipantDto> participants,
             List<List<MatchDto>> matchHistory,
-            Integer roundsNumber,
-            boolean recalculateResults
+            Integer roundsNumber
     ) {
 
         participants = new ArrayList<>(participants.stream().filter(it -> it != null && it.getIsMissing() != true).toList());

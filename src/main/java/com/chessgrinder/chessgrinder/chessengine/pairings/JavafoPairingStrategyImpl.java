@@ -29,7 +29,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
 
     @Override
     @WithSpan
-    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber, boolean recalculateResults) {
+    public List<MatchDto> makePairings(List<ParticipantDto> participants, List<List<MatchDto>> matchHistory, Integer roundsNumber) {
         if (participants.isEmpty()) return Collections.emptyList();
 
         Map<ParticipantDto, List<MatchDto>> participantsMatches = getParticipantsMatches(participants, matchHistory);
