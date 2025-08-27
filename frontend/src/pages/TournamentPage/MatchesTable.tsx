@@ -123,8 +123,8 @@ export function MatchRow(
     let blackProbablyWin = result === "BLACK_WIN" && !isFinalResult && !isConflict;
     let probablyDraw = result === "DRAW" && !isFinalResult && !isConflict;
 
-    const iAmWhite = match?.white?.userId === authenticatedUser?.id;
-    const iAmBlack = match?.black?.userId === authenticatedUser?.id;
+    const iAmWhite = !!match?.white?.userId && match?.white?.userId === authenticatedUser?.id;
+    const iAmBlack = !!match?.black?.userId && match?.black?.userId === authenticatedUser?.id;
 
     return <Fragment key={idx}>
         <div className={`grid text-xs p-3 
