@@ -22,6 +22,7 @@ import PrivacyPolicyPage from "pages/PrivacyPolicy";
 import NotFoundPage from "pages/NotFoundPage";
 import {ConfigurationContextProvider} from "contexts/ConfigurationContext";
 import Footer from "components/Footer";
+import AboutPage from "./pages/AboutPage";
 
 const queryClient = new QueryClient()
 
@@ -40,6 +41,7 @@ function App() {
                                 <Routes>
                                 <Route element={<DefaultLayout/>}>
                                     <Route path="/" element={<MainPage/>}/>
+                                    <Route path="/about" element={<AboutPage/>}/>
                                     <Route path="/tournament/:id" element={<TournamentPage/>}/>
                                     <Route path="/tournament/:id/round/:roundId" element={<TournamentPage />}/>
                                     <Route path="/tournament/:id/share" element={<TournamentPage tab={"SHARE"}/>}/>
