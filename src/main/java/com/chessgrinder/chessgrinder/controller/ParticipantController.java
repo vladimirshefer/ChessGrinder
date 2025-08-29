@@ -6,7 +6,6 @@ import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoleEntity.Roles;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
-import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
@@ -129,12 +128,21 @@ public class ParticipantController {
             @PathVariable UUID tournamentId
     ) {
         TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
-        if (tournament.getStatus().equals(TournamentStatus.FINISHED)) {
-            throw new ResponseStatusException(400, "Tournament already started. Ask administrator for help.", null);
-        }
         ParticipantEntity participant = participantRepository.findByTournamentIdAndUserId(tournamentId, user.getId());
-        participant.setMissing(true);
-        participantRepository.save(participant);
+
+        switch (tournament.getStatus()) {
+            case FINISHED -> {
+                throw new ResponseStatusException(400, "Tournament already finished. Ask administrator for help.", null);
+            }
+            case ACTIVE -> {
+                participant.setMissing(true);
+                participantRepository.save(participant);
+            }
+            case PLANNED -> {
+                participantRepository.delete(participant);
+            }
+        }
+
     }
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
