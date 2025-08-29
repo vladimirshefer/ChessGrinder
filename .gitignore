@@ -35,6 +35,7 @@ build/
 
 application-local.properties
 application-production.properties
+/app/config
 
 ## Production log files
 *.log
