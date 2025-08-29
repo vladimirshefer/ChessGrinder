@@ -128,7 +128,7 @@ class RestApiTournamentRepository implements TournamentRepository {
     }
 
     async participate(tournamentId: string, nickname: string): Promise<void> {
-        await restApiClient.post(`/tournament/${tournamentId}/action/participate?nickname=${nickname}`)
+        await restApiClient.post(`/tournament/${tournamentId}/action/participate?nickname=${encodeURIComponent(nickname)}`)
     }
 
     async updateTournament(tournament: TournamentDto): Promise<void> {
