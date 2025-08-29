@@ -298,7 +298,7 @@ function TournamentPage(
         </>
         <Conditional on={isMain}>
             <Conditional on={isAuthenticatedUser && !!meParticipantQuery.data && !meParticipantQuery.data?.isMissing}>
-                <Conditional on={tournament?.status === "PLANNED"}>
+                <Conditional on={tournament?.status === "PLANNED" || tournament?.status === "ACTIVE"}>
                     <div className={"grid 2-full p-2"}>
                         <button
                             className={"btn-light uppercase w-full"}
