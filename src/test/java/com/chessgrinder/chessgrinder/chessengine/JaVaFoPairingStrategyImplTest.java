@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.chessengine;
 
-import com.chessgrinder.chessgrinder.chessengine.pairings.JavafoPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.chessengine.pairings.PairingStrategy;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import org.junit.jupiter.api.Test;
@@ -9,9 +9,9 @@ import static com.chessgrinder.chessgrinder.chessengine.MockTournamentRunnerUtil
 import static com.chessgrinder.chessgrinder.chessengine.MockTournamentRunnerUtils.runTournament;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class JavafoPairingStrategyImplTest {
+class JaVaFoPairingStrategyImplTest {
 
-    PairingStrategy swissEngine = new JavafoPairingStrategyImpl();
+    PairingStrategy swissEngine = new JaVaFoPairingStrategyImpl();
 
     @Test
     void test5p() {

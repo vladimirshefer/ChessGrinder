@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.service;
 
-import com.chessgrinder.chessgrinder.chessengine.pairings.JavafoPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.chessengine.pairings.PairingStrategy;
 import com.chessgrinder.chessgrinder.chessengine.pairings.RoundRobinPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
@@ -44,7 +44,7 @@ public class RoundService {
     private final TournamentRepository tournamentRepository;
     private final RoundRepository roundRepository;
     private final ParticipantRepository participantRepository;
-    private final JavafoPairingStrategyImpl javafoPairingStrategy;
+    private final JaVaFoPairingStrategyImpl javafoPairingStrategy;
     private final RoundRobinPairingStrategyImpl roundRobinPairingStrategy;
 
     private PairingStrategy getPairingStrategy(String name) {

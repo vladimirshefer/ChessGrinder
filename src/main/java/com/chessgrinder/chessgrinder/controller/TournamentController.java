@@ -1,6 +1,6 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.chessengine.pairings.JavafoPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.dto.ListDto;
 import com.chessgrinder.chessgrinder.dto.MatchDto;
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
@@ -112,7 +112,7 @@ public class TournamentController {
         var participants = participantDtos;
         var roundsNumber = tournament.getRoundsNumber();
 
-        Map<ParticipantDto, List<MatchDto>> participantsMatches = JavafoPairingStrategyImpl.getParticipantsMatches(participants, matchHistory);
+        Map<ParticipantDto, List<MatchDto>> participantsMatches = JaVaFoPairingStrategyImpl.getParticipantsMatches(participants, matchHistory);
         List<String> playerIds = participantsMatches.keySet().stream()
                 .sorted(COMPARE_PARTICIPANT_DTO_BY_NICKNAME_NULLS_LAST)
                 .map(ParticipantDto::getId).toList();
@@ -130,7 +130,7 @@ public class TournamentController {
 
         List<Player001TrfLine> playerTrfLines = participantsMatches.entrySet()
                 .stream()
-                .map(entry -> JavafoPairingStrategyImpl.toTrfDto(entry.getKey(), entry.getValue(), playerIds))
+                .map(entry -> JaVaFoPairingStrategyImpl.toTrfDto(entry.getKey(), entry.getValue(), playerIds))
                 .toList();
 
         trfLines.addAll(playerTrfLines);

@@ -4,7 +4,7 @@ import javafo.api.JaVaFoApi;
 
 import java.io.ByteArrayInputStream;
 
-public class JavafoWrapper {
+public class JaVaFoWrapper {
     /**
      * JaVaFo is not thread-safe library, therefore to avoid concurrency problems,
      * the requests to JaVaFo are synchronized on this monitor.

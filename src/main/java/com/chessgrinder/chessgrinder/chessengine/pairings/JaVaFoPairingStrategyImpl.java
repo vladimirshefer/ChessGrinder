@@ -22,7 +22,7 @@ import java.util.Map;
 import static com.chessgrinder.chessgrinder.comparator.ParticipantDtoComparators.COMPARE_PARTICIPANT_DTO_BY_NICKNAME_NULLS_LAST;
 
 @Component
-public class JavafoPairingStrategyImpl implements PairingStrategy {
+public class JaVaFoPairingStrategyImpl implements PairingStrategy {
 
     private static final int DEFAULT_RATING = 1000;
     private static final String NEWLINE_REGEX = "\\r?\\n|\\r";
@@ -58,7 +58,7 @@ public class JavafoPairingStrategyImpl implements PairingStrategy {
         String tournamentTrf = TrfUtil.writeTrfLines(trfLines);
         String pairingsFileContent;
         try {
-            pairingsFileContent = JavafoWrapper.exec(JavafoWrapper.ExecutionCodes.PAIRING, tournamentTrf);
+            pairingsFileContent = JaVaFoWrapper.exec(JaVaFoWrapper.ExecutionCodes.PAIRING, tournamentTrf);
         } catch (Exception e) {
             throw new RuntimeException("Could not do pairing via javafo. \n" + tournamentTrf, e);
         }
