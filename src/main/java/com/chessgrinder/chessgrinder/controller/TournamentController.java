@@ -171,7 +171,7 @@ public class TournamentController {
             throw new ResponseStatusException(400, "Tournament already started. Ask administrator for help.", null);
         }
 
-        if (tournament.getRegistrationLimit() != null && tournament.getRegistrationLimit() <= participantRepository.countByTournament(tournamentId)) {
+        if (tournament.getRegistrationLimit() != null && tournament.getRegistrationLimit() > 0 && tournament.getRegistrationLimit() <= participantRepository.countByTournament(tournamentId)) {
             throw new ResponseStatusException(400, "Participant limit is full.", null);
         }
 
