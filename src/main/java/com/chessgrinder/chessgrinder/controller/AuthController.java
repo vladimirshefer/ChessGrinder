@@ -32,7 +32,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$";
 
     private final UserRepository userRepository;

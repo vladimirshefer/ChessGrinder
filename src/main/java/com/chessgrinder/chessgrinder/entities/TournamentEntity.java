@@ -1,15 +1,30 @@
 package com.chessgrinder.chessgrinder.entities;
 
-import java.time.*;
-import java.util.*;
-
-import com.chessgrinder.chessgrinder.enums.*;
+import com.chessgrinder.chessgrinder.enums.RepeatableType;
+import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.*;
-import lombok.extern.slf4j.*;
-import org.hibernate.annotations.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -76,7 +91,8 @@ public class TournamentEntity extends AbstractAuditingEntity {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "tournament")
-    private List<RoundEntity> rounds;
+    @Builder.Default
+    private List<RoundEntity> rounds = new ArrayList<>();
 
     @Nullable
     @ManyToOne

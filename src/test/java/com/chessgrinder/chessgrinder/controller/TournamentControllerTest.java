@@ -64,7 +64,6 @@ class TournamentControllerTest {
         tournamentController = new TournamentController(
                 tournamentService,
                 tournamentRepository,
-                userRepository,
                 participantRepository,
                 tournamentMapper,
                 new MatchMapper(participantMapper),

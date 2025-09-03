@@ -28,4 +28,16 @@ public final class ComparatorUtil {
         return elements2.get(0);
     }
 
+    public static <T, U extends Comparable<U>> Comparator<T> safeCompareByAsc(
+            Function<? super T, ? extends U> keyExtractor
+    ) {
+        return Comparator.nullsLast(Comparator.<T, U>comparing(keyExtractor, Comparator.nullsLast(Comparator.naturalOrder())));
+    }
+
+    public static <T, U extends Comparable<U>> Comparator<T> safeCompareByDesc(
+            Function<? super T, ? extends U> keyExtractor
+    ) {
+        return Comparator.nullsLast(Comparator.<T, U>comparing(keyExtractor, Comparator.nullsLast(Comparator.reverseOrder())));
+    }
+
 }

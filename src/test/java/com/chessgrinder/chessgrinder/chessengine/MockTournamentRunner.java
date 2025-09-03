@@ -11,6 +11,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class MockTournamentRunner {
     private static final double NO_VALUE = -1000;
 
@@ -59,7 +61,10 @@ public class MockTournamentRunner {
             actualMatch.setResult(expectedResult.getResult());
         }
         if (expectedResults.size() != actualMatches.size()) {
-            throw new AssertionError("Different pairings size " + expectedResults.size() + " " + actualMatches.size());
+            assertEquals(
+                    expectedResults.stream().map(it -> asString(it)).collect(Collectors.toSet()),
+                    actualMatches.stream().map(it -> asString(it)).collect(Collectors.toSet())
+            );
         }
 
         rounds.add(actualMatches);

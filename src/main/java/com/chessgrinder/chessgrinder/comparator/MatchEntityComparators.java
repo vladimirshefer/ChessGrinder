@@ -10,8 +10,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Optional;
 
-import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST;
-import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
 
@@ -51,14 +49,8 @@ public final class MatchEntityComparators {
 
     public static final Comparator<MatchEntity> COMPARE_MATCH_ENTITY_BY_PLAYER_SCORE_AND_BUCHHOLZ_NULLS_LAST = ComparatorUtil.compareRecursive(
             (m) -> Arrays.asList(m.getParticipant1(), m.getParticipant2()),
-            COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST
-                    .thenComparing(COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST)
-    );
-
-
-    public static final Comparator<MatchEntity> COMPARE_MATCH_ENTITY_BY_PLAYER_PLACE = ComparatorUtil.compareRecursive(
-            (m) -> Arrays.asList(m.getParticipant1(), m.getParticipant2()),
-            nullsLast(Comparator.comparing(ParticipantEntity::getPlace, nullsLast(naturalOrder())))
+            ComparatorUtil.safeCompareByDesc(ParticipantEntity::getScore)
+                    .thenComparing(ComparatorUtil.safeCompareByDesc(ParticipantEntity::getBuchholz))
     );
 
 }
