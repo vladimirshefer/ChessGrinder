@@ -120,7 +120,6 @@ public class ParticipantController {
         participantRepository.save(participant);
     }
 
-    @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PostMapping("/me/action/miss")
     public void miss(
             @AuthenticatedUser UserEntity user,
