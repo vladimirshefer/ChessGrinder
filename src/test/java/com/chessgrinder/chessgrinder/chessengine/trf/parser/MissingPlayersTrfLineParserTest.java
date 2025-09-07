@@ -1,5 +1,6 @@
-package com.chessgrinder.chessgrinder.trf.line;
+package com.chessgrinder.chessgrinder.chessengine.trf.parser;
 
+import com.chessgrinder.chessgrinder.chessengine.trf.parser.MissingPlayersTrfLineParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

@@ -1,7 +1,8 @@
-package com.chessgrinder.chessgrinder.trf.line;
+package com.chessgrinder.chessgrinder.chessengine.trf.parser;
 
-import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
-import com.chessgrinder.chessgrinder.trf.dto.WriteableTrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.UnknownTrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.WriteableTrfLine;
 
 import java.util.function.Consumer;
 
@@ -14,11 +15,12 @@ public class WriteableTrfLineParser implements TrfLineParser<WriteableTrfLine> {
 
     @Override
     public WriteableTrfLine tryParse(String line) {
-        throw new UnsupportedOperationException();
+        return new UnknownTrfLine(line);
     }
 
     @Override
     public void tryWrite(Consumer<String> trfConsumer, TrfLine line) {
         trfConsumer.accept(line.toString());
     }
+
 }

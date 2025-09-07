@@ -1,4 +1,4 @@
-package com.chessgrinder.chessgrinder.trf.dto;
+package com.chessgrinder.chessgrinder.chessengine.trf.dto;
 
 /**
  * Means that trf line can be printed using just .toString()
