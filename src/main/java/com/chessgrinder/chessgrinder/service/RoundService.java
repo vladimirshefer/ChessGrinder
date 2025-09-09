@@ -3,8 +3,8 @@ package com.chessgrinder.chessgrinder.service;
 import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.chessengine.pairings.PairingStrategy;
 import com.chessgrinder.chessgrinder.chessengine.pairings.RoundRobinPairingStrategyImpl;
-import com.chessgrinder.chessgrinder.dto.MatchDto;
-import com.chessgrinder.chessgrinder.dto.ParticipantDto;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
+import com.chessgrinder.chessgrinder.comparator.ComparatorUtil;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoundEntity;
@@ -30,7 +30,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_BUCHHOLZ_NULLSLAST;
 import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_SCORE_NULLS_LAST;
@@ -146,9 +155,9 @@ public class RoundService {
 
     @Transactional
     public void makePairings(UUID tournamentId, Integer roundNumber) {
-
         RoundEntity round = roundRepository.findByTournamentIdAndNumber(tournamentId, roundNumber);
 
+        // Delete already existing matches in case of re-pairing
         Optional<TournamentEntity> currentTournament = tournamentRepository.findById(tournamentId);
         TournamentEntity tournamentEntity = currentTournament.orElseThrow();
         if (tournamentEntity.getStatus().equals(TournamentStatus.PLANNED)) {
@@ -172,45 +181,29 @@ public class RoundService {
             matchRepository.deleteAll(alreadyExistedMatches);
         }
 
-        List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
-        List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
 
+        // run and save pairings
         TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
-
-        List<List<MatchEntity>> allMatchesInTheTournament = tournament.getRounds().stream()
-                .filter(RoundEntity::isFinished)
-                .map(RoundEntity::getMatches)
+        List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId)
+                .stream()
+                .sorted(ComparatorUtil.safeCompareByDesc(ParticipantEntity::getInitialEloPoints))
                 .toList();
-
-        List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
-
-        String pairingStrategy = tournament.getPairingStrategy();
-        PairingStrategy strategy = getPairingStrategy(pairingStrategy);
-        List<MatchDto> matchesDto = strategy.makePairings(participantDtos, allMatches, tournament.getRoundsNumber());
+        List<TrfLine> trf = TrfService.toTrfTournament(participantEntities, tournament);
+        Map<Integer, Integer> pairings = getPairingStrategy(tournament.getPairingStrategy()).makePairings(trf);
         List<MatchEntity> matches = new ArrayList<>();
-
-        for (MatchDto matchDto : matchesDto) {
-
-            ParticipantEntity participant1 = null;
-            ParticipantEntity participant2 = null;
-
-            if (matchDto.getWhite() != null) {
-                participant1 = participantRepository.findById(UUID.fromString(matchDto.getWhite().getId())).orElse(null);
-            }
-            if (matchDto.getBlack() != null) {
-                participant2 = participantRepository.findById(UUID.fromString(matchDto.getBlack().getId())).orElse(null);
-            }
-
+        pairings.forEach((white, black) -> {
+            ParticipantEntity participant1 = white != 0 ? participantEntities.get(white - 1) : null;
+            ParticipantEntity participant2 = black != 0 ? participantEntities.get(black - 1) : null;
             matches.add(MatchEntity.builder()
                     .round(round)
                     .participant1(participant1)
                     .participant2(participant2)
-                    .result(matchDto.getResult())
+                    .result(white == 0 || black == 0 ? MatchResult.BUY : null)
                     .build()
             );
-        }
-
+        });
         matchRepository.saveAll(matches);
+
     }
 
     public void updateResults(UUID tournamentId) {
