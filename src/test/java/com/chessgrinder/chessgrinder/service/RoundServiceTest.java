@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.service;
 
+import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoundEntity;
@@ -13,14 +14,21 @@ import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.security.WithRefererOAuth2AuthorizationRequestResolver;
 import com.chessgrinder.chessgrinder.util.Graph;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
 import java.math.BigDecimal;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +48,9 @@ public class RoundServiceTest {
     @Autowired
     private RoundService roundService;
 
+    @SpyBean
+    JaVaFoPairingStrategyImpl javaFoPairingStrategy;
+
     //These fields are needed for full SpringBootTest deployment
     @MockBean
     WithRefererOAuth2AuthorizationRequestResolver oauth2;
@@ -50,15 +61,15 @@ public class RoundServiceTest {
     void shouldCorrectlySetFinalPlacements() {
         TournamentEntity tournament = tournamentRepository.save(createTournament());
 
-        ParticipantEntity p1 = participantRepository.save(createParticipant("Миша буги вуги", tournament));
-        ParticipantEntity p2 = participantRepository.save(createParticipant("Непомерное свинство", tournament));
+        ParticipantEntity p1 = participantRepository.save(createParticipant("Boogie", tournament));
+        ParticipantEntity p2 = participantRepository.save(createParticipant("Pigster", tournament));
         ParticipantEntity p3 = participantRepository.save(createParticipant("In chess we trust", tournament));
-        ParticipantEntity p4 = participantRepository.save(createParticipant("The semen arsonist", tournament));
+        ParticipantEntity p4 = participantRepository.save(createParticipant("The SA", tournament));
         ParticipantEntity p5 = participantRepository.save(createParticipant("Alex", tournament));
         ParticipantEntity p6 = participantRepository.save(createParticipant("DmitryAnikeyev", tournament));
-        ParticipantEntity p7 = participantRepository.save(createParticipant("Волк не тот", tournament));
-        ParticipantEntity p8 = participantRepository.save(createParticipant("магадан", tournament));
-        ParticipantEntity p9 = participantRepository.save(createParticipant("Султан", tournament));
+        ParticipantEntity p7 = participantRepository.save(createParticipant("Wolf", tournament));
+        ParticipantEntity p8 = participantRepository.save(createParticipant("Magadan", tournament));
+        ParticipantEntity p9 = participantRepository.save(createParticipant("Sultan", tournament));
         ParticipantEntity p10 = participantRepository.save(createParticipant("сэр А'ртур", tournament));
         ParticipantEntity p11 = participantRepository.save(createParticipant("Bob", tournament));
         ParticipantEntity p12 = participantRepository.save(createParticipant("milpops", tournament));
@@ -138,20 +149,34 @@ public class RoundServiceTest {
                 .sorted(Comparator.comparing(ParticipantEntity::getPlace))
                 .toList();
 
-        assertThat(sorted.get(0).getNickname()).isEqualTo("Миша буги вуги");
-        assertThat(sorted.get(1).getNickname()).isEqualTo("Непомерное свинство");
+        assertThat(sorted.get(0).getNickname()).isEqualTo("Boogie");
+        assertThat(sorted.get(0).getScore()).isEqualByComparingTo(BigDecimal.valueOf(5.0));
+        assertThat(sorted.get(1).getNickname()).isEqualTo("Pigster");
+        assertThat(sorted.get(1).getScore()).isEqualByComparingTo(BigDecimal.valueOf(5.0));
         assertThat(sorted.get(2).getNickname()).isEqualTo("In chess we trust");
-        assertThat(sorted.get(3).getNickname()).isEqualTo("The semen arsonist");
+        assertThat(sorted.get(2).getScore()).isEqualByComparingTo(BigDecimal.valueOf(5.0));
+        assertThat(sorted.get(3).getNickname()).isEqualTo("The SA");
+        assertThat(sorted.get(3).getScore()).isEqualByComparingTo(BigDecimal.valueOf(4.0));
         assertThat(sorted.get(4).getNickname()).isEqualTo("Alex");
+        assertThat(sorted.get(4).getScore()).isEqualByComparingTo(BigDecimal.valueOf(3.0));
         assertThat(sorted.get(5).getNickname()).isEqualTo("DmitryAnikeyev");
-        assertThat(sorted.get(6).getNickname()).isEqualTo("Волк не тот");
-        assertThat(sorted.get(7).getNickname()).isEqualTo("магадан");
-        assertThat(sorted.get(8).getNickname()).isEqualTo("Султан");
+        assertThat(sorted.get(5).getScore()).isEqualByComparingTo(BigDecimal.valueOf(3.0));
+        assertThat(sorted.get(6).getNickname()).isEqualTo("Wolf");
+        assertThat(sorted.get(6).getScore()).isEqualByComparingTo(BigDecimal.valueOf(3.0));
+        assertThat(sorted.get(7).getNickname()).isEqualTo("Magadan");
+        assertThat(sorted.get(7).getScore()).isEqualByComparingTo(BigDecimal.valueOf(3.0));
+        assertThat(sorted.get(8).getNickname()).isEqualTo("Sultan");
+        assertThat(sorted.get(8).getScore()).isEqualByComparingTo(BigDecimal.valueOf(2.5));
         assertThat(sorted.get(9).getNickname()).isEqualTo("сэр А'ртур");
+        assertThat(sorted.get(9).getScore()).isEqualByComparingTo(BigDecimal.valueOf(2.0));
         assertThat(sorted.get(10).getNickname()).isEqualTo("Bob");
+        assertThat(sorted.get(10).getScore()).isEqualByComparingTo(BigDecimal.valueOf(1.5));
         assertThat(sorted.get(11).getNickname()).isEqualTo("milpops");
+        assertThat(sorted.get(11).getScore()).isEqualByComparingTo(BigDecimal.valueOf(1.0));
         assertThat(sorted.get(12).getNickname()).isEqualTo("если проиграю то мощно");
+        assertThat(sorted.get(12).getScore()).isEqualByComparingTo(BigDecimal.valueOf(1.0));
         assertThat(sorted.get(13).getNickname()).isEqualTo("Страх и ненависть на шахматах");
+        assertThat(sorted.get(13).getScore()).isEqualByComparingTo(BigDecimal.valueOf(0.0));
     }
 
     /**
@@ -191,6 +216,41 @@ public class RoundServiceTest {
             assertEquals(new HashSet<>(asList(p1, p2, p3)), new HashSet<>(participants.subList(0, 3)));
             assertEquals(new HashSet<>(asList(p4)), new HashSet<>(participants.subList(3,4)));
         }
+    }
+
+    @Test
+    void testPairingsSave() {
+        TournamentEntity tournament = tournamentRepository.save(createTournament());
+
+        ParticipantEntity p1 = participantRepository.save(createParticipant("Journey", tournament));
+        ParticipantEntity p2 = participantRepository.save(createParticipant("Hiloko", tournament));
+        ParticipantEntity p3 = participantRepository.save(createParticipant("In chess we trust", tournament));
+        ParticipantEntity p4 = participantRepository.save(createParticipant("The cluster arson", tournament));
+        ParticipantEntity p5 = participantRepository.save(createParticipant("Alex", tournament));
+        ParticipantEntity p6 = participantRepository.save(createParticipant("Dmitry", tournament));
+        ParticipantEntity p7 = participantRepository.save(createParticipant("Hooray", tournament));
+        ParticipantEntity p8 = participantRepository.save(createParticipant("Poliono", tournament));
+        ParticipantEntity p9 = participantRepository.save(createParticipant("Jovoko", tournament));
+        ParticipantEntity p10 = participantRepository.save(createParticipant("Masterpiece", tournament));
+        ParticipantEntity p11 = participantRepository.save(createParticipant("Bob", tournament));
+        ParticipantEntity p12 = participantRepository.save(createParticipant("milpops", tournament));
+        ParticipantEntity p13 = participantRepository.save(createParticipant("Vasilyok", tournament));
+
+        RoundEntity round1 = roundRepository.save(createRound(tournament, 1));
+        Mockito.doAnswer(i -> new HashMap<Integer, Integer>() {{
+            put(1, 2);
+            put(3, 4);
+            put(5, 6);
+            put(7, 8);
+            put(9, 10);
+            put(11, 12);
+            put(13, 0);
+        }}).when(javaFoPairingStrategy).makePairings(Mockito.any());
+        roundService.makePairings(tournament.getId(), 1);
+
+        List<MatchEntity> matchEntitiesByRoundId = matchRepository.findMatchEntitiesByRoundId(round1.getId());
+
+        assertEquals(7, matchEntitiesByRoundId.size());
     }
 
     private TournamentEntity createTournament() {

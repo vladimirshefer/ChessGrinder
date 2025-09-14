@@ -1,9 +1,12 @@
-package com.chessgrinder.chessgrinder.trf.dto;
+package com.chessgrinder.chessgrinder.chessengine.trf.dto;
 
+import com.chessgrinder.chessgrinder.chessengine.trf.parser.PlayerTrfLineParser;
 import jakarta.annotation.Nullable;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * <pre>
@@ -38,13 +41,15 @@ import java.util.List;
  * 86 - 89   Rank Exact definition, especially for Team         ■
  * </pre>
  *
- * @see com.chessgrinder.chessgrinder.trf.line.PlayerTrfLineParser
+ * @see PlayerTrfLineParser
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Player001TrfLine implements TrfLine {
+public class Player001TrfLine implements CodedTrfLine {
+
+    private static final String CODE = "001";
 
     private int startingRank;
 
@@ -66,7 +71,18 @@ public class Player001TrfLine implements TrfLine {
 
     private Integer rank;
 
-    private List<Match> matches;
+    @Builder.Default
+    private List<Match> matches = new ArrayList<>();
+
+    @Override
+    public String getCode() {
+        return CODE;
+    }
+
+    @Override
+    public String toString() {
+        return startingRank + " " + rank + " " + rating + " " + sex + '\'' + " " + title + '\'' + " " + name + '\'' + " " + points + " " + matches;
+    }
 
     /**
      * <pre>
@@ -131,9 +147,14 @@ public class Player001TrfLine implements TrfLine {
         private int opponentPlayerId;
         private char color;
         private char result;
+
+        @Override
+        public String toString() {
+            return opponentPlayerId + " " + color + " " + result;
+        }
     }
 
-    public static enum TrfMatchResult {
+    public enum TrfMatchResult {
         /**
          * The scheduled game was not played
          */
@@ -196,7 +217,17 @@ public class Player001TrfLine implements TrfLine {
 
         public char getCharCode(){
             return code.charAt(0);
-        };
+        }
+
+        public static TrfMatchResult fromCode(char code) {
+            String strCode = code + "";
+            for (TrfMatchResult trfMatchResult : TrfMatchResult.values()) {
+                if (trfMatchResult.getCode().equals(strCode)) {
+                    return trfMatchResult;
+                }
+            }
+            throw new NoSuchElementException(strCode);
+        }
 
     }
 }

@@ -1,12 +1,11 @@
-package com.chessgrinder.chessgrinder.trf.line;
+package com.chessgrinder.chessgrinder.chessengine.trf.parser;
 
-import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersXxzTrfLine;
-import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.MissingPlayersXxzTrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class MissingPlayersTrfLineParser implements TrfLineParser<MissingPlayersXxzTrfLine> {
 
@@ -22,26 +21,25 @@ public class MissingPlayersTrfLineParser implements TrfLineParser<MissingPlayers
         }
         String playerIdsString = line.substring(3).trim();
 
-        List<Integer> playerIds = Arrays.stream(playerIdsString.split("\\W"))
+        List<Integer> playerIds = parseIntegers(playerIdsString);
+
+        return MissingPlayersXxzTrfLine.of(playerIds);
+    }
+
+    /**
+     * @param string example: "    1 \n \t 678 039  9129  912  "
+     * @return example: [1, 678, 39, 9129, 912]
+     */
+    private static List<Integer> parseIntegers(String string) {
+        return Arrays.stream(string.split("\\W"))
                 .map(String::trim)
                 .filter(it -> !it.isBlank())
                 .map(Integer::valueOf)
                 .toList();
-
-        return MissingPlayersXxzTrfLine.builder().playerIds(playerIds).build();
     }
 
     @Override
     public void tryWrite(Consumer<String> trfConsumer, TrfLine line) {
-        if (!(line instanceof MissingPlayersXxzTrfLine trfLine)) {
-            return;
-        }
-
-        if (trfLine.getPlayerIds() == null || trfLine.getPlayerIds().isEmpty()) {
-            return;
-        }
-
-        trfConsumer.accept("XXZ ");
-        trfConsumer.accept(trfLine.getPlayerIds().stream().map(Object::toString).collect(Collectors.joining(" ")));
+        trfConsumer.accept(line.toString());
     }
 }

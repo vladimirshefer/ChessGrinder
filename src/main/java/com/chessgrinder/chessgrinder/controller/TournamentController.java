@@ -1,14 +1,9 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.dto.ListDto;
-import com.chessgrinder.chessgrinder.dto.MatchDto;
-import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
-import com.chessgrinder.chessgrinder.entities.MatchEntity;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
 import com.chessgrinder.chessgrinder.entities.RoleEntity;
-import com.chessgrinder.chessgrinder.entities.RoundEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
@@ -20,11 +15,9 @@ import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
 import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import com.chessgrinder.chessgrinder.service.TournamentService;
-import com.chessgrinder.chessgrinder.trf.TrfUtil;
-import com.chessgrinder.chessgrinder.trf.dto.MissingPlayersXxzTrfLine;
-import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine;
-import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
-import com.chessgrinder.chessgrinder.trf.dto.RoundsNumberXxrTrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.util.TrfUtil;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
+import com.chessgrinder.chessgrinder.service.TrfService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -43,12 +36,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import static com.chessgrinder.chessgrinder.comparator.ParticipantDtoComparators.COMPARE_PARTICIPANT_DTO_BY_NICKNAME_NULLS_LAST;
+import static com.chessgrinder.chessgrinder.comparator.ParticipantEntityComparators.COMPARE_PARTICIPANT_ENTITY_BY_NICKNAME_NULLS_LAST;
 
 @RestController
 @RequestMapping("/tournament")
@@ -105,45 +96,14 @@ public class TournamentController {
         TournamentEntity tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
 
-        List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId);
-        List<ParticipantDto> participantDtos = participantMapper.toDto(participantEntities);
-
-        List<List<MatchEntity>> allMatchesInTheTournament = tournament.getRounds().stream()
-                .filter(RoundEntity::isFinished)
-                .map(RoundEntity::getMatches)
-                .toList();
-
-        List<List<MatchDto>> allMatches = allMatchesInTheTournament.stream().map(matchMapper::toDto).toList();
-        var matchHistory = allMatches;
-        var participants = participantDtos;
-        var roundsNumber = tournament.getRoundsNumber();
-
-        Map<ParticipantDto, List<MatchDto>> participantsMatches = JaVaFoPairingStrategyImpl.getParticipantsMatches(participants, matchHistory);
-        List<String> playerIds = participantsMatches.keySet().stream()
-                .sorted(COMPARE_PARTICIPANT_DTO_BY_NICKNAME_NULLS_LAST)
-                .map(ParticipantDto::getId).toList();
-
-        List<TrfLine> trfLines = new ArrayList<>();
-        // XXR - number of rounds. required for pairing.
-        trfLines.add(RoundsNumberXxrTrfLine.builder().roundsNumber(roundsNumber).build());
-
-        List<ParticipantDto> missingParticipants = participants.stream().filter(ParticipantDto::getIsMissing).toList();
-        trfLines.add(
-                MissingPlayersXxzTrfLine.builder()
-                        .playerIds(missingParticipants.stream().map(it1 -> playerIds.indexOf(it1.getId()) + 1).toList())
-                        .build()
-        );
-
-        List<Player001TrfLine> playerTrfLines = participantsMatches.entrySet()
+        List<ParticipantEntity> participantEntities = participantRepository.findByTournamentId(tournamentId)
                 .stream()
-                .map(entry -> JaVaFoPairingStrategyImpl.toTrfDto(entry.getKey(), entry.getValue(), playerIds))
+                .sorted(COMPARE_PARTICIPANT_ENTITY_BY_NICKNAME_NULLS_LAST)
                 .toList();
 
-        trfLines.addAll(playerTrfLines);
+        List<TrfLine> trfLines = TrfService.toTrfTournament(participantEntities, tournament);
 
-        String tournamentTrf = TrfUtil.writeTrfLines(trfLines);
-
-        return tournamentTrf;
+        return TrfUtil.writeTrfLines(trfLines);
     }
 
     @Secured(RoleEntity.Roles.ADMIN)

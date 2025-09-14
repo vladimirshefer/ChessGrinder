@@ -1,8 +1,9 @@
-package com.chessgrinder.chessgrinder.chessengine.pairings;
+package com.chessgrinder.chessgrinder.chessengine.javafo;
 
 import javafo.api.JaVaFoApi;
 
 import java.io.ByteArrayInputStream;
+import java.util.Properties;
 
 public class JaVaFoWrapper {
     /**
@@ -14,6 +15,12 @@ public class JaVaFoWrapper {
     public static String exec(ExecutionCodes code, String trf) {
         synchronized (JAVAFO_MONITOR) {
             return JaVaFoApi.exec(code.getCode(), new ByteArrayInputStream(trf.getBytes()));
+        }
+    }
+
+    public static String execGenerate(Properties generatorProperties) {
+        synchronized (JAVAFO_MONITOR) {
+            return JaVaFoApi.exec(ExecutionCodes.RANDOM_GENERATOR.getCode(), generatorProperties);
         }
     }
 
