@@ -194,6 +194,7 @@ function TournamentEditPageImpl(
                     defaultValue={tournament.pairingStrategy || "SWISS"} className={"border-b"}>
                        <option value="SWISS">{loc("Swiss")}</option>
                        <option value="ROUND_ROBIN">{loc("Round Robin")}</option>
+                       <option value="SIMPLE">{loc("Simple")}</option>
             </select>
 
             <label htmlFor={"repeatable"}>{loc("Repeatable")}</label>

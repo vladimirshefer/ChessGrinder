@@ -6,6 +6,7 @@ import com.chessgrinder.chessgrinder.chessengine.trf.dto.Player001TrfLine;
 import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
 import com.chessgrinder.chessgrinder.chessengine.trf.util.TrfUtil;
 import jakarta.annotation.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
  *   <li>Minimize byes and avoid giving multiple byes to the same player unless strictly necessary.</li>
  * </ul>
  */
+@Component
 public class SimplePairingStrategyImpl implements PairingStrategy {
     @Override
     public Map<Integer, Integer> makePairings(List<TrfLine> trf) {

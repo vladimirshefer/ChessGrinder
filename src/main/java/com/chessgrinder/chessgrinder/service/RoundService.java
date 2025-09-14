@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.service;
 import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.chessengine.pairings.PairingStrategy;
 import com.chessgrinder.chessgrinder.chessengine.pairings.RoundRobinPairingStrategyImpl;
+import com.chessgrinder.chessgrinder.chessengine.pairings.SimplePairingStrategyImpl;
 import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
 import com.chessgrinder.chessgrinder.comparator.ComparatorUtil;
 import com.chessgrinder.chessgrinder.entities.MatchEntity;
@@ -12,8 +13,6 @@ import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.MatchResult;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.exceptions.RoundNotFoundException;
-import com.chessgrinder.chessgrinder.mappers.MatchMapper;
-import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.repositories.MatchRepository;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
@@ -55,18 +54,16 @@ public class RoundService {
     private final ParticipantRepository participantRepository;
     private final JaVaFoPairingStrategyImpl javafoPairingStrategy;
     private final RoundRobinPairingStrategyImpl roundRobinPairingStrategy;
+    private final SimplePairingStrategyImpl simplePairingStrategy;
 
     private PairingStrategy getPairingStrategy(String name) {
         if ("SWISS".equals(name)) return javafoPairingStrategy;
         if ("ROUND_ROBIN".equals(name)) return roundRobinPairingStrategy;
+        if ("SIMPLE".equals(name)) return simplePairingStrategy;
         return javafoPairingStrategy;
     }
 
     private final MatchRepository matchRepository;
-
-    private final MatchMapper matchMapper;
-
-    private final ParticipantMapper participantMapper;
 
     @Transactional
     public void createRound(UUID tournamentId) {
