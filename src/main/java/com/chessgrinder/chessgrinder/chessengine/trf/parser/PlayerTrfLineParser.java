@@ -1,7 +1,7 @@
-package com.chessgrinder.chessgrinder.trf.line;
+package com.chessgrinder.chessgrinder.chessengine.trf.parser;
 
-import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine;
-import com.chessgrinder.chessgrinder.trf.dto.TrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.Player001TrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
 import jakarta.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -23,7 +23,13 @@ public class PlayerTrfLineParser implements TrfLineParser<Player001TrfLine> {
         String pairingIdPart = line.substring(4, 8);
         String namePart = line.substring(14, 47);
         String ratingPart = line.substring(48, 52);
-        String pointsPart = line.substring(80, 84);
+        /*
+         DANGER: By TRF documentation the points are in position 81-84 (1-based).
+         But JaVaFo random tournament generator actually generates the points on positions 81-85.
+         Looks like either a bug in JaVaFo, or a mistake in TRF docs.
+         Char 85 is empty anyway (space), so taking char at position 85 (1-based) looks safe.
+        */
+        String pointsPart = line.substring(80, 84 + 1);
         String rankPart = line.substring(85, 89);
 
         Player001TrfLine result = Player001TrfLine.builder()
@@ -137,6 +143,13 @@ public class PlayerTrfLineParser implements TrfLineParser<Player001TrfLine> {
             return "";
         }
         return String.valueOf(any);
+    }
+
+    public static String toStringOrEmpty(Float number) {
+        if (number == null) {
+            return "";
+        }
+        return String.format("%.1f", number);
     }
 
 }

@@ -1,23 +1,30 @@
 package com.chessgrinder.chessgrinder.chessengine.pairings;
 
-import com.chessgrinder.chessgrinder.dto.MatchDto;
-import com.chessgrinder.chessgrinder.dto.ParticipantDto;
-import com.chessgrinder.chessgrinder.enums.MatchResult;
+import com.chessgrinder.chessgrinder.chessengine.PairingFailedException;
+import com.chessgrinder.chessgrinder.chessengine.trf.util.TrfUtil;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.MissingPlayersXxzTrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.Player001TrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
 import org.springframework.stereotype.Component;
-import java.util.*;
 
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.nullsLast;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * RoundRobinPairingStrategyImpl is a class for creating pairings based on Berger tables.
  * In this format, each player competes against every other player exactly once.
+ * This implementation supports several rounds - players start all over again after full circle.
  * This class is applicable when the number of players is between 4 and 16, inclusive.
  */
-
 @Component
 public class RoundRobinPairingStrategyImpl implements PairingStrategy {
-
 
     //Berger tables completed according to FIDE rules
     private static final int[][] bergerTable4 = {
@@ -104,97 +111,87 @@ public class RoundRobinPairingStrategyImpl implements PairingStrategy {
             {7, 15, 8, 6, 9, 5, 10, 4, 11, 3, 12, 2, 13, 1, 14, 0}    // Round 15
     };
 
-
-    // Following function counts the sum of players participated in the previous round.
-    public int countPlayers(List<MatchDto> lastRound) {
-
-        int playersCount = 0;
-
-        if (lastRound.isEmpty()) {
-            return 0;
-        } else {
-
-            for (MatchDto match : lastRound) {
-                ParticipantDto white = match.getWhite();
-                if (white != null && white.getIsMissing() != true) {
-                    playersCount++;
-                }
-                ParticipantDto black = match.getBlack();
-                if (black != null && black.getIsMissing() != true) {
-                    playersCount++;
-                }
-            }
-        }
-
-        return playersCount;
-    }
+    private static final Map<Integer, int[][]> bergerTables = new HashMap<>() {{
+        put(3, bergerTable4); // For 3 players
+        put(4, bergerTable4); // For 4 players
+        put(5, bergerTable6); // For 5 players
+        put(6, bergerTable6); // For 6 players
+        put(7, bergerTable8); // For 7 players
+        put(8, bergerTable8); // For 8 players
+        put(9, bergerTable10); // For 9 players
+        put(10, bergerTable10); // For 10 players
+        put(11, bergerTable12); // For 11 players
+        put(12, bergerTable12); // For 12 players
+        put(13, bergerTable14); // For 13 players
+        put(14, bergerTable14); // For 14 players
+        put(15, bergerTable16); // For 15 players
+        put(16, bergerTable16); // For 16 players
+    }};
 
     @Override
-    public List<MatchDto> makePairings(
-            List<ParticipantDto> participants,
-            List<List<MatchDto>> matchHistory,
-            Integer roundsNumber
-    ) {
+    public Map<Integer, Integer> makePairings(List<TrfLine> trf) {
+        List<Integer> missingPlayers = trf.stream().filter(it -> it instanceof MissingPlayersXxzTrfLine)
+                .flatMap(it -> ((MissingPlayersXxzTrfLine) it).getPlayerIds().stream())
+                .toList();
 
-        participants = new ArrayList<>(participants.stream().filter(it -> it != null && it.getIsMissing() != true).toList());
+        List<Player001TrfLine> players = trf.stream()
+                .filter(it -> it instanceof Player001TrfLine)
+                .map(it -> (Player001TrfLine) it)
+                .sorted(Comparator.comparing(Player001TrfLine::getStartingRank))
+                .filter(it -> !missingPlayers.contains(it.getStartingRank()))
+                .toList();
 
-        participants.sort(Comparator.comparing(ParticipantDto::getId, nullsLast(naturalOrder())));
+        verifySamePlayers(trf, players.stream().map(Player001TrfLine::getStartingRank).toList());
 
-        int participantsNumber = participants.size();
-
-        // We do not apply the round-robin format if the number of players is less than 3 or more than 16.
-        if (participants.isEmpty() || participantsNumber < 3 || participantsNumber > 16) {
-            throw new IllegalArgumentException("A pairing is not allowed if there are less than 3 or more than 16 players.");
+        if (players.size() < 3) {
+            throw new PairingFailedException("There are less than 3 players.");
         }
 
-        // Check for additional players
-        List<MatchDto> lastRound = matchHistory.isEmpty() ? new ArrayList<>() : matchHistory.get(matchHistory.size() - 1);
-        int currentCounts = countPlayers(lastRound);
-        if (currentCounts != participants.size() && currentCounts != 0) {
-            throw new IllegalArgumentException("It is prohibited to add additional players");
+        int nextRoundNumber = players.get(0).getMatches().size();
+
+        Map<Integer, Integer> pairings = new LinkedHashMap<>();
+        int[][] bergerTable = bergerTables.get(players.size());
+        int[] bergerLine = bergerTable[nextRoundNumber % bergerTable.length];
+        for (int i = 0; i < bergerLine.length; i+=2) {
+            int whiteStartingRank = getStartingRank(players, bergerLine[i]);
+            int blackStartingRank = getStartingRank(players, bergerLine[i + 1]);
+            if (whiteStartingRank != 0) {
+                pairings.put(whiteStartingRank, blackStartingRank);
+            } else {
+                pairings.put(blackStartingRank, whiteStartingRank);
+            }
         }
-
-        // A player for a bye is adding in case of an odd number of players.
-        if (participantsNumber % 2 != 0) {
-            participants.add(null);
-            participantsNumber = participantsNumber + 1;
-        }
-
-        Map<Integer, int[][]> getBergerTable = new HashMap<>();
-
-        getBergerTable.put(3, bergerTable4); // For 3 players
-        getBergerTable.put(4, bergerTable4); // For 4 players
-        getBergerTable.put(5, bergerTable6); // For 5 players
-        getBergerTable.put(6, bergerTable6); // For 6 players
-        getBergerTable.put(7, bergerTable8); // For 7 players
-        getBergerTable.put(8, bergerTable8); // For 8 players
-        getBergerTable.put(9, bergerTable10); // For 9 players
-        getBergerTable.put(10, bergerTable10); // For 10 players
-        getBergerTable.put(11, bergerTable12); // For 11 players
-        getBergerTable.put(12, bergerTable12); // For 12 players
-        getBergerTable.put(13, bergerTable14); // For 13 players
-        getBergerTable.put(14, bergerTable14); // For 14 players
-        getBergerTable.put(15, bergerTable16); // For 15 players
-        getBergerTable.put(16, bergerTable16); // For 16 players
-
-        List<MatchDto> pairings = new ArrayList<>();
-
-        int[][] bergerTable = getBergerTable.get(participantsNumber);
-
-        for (int i = 0; i < participantsNumber; i += 2) {
-
-            ParticipantDto whitePlayer = participants.get(bergerTable[matchHistory.size() % (participantsNumber - 1)][i]);
-            ParticipantDto blackPlayer = participants.get(bergerTable[matchHistory.size() % (participantsNumber - 1)][(i + 1)]);
-
-            MatchDto match = MatchDto.builder()
-                    .white(whitePlayer)
-                    .black(blackPlayer)
-                    .result(whitePlayer == null || blackPlayer == null ? MatchResult.BUY : null)
-                    .build();
-            pairings.add(match);
-
-        }
-
         return pairings;
+    }
+
+    private static int getStartingRank(List<Player001TrfLine> players, int index) {
+        if (index >= players.size()) {
+            return 0;
+        }
+        return players.get(index).getStartingRank();
+    }
+
+    private static void verifySamePlayers(List<TrfLine> trf, List<Integer> players) {
+        Set<Integer> activePlayers = new HashSet<>(players);
+        for (int i = 0; i < TrfUtil.players(trf).findAny().orElseThrow().getMatches().size(); i++) {
+            Set<Integer> activePlayers1 = getActivePlayers(trf, i);
+            if (!Objects.equals(activePlayers, activePlayers1)) {
+                throw new PairingFailedException("Players list have changed " + " " + activePlayers + "; before: " + i + " " + activePlayers1);
+            }
+        }
+    }
+
+    /**
+     * @param round 0-based
+     */
+    private static Set<Integer> getActivePlayers(List<TrfLine> trf, int round) {
+        return TrfUtil.players(trf)
+                .filter(it -> !isMissing(it.getMatches().get(round)))
+                .map(Player001TrfLine::getStartingRank)
+                .collect(Collectors.toSet());
+    }
+
+    private static boolean isMissing(Player001TrfLine.Match match) {
+        return match.getResult() == Player001TrfLine.TrfMatchResult.ZERO_POINT_BYE.getCharCode();
     }
 }

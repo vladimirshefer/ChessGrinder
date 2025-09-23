@@ -28,7 +28,7 @@ export interface ListDto<T extends any> {
 
 export type TournamentStatus = "FINISHED" | "ACTIVE" | "PLANNED"
 
-export type PairingStrategy = "SWISS" | "ROUND_ROBIN"
+export type PairingStrategy = "SWISS" | "ROUND_ROBIN" | "SIMPLE"
 
 export type RepeatableType = "WEEKLY" | null
 

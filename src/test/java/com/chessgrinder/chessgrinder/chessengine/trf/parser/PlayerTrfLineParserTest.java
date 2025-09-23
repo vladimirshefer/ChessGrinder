@@ -1,9 +1,9 @@
-package com.chessgrinder.chessgrinder.trf.line;
+package com.chessgrinder.chessgrinder.chessengine.trf.parser;
 
-import com.chessgrinder.chessgrinder.trf.dto.Player001TrfLine;
+import com.chessgrinder.chessgrinder.chessengine.trf.dto.Player001TrfLine;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PlayerTrfLineParserTest {
     @Test
