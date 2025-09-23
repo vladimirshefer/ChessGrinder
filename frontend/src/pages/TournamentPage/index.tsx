@@ -292,7 +292,7 @@ function TournamentPage() {
         </Conditional>
         <Conditional on={isMain && isMeModerator}>
             <ControlButtons
-                copyNicknames={copyNicknamesToClipboard}
+                createStrawpoll={createStrawpoll}
                 tournament={tournament}
                 startTournament={startTournament}
                 finishTournament={finishTournament}
@@ -307,34 +307,17 @@ function ControlButtons(props: {
     startTournament: () => Promise<void>,
     finishTournament: () => Promise<void>,
     deleteTournament: () => Promise<void>,
-    copyNicknames: () => Promise<void>,
     createStrawpoll: () => Promise<void>,
 }) {
     let loc = useLoc()
 
     return <div className={"flex p-2 items-top content-center"}>
         <div className="flex flex-col gap-2 justify-start p-2 grow">
-            <div
-                className="cursor-pointer"
+            <button
                 onClick={props.createStrawpoll}
-                style={{
-                    width: "50px",
-                    height: "30px",
-                    backgroundColor: "#d2b058",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "6px"
-                }}
+                className={"btn-primary uppercase !px-4"}
             >
-                <img src="/telegramPoll.png" alt="Send Poll" style={{height: "100%", width: "auto"}}/>
-            </div>
-        </div>
-        <div className={"flex gap-1 justify-start p-2 grow"}>
-            <button className={"btn-light h-full !px-4"}
-                    onClick={props.copyNicknames}
-            >
-                <AiOutlineCopy/>
+                Nickname Contest!
             </button>
         </div>
 
