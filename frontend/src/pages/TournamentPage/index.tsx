@@ -7,7 +7,7 @@ import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api
 import RoundTab from "pages/TournamentPage/RoundTab";
 import {Conditional, usePermissionGranted} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
-import {AiOutlineCopy, AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
+import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
 import {useLoc, useTransliterate} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
@@ -18,7 +18,7 @@ import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
 import QrCode from "components/QrCode";
 import {IoMdShare} from "react-icons/io";
-import restApiClient from "../../lib/api/RestApiClient";
+import restApiClient from "lib/api/RestApiClient";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
 import {copyToClipboard} from "lib/util/clipboard";
