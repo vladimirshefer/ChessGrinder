@@ -3,8 +3,11 @@ package com.chessgrinder.chessgrinder.controller;
 import java.util.*;
 
 import com.chessgrinder.chessgrinder.service.*;
+import com.chessgrinder.chessgrinder.util.CacheUtil;
 import lombok.*;
 import org.springframework.http.*;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,9 +17,19 @@ public class StrawpollController {
 
     private final StrawpollService strawpollService;
 
+    public static final Map<UUID, String> cachedLinks = CacheUtil.createCache(20);
+
+    @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @GetMapping(value = "/{tournamentId}", produces = MediaType.TEXT_PLAIN_VALUE)
     public String makeStrawpoll(@PathVariable UUID tournamentId) {
-        String result = strawpollService.createStrawpoll(tournamentId);
-        return result;
+        synchronized (cachedLinks) {
+            if (cachedLinks.containsKey(tournamentId)) {
+                return cachedLinks.get(tournamentId);
+            }
+            String result = strawpollService.createStrawpoll(tournamentId);
+            cachedLinks.put(tournamentId, result);
+            return result;
+        }
     }
+
 }
