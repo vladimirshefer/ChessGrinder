@@ -1,17 +1,23 @@
 package com.chessgrinder.chessgrinder.service;
 
-import java.util.*;
-
-import com.chessgrinder.chessgrinder.entities.*;
+import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
+import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.external.strawpoll.Poll;
 import com.chessgrinder.chessgrinder.external.strawpoll.PollConfig;
 import com.chessgrinder.chessgrinder.external.strawpoll.PollOptionDto;
-import com.chessgrinder.chessgrinder.repositories.*;
-import lombok.*;
-import org.springframework.http.*;
-import org.springframework.stereotype.*;
-import org.springframework.web.client.*;
+import com.chessgrinder.chessgrinder.external.strawpoll.StrawpollClient;
+import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
+import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,46 +28,39 @@ public class StrawpollService {
 
     private final ParticipantRepository participantRepository;
     private final TournamentRepository tournamentRepository;
+    private StrawpollClient strawpollClient;
+
+    @PostConstruct
+    public void init() {
+        strawpollClient = new StrawpollClient(strawpollApiKey);
+    }
 
     public String createStrawpoll(UUID tournamentID) {
         Optional<TournamentEntity> tournament = tournamentRepository.findById(tournamentID);
         String tournamentName = tournament.map(TournamentEntity::getName).orElse(null);
         List<ParticipantEntity> tournamentParticipants = participantRepository.findByTournamentId(tournamentID);
         List<String> nicknames = tournamentParticipants.stream().map(ParticipantEntity::getNickname).toList();
-        String strawpollLink = createStrawpollLink(tournamentName, nicknames);
-        return strawpollLink;
+        return createPoll(tournamentName, nicknames);
     }
 
-    public String createStrawpollLink(String title, List<String> options) {
-        RestTemplate restTemplate = new RestTemplate();
-
+    public String createPoll(String title, List<String> options) {
         Poll poll = new Poll();
         poll.setTitle(title);
-
         List<PollOptionDto> optionDtos = options.stream()
                 .map(value -> new PollOptionDto(value))
                 .toList();
         poll.setPollOptions(optionDtos);
-
         PollConfig pollConfig = new PollConfig();
         pollConfig.setIsMultipleChoice(true);
         pollConfig.setMultipleChoiceMin(3);
         pollConfig.setMultipleChoiceMax(3);
         pollConfig.setRandomizeOptions(true);
+        pollConfig.setDuplicationChecking("session");
+        long tomorrowTimestamp = LocalDateTime.now().plusDays(1).toEpochSecond(ZoneOffset.UTC);
+        pollConfig.setDeadlineAt(tomorrowTimestamp);
         poll.setPollConfig(pollConfig);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("API-KEY", strawpollApiKey);
-        HttpEntity<Poll> entity = new HttpEntity<>(poll, headers);
-        try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(
-                    "https://api.strawpoll.com/v3/polls", entity, Map.class);
-
-            return response.getBody().get("url").toString();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create Strawpoll", e);
-        }
+        Poll poll1 = strawpollClient.createPoll(poll);
+        return "https://strawpoll.com/" + poll1.getId();
     }
 
 }
