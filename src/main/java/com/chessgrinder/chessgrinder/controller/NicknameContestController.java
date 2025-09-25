@@ -36,7 +36,7 @@ public class NicknameContestController {
         if (cachedLinks.containsKey(tournamentId)) {
             return cachedLinks.get(tournamentId);
         }
-        return "No poll created yet.";
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No strawpoll found for tournament id " + tournamentId, null) ;
     }
 
 }
