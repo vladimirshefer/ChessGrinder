@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 import { LuArrowRight, LuChevronDown } from "react-icons/lu";
 
 function NicknameContextPane({ tournamentId }: { tournamentId: string }) {
-    const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isCollapsed, setIsCollapsed] = useState(true)
 
     const pollQuery = useQuery({
         queryKey: ["poll", tournamentId],
         queryFn: async () => restApiClient.get<string>(`/nickname-contest/${tournamentId}`),
+        retry: false,
     })
 
     if (pollQuery.isLoading) return <Skeleton />
@@ -51,7 +52,7 @@ function NicknameContextPane({ tournamentId }: { tournamentId: string }) {
 }
 
 function Skeleton() {
-    return <div className="h-32 animate-pulse bg-primary-300/40" />
+    return <div className="h-15 animate-pulse bg-primary-300/40" />
 }
 
 export default NicknameContextPane
