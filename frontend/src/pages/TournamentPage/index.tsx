@@ -21,6 +21,7 @@ import {IoMdShare} from "react-icons/io";
 import restApiClient from "lib/api/RestApiClient";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
+import NicknameContextPane from "./NicknameContextPane";
 import {copyToClipboard} from "lib/util/clipboard";
 import ShareDropdownButton from "pages/TournamentPage/ShareDropdownButton";
 
@@ -121,8 +122,8 @@ function TournamentPage() {
         await tournamentQuery.refetch();
     }
 
-    async function createStrawpoll() {
-        await restApiClient.get(`/strawpoll/${id}`, { responseType: 'text' });
+    async function startNicknameContest() {
+        await restApiClient.post(`/nickname-contest/${tournament.id}`);
     }
 
     if (tournamentQuery.isError) return <>Error!</>
@@ -198,7 +199,9 @@ function TournamentPage() {
         {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && (
             <MyActiveTournamentPane tournamentId={tournament.id}/>
         )}
-
+        <div className={"p-2"}>
+            <NicknameContextPane tournamentId={tournament.id}/>
+        </div>
         {!hideParticipateButton && tournament.status === "PLANNED" && (
             <div className={"px-2"}>
                 {isAuthenticatedUser ?
@@ -292,7 +295,7 @@ function TournamentPage() {
         </Conditional>
         <Conditional on={isMain && isMeModerator}>
             <ControlButtons
-                createStrawpoll={createStrawpoll}
+                startNicknameContest={startNicknameContest}
                 tournament={tournament}
                 startTournament={startTournament}
                 finishTournament={finishTournament}
@@ -307,23 +310,23 @@ function ControlButtons(props: {
     startTournament: () => Promise<void>,
     finishTournament: () => Promise<void>,
     deleteTournament: () => Promise<void>,
-    createStrawpoll: () => Promise<void>,
+    startNicknameContest: () => Promise<void>,
 }) {
     let loc = useLoc()
 
-    return <div className={"flex p-2 items-top content-center"}>
-        <div className="flex flex-col gap-2 justify-start p-2 grow">
+    return <div className={"flex p-2 gap-2 items-top content-center"}>
+        <div className="flex flex-col gap-2 justify-start grow">
             <button
-                onClick={props.createStrawpoll}
-                className={"btn-primary uppercase !px-4"}
+                onClick={props.startNicknameContest}
+                className={"btn-primary uppercase"}
             >
-                Nickname Contest!
+                {"Run nickname contest!"}
             </button>
         </div>
 
-        <div className={"flex gap-1 justify-end p-2"}>
+        <div className={"flex gap-2 justify-end"}>
             <Conditional on={props.tournament.status !== "ACTIVE"}>
-                <button className={"btn-primary uppercase !px-4"}
+                <button className={"btn-primary uppercase"}
                         onClick={props.startTournament}
                 >{loc("Start")}
                 </button>
@@ -335,12 +338,12 @@ function ControlButtons(props: {
                 </button>
             </Conditional>
             <Link to={`/tournament/${props.tournament.id}/edit`}>
-                <button className={"btn-light h-full !px-4"}>
+                <button className={"btn-light h-full"}>
                     <AiOutlineEdit/>
                 </button>
             </Link>
             <button
-                className={"btn-danger uppercase !px-4"}
+                className={"btn-danger uppercase"}
                 onClick={props.deleteTournament}
                 title={loc("Delete")}
             >
