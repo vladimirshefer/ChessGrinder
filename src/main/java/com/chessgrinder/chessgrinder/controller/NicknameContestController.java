@@ -1,9 +1,9 @@
 package com.chessgrinder.chessgrinder.controller;
 
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import com.chessgrinder.chessgrinder.service.*;
-import com.chessgrinder.chessgrinder.util.CacheUtil;
 import lombok.*;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,26 +16,24 @@ import org.springframework.web.server.ResponseStatusException;
 public class NicknameContestController {
 
     private final StrawpollService strawpollService;
-
-    public static final Map<UUID, String> cachedLinks = CacheUtil.createCache(20);
+    private static final String STRAWPOLL_URL_PREFIX = "https://strawpoll.com/";
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PostMapping(value = "/{tournamentId}", produces = MediaType.TEXT_PLAIN_VALUE)
     public String create(@PathVariable UUID tournamentId) {
-        synchronized (cachedLinks) {
-            if (cachedLinks.containsKey(tournamentId)) {
-                return cachedLinks.get(tournamentId);
-            }
-            String result = strawpollService.createStrawpoll(tournamentId);
-            cachedLinks.put(tournamentId, result);
-            return result;
+        try {
+            String pollId = strawpollService.getOrCreateContestPollId(tournamentId);
+            return STRAWPOLL_URL_PREFIX + pollId;
+        } catch (NoSuchElementException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
         }
     }
 
     @GetMapping(value = "/{tournamentId}", produces = MediaType.TEXT_PLAIN_VALUE)
     public String get(@PathVariable UUID tournamentId) {
-        if (cachedLinks.containsKey(tournamentId)) {
-            return cachedLinks.get(tournamentId);
+        String pollId = strawpollService.getPollId(tournamentId);
+        if (pollId != null) {
+            return STRAWPOLL_URL_PREFIX + pollId;
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No strawpoll found for tournament id " + tournamentId, null) ;
     }
