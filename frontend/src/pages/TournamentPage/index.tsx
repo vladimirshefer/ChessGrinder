@@ -21,6 +21,7 @@ import {IoMdShare} from "react-icons/io";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
 import {copyToClipboard} from "lib/util/clipboard";
+import AddToCalendarButton from "components/AddToCalendarButton";
 
 function TournamentPage(
     {
@@ -142,6 +143,7 @@ function TournamentPage(
     if (!tournamentQuery.isSuccess || !tournamentQuery.data) return <>Loading</>
     let tournament: TournamentDto = tournamentQuery.data.tournament
     let hideParticipateButton = !meParticipantQuery.isSuccess || !!meParticipantQuery.data
+    let isTournamentFinished = tournament?.status === "FINISHED"
 
     async function startTournament() {
         await tournamentRepository.startTournament(tournament.id)
@@ -232,7 +234,7 @@ function TournamentPage(
                     </div>
                 </Link>
             })}
-            <Conditional on={tournament.status !== "FINISHED"}>
+            <Conditional on={!isTournamentFinished}>
                 <Conditional on={isMeModerator}>
                     <button className={`py-1 px-3`}
                             onClick={createRound}
@@ -245,6 +247,9 @@ function TournamentPage(
             <Link to={`/tournament/${id}/share`} title={loc("Share")}>
                 <button className={"w-full h-full py-1 px-3"}><IoMdShare/></button>
             </Link>
+            <Conditional on={isMain && !isTournamentFinished}>
+                <AddToCalendarButton tournament={tournament} />
+            </Conditional>
         </div>
         <>
             <Conditional on={isMain}>
@@ -268,7 +273,7 @@ function TournamentPage(
                     )}
                 </>
                 <Conditional on={isMeModerator}>
-                    <Conditional on={tournament?.status !== "FINISHED"}>
+                    <Conditional on={!isTournamentFinished}>
                         <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
                     </Conditional>
                 </Conditional>
@@ -298,7 +303,7 @@ function TournamentPage(
         </>
         <Conditional on={isMain}>
             <Conditional on={isAuthenticatedUser && !!meParticipantQuery.data && !meParticipantQuery.data?.isMissing}>
-                <Conditional on={tournament?.status === "PLANNED" || tournament?.status === "ACTIVE"}>
+                <Conditional on={!isTournamentFinished}>
                     <div className={"grid 2-full p-2"}>
                         <button
                             className={"btn-light uppercase w-full"}
