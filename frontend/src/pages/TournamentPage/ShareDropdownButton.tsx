@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {TournamentDto} from 'lib/api/dto/MainPageData';
+import {DEFAULT_DATETIME_FORMAT, TournamentDto} from 'lib/api/dto/MainPageData';
 import {useLoc} from 'strings/loc';
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {LuCalendarPlus, LuLink2, LuQrCode, LuShare2, LuTable} from "react-icons/lu";
@@ -30,9 +30,14 @@ function ShareDropdownButton(
         location: tournament.locationUrl || tournament.locationName || tournament.city || 'Planet Earth',
     });
 
+    let locationGeneratedUrl = !!tournament.locationName
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tournament.locationName + " " + (tournament.city || ""))}`
+        : undefined;
+
     const droprownRef = useRef(null);
     useClickOutsideHandler(droprownRef, () => setShowDropdown(false));
 
+    let tournamentUrl = `/api/tournament/${tournament.id}/export/trf`;
     return (
         <div className="relative flex">
             <button
@@ -73,17 +78,15 @@ function ShareDropdownButton(
                         <button
                             className="text-left text-sm"
                             onClick={() => {
-                                if (typeof navigator !== 'undefined' && navigator.share) {
-                                    navigator.share({
-                                        title: tournament.name,
-                                        text: 'Share this tournament',
-                                        url: window.location.href,
-                                    }).catch(() => {
-                                        // Ignore aborted share attempts
-                                    });
-                                } else if (navigator.clipboard?.writeText) {
-                                    navigator.clipboard.writeText(window.location.href).catch(() => void 0);
-                                }
+                                navigator.share({
+                                    title: `"${tournament.name}" - Tournament - Chess Grinder`,
+                                    text:
+                                        `Date: ${dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("MMMM D, HH:mm")}\n` +
+                                        `Location: "${tournament.locationName}" ${tournament.locationUrl || locationGeneratedUrl}`,
+                                    url: tournamentUrl,
+                                }).catch(() => {
+                                    // Ignore aborted share attempts
+                                });
                                 setShowDropdown(false);
                             }}
                         >
@@ -94,7 +97,7 @@ function ShareDropdownButton(
                         <LuTable/>
                         <Link
                             className="text-left text-sm"
-                            to={`/api/tournament/${tournament.id}/export/trf`}
+                            to={tournamentUrl}
                             target={"_blank"}
                         >
                             {"Export TRF"}
