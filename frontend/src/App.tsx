@@ -44,7 +44,6 @@ function App() {
                                     <Route path="/about" element={<AboutPage/>}/>
                                     <Route path="/tournament/:id" element={<TournamentPage/>}/>
                                     <Route path="/tournament/:id/round/:roundId" element={<TournamentPage />}/>
-                                    <Route path="/tournament/:id/share" element={<TournamentPage tab={"SHARE"}/>}/>
                                     <Route path="/tournament/:tournamentId/participant/:participantId"
                                            element={<ParticipantPage/>}/>
                                     <Route path="/tournament/:tournamentId/edit"
