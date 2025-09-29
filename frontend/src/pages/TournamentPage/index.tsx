@@ -16,20 +16,12 @@ import AddParticipantTournamentPageSection from "pages/TournamentPage/AddPartici
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
-import QrCode from "components/QrCode";
-import {IoMdShare} from "react-icons/io";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
 import {copyToClipboard} from "lib/util/clipboard";
-import AddToCalendarButton from "components/AddToCalendarButton";
+import ShareDropdownButton from "pages/TournamentPage/ShareDropdownButton";
 
-function TournamentPage(
-    {
-        tab = undefined
-    }: {
-        tab?: "SHARE" | undefined
-    }
-) {
+function TournamentPage() {
     let loc = useLoc()
     let transliterate = useTransliterate();
     let loginPageLink = useLoginPageLink();
@@ -39,7 +31,7 @@ function TournamentPage(
         queryKey: ["tournamentPageData", id],
         queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
     })
-    let isMain = !roundId && !tab
+    let isMain = !roundId
 
     usePageTitle(`${tournamentQuery.data?.tournament?.name || "Unnamed"} - ${dayjs(tournamentQuery?.data?.tournament?.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")} - Tournament - ChessGrinder`, [tournamentQuery.data])
 
@@ -266,12 +258,7 @@ function TournamentPage(
                 </Conditional>
             </Conditional>
             <div className={"grow"}></div>
-            <Link to={`/tournament/${id}/share`} title={loc("Share")}>
-                <button className={"w-full h-full py-1 px-3"}><IoMdShare/></button>
-            </Link>
-            <Conditional on={isMain && !isTournamentFinished}>
-                <AddToCalendarButton tournament={tournament} />
-            </Conditional>
+            <ShareDropdownButton tournament={tournament}/>
         </div>
         <>
             <Conditional on={isMain}>
@@ -288,18 +275,6 @@ function TournamentPage(
                         runPairing={() => runPairingForRound()}
                         reopenRound={() => reopenRound()}
                     />
-                </div>
-            </Conditional>
-            <Conditional on={tab === "SHARE"}>
-                <div className={"w-full p-1 grid justify-items-center gap-2"}>
-                    <div className={"w-1/2 md:w-1/3 lg:w-1/4"}>
-                        <QrCode text={(new URL(`/tournament/${tournament.id}`, document.location.href)).href}></QrCode>
-                    </div>
-                    <div>
-                        <Link target={"_blank"} to={`/api/tournament/${tournament.id}/export/trf`}>
-                            <button className={"btn-dark"}>{"Export as TRF"}</button>
-                        </Link>
-                    </div>
                 </div>
             </Conditional>
         </>
