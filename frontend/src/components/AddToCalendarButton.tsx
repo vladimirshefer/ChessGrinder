@@ -1,61 +1,16 @@
-import React, {useState} from 'react';
-import {CalendarEvent} from 'calendar-link';
-import {google, ics} from 'calendar-link';
+import React from 'react';
 import {TournamentDto} from 'lib/api/dto/MainPageData';
-import dayjs from 'dayjs';
 import {useLoc} from 'strings/loc';
 import {AiOutlineCalendar, AiOutlineDown} from 'react-icons/ai';
+import {useCalendar} from 'lib/react/hooks/useCalendar';
 
 interface AddToCalendarButtonProps {
     tournament: TournamentDto;
 }
 
-function createCalendarEvent(tournament: TournamentDto): CalendarEvent {
-    const startDateTime = dayjs(tournament.date);
-    const endDateTime = startDateTime.add(2, 'hours');
-
-    return {
-        title: tournament.name,
-        description: `Chess tournament: ${tournament.name}`,
-        start: startDateTime.toDate(),
-        end: endDateTime.toDate(),
-        location: tournament.locationUrl || tournament.locationName || tournament.city || 'Planet Earth',
-    };
-}
-
 function AddToCalendarButton({tournament}: AddToCalendarButtonProps) {
-    const [showDropdown, setShowDropdown] = useState(false);
     const loc = useLoc();
-    
-    const calendarEvent = createCalendarEvent(tournament);
-    
-    const calendarOptions = [
-        {
-            name: 'Google Calendar',
-            url: google(calendarEvent),
-        },
-        {
-            name: 'Apple / Others',
-            url: ics(calendarEvent),
-            download: true,
-        },
-    ];
-    
-    const handleCalendarClick = (option: typeof calendarOptions[0]) => {
-        if (option.download) {
-            // For ICS files, trigger download
-            const link = document.createElement('a');
-            link.href = option.url;
-            link.download = `${tournament.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } else {
-            // For web calendars, open in new tab
-            window.open(option.url, '_blank');
-        }
-        setShowDropdown(false);
-    };
+    const {showDropdown, setShowDropdown, calendarOptions, handleCalendarClick} = useCalendar(tournament);
     
     return (
         <div className="relative">
