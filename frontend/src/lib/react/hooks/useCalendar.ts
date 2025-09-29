@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { CalendarEvent, google, ics } from 'calendar-link';
 import { TournamentDto } from 'lib/api/dto/MainPageData';
 import dayjs from 'dayjs';
@@ -10,8 +9,6 @@ interface CalendarOption {
 }
 
 export function useCalendar(tournament: TournamentDto) {
-    const [showDropdown, setShowDropdown] = useState(false);
-
     const createCalendarEvent = (): CalendarEvent => ({
         title: tournament.name,
         description: `Chess tournament: ${tournament.name}`,
@@ -43,12 +40,9 @@ export function useCalendar(tournament: TournamentDto) {
         } else {
             window.open(option.url, '_blank');
         }
-        setShowDropdown(false);
     };
 
     return {
-        showDropdown,
-        setShowDropdown,
         calendarOptions,
         handleCalendarClick,
     };

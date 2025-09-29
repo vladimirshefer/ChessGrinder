@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {TournamentDto} from 'lib/api/dto/MainPageData';
 import {useLoc} from 'strings/loc';
 import {AiOutlineCalendar, AiOutlineDown} from 'react-icons/ai';
@@ -10,7 +10,8 @@ interface AddToCalendarButtonProps {
 
 function AddToCalendarButton({tournament}: AddToCalendarButtonProps) {
     const loc = useLoc();
-    const {showDropdown, setShowDropdown, calendarOptions, handleCalendarClick} = useCalendar(tournament);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const {calendarOptions, handleCalendarClick} = useCalendar(tournament);
     
     return (
         <div className="relative">
@@ -35,7 +36,10 @@ function AddToCalendarButton({tournament}: AddToCalendarButtonProps) {
                             <button
                                 key={option.name}
                                 className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
-                                onClick={() => handleCalendarClick(option)}
+                                onClick={() => {
+                                    handleCalendarClick(option);
+                                    setShowDropdown(false);
+                                }}
                             >
                                 {option.name}
                             </button>

@@ -38,13 +38,6 @@ describe('useCalendar', () => {
         jest.spyOn(window, 'open').mockImplementation(() => null);
     });
 
-    it('should initialize with dropdown closed', () => {
-        const container = document.createElement('div');
-        const { result } = renderHook(() => useCalendar(mockTournament), { container });
-        
-        expect(result.current.showDropdown).toBe(false);
-    });
-
     it('should provide calendar options', () => {
         const container = document.createElement('div');
         const { result } = renderHook(() => useCalendar(mockTournament), { container });
@@ -53,19 +46,6 @@ describe('useCalendar', () => {
         expect(result.current.calendarOptions[0].name).toBe('Google Calendar');
         expect(result.current.calendarOptions[1].name).toBe('Apple / Others');
         expect(result.current.calendarOptions[1].download).toBe(true);
-    });
-
-    it('should provide setShowDropdown function', () => {
-        const container = document.createElement('div');
-        const { result } = renderHook(() => useCalendar(mockTournament), { container });
-        
-        expect(typeof result.current.setShowDropdown).toBe('function');
-
-        act(() => {
-            result.current.setShowDropdown(true);
-        });
-
-        expect(result.current.showDropdown).toBe(true);
     });
 
     it('should handle Google Calendar click', () => {
@@ -79,7 +59,6 @@ describe('useCalendar', () => {
         });
         
         expect(window.open).toHaveBeenCalledWith(googleOption.url, '_blank');
-        expect(result.current.showDropdown).toBe(false);
     });
 
     it('should handle ICS download click', () => {
@@ -113,7 +92,6 @@ describe('useCalendar', () => {
         expect(mockLink.click).toHaveBeenCalled();
         expect(document.body.appendChild).toHaveBeenCalledWith(mockLink);
         expect(document.body.removeChild).toHaveBeenCalledWith(mockLink);
-        expect(result.current.showDropdown).toBe(false);
         
         jest.restoreAllMocks();
     });
