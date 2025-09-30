@@ -1,4 +1,4 @@
-FROM maven as build-backend
+FROM maven:3.9.4-amazoncorretto-17 as build-backend
 WORKDIR /app
 COPY .mvn .mvn
 COPY lib lib
