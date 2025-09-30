@@ -3,6 +3,7 @@ WORKDIR /app
 COPY .mvn .mvn
 COPY lib lib
 COPY pom.xml pom.xml
+ENV MAVEN_ARGS="--batch-mode --no-transfer-progress --show-version --errors"
 # Install maven dependencies to local repository so that they could be used in the pom.xml
 RUN mvn install:install-file -Dfile=./lib/javafo-2.2-main.jar -DgroupId=javafo -DartifactId=javafo -Dversion=2.2 -Dpackaging=jar
 RUN mvn dependency:resolve
