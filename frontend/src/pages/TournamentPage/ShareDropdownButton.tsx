@@ -1,12 +1,12 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from 'lib/api/dto/MainPageData';
 import {useLoc} from 'strings/loc';
-import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {LuCalendarPlus, LuLink2, LuQrCode, LuShare2, LuTable} from "react-icons/lu";
 import {Link} from "react-router-dom";
 import {google} from "calendar-link";
 import dayjs from "dayjs";
 import QrCode from "components/QrCode";
+import useDropdownControls from "lib/react/hooks/useDropdownControls";
 
 function ShareDropdownButton(
     {
@@ -18,7 +18,7 @@ function ShareDropdownButton(
 ) {
     const loc = useLoc();
 
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [showDropdown, setShowDropdown, dropdownRef] = useDropdownControls();
 
     const [showQrModal, setShowQrModal] = useState(false);
 
@@ -34,9 +34,6 @@ function ShareDropdownButton(
         ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tournament.locationName + " " + (tournament.city || ""))}`
         : undefined;
 
-    const droprownRef = useRef(null);
-    useClickOutsideHandler(droprownRef, () => setShowDropdown(false));
-
     let tournamentUrl = `/api/tournament/${tournament.id}/export/trf`;
     return (
         <div className="relative flex">
@@ -50,7 +47,7 @@ function ShareDropdownButton(
 
             {showDropdown && (
                 <div className="absolute grid right-0 top-full bg-white border border-gray-300 shadow-lg z-20 min-w-max"
-                     ref={droprownRef}
+                     ref={dropdownRef}
                 >
                     <li className={"flex items-center gap-2 hover:bg-gray-100 p-2"}>
                         <LuCalendarPlus/>

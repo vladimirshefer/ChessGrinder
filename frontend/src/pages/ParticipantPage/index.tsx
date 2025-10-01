@@ -3,23 +3,25 @@ import participantRepository from "lib/api/repository/ParticipantRepository";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import {Conditional, usePermissionGranted} from "components/Conditional";
-import {useForm} from "react-hook-form";
 import {propagate} from "lib/util/misc";
-import {AiOutlineArrowLeft, AiOutlineDelete} from "react-icons/ai";
+import {AiOutlineArrowLeft, AiOutlineDelete, AiOutlineEdit} from "react-icons/ai";
 import React, {useMemo} from "react";
 import {useLoc} from "strings/loc";
-import Toggle from "components/Toggle";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import UserPane from "pages/MainPage/UserPane";
 import MatchesTable from "pages/TournamentPage/MatchesTable";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {TournamentPageData} from "lib/api/dto/TournamentPageData";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
+import {IoMdMore} from "react-icons/io";
+import useDropdownControls from "../../lib/react/hooks/useDropdownControls";
+import {BsToggleOff, BsToggleOn} from "react-icons/bs";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
-    let editForm = useForm()
     let loc = useLoc();
+
+    let [showDropdown, setShowDropdown, dropdownRef] = useDropdownControls()
 
     let {
         tournamentId,
@@ -91,10 +93,19 @@ export default function ParticipantPage() {
         </>
     }
 
-    async function changeNickname(data: { [key: string]: string }) {
+    async function changeNickname() {
+        let currentName = participantQuery.data?.name || "";
+        let nextName = window.prompt("Enter new nickname", currentName);
+        if (nextName === null) {
+            return;
+        }
+        nextName = nextName.trim();
+        if (!nextName || nextName === currentName) {
+            return;
+        }
         await participantRepository.updateParticipant(tournamentId!!, {
             id: participantQuery.data?.id || "",
-            name: data["nickname"],
+            name: nextName,
             userId: "",
             score: 0,
             userFullName: "",
@@ -109,6 +120,40 @@ export default function ParticipantPage() {
     let missing = (participantQuery.data && participantQuery.data?.isMissing) || false;
     let moderator = (participantQuery.data && participantQuery.data?.isModerator) || false;
 
+    async function deleteParticipant() {
+        let participantFriendlyName = userQuery.data?.name || participantQuery.data?.name || participantId;
+        let tournamentFriendlyName = tournamentQuery.data?.name || tournamentId;
+        if (!window.confirm(`Do you want to delete user ${participantFriendlyName} from tournament ${tournamentFriendlyName}?`)) {
+            return;
+        }
+        if (tournamentQuery.data?.status !== "PLANNED") {
+            if (!window.confirm("Tournament already started!\n" +
+                "Deleting the participant could break the pairing engine!\n" +
+                "Consider \"Missing\" instead.\n" +
+                "Are you sure?")) {
+                return
+            }
+        }
+        await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
+        navigate(`/tournament/${tournamentId}`)
+    }
+
+    async function toggleMissing() {
+        if (missing) {
+            await participantRepository.unmissParticipant(tournamentId!!, participantId!!)
+        } else {
+            await participantRepository.missParticipant(tournamentId!!, participantId!!)
+        }
+        await participantQuery.refetch()
+    }
+
+    async function toggleIsModerator() {
+        await participantRepository.updateParticipant(tournamentId!!, {
+            id: participantId,
+            isModerator: !moderator
+        })
+        await participantQuery.refetch()
+    }
 
     return <div className={"p-3 text-left"}>
         <div className={"py-3 grid gap-3"}>
@@ -119,9 +164,75 @@ export default function ParticipantPage() {
                         {"Back to tournament"}
                     </span>
                 </Link>
-                <h1 className={"text-xl font-bold flex gap-2"}>
-                    {participantQuery.data?.name}
-                </h1>
+                <div className={"text-xl flex gap-2 items-center"}>
+                    <h1 className={"font-bold"}>
+                        {participantQuery.data?.name}
+                    </h1>
+                    <div className={"grow"}/>
+                    <Conditional on={isMeModerator}>
+                        <div className={"relative"}>
+                            <button onClick={() => setShowDropdown(!showDropdown)}>
+                                <IoMdMore/>
+                            </button>
+                            {showDropdown ? (
+                                <ul ref={dropdownRef}
+                                    className={"absolute grid right-0 top-full bg-white border border-gray-300 shadow-lg z-20 min-w-max text-sm place-items-stretch"}
+                                >
+                                    <Conditional on={isMeModerator}>
+                                        <li>
+                                            <button
+                                                className={"flex gap-2 items-center px-3 py-2 hover:bg-gray-100 w-full"}
+                                                type={"button"}
+                                                onClick={changeNickname}
+                                                disabled={!participantQuery.data}
+                                            >
+                                                <AiOutlineEdit/>
+                                                {loc("Change nickname")}
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button
+                                                className={"flex gap-2 items-center px-3 py-2 hover:bg-gray-100 w-full"}
+                                                type={"button"}
+                                                onClick={toggleMissing}
+                                                title={"Set missing"}
+                                                disabled={!participantQuery.data}
+                                            >
+                                                {missing ? <BsToggleOn/> : <BsToggleOff/>}
+                                                {loc("Missing")}
+                                            </button>
+                                        </li>
+                                        <Conditional on={isMeOwner}>
+                                            <li>
+                                                <button
+                                                    className={"flex gap-2 items-center px-3 py-2 hover:bg-gray-100 w-full"}
+                                                    type={"button"}
+                                                    onClick={toggleIsModerator}
+                                                    title={"Set moderator"}
+                                                    disabled={!participantQuery.data}
+                                                >
+                                                    {moderator ? <BsToggleOn/> : <BsToggleOff/>}
+                                                    {loc("Moderator")}
+                                                </button>
+                                            </li>
+                                        </Conditional>
+                                        <li>
+                                            <button
+                                                className={"flex gap-2 items-center px-3 py-2 bg-danger-100 w-full hover:bg-danger-300 text-danger-800"}
+                                                title={loc("Delete")}
+                                                onClick={deleteParticipant}
+                                            >
+                                                <AiOutlineDelete/>
+                                                {loc("Delete participant")}
+                                            </button>
+                                        </li>
+                                    </Conditional>
+
+                                </ul>
+                            ) : <></>}
+                        </div>
+                    </Conditional>
+                </div>
             </Conditional>
 
             <Conditional on={userQuery.isSuccess && userQuery.data}>
@@ -140,78 +251,5 @@ export default function ParticipantPage() {
                 />
             </div>
         </div>
-        <div></div>
-        <Conditional on={isMeModerator}>
-            <div className={"grid border-y-2 py-2 grid-cols-[auto_1fr] gap-3 items-center"}>
-                <h3 className={"col-span-2 text-lg font-semibold"}>{loc("Admin")}</h3>
-                <span>{"Change nickname"}</span>
-                <form onSubmit={editForm.handleSubmit(changeNickname)}>
-                    <input
-                        className={"input-text w-full"}
-                        type={"text"}
-                        defaultValue={participantQuery.data?.name || ""}
-                        placeholder={loc("Nickname")}
-                        {...editForm.register("nickname")}
-                    />
-                    <input type="submit" hidden/>
-                </form>
-
-                <span>{loc("Missing")}</span>
-                <Toggle
-                    title={"Set missing"}
-                    checked={missing}
-                    setChecked={async (v) => {
-                        if (missing) {
-                            await participantRepository.unmissParticipant(tournamentId!!, participantId!!)
-                        } else {
-                            await participantRepository.missParticipant(tournamentId!!, participantId!!)
-                        }
-                        await participantQuery.refetch()
-                    }}
-                />
-                <Conditional on={isMeOwner}>
-                    <span className="">{loc("Moderator")}</span>
-                    <Toggle
-                        title={"Set moderator"}
-                        checked={moderator}
-                        setChecked={async (v) => {
-                            await participantRepository.updateParticipant(tournamentId!!, {
-                                id: participantId,
-                                isModerator: !moderator
-                            })
-                            await participantQuery.refetch()
-                        }}
-                    />
-                </Conditional>
-
-                <span>{loc("Delete participant")}</span>
-                <div>
-                    <button className={"btn-danger flex gap-1 items-center"}
-                            title={loc("Delete")}
-                            onClick={async () => {
-                                let participantFriendlyName = userQuery.data?.name || participantQuery.data?.name || participantId;
-                                let tournamentFriendlyName = tournamentQuery.data?.name || tournamentId;
-                                if (!window.confirm(`Do you want to delete user ${participantFriendlyName} from tournament ${tournamentFriendlyName}?`)) {
-                                    return;
-                                }
-                                if (tournamentQuery.data?.status !== "PLANNED") {
-                                    if (!window.confirm("Tournament already started!\n" +
-                                        "Deleting the participant could break the pairing engine!\n" +
-                                        "Consider \"Missing\" instead.\n" +
-                                        "Are you sure?")) {
-                                        return
-                                    }
-                                }
-                                await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
-                                navigate(`/tournament/${tournamentId}`)
-                            }}
-                    >
-                        <span><AiOutlineDelete/></span>
-                        {loc("Delete")}
-                    </button>
-                </div>
-            </div>
-        </Conditional>
-
     </div>
 }
