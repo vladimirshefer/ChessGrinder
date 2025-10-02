@@ -1,4 +1,16 @@
-# Getting Started with Create React App
+# Chess Grinder Frontend
+
+- Frontend app supports two modes: production and local.
+- Production mode uses real rest api to access and manipulate the data.
+- Local mode uses localStorage to store all the data. The real rest api is not used.
+- Local mode is used for development purposes only.
+- Page components (that are mounted to by the router) use `...Page.tsx` suffix.
+- Local data for local mode has `cgd.` key prefix.
+- The app is designed mobile-first, and it is a known issue to be not that well-looked on desktop.
+- 
+
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -44,3 +56,4 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+

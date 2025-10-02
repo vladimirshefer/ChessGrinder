@@ -1,5 +1,5 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import React, {useMemo} from "react";
+import React, {useMemo, useState} from "react";
 import ResultsTable from "pages/TournamentPage/ResultsTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
@@ -7,7 +7,7 @@ import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api
 import RoundTab from "pages/TournamentPage/RoundTab";
 import {Conditional, usePermissionGranted} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
-import {AiOutlineCopy, AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
+import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
 import {useLoc, useTransliterate} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
@@ -16,8 +16,12 @@ import AddParticipantTournamentPageSection from "pages/TournamentPage/AddPartici
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
+import QrCode from "components/QrCode";
+import {IoMdShare} from "react-icons/io";
+import restApiClient from "lib/api/RestApiClient";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
+import NicknameContextPane from "./NicknameContextPane";
 import {copyToClipboard} from "lib/util/clipboard";
 import ShareDropdownButton from "pages/TournamentPage/ShareDropdownButton";
 
@@ -118,14 +122,8 @@ function TournamentPage() {
         await tournamentQuery.refetch();
     }
 
-    async function copyNicknamesToClipboard() {
-        const allNicknames: string = participants
-            .filter(participant => !participant.isMissing || participant.score > 0)
-            .map(p => p.name)
-            .map(name => transliterate(name))
-            .join("\n");
-        await copyToClipboard(allNicknames === '' ? ' ' : allNicknames);
-        alert(loc('Nicknames have been copied to clipboard'));
+    async function startNicknameContest() {
+        await restApiClient.post(`/nickname-contest/${tournament.id}`);
     }
 
     if (tournamentQuery.isError) return <>Error!</>
@@ -201,7 +199,9 @@ function TournamentPage() {
         {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && (
             <MyActiveTournamentPane tournamentId={tournament.id}/>
         )}
-
+        <div className={"p-2"}>
+            <NicknameContextPane tournamentId={tournament.id}/>
+        </div>
         {!hideParticipateButton && tournament.status === "PLANNED" && (
             <div className={"px-2"}>
                 {isAuthenticatedUser ?
@@ -295,7 +295,7 @@ function TournamentPage() {
         </Conditional>
         <Conditional on={isMain && isMeModerator}>
             <ControlButtons
-                copyNicknames={copyNicknamesToClipboard}
+                startNicknameContest={startNicknameContest}
                 tournament={tournament}
                 startTournament={startTournament}
                 finishTournament={finishTournament}
@@ -310,22 +310,23 @@ function ControlButtons(props: {
     startTournament: () => Promise<void>,
     finishTournament: () => Promise<void>,
     deleteTournament: () => Promise<void>,
-    copyNicknames: () => Promise<void>,
+    startNicknameContest: () => Promise<void>,
 }) {
     let loc = useLoc()
 
-    return <div className={"flex p-2 items-top content-center"}>
-        <div className={"flex gap-1 justify-start p-2 grow"}>
-            <button className={"btn-light h-full !px-4"}
-                    onClick={props.copyNicknames}
+    return <div className={"flex p-2 gap-2 items-top content-center"}>
+        <div className="flex flex-col gap-2 justify-start grow">
+            <button
+                onClick={props.startNicknameContest}
+                className={"btn-primary uppercase"}
             >
-                <AiOutlineCopy/>
+                {"Run nickname contest!"}
             </button>
         </div>
 
-        <div className={"flex gap-1 justify-end p-2"}>
+        <div className={"flex gap-2 justify-end"}>
             <Conditional on={props.tournament.status !== "ACTIVE"}>
-                <button className={"btn-primary uppercase !px-4"}
+                <button className={"btn-primary uppercase"}
                         onClick={props.startTournament}
                 >{loc("Start")}
                 </button>
@@ -337,12 +338,12 @@ function ControlButtons(props: {
                 </button>
             </Conditional>
             <Link to={`/tournament/${props.tournament.id}/edit`}>
-                <button className={"btn-light h-full !px-4"}>
+                <button className={"btn-light h-full"}>
                     <AiOutlineEdit/>
                 </button>
             </Link>
             <button
-                className={"btn-danger uppercase !px-4"}
+                className={"btn-danger uppercase"}
                 onClick={props.deleteTournament}
                 title={loc("Delete")}
             >
