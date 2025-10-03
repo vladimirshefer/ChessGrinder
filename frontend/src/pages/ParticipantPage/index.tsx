@@ -165,10 +165,10 @@ export default function ParticipantPage() {
                     </span>
                 </Link>
                 <div className={"text-xl flex gap-2 items-center"}>
-                    <h1 className={"font-bold"}>
+                    <h1 className={"font-bold text-ellipsis line-clamp-5 overflow-hidden break-all"}
+                        title={participantQuery.data?.name}>
                         {participantQuery.data?.name}
                     </h1>
-                    <div className={"grow"}/>
                     <Conditional on={isMeModerator}>
                         <div className={"relative"}>
                             <button onClick={() => setShowDropdown(!showDropdown)}>
