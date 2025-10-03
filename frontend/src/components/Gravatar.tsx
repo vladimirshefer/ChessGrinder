@@ -10,7 +10,7 @@ import {Md5} from "ts-md5";
  * @param type
  * @constructor
  */
-export default function Gravatar(
+export function Gravatar(
     {
         text,
         alt = "",
@@ -70,4 +70,63 @@ export enum GravatarType {
      * a transparent PNG image (border added to HTML below for demonstration purposes)
      */
     Blank = "blank",
+}
+
+export function UserAvatarImg(
+    {
+        emailHash,
+        className = "",
+        size,
+    }: {
+        emailHash: string | undefined,
+        className?: string,
+        size?: number,
+    }
+) {
+    return <Gravatar
+        text={emailHash}
+        alt={"User avatar"}
+        className={className}
+        size={size}
+        type={GravatarType.Robohash}
+        inputType={"MD5"}
+    />;
+}
+
+export function EmptyUserAvatarImg(
+    {
+        className = "",
+        size,
+    }: {
+        className?: string,
+        size?: number,
+    }
+) {
+    return <Gravatar
+        text={""}
+        alt={"Anonymous user avatar"}
+        className={className}
+        size={size}
+        type={GravatarType.MysteryPerson}
+        inputType={"MD5"}
+    />;
+}
+
+export function BadgeIcon(
+    {
+        title,
+        className = "",
+        size,
+    }: {
+        title: string,
+        className?: string | undefined,
+        size: number,
+    }
+) {
+    return <Gravatar
+        text={title}
+        type={GravatarType.Identicon}
+        size={size}
+        className={"rounded-full " + className}
+    />
 }

@@ -1,4 +1,4 @@
-import Gravatar, {GravatarType} from "components/Gravatar";
+import {UserAvatarImg} from "components/Gravatar";
 import userRepository from "lib/api/repository/UserRepository";
 import React, {useEffect} from "react";
 import {Link, useNavigate} from "react-router-dom";
@@ -74,8 +74,7 @@ export default function UserProfileEditPage() {
         </div>
         <form className={"grid gap-2"} onSubmit={handleSubmit(saveUserData)}>
             <div className={"grid gap-1"}>
-                <Gravatar text={authenticatedUser.emailHash} type={GravatarType.Robohash} size={100}
-                          className={"rounded-full"} inputType={"MD5"}/>
+                <UserAvatarImg emailHash={authenticatedUser.emailHash} size={100} className={"rounded-full"}/>
                 <div className={"text-left btn btn-light btn-sm text-sm"}>
                     <Link to={"https://gravatar.com/profile/avatars"} target={"_blank"}>
                         <div className={"flex gap-1 items-center"}>

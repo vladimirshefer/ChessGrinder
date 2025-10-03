@@ -2,7 +2,7 @@ import {Link, useNavigate} from "react-router-dom";
 import React, {useContext, useRef, useState} from "react";
 import {useLoc} from "strings/loc";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
-import Gravatar, {GravatarType} from "components/Gravatar";
+import {EmptyUserAvatarImg, UserAvatarImg} from "components/Gravatar";
 import {AiOutlineClose, AiOutlineMenu} from "react-icons/ai";
 import ConditionalOnUserRole, {Conditional, ConditionalOnAuthorized} from "components/Conditional";
 import loginPageRepository from "lib/api/repository/LoginPageRepository";
@@ -60,11 +60,11 @@ function Header() {
                     {
                         !authenticatedUser ? (
                             <Link to={loginPageLink}>
-                                <Gravatar text={""} type={GravatarType.MysteryPerson} size={50}/>
+                                <EmptyUserAvatarImg size={50}/>
                             </Link>
                         ) : (
                             <Link to={"/user"}>
-                                <Gravatar text={authenticatedUser.emailHash} type={GravatarType.Robohash} size={50} inputType={"MD5"}/>
+                                <UserAvatarImg emailHash={authenticatedUser.emailHash} size={50}/>
                             </Link>
                         )
                     }

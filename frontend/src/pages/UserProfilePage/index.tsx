@@ -13,7 +13,7 @@ import {
 import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
-import Gravatar, {GravatarType} from "components/Gravatar";
+import {BadgeIcon, UserAvatarImg} from "components/Gravatar";
 import {BsPencilFill} from "react-icons/bs";
 import {FiLogOut} from "react-icons/fi";
 import useSearchParam from "lib/react/hooks/useSearchParam";
@@ -62,12 +62,7 @@ function AssignAchievementPane(
             }
             presenter={badge =>
                 <div className={"flex gap-2 p-2 bg-inherit"} title={badge.description}>
-                    <Gravatar
-                        text={badge.title}
-                        type={GravatarType.Identicon}
-                        size={50}
-                        className={"rounded-full min-w-[50px] max-h-[50px]"}
-                    />
+                    <BadgeIcon title={badge.title} size={50} className={"min-w-[50px] max-h-[50px]"}/>
                     <div className={"text-left bg-inherit"}>
                         <span className={"uppercase font-semibold"}>{badge.title}</span>
                         <span className={"text-sm text-gray-600 line-clamp-2"}
@@ -206,9 +201,8 @@ export default function UserProfilePage() {
         </div>
         <div className={"p-2"}/>
         <div className={"flex gap-2"}>
-            <div>
-                <Gravatar text={userProfile.emailHash} type={GravatarType.Robohash} size={100} inputType={"MD5"}
-                          className={"rounded-full"}/>
+            <div className={"h-full aspect-square"}>
+                <UserAvatarImg emailHash={userProfile.emailHash} size={100} className={"rounded-full"}/>
             </div>
             <div className={"grid text-left"}>
                 <h1 className={"font-semibold uppercase truncate"}
@@ -236,8 +230,7 @@ export default function UserProfilePage() {
                     {!!statsAgainstMeQuery.data && (
                         <div className={"flex gap-2 items-center font-semibold"}>
                             <LuSwords/>
-                            <Gravatar className={"rounded-full"} size={20} text={authenticatedUser?.emailHash || ""}
-                                      type={GravatarType.Robohash} inputType={"MD5"}></Gravatar>
+                            <UserAvatarImg emailHash={authenticatedUser?.emailHash || ""} size={20} className={"rounded-full"}/>
                             <span className={"text-green-900"} title={"Wins"}>{statsAgainstMeQuery.data.wins}</span>
                             {"/"}
                             <span className={"text-gray-700"}>{statsAgainstMeQuery.data.draws}</span>
@@ -305,12 +298,7 @@ export default function UserProfilePage() {
                     userProfile.badges.map(badge => {
                         return <Link to={`/badge/${badge.id}`} key={badge.id}>
                             <div className={"flex gap-2"} title={badge.description}>
-                                <Gravatar
-                                    text={badge.title}
-                                    type={GravatarType.Identicon}
-                                    size={50}
-                                    className={"rounded-full min-w-[50px] max-h-[50px]"}
-                                />
+                                <BadgeIcon title={badge.title} size={50} className={"rounded-full min-w-[50px] max-h-[50px]"}/>
                                 <div className={"text-left"}>
                                     <span className={"uppercase font-semibold"}>{badge.title}</span>
                                     <span className={"text-sm text-gray-600 line-clamp-2"}

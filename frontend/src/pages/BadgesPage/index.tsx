@@ -4,30 +4,8 @@ import ConditionalOnUserRole, {Conditional} from "components/Conditional";
 import {useForm} from "react-hook-form";
 import {BadgeDto, UserRoles} from "lib/api/dto/MainPageData";
 import {randomString} from "lib/util/Random";
-import Gravatar, {GravatarType} from "components/Gravatar";
 import {Link} from "react-router-dom";
-
-function BadgeImage(
-    {
-        imageUrl,
-        title,
-        size
-    }: {
-        imageUrl: string,
-        title: string,
-        size: number
-    }
-) {
-    return <div style={{width: size, height: size}}
-                className={`rounded-full overflow-hidden grid bg-blue-500`}>
-            <Gravatar
-                text={title}
-                type={GravatarType.Identicon}
-                size={size}
-                className={"rounded-full"}
-            />
-    </div>;
-}
+import {BadgeIcon} from "components/Gravatar";
 
 export default function BadgesPage() {
     const {register, handleSubmit, watch} = useForm();
@@ -64,7 +42,7 @@ export default function BadgesPage() {
                     return <Link to={`/badge/${badge.id}`} key={badge.id} title={badge.description} className={"col-span-3 grid oveflow-hidden content-start"}>
                         {/*<span className={"text-3xl"}>{badge.imageUrl}</span>*/}
                         <div className={"rounded-full overflow-hidden flex justify-center"}>
-                            <BadgeImage imageUrl={badge.imageUrl} title={badge.title} size={100}/>
+                            <BadgeIcon title={badge.title} size={100}/>
                         </div>
                         <span>{badge.title}</span>
                         <div className={"max-w-full overflow-hidden"}>
@@ -83,8 +61,7 @@ export default function BadgesPage() {
                 <h3 className={"font-bold"}>Create badge</h3>
                 <div className={"flex"}>
                     <div>
-                        <BadgeImage imageUrl={(watch("imageUrl", "") as string)} title={(watch("title", "") as string)}
-                                    size={100}/>
+                        <BadgeIcon title={watch("title", "")} size={100}/>
                     </div>
                     <div className={"grid"}>
                         <input type={"text"}

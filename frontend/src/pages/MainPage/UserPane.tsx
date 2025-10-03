@@ -1,6 +1,6 @@
 import {UserDto} from "lib/api/dto/MainPageData";
 import {useLoc, useTransliterate} from "strings/loc";
-import Gravatar, {GravatarType} from "components/Gravatar";
+import {BadgeIcon, UserAvatarImg} from "components/Gravatar";
 import {Link} from "react-router-dom";
 import {FaRegHeart} from "react-icons/fa";
 import {FaArrowTrendUp} from "react-icons/fa6";
@@ -21,13 +21,7 @@ export function UserPane(
 
     return <div key={user.id} className={"col-span-12 flex"}>
         <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
-            <Gravatar
-                text={user.emailHash}
-                type={GravatarType.Robohash}
-                size={150}
-                className={"rounded-full"}
-                inputType={"MD5"}
-            />
+            <UserAvatarImg emailHash={user.emailHash} size={150} className={"rounded-full"}/>
         </div>
         <div className={"grid w-full content-left items-left"}>
             <div className={"text-left"}>
@@ -43,12 +37,7 @@ export function UserPane(
                               key={badge.id}
                               title={`${badge.title}\n\n${badge.description}`}
                         >
-                            <Gravatar
-                                text={badge.title}
-                                type={GravatarType.Identicon}
-                                size={150}
-                                className={"block rounded-full h-full"}
-                            />
+                            <BadgeIcon title={badge.title} size={30} className={"block h-full"}/>
                         </Link>
                     )}
                 </div>

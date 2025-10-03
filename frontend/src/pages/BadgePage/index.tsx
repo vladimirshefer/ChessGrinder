@@ -1,10 +1,10 @@
-import Gravatar, {GravatarType} from "components/Gravatar";
 import {useQuery} from "@tanstack/react-query";
 import {useNavigate, useParams} from "react-router-dom";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import ConditionalOnUserRole from "components/Conditional";
 import {UserRoles} from "lib/api/dto/MainPageData";
 import {UserPane} from "pages/MainPage/UserPane";
+import {BadgeIcon} from "components/Gravatar";
 
 export default function BadgePage() {
     let {badgeId} = useParams()
@@ -46,12 +46,7 @@ export default function BadgePage() {
         </div>
         <div className={"flex gap-3"}>
             <div className={"min-w-[100px]"}>
-                <Gravatar
-                    text={badge.title}
-                    type={GravatarType.Identicon}
-                    size={100}
-                    className={"rounded-full"}
-                />
+                <BadgeIcon title={badge.title} size={100}/>
             </div>
             <div className={"grid text-left"}>
                 <div>
