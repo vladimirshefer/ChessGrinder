@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,8 +15,8 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     @Query("SELECT u FROM UserEntity u ORDER BY u.eloPoints DESC, u.reputation DESC, u.createdAt DESC")
     Page<UserEntity> findAllOrdered(Pageable pageable);
 
-    @Query("SELECT u FROM UserEntity u ORDER BY u.eloPoints DESC, u.reputation DESC, u.createdAt DESC")
-    List<UserEntity> findAllOrdered();
+    @Query("SELECT distinct(p.user) FROM ParticipantEntity p WHERE p.tournament.city = :city ORDER BY p.user.eloPoints DESC, p.user.reputation DESC, p.user.createdAt DESC")
+    Page<UserEntity> findAllOrderedByCity(String city, Pageable pageable);
 
     UserEntity findByUsername(String userName);
 

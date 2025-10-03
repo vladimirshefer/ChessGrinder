@@ -8,12 +8,13 @@ import MemberList from "pages/MainPage/MemberList";
 export default function UsersPage() {
     let loc = useLoc();
     const [sort] = useSearchParam("sort");
+    const [city] = useSearchParam("city");
 
     let usersQuery = useQuery({
-        queryKey: ["members"],
+        queryKey: ["members", city],
         queryFn: async () => {
             try {
-                return await userRepository.getUsers();
+                return await userRepository.getUsers(undefined, city ?? undefined);
             }
             catch (error: any) {
                 alert(loc(error.response.data.message));

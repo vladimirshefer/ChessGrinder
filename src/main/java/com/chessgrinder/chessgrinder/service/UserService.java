@@ -9,6 +9,7 @@ import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.principal.CustomOAuth2User;
 import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,12 +32,15 @@ public class UserService {
     @Value("${chessgrinder.security.adminEmail:}")
     private String adminEmail = "";
 
-    public List<UserDto> getAllUsers(Integer limit) {
+    public List<UserDto> getAllUsers(@Nullable Integer limit, @Nullable String city) {
         List<UserEntity> users;
-        if (limit != null && limit > 0) {
-            users = userRepository.findAllOrdered(Pageable.ofSize(limit).withPage(0)).getContent();
+        if (limit == null || limit <= 0) {
+            limit = 1000;
+        }
+        if (city != null && !city.isBlank()) {
+            users = userRepository.findAllOrderedByCity(city, Pageable.ofSize(limit).withPage(0)).getContent();
         } else {
-            users = userRepository.findAllOrdered();
+            users = userRepository.findAllOrdered(Pageable.ofSize(limit).withPage(0)).getContent();
         }
 
         return users.stream().map(userMapper::toDto)
