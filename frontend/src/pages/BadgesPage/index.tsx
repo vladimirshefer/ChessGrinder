@@ -36,11 +36,10 @@ export default function BadgesPage() {
                 <div>No badges</div>
             </Conditional>
         }
-        <div className={"grid grid-cols-12 gap-2 p-4"}>
+        <div className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-4"}>
             {
                 badges.map(badge => {
-                    return <Link to={`/badge/${badge.id}`} key={badge.id} title={badge.description} className={"col-span-3 grid oveflow-hidden content-start"}>
-                        {/*<span className={"text-3xl"}>{badge.imageUrl}</span>*/}
+                    return <Link to={`/badge/${badge.id}`} key={badge.id} title={badge.description} className={"grid oveflow-hidden content-start"}>
                         <div className={"rounded-full overflow-hidden flex justify-center"}>
                             <BadgeIcon title={badge.title} size={100}/>
                         </div>
