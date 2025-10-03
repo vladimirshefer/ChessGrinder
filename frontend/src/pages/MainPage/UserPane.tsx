@@ -1,6 +1,6 @@
 import {UserDto} from "lib/api/dto/MainPageData";
 import {useLoc, useTransliterate} from "strings/loc";
-import {BadgeIcon, UserAvatarImg} from "components/Gravatar";
+import {UserAvatarImg} from "components/Gravatar";
 import {Link} from "react-router-dom";
 import {FaRegHeart} from "react-icons/fa";
 import {FaArrowTrendUp} from "react-icons/fa6";
@@ -19,28 +19,17 @@ export function UserPane(
 
     const [eloServiceEnabled] = useConfigurationPropertyEnabled("chess.rating", false);
 
-    return <div key={user.id} className={"col-span-12 flex"}>
+    return <div key={user.id} className={"flex"}>
         <div className={"h-[3em] w-[3em] inline-block overflow-hidden mr-2"}>
             <UserAvatarImg emailHash={user.emailHash} size={150} className={"rounded-full"}/>
         </div>
         <div className={"grid w-full content-left items-left"}>
-            <div className={"text-left"}>
+            <div className={"text-left font-semibold"}>
                 <Link to={`/user/${user.id}`}>
                     {transliterate(user.name)}
                 </Link>
             </div>
-            <div className={"h-[1em] text-xl flex gap-2 items-start"}>
-                <div className={"flex items-start h-full gap-2 grow"}>
-                    {(user.badges || []).map(badge =>
-                        <Link to={`/badge/${badge.id}`}
-                              className={"block h-full"}
-                              key={badge.id}
-                              title={`${badge.title}\n\n${badge.description}`}
-                        >
-                            <BadgeIcon title={badge.title} size={30} className={"block h-full"}/>
-                        </Link>
-                    )}
-                </div>
+            <div className={"h-[1em] text-sm flex gap-2 items-start"}>
                 {eloServiceEnabled && !!user.eloPoints && (
                     <div className={"h-full flex items-center gap-1"} title={`${loc("Rating")} (${loc("Elo points")})`}>
                         <FaArrowTrendUp/>
@@ -53,7 +42,6 @@ export function UserPane(
                         <span className={""}>{user.reputation || 0}</span>
                     </div>
                 )}
-
             </div>
         </div>
     </div>;
