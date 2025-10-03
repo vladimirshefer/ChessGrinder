@@ -227,7 +227,7 @@ export default function UserProfilePage() {
                             <span>{userProfile.eloPoints || "0"}</span>
                         </div>
                     )}
-                    {!!statsAgainstMeQuery.data && (
+                    {!!authenticatedUser && !!statsAgainstMeQuery.data && (
                         <div className={"flex gap-2 items-center font-semibold"}>
                             <LuSwords/>
                             <UserAvatarImg emailHash={authenticatedUser?.emailHash || ""} size={20} className={"rounded-full"}/>
