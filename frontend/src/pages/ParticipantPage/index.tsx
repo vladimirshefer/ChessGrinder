@@ -16,6 +16,7 @@ import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {IoMdMore} from "react-icons/io";
 import useDropdownControls from "../../lib/react/hooks/useDropdownControls";
 import {BsToggleOff, BsToggleOn} from "react-icons/bs";
+import {MdOutlineMoreVert} from "react-icons/md";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
@@ -165,14 +166,14 @@ export default function ParticipantPage() {
                     </span>
                 </Link>
                 <div className={"text-xl flex gap-2 items-center"}>
-                    <h1 className={"font-bold text-ellipsis line-clamp-5 overflow-hidden break-all"}
+                    <h1 className={"grow font-bold text-ellipsis line-clamp-5 overflow-hidden break-all"}
                         title={participantQuery.data?.name}>
                         {participantQuery.data?.name}
                     </h1>
                     <Conditional on={isMeModerator}>
                         <div className={"relative"}>
-                            <button onClick={() => setShowDropdown(!showDropdown)}>
-                                <IoMdMore/>
+                            <button onClick={() => setShowDropdown(!showDropdown)} className={"flex items-center"}>
+                                <MdOutlineMoreVert/>
                             </button>
                             {showDropdown ? (
                                 <ul ref={dropdownRef}
@@ -243,13 +244,16 @@ export default function ParticipantPage() {
             {userQuery.isLoading ? <>Loading user data</> : null}
             {userQuery.isError ? <>Error loading user data</> : null}
 
-            <div>
-                <MatchesTable
-                    matches={matches}
-                    canEditResults={false}
-                    submitMatchResult={() => {}}
-                />
-            </div>
+            {!!matches && matches.length > 0 &&
+                <div>
+                    <MatchesTable
+                        matches={matches}
+                        canEditResults={false}
+                        submitMatchResult={() => {
+                        }}
+                    />
+                </div>
+            }
         </div>
     </div>
 }
