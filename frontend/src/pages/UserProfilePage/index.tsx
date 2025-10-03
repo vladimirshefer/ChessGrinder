@@ -274,10 +274,15 @@ export default function UserProfilePage() {
                             {historyQuery.data?.values?.map(row =>
                                 <div key={row.id}
                                      className={"col-span-12 grid grid-cols-12 text-left border-b py-2"}>
-                                    <Link to={`/tournament/${row.tournament?.id}`} className={"grid col-span-6"}>
-                                        {row.tournament?.name || row.tournament?.id || ""}
+                                    <Link to={`/tournament/${row.tournament?.id}/participant/${row.id}`} className={"grid col-span-6"}>
+                                        <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-1"}>
+                                            {row.tournament?.name || row.tournament?.id || ""}
+                                        </span>
                                         <span className={"text-xs text-gray-800"}>
                                             {dayjs(row.tournament?.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}
+                                        </span>
+                                        <span className={"text-xs text-gray-800 font-semibold text-ellipsis overflow-hidden line-clamp-1"} title={row.name}>
+                                            {row.name}
                                         </span>
                                     </Link>
                                     <span className={"col-span-2"}>{row.place}</span>
