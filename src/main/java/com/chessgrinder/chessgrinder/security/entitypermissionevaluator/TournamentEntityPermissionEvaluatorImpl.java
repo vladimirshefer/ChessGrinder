@@ -49,7 +49,7 @@ public class TournamentEntityPermissionEvaluatorImpl implements EntityPermission
         }
 
         if (byTournamentIdAndUserId != null) {
-            if (Objects.equals(permission, "MODERATOR")) {
+            if (Objects.equals(permission, Permissions.MODERATOR.name())) {
                 if (byTournamentIdAndUserId.isModerator()) {
                     return true;
                 }
@@ -57,6 +57,10 @@ public class TournamentEntityPermissionEvaluatorImpl implements EntityPermission
         }
 
         return false;
-
     }
+
+    public enum Permissions {
+        OWNER, MODERATOR
+    }
+
 }

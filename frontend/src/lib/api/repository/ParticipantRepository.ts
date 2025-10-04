@@ -114,7 +114,7 @@ class RestApiParticipantRepository implements ParticipantRepository {
     }
 
     async updateParticipant(tournamentId: string, participant: ParticipantDto): Promise<void> {
-        await restApiClient.put(`/tournament/${tournamentId}/participant/${participant.id}`, participant)
+        await restApiClient.patch(`/tournament/${tournamentId}/participant/${participant.id}`, participant)
     }
 
     async missParticipant(tournamentId: string, participantId: string): Promise<void> {

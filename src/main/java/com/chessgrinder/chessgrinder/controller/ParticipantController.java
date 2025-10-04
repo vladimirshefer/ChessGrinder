@@ -89,8 +89,10 @@ public class ParticipantController {
         return participantMapper.toDto(participantEntity);
     }
 
-    @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
-    @PutMapping("/{participantId}")
+    /**
+     * @param participantDto partial dto. fields that do not require changes are null.
+     */
+    @PatchMapping("/{participantId}")
     public void update(
             @SuppressWarnings("unused") // Used in PreAuthorize
             @PathVariable UUID tournamentId,
@@ -98,20 +100,12 @@ public class ParticipantController {
             @AuthenticatedUser UserEntity user,
             @RequestBody ParticipantDto participantDto
     ) {
-        ParticipantEntity participant = participantRepository.findById(participantId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No participant with id " + participantId));
-
-        if (participantDto.getName() != null) {
-            participant.setNickname(participantDto.getName());
-        }
-
-        if (SecurityUtil.hasRole(user, Roles.ADMIN)) {
-            if (participantDto.getIsModerator() != null) {
-                participant.setModerator(participantDto.getIsModerator());
-            }
-        }
-
-        participantRepository.save(participant);
+        participantService.update(
+                tournamentId,
+                participantId,
+                user,
+                participantDto
+        );
     }
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")

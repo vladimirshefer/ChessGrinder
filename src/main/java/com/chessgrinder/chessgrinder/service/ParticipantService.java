@@ -8,14 +8,22 @@ import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
 import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
+import com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
+
+import static com.chessgrinder.chessgrinder.enums.TournamentStatus.PLANNED;
+import static com.chessgrinder.chessgrinder.security.entitypermissionevaluator.TournamentEntityPermissionEvaluatorImpl.Permissions.MODERATOR;
+import static com.chessgrinder.chessgrinder.security.entitypermissionevaluator.TournamentEntityPermissionEvaluatorImpl.Permissions.OWNER;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +33,7 @@ public class ParticipantService {
     private final TournamentRepository tournamentRepository;
     private final ParticipantMapper participantMapper;
     private final UserRepository userRepository;
+    private final EntityPermissionEvaluator<TournamentEntity> tournamentPermissionEvaluator;
 
     public void addParticipantToTheTournament(UUID tournamentId, ParticipantDto participantDto) {
 
@@ -65,4 +74,34 @@ public class ParticipantService {
         return participantMapper.toDto(participantRepository.findAllWinnersByTournamentId(tournamentId));
     }
 
+    public void update(UUID tournamentId, UUID participantId, UserEntity user, ParticipantDto participantDto) {
+        ParticipantEntity participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No participant with id " + participantId));
+        TournamentEntity tournament = tournamentRepository.findById(tournamentId).orElseThrow();
+
+        boolean isMeModerator = tournamentPermissionEvaluator.hasPermission(user, tournamentId.toString(), MODERATOR.name());
+        boolean isMyParticipant = participant.getUser() != null && participant.getUser().getId().equals(user.getId());
+        boolean isTournamentNotStarted = tournament.getStatus().equals(PLANNED);
+        boolean canChangeNickname = isMeModerator || (isMyParticipant && isTournamentNotStarted);
+        // This is partial DTO, therefore, name could be null.
+        //noinspection ConstantValue
+        if (participantDto.getName() != null && !Objects.equals(participant.getNickname(), participantDto.getName())) {
+            if (canChangeNickname) {
+                participant.setNickname(participantDto.getName());
+            } else {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to change the nickname of this participant.");
+            }
+        }
+
+        boolean isMeOwner = tournamentPermissionEvaluator.hasPermission(user, tournamentId.toString(), OWNER.name());
+        if (participantDto.getIsModerator() != null && participant.isModerator() != participantDto.getIsModerator()) {
+            if (isMeOwner) {
+                participant.setModerator(participantDto.getIsModerator());
+            } else {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to change the moderator status of this participant.");
+            }
+        }
+
+        participantRepository.save(participant);
+    }
 }

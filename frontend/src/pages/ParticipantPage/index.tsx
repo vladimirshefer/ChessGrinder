@@ -13,16 +13,17 @@ import MatchesTable from "pages/TournamentPage/MatchesTable";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {TournamentPageData} from "lib/api/dto/TournamentPageData";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
-import {IoMdMore} from "react-icons/io";
-import useDropdownControls from "../../lib/react/hooks/useDropdownControls";
+import useDropdownControls from "lib/react/hooks/useDropdownControls";
 import {BsToggleOff, BsToggleOn} from "react-icons/bs";
 import {MdOutlineMoreVert} from "react-icons/md";
+import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 
 export default function ParticipantPage() {
     let navigate = useNavigate()
     let loc = useLoc();
 
     let [showDropdown, setShowDropdown, dropdownRef] = useDropdownControls()
+    let [authenticatedUser] = useAuthenticatedUser()
 
     let {
         tournamentId,
@@ -61,25 +62,26 @@ export default function ParticipantPage() {
 
     let isMeModerator = usePermissionGranted(tournamentId || "", "TournamentEntity", "MODERATOR");
     let isMeOwner = usePermissionGranted(tournamentId || "", "TournamentEntity", "OWNER");
-
+    let isMeParticipant = !!userQuery?.data?.id && userQuery?.data?.id === authenticatedUser?.id;
     let matches = useMemo(
         () => {
-            if (!tournamentPageQuery.isSuccess) {return []}
+            if (!tournamentPageQuery.isSuccess) {
+                return []
+            }
             return tournamentPageQuery.data!!.rounds
                 .flatMap(it => it.matches)
                 .filter(it => it.white?.id === participantId || it.black?.id === participantId)
         }, [tournamentPageQuery, participantId]
     )
 
-    if (!tournamentId) {
-        return <>
-            No tournamentId or userId
+    if (tournamentQuery.isLoading) {
+        return <>Loading tournament</>
+    }
 
-            <Link to={`/`}>
-                <button className={"p-2 bg-gray-200 rounded-md mx-1"}>
-                    Home
-                </button>
-            </Link>
+    if (!tournamentId && tournamentQuery.isError) {
+        return <>
+            No tournament
+            <Link to={`/`} className={"btn-light"}>Home</Link>
         </>
     }
 
@@ -114,12 +116,17 @@ export default function ParticipantPage() {
             isMissing: false,
             place: -1
         })
-            .catch(propagate(() => "Could not change nickname!"))
+            .catch((e) => alert("Could not change nickname! " + e?.response?.data?.message))
         await participantQuery.refetch()
     }
 
-    let missing = (participantQuery.data && participantQuery.data?.isMissing) || false;
-    let moderator = (participantQuery.data && participantQuery.data?.isModerator) || false;
+    if (!participantQuery.data) {
+        return <>No participant</>
+    }
+    let participant = participantQuery.data!!;
+
+    let missing = participant.isMissing || false;
+    let moderator = participant.isModerator || false;
 
     async function deleteParticipant() {
         let participantFriendlyName = userQuery.data?.name || participantQuery.data?.name || participantId;
@@ -170,69 +177,69 @@ export default function ParticipantPage() {
                         title={participantQuery.data?.name}>
                         {participantQuery.data?.name}
                     </h1>
-                    <Conditional on={isMeModerator}>
-                        <div className={"relative"}>
-                            <button onClick={() => setShowDropdown(!showDropdown)} className={"flex items-center"}>
-                                <MdOutlineMoreVert/>
-                            </button>
-                            {showDropdown ? (
-                                <ul ref={dropdownRef}
-                                    className={"absolute grid right-0 top-full bg-white border border-gray-300 shadow-lg z-20 min-w-max text-sm place-items-stretch"}
-                                >
-                                    <Conditional on={isMeModerator}>
+                    <div className={"relative"}>
+                        <button onClick={() => setShowDropdown(!showDropdown)} className={"flex items-center"}>
+                            <MdOutlineMoreVert/>
+                        </button>
+                        {showDropdown ? (
+                            <ul ref={dropdownRef}
+                                className={"absolute grid right-0 top-full bg-white border border-gray-300 shadow-lg z-20 min-w-max text-sm place-items-stretch"}
+                            >
+                                <Conditional on={isMeModerator || (isMeParticipant)}>
+                                    <li>
+                                        <button
+                                            className={"flex gap-2 items-center px-3 py-2 hover:bg-gray-100 w-full"}
+                                            type={"button"}
+                                            onClick={changeNickname}
+                                            disabled={!participantQuery.data}
+                                        >
+                                            <AiOutlineEdit/>
+                                            {loc("Change nickname")}
+                                        </button>
+                                    </li>
+                                </Conditional>
+                                <Conditional on={isMeModerator}>
+                                    <li>
+                                        <button
+                                            className={"flex gap-2 items-center px-3 py-2 hover:bg-gray-100 w-full"}
+                                            type={"button"}
+                                            onClick={toggleMissing}
+                                            title={"Set missing"}
+                                            disabled={!participantQuery.data}
+                                        >
+                                            {missing ? <BsToggleOn/> : <BsToggleOff/>}
+                                            {loc("Missing")}
+                                        </button>
+                                    </li>
+                                    <Conditional on={isMeOwner}>
                                         <li>
                                             <button
                                                 className={"flex gap-2 items-center px-3 py-2 hover:bg-gray-100 w-full"}
                                                 type={"button"}
-                                                onClick={changeNickname}
+                                                onClick={toggleIsModerator}
+                                                title={"Set moderator"}
                                                 disabled={!participantQuery.data}
                                             >
-                                                <AiOutlineEdit/>
-                                                {loc("Change nickname")}
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button
-                                                className={"flex gap-2 items-center px-3 py-2 hover:bg-gray-100 w-full"}
-                                                type={"button"}
-                                                onClick={toggleMissing}
-                                                title={"Set missing"}
-                                                disabled={!participantQuery.data}
-                                            >
-                                                {missing ? <BsToggleOn/> : <BsToggleOff/>}
-                                                {loc("Missing")}
-                                            </button>
-                                        </li>
-                                        <Conditional on={isMeOwner}>
-                                            <li>
-                                                <button
-                                                    className={"flex gap-2 items-center px-3 py-2 hover:bg-gray-100 w-full"}
-                                                    type={"button"}
-                                                    onClick={toggleIsModerator}
-                                                    title={"Set moderator"}
-                                                    disabled={!participantQuery.data}
-                                                >
-                                                    {moderator ? <BsToggleOn/> : <BsToggleOff/>}
-                                                    {loc("Moderator")}
-                                                </button>
-                                            </li>
-                                        </Conditional>
-                                        <li>
-                                            <button
-                                                className={"flex gap-2 items-center px-3 py-2 bg-danger-100 w-full hover:bg-danger-300 text-danger-800"}
-                                                title={loc("Delete")}
-                                                onClick={deleteParticipant}
-                                            >
-                                                <AiOutlineDelete/>
-                                                {loc("Delete participant")}
+                                                {moderator ? <BsToggleOn/> : <BsToggleOff/>}
+                                                {loc("Moderator")}
                                             </button>
                                         </li>
                                     </Conditional>
+                                    <li>
+                                        <button
+                                            className={"flex gap-2 items-center px-3 py-2 bg-danger-100 w-full hover:bg-danger-300 text-danger-800"}
+                                            title={loc("Delete")}
+                                            onClick={deleteParticipant}
+                                        >
+                                            <AiOutlineDelete/>
+                                            {loc("Delete participant")}
+                                        </button>
+                                    </li>
+                                </Conditional>
 
-                                </ul>
-                            ) : <></>}
-                        </div>
-                    </Conditional>
+                            </ul>
+                        ) : <></>}
+                    </div>
                 </div>
             </Conditional>
 
