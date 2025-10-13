@@ -23,6 +23,7 @@ import NotFoundPage from "pages/NotFoundPage";
 import {ConfigurationContextProvider} from "contexts/ConfigurationContext";
 import Footer from "components/Footer";
 import AboutPage from "./pages/AboutPage";
+import EventPage from "./pages/TournamentPage/EventPage";
 
 const queryClient = new QueryClient()
 
@@ -43,6 +44,7 @@ function App() {
                                     <Route path="/" element={<MainPage/>}/>
                                     <Route path="/about" element={<AboutPage/>}/>
                                     <Route path="/tournament/:id" element={<TournamentPage/>}/>
+                                    <Route path="/event/:city/:date" element={<EventPage/>}/>
                                     <Route path="/tournament/:id/round/:roundId" element={<TournamentPage />}/>
                                     <Route path="/tournament/:tournamentId/participant/:participantId"
                                            element={<ParticipantPage/>}/>
