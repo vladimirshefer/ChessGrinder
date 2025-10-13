@@ -1,5 +1,5 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
-import React, {useMemo, useState} from "react";
+import React, {useMemo} from "react";
 import ResultsTable from "pages/TournamentPage/ResultsTable";
 import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
@@ -8,7 +8,7 @@ import RoundTab from "pages/TournamentPage/RoundTab";
 import {Conditional, usePermissionGranted} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
-import {useLoc, useTransliterate} from "strings/loc";
+import {useLoc} from "strings/loc";
 import tournamentRepository from "lib/api/repository/TournamentRepository";
 import dayjs from "dayjs";
 import roundRepository from "lib/api/repository/RoundRepository";
@@ -16,28 +16,50 @@ import AddParticipantTournamentPageSection from "pages/TournamentPage/AddPartici
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
 import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
-import QrCode from "components/QrCode";
-import {IoMdShare} from "react-icons/io";
 import restApiClient from "lib/api/RestApiClient";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
 import NicknameContextPane from "./NicknameContextPane";
-import {copyToClipboard} from "lib/util/clipboard";
 import ShareDropdownButton from "pages/TournamentPage/ShareDropdownButton";
 
 function TournamentPage() {
-    let loc = useLoc()
-    let transliterate = useTransliterate();
-    let loginPageLink = useLoginPageLink();
     let {id, roundId: roundIdStr} = useParams();
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
     let tournamentQuery = useQuery({
         queryKey: ["tournamentPageData", id],
         queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
     })
+
+    let tournament = tournamentQuery.data?.tournament;
+
+    if (!id) return <>No tournament id!</>
+    if (tournamentQuery.isLoading) return <>Loading...</>
+    if (tournamentQuery.isError || !tournament) return <>Error! tid: {id}</>
+
+    return <TournamentPageImpl
+        tournament={tournament}
+        roundId={roundId}
+    />;
+}
+
+export function TournamentPageImpl(
+    {
+        roundId = null,
+        tournament,
+    }: {
+        roundId?: number | null,
+        tournament: TournamentDto,
+    }) {
+    let loc = useLoc()
+    let id = tournament.id;
+    let loginPageLink = useLoginPageLink();
+    let tournamentQuery = useQuery({
+        queryKey: ["tournamentPageData", id],
+        queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
+    })
     let isMain = !roundId
 
-    usePageTitle(`${tournamentQuery.data?.tournament?.name || "Unnamed"} - ${dayjs(tournamentQuery?.data?.tournament?.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")} - Tournament - ChessGrinder`, [tournamentQuery.data])
+    usePageTitle(`${tournament.name || "Unnamed"} - ${dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")} - Tournament - ChessGrinder`, [tournamentQuery.data])
 
     let [authenticatedUser] = useAuthenticatedUser()
     let isAuthenticatedUser = !!authenticatedUser
@@ -126,11 +148,8 @@ function TournamentPage() {
         await restApiClient.post(`/nickname-contest/${tournament.id}`);
     }
 
-    if (tournamentQuery.isError) return <>Error!</>
-    if (!tournamentQuery.isSuccess || !tournamentQuery.data) return <>Loading</>
-    let tournament: TournamentDto = tournamentQuery.data.tournament
     let hideParticipateButton = !meParticipantQuery.isSuccess || !!meParticipantQuery.data
-    let isTournamentFinished = tournament?.status === "FINISHED"
+    let isTournamentFinished = tournament.status === "FINISHED"
 
     async function startTournament() {
         await tournamentRepository.startTournament(tournament.id)
@@ -189,7 +208,7 @@ function TournamentPage() {
             </h2>
             <div className={"px-2"}>
                 <div>
-                    <small className={"font-semibold text-gray-500"}>{tournament?.status}</small>
+                    <small className={"font-semibold text-gray-500"}>{tournament.status}</small>
                 </div>
                 <div>
                     <span className={"font-semibold"}>{tournament.date && dayjs(tournament.date).format("DD.MM.YY")}</span>
@@ -221,7 +240,7 @@ function TournamentPage() {
         )}
 
         <Conditional on={isMeModerator}>
-            <Conditional on={tournament?.status !== "FINISHED"}>
+            <Conditional on={tournament.status !== "FINISHED"}>
                 <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
             </Conditional>
         </Conditional>
