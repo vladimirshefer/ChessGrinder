@@ -16,18 +16,17 @@ export function TournamentsList(
     let loc = useLoc()
 
     return <div>
-        <h2 className={"text-xl my-2 text-left px-3 uppercase font-semibold"}>{loc("Tournaments")}</h2>
-        <ul className={"grid grid-cols-12 gap-2"}>
+        <div className={"flex gap-3 items-stretch my-2"}>
+            <h2 className={"text-xl uppercase text-left font-semibold"}>{loc("Tournaments")}</h2>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
-                <li className={"col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 " +
-                    "bg-gray-200 flex justify-center content-center"}>
-                    <button className={"h-full w-full text-xl text-primary-600 p-3"}
-                            onClick={createTournament}
-                    >
-                        + {loc("Tournament")}
-                    </button>
-                </li>
+                <button className={"bg-primary-400 text-white px-3 uppercase text-sm"}
+                    onClick={createTournament}
+                >
+                    + {loc("Create")}
+                </button>
             </ConditionalOnUserRole>
+        </div>
+        <ul className={"grid grid-cols-12 gap-2"}>
             <Conditional on={!tournaments || tournaments.length === 0}>
                 <div className={"col-span-12"}>
                     <span>No tournaments</span>
