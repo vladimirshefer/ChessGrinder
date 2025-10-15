@@ -290,17 +290,17 @@ function MyActiveTournamentPaneImpl(
         {(resultSelectorActive && (<>
                 <div className={"p-1"}></div>
                 <div className={"flex gap-1"}>
-                    <div className={"btn-light text-sm !bg-primary-400 grow"} onClick={async () => {
+                    <div className={"btn-light text-sm bg-primary-400! grow"} onClick={async () => {
                         await submitMatchResult(isMeWhite ? "WHITE_WIN" : "BLACK_WIN");
                     }}>
                         {loc("Win")}
                     </div>
-                    <div className={"btn-light text-sm !bg-primary-200 grow"} onClick={async () => {
+                    <div className={"btn-light text-sm bg-primary-200! grow"} onClick={async () => {
                         await submitMatchResult("DRAW");
                     }}>
                         {loc("Draw")}
                     </div>
-                    <div className={"btn-light text-sm !bg-gray-200 grow"} onClick={async () => {
+                    <div className={"btn-light text-sm bg-gray-200! grow"} onClick={async () => {
                         await submitMatchResult(isMeWhite ? "BLACK_WIN" : "WHITE_WIN");
                     }}>
                         {loc("Loss")}

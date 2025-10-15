@@ -29,7 +29,7 @@ export default function Toggle(
                         w-11
                         h-6
                         bg-gray-200
-                        peer-focus:outline-none
+                        peer-focus:outline-hidden
                         peer-focus:ring-4
                         peer-focus:ring-primary-300
                         dark:peer-focus:ring-primary-800
@@ -37,7 +37,7 @@ export default function Toggle(
                         peer
                         dark:bg-gray-700
                         peer-checked:after:translate-x-full
-                        rtl:peer-checked:after:-translate-x-full
+                        peer-checked:rtl:after:-translate-x-full
                         peer-checked:after:border-white
                         after:content-['']
                         after:absolute

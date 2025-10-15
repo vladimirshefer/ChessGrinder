@@ -13,16 +13,19 @@ RUN mvn versions:set -DnewVersion=${VERSION}
 RUN mvn spring-boot:build-info
 RUN mvn install -DskipTests
 
-FROM node:16-slim as build-frontend
+FROM node:22-slim as build-frontend
 WORKDIR /app
 COPY frontend/package.json package.json
 COPY frontend/package-lock.json package-lock.json
 RUN npm ci
 COPY frontend/public ./public
+COPY frontend/tsconfig.json ./
+COPY frontend/vite.config.ts ./
+COPY frontend/postcss.config.cjs ./
+COPY frontend/eslint.config.mjs ./
+COPY frontend/index.html ./
 COPY frontend/src ./src
 COPY frontend/.env* ./
-COPY frontend/tsconfig.json ./
-COPY frontend/tailwind.config.js ./
 RUN ls
 RUN npm run build
 

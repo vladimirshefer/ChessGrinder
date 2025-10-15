@@ -1,18 +1,15 @@
-.tournament {
-
-}
+@reference '../../index.css';
 
 .tournament-planned {
-    @apply tournament;
     @apply bg-black;
     @apply text-white;
 }
 
 .tournament-finished {
-    @apply tournament;
     @apply bg-gray-200;
 }
 
 .tournament-active {
-    @apply tournament-planned; /*temporary*/
+    @apply bg-black;
+    @apply text-white;
 }

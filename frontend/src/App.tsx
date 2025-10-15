@@ -1,6 +1,6 @@
 import ChessClockPage from "pages/ChessClockPage";
 import React from 'react';
-import 'App.css';
+import './App.css';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import MainPage from "pages/MainPage"

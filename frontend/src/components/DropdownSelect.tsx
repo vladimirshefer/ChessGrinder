@@ -69,7 +69,7 @@ export default function DropdownSelect<T>(
             }
         </div>
         {dropdownActive &&
-            <div className={"grid absolute t-[100%] w-full shadow bg-inherit"}>
+            <div className={"grid absolute t-[100%] w-full shadow-sm bg-inherit"}>
                 <div className={"flex bg-inherit"}>
                     <button className={"px-2"}><AiOutlineSearch/></button>
                     <input type={"text"}

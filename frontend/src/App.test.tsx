@@ -1,9 +1,10 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import App from './App';
 
 // Mock RestApiClient to avoid axios ES6 import issues
-jest.mock('lib/api/RestApiClient', () => ({
+vi.mock('lib/api/RestApiClient', () => ({
   default: {}
 }));
 

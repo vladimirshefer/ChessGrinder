@@ -1,15 +1,71 @@
-body {
-  margin: 0;
-  font-family: "Open Sans", "Arial", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import 'tailwindcss';
+
+@theme {
+  --color-anzac-50: #fbf8eb;
+  --color-anzac-100: #f5edcc;
+  --color-anzac-200: #ecdb9c;
+  --color-anzac-300: #e1c163;
+  --color-anzac-400: #d9ae46;
+  --color-anzac-500: #c7932b;
+  --color-anzac-600: #ab7323;
+  --color-anzac-700: #89541f;
+  --color-anzac-800: #724521;
+  --color-anzac-900: #623a21;
+  --color-anzac-950: #391d0f;
+
+  --color-primary-50: var(--color-anzac-50);
+  --color-primary-100: var(--color-anzac-100);
+  --color-primary-200: var(--color-anzac-200);
+  --color-primary-300: var(--color-anzac-300);
+  --color-primary-400: var(--color-anzac-400);
+  --color-primary-500: var(--color-anzac-500);
+  --color-primary-600: var(--color-anzac-600);
+  --color-primary-700: var(--color-anzac-700);
+  --color-primary-800: var(--color-anzac-800);
+  --color-primary-900: var(--color-anzac-900);
+  --color-primary-950: var(--color-anzac-950);
+
+  --color-danger-50: var(--color-red-50);
+  --color-danger-100: var(--color-red-100);
+  --color-danger-200: var(--color-red-200);
+  --color-danger-300: var(--color-red-300);
+  --color-danger-400: var(--color-red-400);
+  --color-danger-500: var(--color-red-500);
+  --color-danger-600: var(--color-red-600);
+  --color-danger-700: var(--color-red-700);
+  --color-danger-800: var(--color-red-800);
+  --color-danger-900: var(--color-red-900);
+  --color-danger-950: var(--color-red-950);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer base {
+  body {
+    margin: 0;
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family:
+      source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  }
+}

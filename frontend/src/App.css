@@ -1,3 +1,5 @@
+@reference './index.css';
+
 .App {
   text-align: center;
 }
@@ -17,31 +19,41 @@
 }
 
 .btn-primary {
-  @apply btn;
+  @apply py-1;
+  @apply px-3;
+  @apply text-center;
   @apply bg-primary-400;
-  @apply text-black
+  @apply text-black;
 }
 
 .btn-dark {
-  @apply btn;
+  @apply py-1;
+  @apply px-3;
+  @apply text-center;
   @apply bg-black;
   @apply text-white;
 }
 
 .btn-danger {
-  @apply btn;
+  @apply py-1;
+  @apply px-3;
+  @apply text-center;
   @apply bg-danger-800;
   @apply text-white;
 }
 
 .btn-light {
-  @apply btn;
+  @apply py-1;
+  @apply px-3;
+  @apply text-center;
   @apply bg-gray-200;
   @apply text-black;
 }
 
 .btn-unsupported {
-  @apply btn;
+  @apply py-1;
+  @apply px-3;
+  @apply text-center;
   @apply text-gray-600;
   @apply line-through;
   @apply border;
@@ -54,33 +66,33 @@
 .bg-stripes-45-primary-400 {
   background: repeating-linear-gradient(
           45deg,
-          theme("colors.primary.400"),
-          theme("colors.primary.400") 10px,
-          theme("colors.primary.300") 10px,
-          theme("colors.primary.300") 15px,
-          theme("colors.primary.400") 15px
+          var(--color-primary-400),
+          var(--color-primary-400) 10px,
+          var(--color-primary-300) 10px,
+          var(--color-primary-300) 15px,
+          var(--color-primary-400) 15px
   );
 }
 
 .bg-stripes-45-primary-200 {
   background: repeating-linear-gradient(
           45deg,
-          theme("colors.primary.200"),
-          theme("colors.primary.200") 10px,
-          theme("colors.primary.100") 10px,
-          theme("colors.primary.100") 15px,
-          theme("colors.primary.200") 15px
+          var(--color-primary-200),
+          var(--color-primary-200) 10px,
+          var(--color-primary-100) 10px,
+          var(--color-primary-100) 15px,
+          var(--color-primary-200) 15px
   );
 }
 
 .bg-stripes-45-gray-200 {
   background: repeating-linear-gradient(
           45deg,
-          theme("colors.gray.200"),
-          theme("colors.gray.200") 10px,
-          theme("colors.gray.50") 10px,
-          theme("colors.gray.50") 15px,
-          theme("colors.gray.200") 15px
+          var(--color-gray-200),
+          var(--color-gray-200) 10px,
+          var(--color-gray-50) 10px,
+          var(--color-gray-50) 15px,
+          var(--color-gray-200) 15px
   );
 }
 

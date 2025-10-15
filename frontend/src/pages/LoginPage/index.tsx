@@ -28,7 +28,7 @@ export default function LoginPage() {
     let [ENABLE_LOGIN_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
     let [ENABLE_REGISTRATION_EMAIL_LINK] = useConfigurationPropertyEnabled("auth.instant", mode === "local")
     let [ENABLE_REGISTRATION_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
-    let [CAPTCHA_PUBLIC_KEY] = useConfigurationProperty("captcha.site", process.env.REACT_APP_CAPTCHA_PUBLIC_KEY || "placeholder")
+    let [CAPTCHA_PUBLIC_KEY] = useConfigurationProperty("captcha.site", import.meta.env.VITE_CAPTCHA_PUBLIC_KEY || "placeholder")
 
     useEffect(() => {
         if (!!authenticatedUser) {
@@ -124,7 +124,7 @@ export default function LoginPage() {
         <Conditional on={ENABLE_LOGIN_USERNAME_PASSWORD}>
             <form className={"grid gap-1"} onSubmit={instantSignInForm.handleSubmit(handleInstantSignInSubmit)}>
                 <h3 className={"font-semibold uppercase"}>{loc("Instant Sign In")}</h3>
-                <input className={"border-b-2 outline-none"} placeholder={loc("Email")}
+                <input className={"border-b-2 outline-hidden"} placeholder={loc("Email")}
                        {...instantSignInForm.register("email")}
                 />
                 <button className={"btn-primary uppercase"} type={"submit"}>
@@ -140,10 +140,10 @@ export default function LoginPage() {
         <Conditional on={ENABLE_REGISTRATION_EMAIL_LINK}>
             <form className={"grid gap-1"} onSubmit={signInForm.handleSubmit(handleSignInSubmit)}>
                 <h3 className={"font-semibold uppercase"}>{loc("Sign in")}</h3>
-                <input className={"border-b-2 outline-none"} placeholder={loc("Username")}
+                <input className={"border-b-2 outline-hidden"} placeholder={loc("Username")}
                        {...signInForm.register("username")}
                 />
-                <input className={"border-b-2 outline-none"} placeholder={loc("Password")}
+                <input className={"border-b-2 outline-hidden"} placeholder={loc("Password")}
                        type={"password"}
                        {...signInForm.register("password")}
                 />
@@ -155,7 +155,7 @@ export default function LoginPage() {
         <Conditional on={ENABLE_REGISTRATION_USERNAME_PASSWORD}>
             <form className={"grid gap-1"} onSubmit={signUpForm.handleSubmit(handleSignUpSubmit, handleSignUpViolated)}>
                 <h3 className={"font-semibold uppercase"}>{loc("Sign up")}</h3>
-                <input className={"border-b-2 outline-none"} placeholder={loc("Full name")}
+                <input className={"border-b-2 outline-hidden"} placeholder={loc("Full name")}
                        {...signUpForm.register("fullName", {
                            required: {
                                value: true,
@@ -167,7 +167,7 @@ export default function LoginPage() {
                            },
                        })}
                 />
-                <input className={"border-b-2 outline-none"} placeholder={loc("Username")}
+                <input className={"border-b-2 outline-hidden"} placeholder={loc("Username")}
                        {...signUpForm.register("username", {
                            required: {
                                value: true,
@@ -183,7 +183,7 @@ export default function LoginPage() {
                            }
                        })}
                 />
-                <input className={"border-b-2 outline-none"} placeholder={loc("Password")}
+                <input className={"border-b-2 outline-hidden"} placeholder={loc("Password")}
                        {...signUpForm.register("password", {
                            required: {
                                value: true,
@@ -196,7 +196,7 @@ export default function LoginPage() {
                        })}
                        type={"password"}
                 />
-                <input className={"border-b-2 outline-none"} placeholder={loc("Password confirm")}
+                <input className={"border-b-2 outline-hidden"} placeholder={loc("Password confirm")}
                        type={"password"}
                        {...signUpForm.register("passwordConfirm", {
                            required: {

@@ -57,7 +57,7 @@ export default function AddParticipantTournamentPageSection(
             <Conditional on={inputEnabled}>
                 <div className={"w-full grid grid-cols-12 p-1"}>
                     <div className={"col-span-12 py-1"}>
-                        <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-none"}
+                        <input className={"border-b-2 border-b-blue-300 w-full px-2 outline-hidden"}
                                autoFocus
                                name={"nickname"}
                                onChange={event => setNickName(event.target.value)}
@@ -98,7 +98,7 @@ export default function AddParticipantTournamentPageSection(
                                 }}>
                             {loc("Add participant")}
                         </button>
-                        <button className={"btn-light !px-6"}
+                        <button className={"btn-light px-6!"}
                                 title={loc("Cancel")}
                                 onClick={() => {
                                     setInputEnabled(false)

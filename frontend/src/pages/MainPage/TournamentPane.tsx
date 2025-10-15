@@ -189,7 +189,7 @@ export function TournamentPane(
         <Conditional on={isFinished}>
             <div>
                 <Link to={`/tournament/${tournament.id}`} className={""}>
-                    <button className={"btn-dark w-full text-sm !px-4"}>
+                    <button className={"btn-dark w-full text-sm px-4!"}>
                         {loc("More info")}
                     </button>
                 </Link>

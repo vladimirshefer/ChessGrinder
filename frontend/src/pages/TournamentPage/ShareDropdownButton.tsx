@@ -38,7 +38,7 @@ function ShareDropdownButton(
     return (
         <div className="relative flex">
             <button
-                className="flex items-center gap-2 !px-4"
+                className="flex items-center gap-2 px-4!"
                 onClick={() => setShowDropdown(it => !it)}
                 title={loc('Add to calendar')}
             >
