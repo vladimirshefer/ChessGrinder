@@ -1,6 +1,5 @@
 import {UserDto} from "lib/api/dto/MainPageData";
 import React from "react";
-import {useLoc} from "strings/loc";
 import {UserPane} from "pages/MainPage/UserPane";
 
 export function MemberList(

@@ -3,7 +3,6 @@ import participantRepository from "lib/api/repository/ParticipantRepository";
 import {useQuery} from "@tanstack/react-query";
 import userRepository from "lib/api/repository/UserRepository";
 import {Conditional, usePermissionGranted} from "components/Conditional";
-import {propagate} from "lib/util/misc";
 import {AiOutlineArrowLeft, AiOutlineDelete, AiOutlineEdit} from "react-icons/ai";
 import React, {useMemo} from "react";
 import {useLoc} from "strings/loc";
