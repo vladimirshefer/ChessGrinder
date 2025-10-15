@@ -44,3 +44,6 @@ nohup.out
 ## Local H2 database file
 database.h2.mv.db
 database.h2.trace.db
+
+/.agents/
+AGENTS.md
