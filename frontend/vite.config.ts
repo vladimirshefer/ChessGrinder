@@ -1,16 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import { fileURLToPath, URL } from 'node:url';
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      components: fileURLToPath(new URL('./src/components', import.meta.url)),
-      contexts: fileURLToPath(new URL('./src/contexts', import.meta.url)),
-      lib: fileURLToPath(new URL('./src/lib', import.meta.url)),
-      pages: fileURLToPath(new URL('./src/pages', import.meta.url)),
-      strings: fileURLToPath(new URL('./src/strings', import.meta.url)),
+      '@': path.resolve(__dirname, 'src'),
+      components: path.resolve(__dirname, 'src/components'),
+      contexts: path.resolve(__dirname, 'src/contexts'),
+      lib: path.resolve(__dirname, 'src/lib'),
+      pages: path.resolve(__dirname, 'src/pages'),
+      strings: path.resolve(__dirname, 'src/strings'),
     },
   },
   build: {
@@ -21,11 +22,5 @@ export default defineConfig({
   },
   preview: {
     port: 3000,
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
-  },
+  }
 });
