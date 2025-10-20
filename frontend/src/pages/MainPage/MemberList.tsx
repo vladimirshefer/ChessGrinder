@@ -12,8 +12,8 @@ export function MemberList(
     return <div>
         <div className={"w-full grid"}>
             {users.map(user =>
-                <div className={"border-b py-1"}>
-                    <UserPane key={user.id} user={user}/>
+                <div className={"border-b py-1"} key={user.id}>
+                    <UserPane user={user}/>
                 </div>
             )}
         </div>

@@ -1,6 +1,6 @@
 import {useParams} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
-import tournamentRepository from "../../lib/api/repository/TournamentRepository";
+import tournamentRepository from "lib/api/repository/TournamentRepository";
 import {TournamentPageImpl} from "./index";
 
 function EventPage() {
@@ -16,9 +16,9 @@ function EventPage() {
     })
 
     if (!tournamentsQuery.isSuccess) return <>Loading...</>
-    let tournaments = tournamentsQuery.data!!;
+    let tournaments = tournamentsQuery.data;
     return <div className={"grid gap-2"}>
-        {tournaments.map(it => <div>
+        {tournaments.map(it => <div key={it.id}>
             <TournamentPageImpl tournament={it} roundId={null}/>
         </div>)}
     </div>

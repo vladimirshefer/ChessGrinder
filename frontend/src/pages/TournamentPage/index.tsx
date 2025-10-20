@@ -27,7 +27,7 @@ function TournamentPage() {
     let roundId = useMemo(() => roundIdStr ? parseInt(roundIdStr) : null, [roundIdStr]);
     let tournamentQuery = useQuery({
         queryKey: ["tournamentPageData", id],
-        queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
+        queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>(new Error())
     })
 
     let tournament = tournamentQuery.data?.tournament;
@@ -55,7 +55,7 @@ export function TournamentPageImpl(
     let loginPageLink = useLoginPageLink();
     let tournamentQuery = useQuery({
         queryKey: ["tournamentPageData", id],
-        queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>()
+        queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>(new Error())
     })
     let isMain = !roundId
 
@@ -85,7 +85,7 @@ export function TournamentPageImpl(
     let participants: ParticipantDto[] = tournamentQuery.data?.participants || [];
 
     async function addParticipant(participant: ParticipantDto) {
-        await participantRepository.postParticipant(id!!, participant)
+        await participantRepository.postParticipant(id, participant)
             .catch(e => alert("Could not add participant. " +
                 e?.response?.data?.message))
         await tournamentQuery.refetch()
@@ -97,7 +97,7 @@ export function TournamentPageImpl(
 
     async function createRound() {
         try {
-            await roundRepository.postRound(id!!)
+            await roundRepository.postRound(id)
             await tournamentQuery.refetch();
             let newRoundSubPath = tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : "";
             navigate(`/tournament/${id}${newRoundSubPath}`, {replace: true});
@@ -108,14 +108,14 @@ export function TournamentPageImpl(
     }
 
     async function runPairingForRound() {
-        await roundRepository.runPairing(id!!, roundId!!)
+        await roundRepository.runPairing(id, roundId!)
             .catch(e => alert("Pairing failed! " +
                 e?.response?.data?.message));
         await tournamentQuery.refetch()
     }
 
     async function submitMatchResult(match: MatchDto, result: MatchResult) {
-        await roundRepository.postMatchResult(id!!, roundId!!, match.id, result)
+        await roundRepository.postMatchResult(id, roundId!, match.id, result)
             .catch(e => alert("Could not set match result. " +
                 e?.response?.data?.message));
 
@@ -123,7 +123,7 @@ export function TournamentPageImpl(
     }
 
     async function deleteRound() {
-        await roundRepository.deleteRound(id!!, roundId!!)
+        await roundRepository.deleteRound(id, roundId!)
             .catch(e => alert(loc("Could not delete round. " +
                 e?.response?.data?.message)))
         await tournamentQuery.refetch()
@@ -131,14 +131,14 @@ export function TournamentPageImpl(
     }
 
     async function finishRound() {
-        await roundRepository.finishRound(id!!, roundId!!)
+        await roundRepository.finishRound(id, roundId!)
             .catch(e => alert("Could not finish round. Please, check if all match results are submitted. " +
                 e?.response?.data?.message))
         await tournamentQuery.refetch()
     }
 
     async function reopenRound() {
-        await roundRepository.reopenRound(id!!, roundId!!)
+        await roundRepository.reopenRound(id, roundId!)
             .catch(e => alert("Could not reopen round. " +
                 e?.response?.data?.message))
         await tournamentQuery.refetch();
@@ -172,14 +172,14 @@ export function TournamentPageImpl(
             alert("You entered wrong id. Tournament will not be deleted.");
             return;
         }
-        await tournamentRepository.deleteTournament(tournament?.id!!)
+        await tournamentRepository.deleteTournament(tournament?.id)
             .catch(e => alert("Could not delete tournament. " +
                 (e?.response?.data?.message || "Unknown error")));
-        await navigate("/");
+        navigate("/");
     }
 
     async function participate() {
-        let nickname = prompt("Please enter your nickname");
+        let nickname = window.prompt("Please enter your nickname");
         if (!nickname) {
             alert("Nickname is not provided. Registration is cancelled.")
         } else {
@@ -287,9 +287,9 @@ export function TournamentPageImpl(
                 <div className={"p-2"}>
                     <RoundTab
                         tournamentId={tournament.id}
-                        round={tournamentData?.rounds[roundId!! - 1]!!}
-                        submitMatchResult={(match, result) => submitMatchResult(match, result!!)}
-                        submitRoundFinished={() => finishRound()}
+                        round={tournamentData!.rounds[roundId! - 1]}
+                        submitMatchResult={(match, result) => submitMatchResult(match, result!)}
+                        submitRoundFinished={() => {finishRound().catch(console.error)}}
                         deleteRound={() => deleteRound()}
                         runPairing={() => runPairingForRound()}
                         reopenRound={() => reopenRound()}

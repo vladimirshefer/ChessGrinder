@@ -1,5 +1,5 @@
 import {qualifiedService} from "lib/api/repository/apiSettings";
-import {BadgeDto, ListDto, UserBadgeDto, UserDto} from "lib/api/dto/MainPageData";
+import {BadgeDto, ListDto, UserDto} from "lib/api/dto/MainPageData";
 import localStorageUtil from "lib/util/LocalStorageUtil";
 import restApiClient from "lib/api/RestApiClient";
 import {requirePresent} from "lib/util/common";
@@ -38,7 +38,7 @@ class LocalStorageBadgeRepository implements BadgeRepository {
     }
 
     async deleteBadge(badgeId: string): Promise<void> {
-        localStorageUtil.forEach("cgd.user_badge.", (k, v) => {
+        localStorageUtil.forEach("cgd.user_badge.", (k, _v) => {
             if (k.includes(`.${badgeId}`)) {
                 localStorageUtil.removeObject(`cgd.user_badge.${k}`);
             }
@@ -47,7 +47,7 @@ class LocalStorageBadgeRepository implements BadgeRepository {
     }
 
     async getUsers(badgeId: string): Promise<ListDto<UserDto>> {
-        let usersBadges = localStorageUtil.getAllObjectsByPrefix(`cgd.user_badge`) as UserBadgeDto[];
+        let usersBadges = localStorageUtil.getAllObjectsByPrefix<{userId: string, badgeId: string}>(`cgd.user_badge`);
 
         let usersFound = usersBadges
             .filter(it => it.badgeId === badgeId)
@@ -56,7 +56,7 @@ class LocalStorageBadgeRepository implements BadgeRepository {
 
         let usersResolved = (await Promise.all(usersFound))
             .filter(it => !!it)
-            .map(it => it as UserDto)
+            .map(it => it)
 
         return {values: usersResolved}
     }

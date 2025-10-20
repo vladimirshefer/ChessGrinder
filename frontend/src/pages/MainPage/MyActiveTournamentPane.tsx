@@ -75,7 +75,7 @@ function MyActiveTournamentPane(
         if (!isTournamentDataLoaded) {
             return undefined
         }
-        let tournamentPageData = tournamentQuery.data!!;
+        let tournamentPageData = tournamentQuery.data!;
         let rounds = tournamentPageData.rounds;
         if (isNotEmptyArray(rounds)) {
             return rounds
@@ -88,7 +88,7 @@ function MyActiveTournamentPane(
         if (!isNotEmptyArray(rounds)) {
             return undefined
         }
-        let result: any = (rounds as any).findLastIndex((it: RoundDto) => isNotEmptyArray(it.matches) && !it.isFinished);
+        let result = rounds!.findLastIndex((it: RoundDto) => isNotEmptyArray(it.matches) && !it.isFinished);
 
         if (result < 0) {
             return undefined
@@ -101,7 +101,7 @@ function MyActiveTournamentPane(
         if ((!currentRoundIndex && currentRoundIndex !== 0) || !isNotEmptyArray(rounds)) {
             return undefined
         } else {
-            return rounds!![currentRoundIndex];
+            return rounds![currentRoundIndex];
         }
     }, [rounds, currentRoundIndex])
 

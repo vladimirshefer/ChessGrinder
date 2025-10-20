@@ -1,4 +1,4 @@
-import {useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 
 function useDropdownControls(): [boolean, (value: (((prevState: boolean) => boolean) | boolean)) => void, React.MutableRefObject<null>] {

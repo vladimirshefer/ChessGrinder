@@ -18,7 +18,7 @@ class RestApiConfigurationRepository implements ConfigurationRepository {
     async getConfiguration(): Promise<{[key: string]: string}> {
         try {
             return await restApiClient.get(`/configuration`);
-        } catch (e: unknown) {
+        } catch {
             return {}
         }
     }

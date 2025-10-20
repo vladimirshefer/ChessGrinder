@@ -10,7 +10,7 @@ export interface UserRepository {
 
     getUsers(
         limit: number | undefined,
-        city?: string | undefined,
+        city?: string,
     ): Promise<ListDto<UserDto>>
 
     getMe(): Promise<UserDto | null>
@@ -38,7 +38,7 @@ class LocalStorageUserRepository implements UserRepository {
         }
         let user: UserDto = JSON.parse(userStr);
         user.badges = localStorageUtil.getAllObjectsByPrefix<UserBadgeDto>(`cgd.user__badge.${user.id}.`)
-            .map(it => localStorageUtil.getObject<BadgeDto>(`cgd.badge.${it.badgeId}`)!!)
+            .map(it => localStorageUtil.getObject<BadgeDto>(`cgd.badge.${it.badgeId}`)!)
         return user
     }
 
@@ -46,7 +46,7 @@ class LocalStorageUserRepository implements UserRepository {
         let users: UserDto[] = localStorageUtil.getAllObjectsByPrefix<UserDto>(`${this.userKeyPrefix}.`)
             .map(user => {
                 user.badges = localStorageUtil.getAllObjectsByPrefix<UserBadgeDto>(`cgd.user__badge.${user.id}.`)
-                    .map(it => localStorageUtil.getObject<BadgeDto>(`cgd.badge.${it.badgeId}`)!!)
+                    .map(it => localStorageUtil.getObject<BadgeDto>(`cgd.badge.${it.badgeId}`)!)
                 return user
             });
         return {
@@ -69,12 +69,12 @@ class LocalStorageUserRepository implements UserRepository {
                 let matchingParticipants: ParticipantDto[] = tournament.participants
                     .filter(participant => !!participant.userId)
                     .map(participant => {
-                        let user = localStorageUtil.getObject<UserDto>(`cgd.user.${participant.userId!!}`);
+                        let user = localStorageUtil.getObject<UserDto>(`cgd.user.${participant.userId!}`);
                         return [participant, user] as [ParticipantDto, UserDto | null];
                     })
                     .filter(([, user]) => !!user)
                     .filter(([, user]) => {
-                        return user!!.id === userId || user!!.username === userId;
+                        return user!.id === userId || user!.username === userId;
                     })
                     .map(([participant]) => participant);
                 let participant = matchingParticipants?.[0];
@@ -82,8 +82,8 @@ class LocalStorageUserRepository implements UserRepository {
             })
             .filter(([, participant]) => !!participant)
             .map(([tournament, participant]) => {
-                participant!!.tournament = tournament.tournament
-                return participant!!
+                participant!.tournament = tournament.tournament
+                return participant!
             });
         return {
             count: result.length,
@@ -91,7 +91,7 @@ class LocalStorageUserRepository implements UserRepository {
         };
     }
 
-    async assignReputation(data: UserReputationHistoryRecordDto): Promise<void> {
+    async assignReputation(_data: UserReputationHistoryRecordDto): Promise<void> {
         alert("Unsupported");
     }
 
@@ -104,11 +104,11 @@ class LocalStorageUserRepository implements UserRepository {
         localStorageUtil.removeObject(`${this.userKeyPrefix}.${userId}`);
     }
 
-    async checkPermission(userId: string, targetId: string, targetType: string, permission: string): Promise<boolean> {
+    async checkPermission(_userId: string, _targetId: string, _targetType: string, _permission: string): Promise<boolean> {
         return true;
     }
 
-    async getUserStats(userId: string): Promise<StatsAgainstUserDTO | null> {
+    async getUserStats(_userId: string): Promise<StatsAgainstUserDTO | null> {
         alert("Unsupported");
         return null;
     }
@@ -120,12 +120,12 @@ class RestApiUserRepository implements UserRepository {
     }
 
     async getUsers(
-        limit?: number | undefined,
-        city?: string | undefined,
+        limit?: number,
+        city?: string,
     ): Promise<ListDto<UserDto>> {
         let queryParams: any = {}
-        if (!!limit) queryParams.limit = limit
-        if (!!city) queryParams.city = city
+        if (limit) queryParams.limit = limit
+        if (city) queryParams.city = city
         return restApiClient.get(`/user`, {...queryParams});
     }
 

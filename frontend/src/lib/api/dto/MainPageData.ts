@@ -21,7 +21,7 @@ export interface UserDto {
     eloPoints?: number;
 }
 
-export interface ListDto<T extends any> {
+export interface ListDto<T> {
     count?: number
     values: T[]
 }

@@ -14,7 +14,7 @@ export default function AdminPage() {
     let tournamentListenersQuery = useQuery({
         queryKey: ["tournamentListeners"],
         queryFn: async () => {
-            return await restApiClient.get("/admin/tournament-listener") as ListDto<string>
+            return (await restApiClient.get<ListDto<string>>("/admin/tournament-listener"))
         }
     })
 
@@ -40,7 +40,7 @@ export default function AdminPage() {
             </div>
 
             <button className={"btn-dark"}
-                    onClick={e => {
+                    onClick={() => {
                         for (let localStorageKey in localStorage) {
                             if (localStorageKey.startsWith("cgd.")) {
                                 localStorage.removeItem(localStorageKey);
@@ -54,7 +54,7 @@ export default function AdminPage() {
         <div className={"grid gap-2 py-3 border-b-2"}>
         <h3 className={"text-lg font-semibold"}>Cheats</h3>
             <button className={"btn-primary"}
-                    onClick={e => {
+                    onClick={() => {
                         restApiClient.get("/cheat/getAdminRole")
                             .then((e: any) => alert("Got admin role " + e?.data))
                             .catch(e => alert("Could not get admin role " + e?.response?.data?.message))
@@ -74,7 +74,7 @@ export default function AdminPage() {
             />
             <datalist id="tournament-listener-choise">
                 {
-                    tournamentListenersQuery.data?.values.map(it => <option value={it}></option>) || []
+                    tournamentListenersQuery.data?.values.map(it => <option value={it} key={it}></option>) || []
                 }
             </datalist>
             <DangerActionButton
@@ -110,8 +110,8 @@ function DangerActionButton(
     }
 ) {
     return <button className={className}
-                   onClick={e => {
-                       let prompt1 = prompt(`Are you sure you want to ${actionName}? To do so, type ${actionName}`);
+                   onClick={() => {
+                       let prompt1 = window.prompt(`Are you sure you want to ${actionName}? To do so, type ${actionName}`);
                        if (prompt1 !== actionName) return;
                        action();
                    }}

@@ -8,7 +8,7 @@ class LocalStorageUtil {
     getObject<T>(key: string): T | null {
         let value: string | null= localStorage.getItem(key);
         if (value === null) return null;
-        else return JSON.parse(value);
+        else return JSON.parse(value) as T;
     }
 
     /**
@@ -31,20 +31,19 @@ class LocalStorageUtil {
      * @param keyPrefix
      */
     getAllObjectsByPrefix<T>(keyPrefix: string): T[] {
-        let result = []
+        let result = [] as T[]
         for (let localStorageKey in localStorage) {
             if (localStorageKey.startsWith(`${keyPrefix}`)) {
-                result.push(JSON.parse(localStorage.getItem(localStorageKey)!!));
+                result.push(JSON.parse(localStorage.getItem(localStorageKey)!));
             }
         }
         return result;
     }
 
     forEach<T>(keyPrefix: string, action: (id: string, value: T) => void) {
-
         for (let localStorageKey in localStorage) {
             if (localStorageKey.startsWith(`${keyPrefix}`)) {
-                let value = JSON.parse(localStorage.getItem(localStorageKey)!!);
+                let value = JSON.parse(localStorage.getItem(localStorageKey)!) as T;
                 action(localStorageKey.substring(keyPrefix.length), value)
             }
         }

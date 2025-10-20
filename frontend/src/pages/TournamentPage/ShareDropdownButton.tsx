@@ -30,7 +30,7 @@ function ShareDropdownButton(
         location: tournament.locationUrl || tournament.locationName || tournament.city || 'Planet Earth',
     });
 
-    let locationGeneratedUrl = !!tournament.locationName
+    let locationGeneratedUrl = tournament.locationName
         ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tournament.locationName + " " + (tournament.city || ""))}`
         : undefined;
 
@@ -75,7 +75,7 @@ function ShareDropdownButton(
                         <button
                             className="text-left text-sm"
                             onClick={() => {
-                                navigator.share({
+                                window.navigator.share({
                                     title: `"${tournament.name}" - Tournament - Chess Grinder`,
                                     text:
                                         `Date: ${dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("MMMM D, HH:mm")}\n` +

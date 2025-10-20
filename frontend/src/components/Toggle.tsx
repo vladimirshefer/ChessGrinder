@@ -21,7 +21,7 @@ export default function Toggle(
     return <label className="inline-flex items-center cursor-pointer" title={title}>
         <input type="checkbox" className="sr-only peer" checked={checkedReal} title={title}
                onChange={e => {
-                   setChecked === undefined || setChecked(e.target.checked)
+                   setChecked?.(e.target.checked)
                    setCheckedInternal(e.target.checked)
                }}
         />

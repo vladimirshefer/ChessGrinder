@@ -75,7 +75,7 @@ function AssignAchievementPane(
             <Conditional on={!!selectedBadge}>
                 <button className={"btn-dark w-full"}
                         onClick={async () => {
-                            await assignAchievement(selectedBadge!!)
+                            await assignAchievement(selectedBadge!)
                                 .then(() => alert("Badge assigned"))
                                 .catch(() => alert("Could not assign badge!"))
                         }}
@@ -155,7 +155,7 @@ export default function UserProfilePage() {
     let {data: userProfile, refetch} = useQuery({
         queryKey: ["profile", username],
         queryFn: () => {
-            return username ? userRepository.getUser(username) : Promise.reject<UserDto>()
+            return username ? userRepository.getUser(username) : Promise.reject<UserDto>(new Error())
         },
     })
 
@@ -174,7 +174,7 @@ export default function UserProfilePage() {
         queryKey: ["stats-against-me", username, authenticatedUser?.id],
         queryFn: async () => {
             if (!username) return null;
-            return userRepository.getUserStats(username!!);
+            return userRepository.getUserStats(username);
         },
         enabled: !!username && username !== "me" && username !== authenticatedUser?.id,
     })
@@ -319,7 +319,7 @@ export default function UserProfilePage() {
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <div className={"bg-white p-2 grid gap-4"}>
                     <AssignAchievementPane assignAchievement={async (badge) => {
-                        await badgeRepository.assignBadge(badge.id, userProfile!!.id)
+                        await badgeRepository.assignBadge(badge.id, userProfile.id)
                             .catch(propagate(() => alert("Could not assign badge!")));
                         await refetch()
                     }}/>

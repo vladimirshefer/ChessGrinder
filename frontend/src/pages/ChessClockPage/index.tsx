@@ -12,20 +12,20 @@ function ChessClockPage() {
     usePageTitle("Chess Clock - ChessGrinder")
 
     let [searchParams] = useSearchParams()
-    let explicitTime = searchParams.has("time") ? parseInt(searchParams.get("time")!!) : undefined;
-    let explicitBonus = searchParams.has("bonus") ? parseInt(searchParams.get("bonus")!!) : undefined;
+    let explicitTime = searchParams.has("time") ? parseInt(searchParams.get("time")!) : undefined;
+    let explicitBonus = searchParams.has("bonus") ? parseInt(searchParams.get("bonus")!) : undefined;
 
     let lastTime1 =
         localStorage.getItem("chessclock.time_left_1")
-            ? parseInt(localStorage.getItem("chessclock.time_left_1")!!)
+            ? parseInt(localStorage.getItem("chessclock.time_left_1")!)
             : undefined;
     let lastTime2 =
         localStorage.getItem("chessclock.time_left_2")
-            ? parseInt(localStorage.getItem("chessclock.time_left_2")!!)
+            ? parseInt(localStorage.getItem("chessclock.time_left_2")!)
             : undefined;
     let lastBonus =
         localStorage.getItem("chessclock.last_bonus")
-            ? parseInt(localStorage.getItem("chessclock.last_bonus")!!)
+            ? parseInt(localStorage.getItem("chessclock.last_bonus")!)
             : undefined;
 
     let [time1, setTime1] = useState(lastTime1 || explicitTime || DEFAULT_TIME_LIMIT);

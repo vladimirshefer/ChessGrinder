@@ -17,7 +17,7 @@ export function AuthenticatedUserContextProvider({children}: { children: any }) 
     const [user, setUser] = useState<UserDto | null>(null);
 
     useEffect(() => {
-        checkAuthData()
+        checkAuthData().catch(console.error)
     }, [])
 
     async function checkAuthData() {
@@ -29,7 +29,7 @@ export function AuthenticatedUserContextProvider({children}: { children: any }) 
         } else {
             setUser(me)
             let authData: AuthData = {
-                username: me!!.username,
+                username: me.username,
                 roles: me.roles,
                 accessToken: "",
             };

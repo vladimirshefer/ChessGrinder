@@ -27,7 +27,6 @@ class RestApiClient {
     async post<T>(
         path: string,
         body: any = undefined,
-        pathPrefix: string = apiPathPrefix
     ) {
         try {
             let axiosResponse = await restAxios.post(
@@ -44,7 +43,6 @@ class RestApiClient {
     async put<T>(
         path: string,
         body: any = undefined,
-        pathPrefix: string = apiPathPrefix
     ) {
         try {
             let axiosResponse = await restAxios.put(
@@ -61,7 +59,6 @@ class RestApiClient {
     async patch<T>(
         path: string,
         body: any = undefined,
-        pathPrefix: string = apiPathPrefix
     ) {
         try {
             let axiosResponse = await restAxios.patch(
@@ -78,11 +75,10 @@ class RestApiClient {
     async get<T>(
         path: string,
         queryParams: Record<string, string> = {},
-        pathPrefix: string = apiPathPrefix
-    ) {
+    ): Promise<T> {
         try {
             const queryParamsStr: string = Object.entries(queryParams)
-                    .filter(([key, value]) => value !== null)
+                    .filter(([_key, value]) => value !== null)
                     .map(([key, value]) => `${key}=${value}`)
                     .join('&');
             let axiosResponse = await restAxios.get(
@@ -98,7 +94,6 @@ class RestApiClient {
 
     async delete<T>(
         path: string,
-        pathPrefix: string = apiPathPrefix
     ) {
         try {
             let axiosResponse = await restAxios.delete(

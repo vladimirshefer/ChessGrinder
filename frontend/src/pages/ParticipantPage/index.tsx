@@ -33,7 +33,7 @@ export default function ParticipantPage() {
         queryKey: ["participant", participantId],
         queryFn: async () => {
             if (!participantId) return null;
-            return await participantRepository.getParticipant(tournamentId!!, participantId)
+            return await participantRepository.getParticipant(tournamentId!, participantId)
         }
     })
     usePageTitle(` ${participantQuery.data?.name || loc("Nickname")} - ${participantQuery.data?.userFullName || loc("Guest")} - ${loc("Participant")} - ChessGrinder`, [participantQuery.data, loc])
@@ -42,7 +42,7 @@ export default function ParticipantPage() {
         queryKey: ["user", participantQuery.data?.userId],
         queryFn: async () => {
             if (!participantId || !participantQuery.isSuccess || !participantQuery.data?.userId) return null
-            return await userRepository.getUser(participantQuery.data?.userId!!)
+            return await userRepository.getUser(participantQuery.data.userId)
         },
     })
 
@@ -56,7 +56,7 @@ export default function ParticipantPage() {
 
     let tournamentPageQuery = useQuery({
         queryKey: ["tournamentPageData", tournamentId],
-        queryFn: () => tournamentId ? tournamentPageRepository.getData(tournamentId) : Promise.reject<TournamentPageData>()
+        queryFn: () => tournamentId ? tournamentPageRepository.getData(tournamentId) : Promise.reject<TournamentPageData>(new Error())
     })
 
     let isMeModerator = usePermissionGranted(tournamentId || "", "TournamentEntity", "MODERATOR");
@@ -67,7 +67,7 @@ export default function ParticipantPage() {
             if (!tournamentPageQuery.isSuccess) {
                 return []
             }
-            return tournamentPageQuery.data!!.rounds
+            return tournamentPageQuery.data!.rounds
                 .flatMap(it => it.matches)
                 .filter(it => it.white?.id === participantId || it.black?.id === participantId)
         }, [tournamentPageQuery, participantId]
@@ -105,7 +105,7 @@ export default function ParticipantPage() {
         if (!nextName || nextName === currentName) {
             return;
         }
-        await participantRepository.updateParticipant(tournamentId!!, {
+        await participantRepository.updateParticipant(tournamentId!, {
             id: participantQuery.data?.id || "",
             name: nextName,
             userId: "",
@@ -122,7 +122,7 @@ export default function ParticipantPage() {
     if (!participantQuery.data) {
         return <>No participant</>
     }
-    let participant = participantQuery.data!!;
+    let participant = participantQuery.data;
 
     let missing = participant.isMissing || false;
     let moderator = participant.isModerator || false;
@@ -141,21 +141,21 @@ export default function ParticipantPage() {
                 return
             }
         }
-        await participantRepository.deleteParticipant(tournamentId!!, participantId!!)
+        await participantRepository.deleteParticipant(tournamentId!, participantId!)
         navigate(`/tournament/${tournamentId}`)
     }
 
     async function toggleMissing() {
         if (missing) {
-            await participantRepository.unmissParticipant(tournamentId!!, participantId!!)
+            await participantRepository.unmissParticipant(tournamentId!, participantId!)
         } else {
-            await participantRepository.missParticipant(tournamentId!!, participantId!!)
+            await participantRepository.missParticipant(tournamentId!, participantId!)
         }
         await participantQuery.refetch()
     }
 
     async function toggleIsModerator() {
-        await participantRepository.updateParticipant(tournamentId!!, {
+        await participantRepository.updateParticipant(tournamentId!, {
             id: participantId,
             isModerator: !moderator
         })
@@ -244,7 +244,7 @@ export default function ParticipantPage() {
 
             <Conditional on={userQuery.isSuccess && userQuery.data}>
                 <div className={"py-3"}>
-                    <UserPane user={userQuery.data!!}/>
+                    <UserPane user={userQuery.data!}/>
                 </div>
             </Conditional>
             {userQuery.isLoading ? <>Loading user data</> : null}

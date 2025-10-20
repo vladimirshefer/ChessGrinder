@@ -50,7 +50,7 @@ class LocalStorageParticipantRepository implements ParticipantRepository {
     }
 
     async updateParticipant(tournamentId: string, participant: Partial<ParticipantDto>): Promise<void> {
-        let participantId: string = participant.id!!;
+        let participantId: string = participant.id!;
         let oldParticipant = await this.getParticipant(tournamentId, participantId);
         let newParticipant: ParticipantDto = {...oldParticipant, ...participant}
         await this.deleteParticipant(tournamentId, participantId)

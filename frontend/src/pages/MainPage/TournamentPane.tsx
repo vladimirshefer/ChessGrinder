@@ -150,7 +150,7 @@ export function TournamentPane(
                     !isMeParticipating ? (
                         <button className={"btn-primary w-full uppercase"}
                                 onClick={async () => {
-                                    let nickname = prompt("Please enter your nickname");
+                                    let nickname = window.prompt("Please enter your nickname");
                                     if (!nickname) {
                                         alert("Nickname is not provided. Registration is cancelled.")
                                     } else {

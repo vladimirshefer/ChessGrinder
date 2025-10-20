@@ -13,14 +13,14 @@ export default function BadgePage() {
     let badgeQuery = useQuery({
         queryKey: ["badge", badgeId],
         queryFn: async () => {
-            return badgeRepository.getBadge(badgeId!!)
+            return badgeRepository.getBadge(badgeId!)
         },
     })
 
     let usersQuery = useQuery({
         queryKey: ["badgeUsers", badgeId],
         queryFn: async () => {
-            return await badgeRepository.getUsers(badgeId!!)
+            return await badgeRepository.getUsers(badgeId!)
         }
     })
 
@@ -29,10 +29,10 @@ export default function BadgePage() {
     if (badgeQuery.isLoading) return <>Loading...</>
     if (!badgeQuery.isSuccess)  return <>Not successful</>
 
-    let badge = badgeQuery.data!!;
+    let badge = badgeQuery.data;
 
     async function deleteBadge() {
-        let confirmation = prompt(`Are you sure you wand to delete badge? Enter name '${badge.title}' to confirm delete.`);
+        let confirmation = window.prompt(`Are you sure you wand to delete badge? Enter name '${badge.title}' to confirm delete.`);
         if (confirmation !== badge.title) return;
         await badgeRepository.deleteBadge(badge.id);
         navigate("/badges")
@@ -73,7 +73,7 @@ export default function BadgePage() {
         </div>
         <div className={"grid"}>
             {
-                usersQuery.isSuccess && usersQuery.data!!.values.map(it => <UserPane user={it}/>)
+                usersQuery.isSuccess && usersQuery.data.values.map(it => <UserPane user={it} key={it.id}/>)
             }
         </div>
     </div>

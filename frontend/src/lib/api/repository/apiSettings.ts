@@ -47,9 +47,11 @@ export function useMode(): [string, (v: string) => void] {
 
 export let GLOBAL_SETTINGS = {
     profile: new ListenableProperty<string>(() => localStorage.getItem("cgd.profile") || "production", (value) => {
-        !!value ?
+        if (!!value) {
             localStorage.setItem("cgd.profile", value)
-            : localStorage.removeItem("cgd.profile")
+        } else {
+            localStorage.removeItem("cgd.profile")
+        }
     }),
     restApiHost: "",
 }
@@ -62,7 +64,7 @@ export function qualifiedServiceProxy<T extends object>(services: {
     [key: string /*profile name [local/production]*/]: T
 }): T {
     return new Proxy<T>({} as unknown as T, {
-        get(target: T, p: string | symbol, receiver: any): any {
+        get(_target: T, p: string | symbol, _receiver: any): any {
             return (services[GLOBAL_SETTINGS.profile.get()] as any)[p]
         }
     })

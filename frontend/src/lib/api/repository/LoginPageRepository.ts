@@ -18,7 +18,7 @@ export interface LoginPageRepository {
 }
 
 class LocalStorageLoginPageRepository implements LoginPageRepository {
-    async signIn(username: string, password: string): Promise<string> {
+    async signIn(username: string, _password: string): Promise<string> {
         let roles = username.toLowerCase().includes("admin") ? [UserRoles.ADMIN] : [];
         let memberDto = (await userRepository.getUsers()).values.find(it => it.id === username);
         if (!memberDto) {
@@ -43,11 +43,11 @@ class LocalStorageLoginPageRepository implements LoginPageRepository {
         window.location.reload()
     }
 
-    async signUp(data: UserSignUpRequest): Promise<void> {
+    async signUp(_data: UserSignUpRequest): Promise<void> {
         return Promise.reject();
     }
 
-    async authInstantInit(email: string, captchaToken: string): Promise<void> {
+    async authInstantInit(email: string, _captchaToken: string): Promise<void> {
         await this.signIn(email, email);
         alert("Signed in as " + email);
         window.location.reload()

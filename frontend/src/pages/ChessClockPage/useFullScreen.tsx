@@ -10,7 +10,8 @@ function useFullScreen(): [boolean, (value: boolean) => void] {
         const handleFullscreenChange = () => {
             try {
                 setIsFullscreen(!!document.fullscreenElement);
-            } catch (e) {
+            } catch {
+                // ignored
             }
         };
         document.addEventListener('fullscreenchange', handleFullscreenChange);
@@ -24,7 +25,8 @@ function useFullScreen(): [boolean, (value: boolean) => void] {
             } else {
                 await document.exitFullscreen();
             }
-        } catch (e) {
+        } catch {
+            // ignored
         }
     }
 

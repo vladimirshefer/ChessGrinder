@@ -21,7 +21,7 @@ export default function UserProfileEditPage() {
         }
     }, [authenticatedUser, navigate]);
 
-    const currentUserId: string = authenticatedUser?.id!!;
+    const currentUserId: string = authenticatedUser!.id;
 
     const {register, handleSubmit} = useForm();
     if (!authenticatedUser) {
@@ -41,7 +41,7 @@ export default function UserProfileEditPage() {
                 refresh();
             }
         }
-        catch(e) {
+        catch {
             alert(loc("Can not update user name"));
         }
     }
@@ -49,7 +49,7 @@ export default function UserProfileEditPage() {
     const handleDeleteProfile = async () => {
         let userNameOrId = authenticatedUser?.name || authenticatedUser?.username || "";
         let expectedConfirmation = loc("I confirm the deletion of my profile") + " " + userNameOrId;
-        const userConfirmation = prompt(loc("Enter") + " \"" + expectedConfirmation
+        const userConfirmation = window.prompt(loc("Enter") + " \"" + expectedConfirmation
             + "\"\n" + loc("Deletion is final and cannot be undone") + ".");
 
         if (userConfirmation?.trim() !== expectedConfirmation.trim()) {
@@ -58,12 +58,12 @@ export default function UserProfileEditPage() {
         }
 
         try {
-            await userRepository.deleteUser(authenticatedUser?.id!!);
-            await navigate("/");
+            await userRepository.deleteUser(authenticatedUser?.id);
+            navigate("/");
             await loginPageRepository.signOut();
-            await refresh();
+            refresh();
         }
-        catch(e) {
+        catch {
             alert("Can not delete user")
         }
     };
