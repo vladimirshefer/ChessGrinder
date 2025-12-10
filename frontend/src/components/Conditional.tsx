@@ -9,6 +9,7 @@ export function Conditional(
         on,
         children,
     }: {
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
         on: boolean | any,
         children?: ReactElement | ReactElement[] | (() => ReactElement) | (() => ReactElement[])
     }
