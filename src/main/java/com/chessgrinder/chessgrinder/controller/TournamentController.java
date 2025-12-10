@@ -106,7 +106,7 @@ public class TournamentController {
         return TrfUtil.writeTrfLines(trfLines);
     }
 
-    @Secured(RoleEntity.Roles.ADMIN)
+    @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
     @PutMapping("/{tournamentId}")
     public void updateTournament(
             @PathVariable UUID tournamentId,
