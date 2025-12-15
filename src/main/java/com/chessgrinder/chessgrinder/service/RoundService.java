@@ -1,5 +1,6 @@
 package com.chessgrinder.chessgrinder.service;
 
+import com.chessgrinder.chessgrinder.chessengine.pairings.DefaultPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 import com.chessgrinder.chessgrinder.chessengine.pairings.PairingStrategy;
 import com.chessgrinder.chessgrinder.chessengine.pairings.RoundRobinPairingStrategyImpl;
@@ -55,11 +56,13 @@ public class RoundService {
     private final JaVaFoPairingStrategyImpl javafoPairingStrategy;
     private final RoundRobinPairingStrategyImpl roundRobinPairingStrategy;
     private final SimplePairingStrategyImpl simplePairingStrategy;
+    private final DefaultPairingStrategyImpl defaultPairingStrategy;
 
     private PairingStrategy getPairingStrategy(String name) {
         if ("SWISS".equals(name)) return javafoPairingStrategy;
         if ("ROUND_ROBIN".equals(name)) return roundRobinPairingStrategy;
         if ("SIMPLE".equals(name)) return simplePairingStrategy;
+        if ("DEFAULT".equals(name)) return defaultPairingStrategy;
         return javafoPairingStrategy;
     }
 
