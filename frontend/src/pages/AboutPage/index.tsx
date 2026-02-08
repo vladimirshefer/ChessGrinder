@@ -14,21 +14,21 @@ export default function AboutPage() {
 
         <div className={"p-5"}></div>
 
-        <div className={"flex items-grow text-center"}>
+        <div className={"flex flex-wrap items-grow text-center"}>
             <div
-                className={"flex gap-2 justify-center items-center p-3 text-3xl font-bold grow hover:ring-1 hover:ring-primary-400"}>
-                <span className={"text-5xl"} title={"Germany"}>🇩🇪</span>
-                <span>Berlin</span>
+                className={"flex gap-2 justify-center items-center p-3 font-bold grow hover:ring-1 hover:ring-primary-400"}>
+                <span className={"text-3xl md:text-5xl"} title={"Germany"}>🇩🇪</span>
+                <span className={"md:text-3xl"}>Berlin</span>
             </div>
             <div
-                className={"flex gap-2 justify-center items-center p-3 text-3xl font-bold grow hover:ring-1 hover:ring-primary-400"}>
-                <span className={"text-5xl"} title={"Cyprus"}>🇨🇾</span>
-                <span>Limassol</span>
+                className={"flex gap-2 justify-center items-center p-3 font-bold grow hover:ring-1 hover:ring-primary-400"}>
+                <span className={"text-3xl md:text-5xl"} title={"Cyprus"}>🇨🇾</span>
+                <span className={"md:text-3xl"}>Limassol</span>
             </div>
             <div
-                className={"flex gap-2 justify-center items-center p-3 text-3xl font-bold grow hover:ring-1 hover:ring-primary-400"}>
-                <span className={"text-5xl"} title={"Georgia"}>🇬🇪</span>
-                <span>Tbilisi</span>
+                className={"flex gap-2 justify-center items-center p-3 font-bold grow hover:ring-1 hover:ring-primary-400"}>
+                <span className={"text-3xl md:text-5xl"} title={"Georgia"}>🇬🇪</span>
+                <span className={"md:text-3xl"}>Tbilisi</span>
             </div>
         </div>
 
@@ -38,16 +38,15 @@ export default function AboutPage() {
 
 
         <h2 className={"text-2xl font-bold"}>How it works</h2>
-        <div className={"grid gap-5 grid-cols-2 md2:grid-cols-3 lg2:grid-cols-3 text-center"}>
+        <div className={"grid gap-5 md2:grid-cols-3 lg2:grid-cols-3 text-center"}>
             <div
                 className={"grid ring-2 ring-primary-200 bg-primary-200 px-3 py-5 gap-2 content-center place-items-center"}>
                 <h5 className={"text-xl"}>Rapid tournament</h5>
                 <span className={"font-bold text-2xl"}>Every Thursday</span>
                 <span>8:00 PM</span>
             </div>
-            <div className={"grid ring-2 ring-primary-200 px-3 py-5gap-2 content-center place-items-center"}>
+            <div className={"grid ring-2 ring-primary-200 px-3 py-5 gap-2 content-center place-items-center"}>
                 <h5 className={"text-xl"}>5 games</h5>
-                <h5 className={"text-xl"}></h5>
                 <h5 className={"text-2xl font-bold"}>⏳ 10+3</h5>
                 <span
                     className={"text-xs"}>Time control: 10 minutes on the timer, 3 seconds bonus after each move.</span>
