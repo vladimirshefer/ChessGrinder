@@ -16,7 +16,7 @@ export default function TournamentEditPage() {
     let tournamentQuery = useQuery({
         queryKey: ["tournament", tournamentId],
         queryFn: async () => {
-            return await tournamentRepository.getTournament(tournamentId!!);
+            return await tournamentRepository.getTournament(tournamentId!);
         },
         enabled: !!tournamentId,
     })
@@ -33,7 +33,7 @@ export default function TournamentEditPage() {
         return <>Loading</>
     }
 
-    let tournament: TournamentDto = {...tournamentQuery.data!!} as TournamentDto// Added - Default value
+    let tournament: TournamentDto = {...tournamentQuery.data} as TournamentDto// Added - Default value
     let cancelLink = !!tournamentId ? `/tournament/${tournamentId}` : ``;
 
     async function saveTournament(data: { [key: string]: string }) {
@@ -78,7 +78,7 @@ export function TournamentCreatePage() {
             repeatable: undefined,
             locationName: undefined,
             locationUrl: undefined,
-            pairingStrategy: "SWISS",
+            pairingStrategy: "DEFAULT",
             registrationLimit: undefined,
             roundsNumber: 6,
             status: undefined,
@@ -190,12 +190,47 @@ function TournamentEditPageImpl(
                    defaultValue={tournament.registrationLimit || 0}/>
 
             <label htmlFor={"pairingStrategy"}>{loc("Pairing Strategy")}</label>
-            <select id={"pairingStrategy"} {...register("pairingStrategy")}
-                    defaultValue={tournament.pairingStrategy || "SWISS"} className={"border-b"}>
-                       <option value="SWISS">{loc("Swiss")}</option>
-                       <option value="ROUND_ROBIN">{loc("Round Robin")}</option>
-                       <option value="SIMPLE">{loc("Simple")}</option>
-            </select>
+            <div className="flex overflow-x-auto gap-4 p-2" id={"pairingStrategy"}>
+                <label className="flex-none min-w-[200px] p-4 border rounded cursor-pointer">
+                    <input type="radio" {...register("pairingStrategy")} value="DEFAULT"
+                           defaultChecked={tournament.pairingStrategy === "DEFAULT"}
+                           className="mr-2"/>
+                    <div>
+                        <div className="font-medium">{loc("Default")}</div>
+                        <div className="text-sm text-gray-500">Standard pairing system</div>
+                    </div>
+                </label>
+
+                <label className="flex-none min-w-[200px] p-4 border rounded cursor-pointer">
+                    <input type="radio" {...register("pairingStrategy")} value="SWISS"
+                           defaultChecked={tournament.pairingStrategy === "SWISS"}
+                           className="mr-2"/>
+                    <div>
+                        <div className="font-medium">{loc("Swiss")}</div>
+                        <div className="text-sm text-gray-500">Swiss pairing system</div>
+                    </div>
+                </label>
+
+                <label className="flex-none min-w-[200px] p-4 border rounded cursor-pointer">
+                    <input type="radio" {...register("pairingStrategy")} value="ROUND_ROBIN"
+                           defaultChecked={tournament.pairingStrategy === "ROUND_ROBIN"}
+                           className="mr-2"/>
+                    <div>
+                        <div className="font-medium">{loc("Round Robin")}</div>
+                        <div className="text-sm text-gray-500">Round robin tournament format</div>
+                    </div>
+                </label>
+
+                <label className="flex-none min-w-[200px] p-4 border rounded cursor-pointer">
+                    <input type="radio" {...register("pairingStrategy")} value="SIMPLE"
+                           defaultChecked={tournament.pairingStrategy === "SIMPLE"}
+                           className="mr-2"/>
+                    <div>
+                        <div className="font-medium">{loc("Simple")}</div>
+                        <div className="text-sm text-gray-500">Simple pairing system</div>
+                    </div>
+                </label>
+            </div>
 
             <label htmlFor={"repeatable"}>{loc("Repeatable")}</label>
             <select id={"repeatable"} {...register("repeatable")} defaultValue={tournament.repeatable || ""}
