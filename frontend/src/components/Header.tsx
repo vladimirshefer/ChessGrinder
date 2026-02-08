@@ -52,6 +52,7 @@ function Header() {
         <div
             className={"w-full flex justify-between content-center items-center bg-white text-black border-b-2 border-black p-2"}>
             <Link className={"font-bold h-10 flex items-center"} to={"/"}>
+                <img src={"/favicon_transparent.svg"} alt={"Chess Grinder"} className={"h-full"}/>
                 <h1 className={"text-lg"}>Chess Grinder</h1>
             </Link>
             <div className={"flex"}>
