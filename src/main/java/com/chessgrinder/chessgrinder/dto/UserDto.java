@@ -17,10 +17,15 @@ public class UserDto {
     private String id;
 
     /**
-     * User login. Unique across all users. E.g. "vshefer".
-     * Could be null for "guest" users.
+     * User login (email). Visible only to admins in API responses.
      */
     private String username;
+
+    /**
+     * Public user tag/handle used in shareable profile URLs. E.g. "vshefer".
+     */
+    @Nullable
+    private String usertag;
 
     /**
      * User e-mail hash in MD-5. Unique across all users.

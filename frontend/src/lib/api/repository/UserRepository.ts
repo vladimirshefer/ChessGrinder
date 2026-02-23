@@ -74,7 +74,7 @@ class LocalStorageUserRepository implements UserRepository {
                     })
                     .filter(([, user]) => !!user)
                     .filter(([, user]) => {
-                        return user!.id === userId || user!.username === userId;
+                        return user!.id === userId || user!.usertag === userId || user!.username === userId;
                     })
                     .map(([participant]) => participant);
                 let participant = matchingParticipants?.[0];

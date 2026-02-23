@@ -4,7 +4,6 @@ import com.chessgrinder.chessgrinder.dto.*;
 import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
-import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.*;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver.AuthenticatedUser;
@@ -67,7 +66,8 @@ public class UserController {
         } catch (Exception e) {
 
         }
-        return userService.getUserByUserName(userId);
+        // If not a valid UUID, treat the path value as a public usertag
+        return userService.getUserByUsertag(userId);
     }
 
     @Transactional
@@ -132,7 +132,27 @@ public class UserController {
             throw new ResponseStatusException(403, "Not allowed to change other's name", null);
         }
 
-        authenticatedUser.setName(userDto.getName());
+        // Update full name if provided
+        if (userDto.getName() != null) {
+            authenticatedUser.setName(userDto.getName());
+        }
+
+        // Allow updating public usertag (handle) if provided
+        if (userDto.getUsertag() != null) {
+            String newUsertag = userDto.getUsertag();
+
+            if (!newUsertag.matches(USERNAME_REGEX)) {
+                throw new ResponseStatusException(400, "Invalid username", null);
+            }
+
+            UserEntity existing = userRepository.findByUsertag(newUsertag);
+            if (existing != null && !existing.getId().equals(authenticatedUser.getId())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken", null);
+            }
+
+            authenticatedUser.setUsertag(newUsertag);
+        }
+
         userRepository.save(authenticatedUser);
     }
 

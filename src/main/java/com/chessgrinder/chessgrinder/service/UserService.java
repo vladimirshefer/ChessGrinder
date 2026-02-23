@@ -69,12 +69,12 @@ public class UserService {
 
     }
 
-    public UserDto getUserByUserName(String userName) {
-        UserEntity user = userRepository.findByUsername(userName);
+    public UserDto getUserByUsertag(String usertag) {
+        UserEntity user = userRepository.findByUsertag(usertag);
 
         if (user == null) {
-            log.error("There is no such user with username: '" + userName + "'");
-            throw new UserNotFoundException("There is no such user with username: '" + userName + "'");
+            log.error("There is no such user with usertag: '" + usertag + "'");
+            throw new UserNotFoundException("There is no such user with usertag: '" + usertag + "'");
         }
 
         return userMapper.toDto(user);

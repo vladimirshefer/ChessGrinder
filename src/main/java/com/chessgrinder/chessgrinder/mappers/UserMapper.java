@@ -34,6 +34,7 @@ public class UserMapper {
         return UserDto.builder()
                 .id(user.getId().toString())
                 .username(isAdmin ? user.getUsername() : null)
+                .usertag(user.getUsertag())
                 // email has is taken from username field
                 .emailHash(HashUtil.getMd5Hash(user.getUsername()))
                 .badges(badgeMapper.toDto(userBadges))

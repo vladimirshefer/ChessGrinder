@@ -25,7 +25,7 @@ export function UserPane(
         </div>
         <div className={"grid w-full content-left items-left"}>
             <div className={"text-left font-semibold"}>
-                <Link to={`/user/${user.id}`}>
+                <Link to={user.usertag ? `/user/${user.usertag}` : `/user/${user.id}`}>
                     {transliterate(user.name)}
                 </Link>
             </div>

@@ -20,6 +20,8 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     UserEntity findByUsername(String userName);
 
+    UserEntity findByUsertag(String usertag);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE UserEntity u SET u.reputation = CASE WHEN (u.reputation + :amount) < 0 THEN 0 ELSE (u.reputation + :amount) END WHERE u.id = :userId")
     void addReputation(UUID userId, Integer amount);

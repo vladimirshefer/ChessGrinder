@@ -31,18 +31,30 @@ export default function UserProfileEditPage() {
     //data - данные из html-формы
     async function saveUserData(data: { [key: string]: string}) {
         let userPageData = {
-            name : data.fullName
+            name : data.fullName?.trim() || undefined,
         } as UserDto;
+
+        const desiredUsertagRaw = data.usertag?.trim();
+        const currentUsertag = authenticatedUser?.usertag || "";
+        if (!!desiredUsertagRaw && desiredUsertagRaw !== currentUsertag) {
+            userPageData.usertag = desiredUsertagRaw;
+        }
         try {
             await userRepository.updateUser(currentUserId, userPageData);
             //If method above won't throw exception, program will go further
-            navigate(`/user/${currentUserId}`);
+            const newUsertag = userPageData.usertag || currentUsertag;
+            if (newUsertag) {
+                navigate(`/user/${newUsertag}`);
+            } else {
+                navigate(`/user/${currentUserId}`);
+            }
             if (authenticatedUser) {
                 refresh();
             }
         }
-        catch {
-            alert(loc("Can not update user name"));
+        catch (e: any) {
+            const message: string = e?.response?.data?.message || "Can not update user profile";
+            alert(loc(message));
         }
     }
 
@@ -90,12 +102,15 @@ export default function UserProfileEditPage() {
                        placeholder={loc("Full name")}
                        {...register("fullName")}
                 />
-                <input type={"text"} disabled={true} className={"text-sm text-gray-500 border-b-2"}
-                       defaultValue={authenticatedUser.username}
+                <input type={"text"} className={"text-sm border-b-2"}
+                       defaultValue={authenticatedUser.usertag}
                        title={loc("Username")}
                        placeholder={loc("Username")}
-                       {...register("userName")}
+                       {...register("usertag")}
                 />
+                <p className={"text-xs text-left text-gray-600"}>
+                    {loc("Choose a public username for your profile link (letters and digits, must start with a letter).")}
+                </p>
                 <div className="p-2"></div>
                 <div className={"hidden"}>
                     <h3 className={"text-sm uppercase font-semibold"}>{loc("Change password")}</h3>
@@ -129,7 +144,7 @@ export default function UserProfileEditPage() {
                         <button type={"submit"} className="btn-primary uppercase">
                             {loc("Save")}
                         </button>
-                        <Link to={`/user/${currentUserId}`}>
+                        <Link to={authenticatedUser.usertag ? `/user/${authenticatedUser.usertag}` : `/user/${currentUserId}`}>
                             <button className="btn-light uppercase">{loc("Cancel")}</button>
                         </Link>
                     </div>

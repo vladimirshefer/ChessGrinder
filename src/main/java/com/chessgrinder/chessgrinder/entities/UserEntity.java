@@ -28,12 +28,20 @@ public class UserEntity extends AbstractAuditingEntity {
     private UUID id;
 
     /**
-     * User login. Unique across all users. E.g. "vshefer".
-     * Could be null for "guest" users.
+     * User login (email or provider login). Unique across all users.
+     * Note: historically named "username", but actually stores email/login used for authentication.
      */
     @Column(name = "username", unique = true)
     @Nullable
     private String username;
+
+    /**
+     * Public user tag (handle) to be used in profile URLs. E.g. "vshefer".
+     * Nullable: user may not have selected a public handle.
+     */
+    @Column(name = "usertag", unique = true)
+    @Nullable
+    private String usertag;
 
     @Nullable
     @Column(name = "name")

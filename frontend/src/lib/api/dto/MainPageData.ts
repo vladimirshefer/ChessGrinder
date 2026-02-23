@@ -12,7 +12,8 @@ export interface UserBadgeDto {
 
 export interface UserDto {
     id: string
-    username: string
+    username?: string
+    usertag?: string
     name: string
     badges: BadgeDto[]
     roles?: string[]

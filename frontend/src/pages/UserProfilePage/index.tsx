@@ -141,15 +141,19 @@ export default function UserProfilePage() {
 
     useEffect(() => {
         if (!username) {
-            let currentUserId = authenticatedUser?.id;
-            if (currentUserId) {
+            const currentUserTag = authenticatedUser?.usertag;
+            const currentUserId = authenticatedUser?.id;
+            if (currentUserTag) {
+                navigate(`/user/${currentUserTag}`)
+            } else if (currentUserId) {
                 navigate(`/user/${currentUserId}`)
             }
         }
     }, [username, authenticatedUser, navigate])
 
     let isMyProfile = useMemo(() => {
-        return !!username && username === authenticatedUser?.id
+        if (!username) return false;
+        return username === authenticatedUser?.id || username === authenticatedUser?.usertag
     }, [username, authenticatedUser])
 
     let {data: userProfile, refetch} = useQuery({
