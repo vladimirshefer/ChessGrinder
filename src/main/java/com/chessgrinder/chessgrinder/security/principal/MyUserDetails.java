@@ -1,14 +1,12 @@
 package com.chessgrinder.chessgrinder.security.principal;
 
-import com.chessgrinder.chessgrinder.entities.*;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class MyUserDetails implements UserDetails, AuthorizedUserEntityProvider {
@@ -16,11 +14,8 @@ public class MyUserDetails implements UserDetails, AuthorizedUserEntityProvider 
     private final UserEntity userEntity;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return userEntity.getRoles().stream()
-                .map(RoleEntity::getName)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+    public List<GrantedAuthority> getAuthorities() {
+        return SecurityUtil.getGrantedAuthorities(userEntity);
     }
 
     @Override

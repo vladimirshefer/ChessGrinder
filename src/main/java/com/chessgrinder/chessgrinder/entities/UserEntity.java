@@ -8,7 +8,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,6 +54,7 @@ public class UserEntity extends AbstractAuditingEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Nullable
     private Provider provider;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -74,6 +74,9 @@ public class UserEntity extends AbstractAuditingEntity {
     private int eloPoints = 0;
 
     public enum Provider {
-        GUEST, LOCAL, GOOGLE, GITHUB
+        GUEST, LOCAL, GOOGLE, GITHUB, CHESSCOM
     }
+
+    public static final String USERTAG_REGEX = "^[a-zA-Z][a-zA-Z0-9]{1,30}$";
+
 }

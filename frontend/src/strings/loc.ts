@@ -30,6 +30,7 @@ export function useTransliterate(): (key: string) => string {
     }
 
     return (key: string): string => {
+        if (!key) return "";
         let result = '';
         let translitedChar;
         for (let i = 0; i < key.length; i++) {

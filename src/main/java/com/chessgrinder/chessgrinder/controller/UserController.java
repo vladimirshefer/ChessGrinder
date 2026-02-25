@@ -42,8 +42,6 @@ public class UserController {
     @Value("${chessgrinder.feature.auth.password:false}")
     private boolean isSignupWithPasswordEnabled;
 
-    private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9]+$";
-
     @GetMapping
     public ListDto<UserDto> getUsers(
             @Nullable
@@ -141,7 +139,7 @@ public class UserController {
         if (userDto.getUsertag() != null) {
             String newUsertag = userDto.getUsertag();
 
-            if (!newUsertag.matches(USERNAME_REGEX)) {
+            if (!newUsertag.matches(UserEntity.USERTAG_REGEX)) {
                 throw new ResponseStatusException(400, "Invalid username", null);
             }
 
@@ -200,7 +198,7 @@ public class UserController {
             throw new ResponseStatusException(400, "Invalid password. Min 4 chars.", null);
         }
 
-        if (!signUpRequest.getUsername().matches(USERNAME_REGEX)) {
+        if (!signUpRequest.getUsername().matches(UserEntity.USERTAG_REGEX)) {
             throw new ResponseStatusException(400, "Invalid username", null);
         }
 

@@ -2,22 +2,20 @@ package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.dto.StatsAgainstUserDTO;
 import com.chessgrinder.chessgrinder.dto.UserDto;
-import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.exceptions.UserNotFoundException;
 import com.chessgrinder.chessgrinder.mappers.UserMapper;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
-import com.chessgrinder.chessgrinder.security.principal.CustomOAuth2User;
-import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,36 +78,6 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    public void processOAuthPostLogin(CustomOAuth2User oAuth2User) {
-        String email = oAuth2User.getEmail().toLowerCase();
-        UserEntity user = userRepository.findByUsername(email);
-
-
-        if (user == null) {
-            UserEntity newUser = new UserEntity();
-            newUser.setUsername(email);
-            newUser.setName(oAuth2User.getFullName());
-            newUser.setProvider(UserEntity.Provider.GOOGLE);
-            user = userRepository.save(newUser);
-        }
-
-        {
-            Set<String> adminEmails = Arrays.stream(adminEmail.split(","))
-                    .filter(StringUtils::isNotBlank)
-                    .map(String::toLowerCase)
-                    .collect(Collectors.toSet());
-
-            if (adminEmails.contains(email)) {
-                if (!SecurityUtil.hasRole(user, RoleEntity.Roles.ADMIN)) {
-                    roleService.assignRole(user, RoleEntity.Roles.ADMIN);
-                }
-
-                user = userRepository.findById(user.getId()).orElseThrow();
-            }
-        }
-
-        oAuth2User.setUser(user);
-    }
 
     public StatsAgainstUserDTO getStatsAgainstUser(UUID authUserId, UUID opponentUserId) {
         final var statsAgainstOpponent = userRepository.getStatsAgainstUser(authUserId, opponentUserId);

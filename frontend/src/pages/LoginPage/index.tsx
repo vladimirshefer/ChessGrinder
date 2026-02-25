@@ -7,7 +7,7 @@ import {useMode} from "lib/api/repository/apiSettings";
 import {useLoc} from "strings/loc";
 import {useForm} from "react-hook-form";
 import {UserSignUpRequest} from "lib/api/dto";
-import GoogleLoginButton from "pages/LoginPage/GoogleLoginButton";
+import BrandedLoginButton from "@/pages/LoginPage/BrandedLoginButton";
 import useSearchParam from "lib/react/hooks/useSearchParam";
 import {useConfigurationProperty, useConfigurationPropertyEnabled} from "contexts/ConfigurationContext";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -45,7 +45,7 @@ export default function LoginPage() {
     }
 
     async function instantSignIn(email: string) {
-        let token = await captchaRef!!.current!!.executeAsync();
+        let token = await captchaRef.current!.executeAsync();
         if (!token) {
             alert("Captcha is required");
             navigate("/login")
@@ -113,9 +113,14 @@ export default function LoginPage() {
         <div className={"grid gap-2"}>
             <ConditionalOnMode mode={"production"}>
                 <h3 className={"font-semibold uppercase"}>Social login</h3>
-                <div className={"flex justify-center w-full"}>
+                <div className={"flex gap-3 items-center justify-center w-full"}>
                     <a href={`/api/oauth2/authorization/google?referer=${referer}`}>
-                        <GoogleLoginButton/>
+                        <BrandedLoginButton provider={"google"} showText={true}/>
+                    </a>
+                    <a
+                        href={`/api/oauth2/authorization/chesscom?referer=${referer}`}
+                    >
+                        <BrandedLoginButton provider={"chesscom"} showText={false}/>
                     </a>
                 </div>
             </ConditionalOnMode>
@@ -133,7 +138,7 @@ export default function LoginPage() {
                 <ReCAPTCHA
                     ref={captchaRef}
                     size="invisible"
-                    sitekey={CAPTCHA_PUBLIC_KEY!!}
+                    sitekey={CAPTCHA_PUBLIC_KEY!}
                 />
             </form>
         </Conditional>

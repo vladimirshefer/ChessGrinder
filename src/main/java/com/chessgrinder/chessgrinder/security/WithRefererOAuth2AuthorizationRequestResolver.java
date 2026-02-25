@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
+import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,6 +25,10 @@ import org.springframework.stereotype.Component;
  * state=MYRANDOMTOKENTOPREVENTCSRF,/path/to/page
  *
  * Source: https://github.com/spring-projects/spring-security/issues/7808#issuecomment-580836833
+ *
+ *
+ * UPD: Also resets the `nonce` for oidc, because chesscom does not support it.
+ *      That is prone to the oidc replay attack, but not much we can do.
  * </pre>
  */
 @Component
@@ -63,6 +68,12 @@ public class WithRefererOAuth2AuthorizationRequestResolver implements OAuth2Auth
         }
         return OAuth2AuthorizationRequest
                 .from(auth2AuthorizationRequest)
+                /*
+                 * Chess.com does not support nonce parameter :(
+                 * https://github.com/spring-projects/spring-security/issues/7696#issuecomment-2350332546
+                 * OidcAuthorizationCodeAuthenticationProvider::validateNonce
+                 */
+                .attributes(attrs -> attrs.remove(OidcParameterNames.NONCE))
                 .state(state)
                 .build();
     }

@@ -1,7 +1,5 @@
 package com.chessgrinder.chessgrinder.security;
 
-import com.chessgrinder.chessgrinder.security.principal.CustomOAuth2User;
-import com.chessgrinder.chessgrinder.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +35,7 @@ public class WebSecurityConfig {
     public static final String OAUTH2_STATE_SEPARATOR = ",";
 
     @Autowired
-    private CustomOAuth2UserService oauthUserService;
-
-    @Autowired
-    private UserService userService;
+    private LoginService loginService;
 
     @Autowired
     private WithRefererOAuth2AuthorizationRequestResolver oAuth2authorizationRequestResolver;
@@ -74,12 +69,12 @@ public class WebSecurityConfig {
                 .oauth2Login(oauth2Login ->
                         oauth2Login
                                 .authorizationEndpoint(it -> it.authorizationRequestResolver(oAuth2authorizationRequestResolver))
-                                .userInfoEndpoint(it -> it.userService(oauthUserService))
+                                .userInfoEndpoint(it -> it
+                                        .userService(loginService::loadOauth2User)
+                                        .oidcUserService(loginService::loadOidcUser)
+                                )
                                 .successHandler((request, response, authentication) -> {
                                     log.debug("Successfully authenticated user " + authentication.getName() + " via oauth2");
-                                    if (authentication.getPrincipal() instanceof CustomOAuth2User customOAuth2User) {
-                                        userService.processOAuthPostLogin(customOAuth2User);
-                                    }
                                     String redirectTo = HOME_PAGE;
                                     String state = request.getParameter("state");
                                     if (StringUtils.isNotBlank(state)) {

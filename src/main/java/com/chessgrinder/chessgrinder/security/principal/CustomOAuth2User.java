@@ -1,55 +1,38 @@
 package com.chessgrinder.chessgrinder.security.principal;
 
-import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Getter
-@Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class CustomOAuth2User implements OAuth2User, AuthorizedUserEntityProvider {
+@ToString
+@EqualsAndHashCode
+public final class CustomOAuth2User implements OAuth2User, AuthorizedUserEntityProvider {
 
-    @NonNull
-    private OAuth2User oauth2User;
-    @Nullable
-    private UserEntity user;
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return oauth2User.getAttributes();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (user == null) return Collections.emptyList();
-        return user.getRoles().stream()
-                .map(RoleEntity::getName)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
+    @Nonnull
+    private final OAuth2User delegate;
+    @Nonnull
+    private final UserEntity user;
 
     @Override
     public String getName() {
-        return oauth2User.getAttribute("email");
+        return user.getUsername();
     }
 
-    public String getEmail() {
-        return oauth2User.getAttribute("email");
-    }
-
-    public String getFullName() {
-        return oauth2User.getAttribute("name");
+    @Override
+    public List<? extends GrantedAuthority> getAuthorities() {
+        return SecurityUtil.getGrantedAuthorities(user);
     }
 
     @Override
@@ -58,4 +41,19 @@ public class CustomOAuth2User implements OAuth2User, AuthorizedUserEntityProvide
         return user;
     }
 
+    /*
+    =======================================
+              DELEDATED METHODS
+    =======================================
+     */
+
+    @Override
+    public <A> A getAttribute(String name) {
+        return delegate.getAttribute(name);
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return delegate.getAttributes();
+    }
 }

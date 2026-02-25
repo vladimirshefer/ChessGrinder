@@ -1,10 +1,17 @@
 package com.chessgrinder.chessgrinder.security.util;
 
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.security.principal.AuthorizedUserEntityProvider;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class SecurityUtil {
 
@@ -50,6 +57,15 @@ public final class SecurityUtil {
             }
         }
         return null;
+    }
+
+    @Nonnull
+    public static List<GrantedAuthority> getGrantedAuthorities(@Nullable UserEntity user){
+        if (user == null || user.getRoles() == null) {return List.of();}
+        return user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     private SecurityUtil() {
