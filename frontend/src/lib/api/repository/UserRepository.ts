@@ -10,7 +10,9 @@ export interface UserRepository {
 
     getUsers(
         limit: number | undefined,
+        page?: number,
         city?: string,
+        sort?: "RATING" | "REPUTATION",
     ): Promise<ListDto<UserDto>>
 
     getMe(): Promise<UserDto | null>
@@ -121,11 +123,15 @@ class RestApiUserRepository implements UserRepository {
 
     async getUsers(
         limit?: number,
+        page?: number,
         city?: string,
+        sort?: "RATING" | "REPUTATION",
     ): Promise<ListDto<UserDto>> {
         let queryParams: any = {}
-        if (limit) queryParams.limit = limit
+        if (typeof limit !== 'undefined') queryParams.limit = limit
+        if (typeof page !== 'undefined') queryParams.page = page
         if (city) queryParams.city = city
+        if (sort) queryParams.sort = sort
         return restApiClient.get(`/user`, {...queryParams});
     }
 

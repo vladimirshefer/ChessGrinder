@@ -46,12 +46,18 @@ public class UserController {
     public ListDto<UserDto> getUsers(
             @Nullable
             @RequestParam(required = false)
+            Integer page,
+            @Nullable
+            @RequestParam(required = false)
             Integer limit,
+            @Nullable
+            @RequestParam(required = false)
+            String sort,
             @Nullable
             @RequestParam(required = false)
             String city
     ) {
-        return ListDto.of(userService.getAllUsers(limit, city));
+        return ListDto.of(userService.getAllUsers(page, limit, sort, city));
     }
 
     @GetMapping("/{userId}")

@@ -18,6 +18,12 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     @Query("SELECT distinct(p.user) FROM ParticipantEntity p WHERE p.tournament.city = :city ORDER BY p.user.eloPoints DESC, p.user.reputation DESC, p.user.createdAt DESC")
     Page<UserEntity> findAllOrderedByCity(String city, Pageable pageable);
 
+    @Query("SELECT u FROM UserEntity u ORDER BY u.reputation DESC, u.eloPoints DESC, u.createdAt DESC")
+    Page<UserEntity> findAllOrderedByReputation(Pageable pageable);
+
+    @Query("SELECT DISTINCT(p.user) FROM ParticipantEntity p WHERE p.tournament.city = :city ORDER BY p.user.reputation DESC, p.user.eloPoints DESC, p.user.createdAt DESC")
+    Page<UserEntity> findAllByCityOrderedByReputation(String city, Pageable pageable);
+
     UserEntity findByUsername(String userName);
 
     UserEntity findByUsertag(String usertag);

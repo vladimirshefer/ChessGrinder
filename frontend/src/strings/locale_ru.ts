@@ -85,6 +85,9 @@ let locale_ru: { [key: string]: string } = {
     "Berlin": "Берлин",
     "Tbilisi": "Тбилиси",
     "Limassol": "Лимассол",
+    "Rating": "Рейтинг",
+    "Reputation": "Репутация",
+    "Page": "Страница",
 }
 
 export default locale_ru

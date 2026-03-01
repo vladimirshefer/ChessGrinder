@@ -30,29 +30,29 @@ public class UserService {
     @Value("${chessgrinder.security.adminEmail:}")
     private String adminEmail = "";
 
-    public List<UserDto> getAllUsers(@Nullable Integer limit, @Nullable String city) {
+    public List<UserDto> getAllUsers(@Nullable Integer page,
+                                     @Nullable Integer size,
+                                     @Nullable String sort,
+                                     @Nullable String city) {
+        int pageNum = (page == null || page < 0) ? 0 : page;
+        int pageSize = (size == null || size <= 0) ? 50 : size;
+
         List<UserEntity> users;
-        if (limit == null || limit <= 0) {
-            limit = 1000;
-        }
         if (city != null && !city.isBlank()) {
-            users = userRepository.findAllOrderedByCity(city, Pageable.ofSize(limit).withPage(0)).getContent();
+            if ("reputation".equalsIgnoreCase(sort)) {
+                users = userRepository.findAllByCityOrderedByReputation(city, Pageable.ofSize(pageSize).withPage(pageNum)).getContent();
+            } else { // default rating
+                users = userRepository.findAllOrderedByCity(city, Pageable.ofSize(pageSize).withPage(pageNum)).getContent();
+            }
         } else {
-            users = userRepository.findAllOrdered(Pageable.ofSize(limit).withPage(0)).getContent();
+            if ("reputation".equalsIgnoreCase(sort)) {
+                users = userRepository.findAllOrderedByReputation(Pageable.ofSize(pageSize).withPage(pageNum)).getContent();
+            } else { // default rating
+                users = userRepository.findAllOrdered(Pageable.ofSize(pageSize).withPage(pageNum)).getContent();
+            }
         }
 
-        return users.stream().map(userMapper::toDto)
-                .sorted(Comparator
-                        .comparing(
-                                UserDto::getEloPoints,
-                                Comparator.nullsLast(Comparator.reverseOrder())
-                        )
-                        .thenComparing(
-                                UserDto::getReputation,
-                                Comparator.nullsLast(Comparator.reverseOrder())
-                        )
-                )
-                .collect(Collectors.toList());
+        return users.stream().map(userMapper::toDto).collect(Collectors.toList());
     }
 
     public UserDto getUserByUserId(String userId) {
