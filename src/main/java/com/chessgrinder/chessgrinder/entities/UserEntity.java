@@ -57,6 +57,10 @@ public class UserEntity extends AbstractAuditingEntity {
     @Nullable
     private Provider provider;
 
+    @Nullable
+    @Column(name = "chesscom_username")
+    private String chesscomUsername;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @ToString.Exclude

@@ -50,4 +50,10 @@ public class UserDto {
 
     private int reputation;
 
+    /**
+     * Optional Chess.com username linked to the user (if authenticated via Chess.com).
+     */
+    @Nullable
+    private String chesscomUsername;
+
 }

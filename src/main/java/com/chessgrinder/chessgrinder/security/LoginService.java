@@ -99,25 +99,30 @@ public class LoginService {
         if (preferredUsertag != null && !preferredUsertag.matches(UserEntity.USERTAG_REGEX)) {
             preferredUsertag = null;
         }
-        if (user != null) {
-            if (StringUtils.isBlank(user.getUsertag()) && StringUtils.isNotBlank(preferredUsertag)) {
-                user.setUsertag(preferredUsertag);
-                user = userRepository.save(user);
-            }
-            if (user.getProvider() == null && provider != null) {
-                user.setProvider(provider);
-                user = userRepository.save(user);
-            }
-            if (StringUtils.isBlank(user.getName()) && StringUtils.isNotBlank(fullName)) {
-                user.setName(fullName);
-                user = userRepository.save(user);
-            }
-            if (StringUtils.isBlank(user.getName()) && StringUtils.isNotBlank(preferredUsertag)) {
-                user.setName(preferredUsertag);
-            }
-        }
         if (user == null) {
             user = registerNewUser(username, fullName, provider, preferredUsertag);
+        }
+        if (StringUtils.isBlank(user.getUsertag()) && StringUtils.isNotBlank(preferredUsertag)) {
+            user.setUsertag(preferredUsertag);
+            user = userRepository.save(user);
+        }
+        if (user.getProvider() == null && provider != null) {
+            user.setProvider(provider);
+            user = userRepository.save(user);
+        }
+        if (StringUtils.isBlank(user.getName()) && StringUtils.isNotBlank(fullName)) {
+            user.setName(fullName);
+            user = userRepository.save(user);
+        }
+        if (StringUtils.isBlank(user.getName()) && StringUtils.isNotBlank(preferredUsertag)) {
+            user.setName(preferredUsertag);
+        }
+        // If logged-in provider is CHESSCOM and we have a preferred username, store it
+        if (provider == UserEntity.Provider.CHESSCOM && StringUtils.isNotBlank(preferredUsertag)) {
+            if (!StringUtils.equals(user.getChesscomUsername(), preferredUsertag)) {
+                user.setChesscomUsername(preferredUsertag);
+                user = userRepository.save(user);
+            }
         }
         user = setAdminOnLogin(username, user);
         return user;

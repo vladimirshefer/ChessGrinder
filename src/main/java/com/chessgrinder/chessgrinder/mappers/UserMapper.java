@@ -42,6 +42,7 @@ public class UserMapper {
                 .roles(user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toList()))
                 .reputation(user.getReputation())
                 .eloPoints(user.getEloPoints())
+                .chesscomUsername(user.getChesscomUsername())
                 .build();
     }
 
