@@ -71,8 +71,9 @@ export default function AddParticipantTournamentPageSection(
                             onSelect={user => setSelectedValue(user?.id || "")}
                             keyExtractor={user => user.id}
                             matchesSearch={(searchQuery, user) =>
-                                user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                user.name.toLowerCase().includes(searchQuery.toLowerCase())
+                                user.username?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+                                user.usertag?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+                                user.name?.toLowerCase()?.includes(searchQuery.toLowerCase()) || false
                             }
                             emptyPresenter={() => <div>
                                 <span className={"text-sm text-gray-500 p-1"}>
