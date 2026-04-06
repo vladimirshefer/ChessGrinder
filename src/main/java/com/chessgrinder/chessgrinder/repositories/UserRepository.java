@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
-    
+
     @Query("SELECT u FROM UserEntity u ORDER BY u.eloPoints DESC, u.reputation DESC, u.createdAt DESC")
     Page<UserEntity> findAllOrdered(Pageable pageable);
 
@@ -23,6 +23,23 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     @Query("SELECT DISTINCT(p.user) FROM ParticipantEntity p WHERE p.tournament.city = :city ORDER BY p.user.reputation DESC, p.user.eloPoints DESC, p.user.createdAt DESC")
     Page<UserEntity> findAllByCityOrderedByReputation(String city, Pageable pageable);
+
+    @Query("""
+            SELECT u FROM UserEntity u
+            WHERE LOWER(COALESCE(u.username, '')) LIKE LOWER(CONCAT('%', :query, '%'))
+               OR LOWER(COALESCE(u.usertag, '')) LIKE LOWER(CONCAT('%', :query, '%'))
+               OR LOWER(COALESCE(u.name, '')) LIKE LOWER(CONCAT('%', :query, '%'))
+            ORDER BY u.eloPoints DESC, u.reputation DESC, u.createdAt DESC
+            """)
+    Page<UserEntity> searchAllOrdered(String query, Pageable pageable);
+
+    @Query("""
+            SELECT u FROM UserEntity u
+            WHERE LOWER(COALESCE(u.usertag, '')) LIKE LOWER(CONCAT('%', :query, '%'))
+               OR LOWER(COALESCE(u.name, '')) LIKE LOWER(CONCAT('%', :query, '%'))
+            ORDER BY u.eloPoints DESC, u.reputation DESC, u.createdAt DESC
+            """)
+    Page<UserEntity> searchAllOrderedPublic(String query, Pageable pageable);
 
     UserEntity findByUsername(String userName);
 

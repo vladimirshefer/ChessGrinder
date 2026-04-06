@@ -14,6 +14,8 @@ export default function DropdownSelect<T>(
         keyExtractor,
         emptyPresenter = () => <button>Select</button>,
         matchesSearch = () => true,
+        searchQuery: controlledSearchQuery,
+        onSearchQueryChange,
     }: {
         values: T[],
         className?: string
@@ -22,14 +24,24 @@ export default function DropdownSelect<T>(
         keyExtractor: (value: T) => any,
         emptyPresenter?: () => ReactElement,
         matchesSearch?: (searchQuery: string, value: T) => boolean,
+        searchQuery?: string,
+        onSearchQueryChange?: (value: string) => void,
     }
 ) {
     let loc = useLoc()
     let [selectedValue, setSelectedValue] = useState<T>()
     let [dropdownActive, setDropdownActive] = useState(false)
-    let [searchQuery, setSearchQuery] = useState("")
+    let [internalSearchQuery, setInternalSearchQuery] = useState("")
     let dropdownRef = useRef(null);
     useClickOutsideHandler(dropdownRef, () => setDropdownActive(false))
+    const searchQuery = controlledSearchQuery ?? internalSearchQuery;
+
+    function updateSearchQuery(value: string) {
+        if (typeof controlledSearchQuery === "undefined") {
+            setInternalSearchQuery(value);
+        }
+        onSearchQueryChange?.(value);
+    }
 
     const filteredValues = useMemo(
         () => {
@@ -60,7 +72,7 @@ export default function DropdownSelect<T>(
                 <button className={"px-3"}
                         onClick={() => {
                             setSelectedValue(undefined);
-                            setSearchQuery("")
+                            updateSearchQuery("")
                             setDropdownActive(false)
                             onSelect(undefined);
                         }}
@@ -76,12 +88,13 @@ export default function DropdownSelect<T>(
                            placeholder={loc("Search")}
                            autoFocus={true}
                            className={"grow"}
-                           onChange={(e) => setSearchQuery(e.target.value)}
+                           value={searchQuery}
+                           onChange={(e) => updateSearchQuery(e.target.value)}
                     />
                     <button className={"px-3"}
                             onClick={() => {
                                 setSelectedValue(undefined);
-                                setSearchQuery("")
+                                updateSearchQuery("")
                                 setDropdownActive(false)
                             }}
                     ><RxCross2/></button>
@@ -94,7 +107,7 @@ export default function DropdownSelect<T>(
                             onClick={() => {
                                 setSelectedValue(value);
                                 setDropdownActive(false)
-                                setSearchQuery("");
+                                updateSearchQuery("");
                                 onSelect(value);
                             }}>
                             {presenter(value)}

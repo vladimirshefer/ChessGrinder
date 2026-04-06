@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -87,6 +88,82 @@ class UserRepositoryTest {
 
     }
 
+    @Test
+    void searchAllOrdered_shouldMatchUsernameUsertagAndName() {
+        UserEntity usernameUser = userRepository.save(createUser("john@example.com", "alpha", "Somebody", 1200, 10));
+        UserEntity usertagUser = userRepository.save(createUser("tag@example.com", "johnTag", "Else", 1100, 9));
+        UserEntity nameUser = userRepository.save(createUser("name@example.com", "beta", "John Name", 1000, 8));
+        userRepository.save(createUser("other@example.com", "gamma", "Other", 900, 7));
+
+        List<UserEntity> result = userRepository.searchAllOrdered("john", Pageable.ofSize(20).withPage(0)).getContent();
+
+        assertThat(result).extracting(UserEntity::getId)
+                .containsExactly(usernameUser.getId(), usertagUser.getId(), nameUser.getId());
+    }
+
+    @Test
+    void searchAllOrderedPublic_shouldNotMatchUsernameOnly() {
+        UserEntity usernameOnly = userRepository.save(createUser("hidden-john@example.com", "alpha", "Somebody", 1200, 10));
+        UserEntity usertagUser = userRepository.save(createUser("tag@example.com", "johnTag", "Else", 1100, 9));
+        UserEntity nameUser = userRepository.save(createUser("name@example.com", "beta", "John Name", 1000, 8));
+
+        List<UserEntity> result = userRepository.searchAllOrderedPublic("john", Pageable.ofSize(20).withPage(0)).getContent();
+
+        assertThat(result).extracting(UserEntity::getId)
+                .containsExactly(usertagUser.getId(), nameUser.getId());
+        assertThat(result).extracting(UserEntity::getId).doesNotContain(usernameOnly.getId());
+    }
+
+    @Test
+    void findAllOrderedByCity_shouldReturnOnlyUsersFromCityOrderedByRating() {
+        UserEntity topBerlin = userRepository.save(createUser("top@example.com", "top", "Top Berlin", 2200, 10));
+        UserEntity secondBerlin = userRepository.save(createUser("second@example.com", "second", "Second Berlin", 1800, 50));
+        UserEntity limassolUser = userRepository.save(createUser("limassol@example.com", "lim", "Limassol User", 2500, 100));
+
+        TournamentEntity berlinTournament = tournamentRepository.save(createTournament("Berlin"));
+        TournamentEntity limassolTournament = tournamentRepository.save(createTournament("Limassol"));
+
+        participantRepository.save(createParticipant(topBerlin, berlinTournament));
+        participantRepository.save(createParticipant(secondBerlin, berlinTournament));
+        participantRepository.save(createParticipant(limassolUser, limassolTournament));
+
+        List<UserEntity> result = userRepository.findAllOrderedByCity("Berlin", Pageable.ofSize(20).withPage(0)).getContent();
+
+        assertThat(result).extracting(UserEntity::getId)
+                .containsExactly(topBerlin.getId(), secondBerlin.getId());
+    }
+
+    @Test
+    void findAllByCityOrderedByReputation_shouldReturnOnlyUsersFromCityOrderedByReputation() {
+        UserEntity topBerlin = userRepository.save(createUser("top@example.com", "top", "Top Berlin", 1800, 200));
+        UserEntity secondBerlin = userRepository.save(createUser("second@example.com", "second", "Second Berlin", 2400, 100));
+        UserEntity limassolUser = userRepository.save(createUser("limassol@example.com", "lim", "Limassol User", 2500, 500));
+
+        TournamentEntity berlinTournament = tournamentRepository.save(createTournament("Berlin"));
+        TournamentEntity limassolTournament = tournamentRepository.save(createTournament("Limassol"));
+
+        participantRepository.save(createParticipant(topBerlin, berlinTournament));
+        participantRepository.save(createParticipant(secondBerlin, berlinTournament));
+        participantRepository.save(createParticipant(limassolUser, limassolTournament));
+
+        List<UserEntity> result = userRepository.findAllByCityOrderedByReputation("Berlin", Pageable.ofSize(20).withPage(0)).getContent();
+
+        assertThat(result).extracting(UserEntity::getId)
+                .containsExactly(topBerlin.getId(), secondBerlin.getId());
+    }
+
+    @Test
+    void findAllOrderedByReputation_shouldOrderGloballyByReputation() {
+        UserEntity first = userRepository.save(createUser("first@example.com", "first", "First", 1500, 300));
+        UserEntity second = userRepository.save(createUser("second@example.com", "second", "Second", 2200, 200));
+        UserEntity third = userRepository.save(createUser("third@example.com", "third", "Third", 2500, 100));
+
+        List<UserEntity> result = userRepository.findAllOrderedByReputation(Pageable.ofSize(20).withPage(0)).getContent();
+
+        assertThat(result).extracting(UserEntity::getId)
+                .containsExactly(first.getId(), second.getId(), third.getId());
+    }
+
     private static MatchEntity createMatch(ParticipantEntity comparableUserParticipant, ParticipantEntity opponentUserParticipant, RoundEntity roundEntity, MatchResult matchResult) {
         return MatchEntity.builder()
                 .participant1(comparableUserParticipant)
@@ -111,6 +188,15 @@ class UserRepositoryTest {
                 .build();
     }
 
+    private static TournamentEntity createTournament(String city) {
+        return TournamentEntity.builder()
+                .status(TournamentStatus.FINISHED)
+                .date(LocalDateTime.now())
+                .roundsNumber(6)
+                .city(city)
+                .build();
+    }
+
     private static ParticipantEntity createParticipant(
             UserEntity comparableUser,
             TournamentEntity tournament
@@ -128,6 +214,20 @@ class UserRepositoryTest {
     private static UserEntity createUser(String username) {
         return UserEntity.builder()
                 .name(username)
+                .build();
+    }
+
+    private static UserEntity createUser(String username,
+                                         String usertag,
+                                         String fullName,
+                                         int eloPoints,
+                                         int reputation) {
+        return UserEntity.builder()
+                .name(fullName)
+                .username(username)
+                .usertag(usertag)
+                .eloPoints(eloPoints)
+                .reputation(reputation)
                 .build();
     }
 

@@ -7,6 +7,7 @@ import userRepository from "lib/api/repository/UserRepository";
 import {Conditional} from "components/Conditional";
 import DropdownSelect from "components/DropdownSelect";
 import {AiOutlineClose} from "react-icons/ai";
+import useDebouncedValue from "lib/react/hooks/useDebouncedValue";
 
 export default function AddParticipantTournamentPageSection(
     {
@@ -21,15 +22,18 @@ export default function AddParticipantTournamentPageSection(
     let [inputEnabled, setInputEnabled] = useState<boolean>(false);
     let [selectedValue, setSelectedValue] = useState<string>("")
     let [nickName, setNickName] = useState("")
+    let [userSearchQuery, setUserSearchQuery] = useState("")
+    let debouncedUserSearchQuery = useDebouncedValue(userSearchQuery.trim(), 300);
+    let shouldSearchUsers = inputEnabled && debouncedUserSearchQuery.length >= 2;
 
     let {
         data: {
             values: users = [] as UserDto[]
         } = {} as ListDto<UserDto>
     } = useQuery({
-        queryKey: ["users"],
-        queryFn: async () => await userRepository.getUsers(),
-        enabled: inputEnabled
+        queryKey: ["users", "participant-search", debouncedUserSearchQuery],
+        queryFn: async () => await userRepository.getUsers(undefined, undefined, undefined, undefined, debouncedUserSearchQuery),
+        enabled: shouldSearchUsers
     })
 
     async function getSubmitValue(userId: string) {
@@ -43,6 +47,7 @@ export default function AddParticipantTournamentPageSection(
             place: -1,
         };
         setSelectedValue("")
+        setUserSearchQuery("")
         return await addParticipant(participant);
     }
 
@@ -67,7 +72,7 @@ export default function AddParticipantTournamentPageSection(
                     <div className={"col-span-12 grid text-left py-2 bg-white"}>
                         <DropdownSelect<UserDto>
                             className={"border-b-2 border-blue-300 w-full"}
-                            values={users}
+                            values={shouldSearchUsers ? users : []}
                             onSelect={user => setSelectedValue(user?.id || "")}
                             keyExtractor={user => user.id}
                             matchesSearch={(searchQuery, user) =>
@@ -75,6 +80,8 @@ export default function AddParticipantTournamentPageSection(
                                 user.usertag?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
                                 user.name?.toLowerCase()?.includes(searchQuery.toLowerCase()) || false
                             }
+                            searchQuery={userSearchQuery}
+                            onSearchQueryChange={setUserSearchQuery}
                             emptyPresenter={() => <div>
                                 <span className={"text-sm text-gray-500 p-1"}>
                                     {loc("Guest")}
@@ -95,6 +102,7 @@ export default function AddParticipantTournamentPageSection(
                                     if (selectedValue || nickName) {
                                         getSubmitValue(selectedValue);
                                     }
+                                    setUserSearchQuery("")
                                     setInputEnabled(false)
                                 }}>
                             {loc("Add participant")}
@@ -102,6 +110,7 @@ export default function AddParticipantTournamentPageSection(
                         <button className={"btn-light px-6!"}
                                 title={loc("Cancel")}
                                 onClick={() => {
+                                    setUserSearchQuery("")
                                     setInputEnabled(false)
                                 }}>
                             <AiOutlineClose className={"block"}/>

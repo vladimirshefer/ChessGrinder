@@ -13,6 +13,7 @@ export interface UserRepository {
         page?: number,
         city?: string,
         sort?: "RATING" | "REPUTATION",
+        query?: string,
     ): Promise<ListDto<UserDto>>
 
     getMe(): Promise<UserDto | null>
@@ -44,7 +45,13 @@ class LocalStorageUserRepository implements UserRepository {
         return user
     }
 
-    async getUsers(): Promise<ListDto<UserDto>> {
+    async getUsers(
+        _limit?: number,
+        _page?: number,
+        _city?: string,
+        _sort?: "RATING" | "REPUTATION",
+        _query?: string,
+    ): Promise<ListDto<UserDto>> {
         let users: UserDto[] = localStorageUtil.getAllObjectsByPrefix<UserDto>(`${this.userKeyPrefix}.`)
             .map(user => {
                 user.badges = localStorageUtil.getAllObjectsByPrefix<UserBadgeDto>(`cgd.user__badge.${user.id}.`)
@@ -126,12 +133,14 @@ class RestApiUserRepository implements UserRepository {
         page?: number,
         city?: string,
         sort?: "RATING" | "REPUTATION",
+        query?: string,
     ): Promise<ListDto<UserDto>> {
         let queryParams: any = {}
         if (typeof limit !== 'undefined') queryParams.limit = limit
         if (typeof page !== 'undefined') queryParams.page = page
         if (city) queryParams.city = city
         if (sort) queryParams.sort = sort
+        if (query) queryParams.query = encodeURIComponent(query)
         return restApiClient.get(`/user`, {...queryParams});
     }
 
