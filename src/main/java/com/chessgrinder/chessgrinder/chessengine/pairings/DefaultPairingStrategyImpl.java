@@ -38,6 +38,8 @@ public class DefaultPairingStrategyImpl implements PairingStrategy {
                 result = javaFoPairingStrategy.makePairings(trf);
             } catch (PairingException pairingException) {
                 log.error("Could not do pairing via javafo. Trying other pairing instead. {}", pairingException.getMessage(), pairingException);
+            } catch (Exception e) {
+                log.error("Could not do pairing via javafo. Trying other pairing instead. {}", e.getMessage(), e);
             }
         }
 
