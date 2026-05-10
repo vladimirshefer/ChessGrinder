@@ -32,6 +32,9 @@ public class TournamentWinnerBadgeTournamentListenerImpl implements TournamentLi
         }
 
         BadgeEntity badge = getOrCreateBadge();
+        if (userBadgeRepository.existsByUserIdAndBadgeId(winner.getUser().getId(), badge.getId())) {
+            return;
+        }
         userBadgeRepository.save(
                 UserBadgeEntity.builder()
                         .user(winner.getUser())

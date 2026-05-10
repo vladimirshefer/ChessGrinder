@@ -109,6 +109,9 @@ public class UserController {
     ) {
         UserEntity user = userRepository.findById(userId).orElseThrow();
         BadgeEntity badge = badgeRepository.findById(badgeId).orElseThrow();
+        if (userBadgeRepository.existsByUserIdAndBadgeId(userId, badgeId)) {
+            return;
+        }
         UserBadgeEntity assignment = UserBadgeEntity.builder().badge(badge).user(user).build();
         userBadgeRepository.save(assignment);
     }

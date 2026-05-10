@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public interface UserBadgeRepository extends PagingAndSortingRepository<UserBadgeEntity, UUID>, CrudRepository<UserBadgeEntity, UUID> {
 
+    boolean existsByUserIdAndBadgeId(UUID userId, UUID badgeId);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM UserBadgeEntity ub WHERE ub.badge.id = :badgeId")
     void deleteAllByBadgeId(UUID badgeId);
