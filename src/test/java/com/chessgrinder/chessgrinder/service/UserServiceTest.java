@@ -42,7 +42,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, userMapper, roleService);
+        userService = new UserService(userRepository, userMapper);
     }
 
     @AfterEach

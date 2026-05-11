@@ -55,6 +55,7 @@ class TournamentWinnerBadgeTournamentListenerImplTest {
         TournamentEntity tournament = tournamentRepository.save(TournamentEntity.builder()
                 .id(UUID.randomUUID())
                 .name("Test Tournament")
+                .roundsNumber(1)
                 .status(TournamentStatus.ACTIVE)
                 .build());
         participantRepository.save(ParticipantEntity.builder()
