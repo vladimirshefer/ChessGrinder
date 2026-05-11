@@ -5,6 +5,7 @@ import {Fragment, useRef, useState} from "react";
 import {useClickOutsideHandler} from "lib/util/ClickOutside";
 import {IoMdArrowDropdown} from "react-icons/io";
 import { useAuthenticatedUser } from "contexts/AuthenticatedUserContext";
+import {useAuthData} from "lib/auth/AuthService";
 
 function MatchResultSelector(
     {
@@ -113,6 +114,7 @@ export function MatchRow(
 ) {
     let transliterate = useTransliterate();
     let [authenticatedUser] = useAuthenticatedUser();
+    let authData = useAuthData();
 
     let resultW = match.resultSubmittedByWhite;
     let resultB = match.resultSubmittedByBlack;
@@ -142,7 +144,7 @@ export function MatchRow(
                         `}
         >
             <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(match.white?.name || "-")}</span>
-            {match.white?.userFullName &&
+            {authData && match.white?.userFullName &&
                 <span className={"text-ellipsis overflow-hidden"}>{transliterate(match.white?.userFullName)}</span>
             }
         </div>
@@ -170,7 +172,7 @@ export function MatchRow(
                         `}
         >
             <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-2"}>{transliterate(match.black?.name || "-")}</span>
-            {match.black?.userFullName &&
+            {authData && match.black?.userFullName &&
                 <span className={"text-ellipsis overflow-hidden"}>{transliterate(match.black?.userFullName)}</span>
             }
         </div>

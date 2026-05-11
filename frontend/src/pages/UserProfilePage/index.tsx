@@ -26,6 +26,8 @@ import dayjs from "dayjs";
 import {FaArrowTrendUp} from "react-icons/fa6";
 import {LuSwords} from "react-icons/lu";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
+import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
+import {useAuthData} from "lib/auth/AuthService";
 
 function AssignAchievementPane(
     {
@@ -137,9 +139,20 @@ export default function UserProfilePage() {
     let navigate = useNavigate()
     let loc = useLoc()
     let [authenticatedUser, authenticatedUserReload] = useAuthenticatedUser()
+    let authData = useAuthData()
+    let loginPageLink = useLoginPageLink()
     let [activeTab, setActiveTab] = useSearchParam("tab", "history")
 
     useEffect(() => {
+        if (!authData) {
+            navigate(loginPageLink, {replace: true})
+        }
+    }, [authData, loginPageLink, navigate])
+
+    useEffect(() => {
+        if (!authData) {
+            return;
+        }
         if (!username) {
             const currentUserTag = authenticatedUser?.usertag;
             const currentUserId = authenticatedUser?.id;
@@ -149,15 +162,16 @@ export default function UserProfilePage() {
                 navigate(`/user/${currentUserId}`)
             }
         }
-    }, [username, authenticatedUser, navigate])
+    }, [username, authenticatedUser, authData, navigate])
 
     let isMyProfile = useMemo(() => {
         if (!username) return false;
         return username === authenticatedUser?.id || username === authenticatedUser?.usertag
     }, [username, authenticatedUser])
 
-    let {data: userProfile, refetch} = useQuery({
+    let {data: userProfile, refetch, isLoading: isUserProfileLoading, error: userProfileError} = useQuery({
         queryKey: ["profile", username],
+        enabled: !!authData && !!username,
         queryFn: () => {
             return username ? userRepository.getUser(username) : Promise.reject<UserDto>(new Error())
         },
@@ -188,7 +202,19 @@ export default function UserProfilePage() {
         await authenticatedUserReload()
     }
 
-    if (!userProfile) {
+    if (!authData) {
+        return <>Redirecting to login...</>
+    }
+
+    if (!username && !authenticatedUser) {
+        return <>Loading...</>
+    }
+
+    if (isUserProfileLoading) {
+        return <>Loading...</>
+    }
+
+    if (userProfileError || !userProfile) {
         return <>No such user</>
     }
 

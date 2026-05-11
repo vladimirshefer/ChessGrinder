@@ -2,6 +2,7 @@ import React from "react";
 import {ParticipantDto} from "lib/api/dto/TournamentPageData";
 import {useLoc, useTransliterate} from "strings/loc";
 import {RiAdminLine} from "react-icons/ri";
+import {useAuthData} from "lib/auth/AuthService";
 
 function ResultsTable(
     {
@@ -14,6 +15,7 @@ function ResultsTable(
 ) {
     let loc = useLoc();
     let transliterate = useTransliterate();
+    let authData = useAuthData();
 
     return <>
         <div className={"w-full grid grid-cols-12 text-left p-2"}>
@@ -32,7 +34,7 @@ function ResultsTable(
                                 <button onClick={() => openParticipant(participant)}>
                                     <div className={"grid text-left"}>
                                         <span className={"font-semibold text-ellipsis overflow-hidden line-clamp-3"}>{transliterate(participant.name) || "No nickname"}</span>
-                                        {participant.userFullName &&
+                                        {authData && participant.userFullName &&
                                             <div className={"flex items-center gap-1"}>
                                                 {participant.isModerator === true && (
                                                     <RiAdminLine className={"inline"} title={"Moderator"}/>

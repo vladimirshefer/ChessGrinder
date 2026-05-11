@@ -44,6 +44,9 @@ public class UserController {
 
     @GetMapping
     public ListDto<UserDto> getUsers(
+            @AuthenticatedUser(required = false)
+            @Nullable
+            UserEntity authenticatedUser,
             @Nullable
             @RequestParam(required = false)
             Integer page,
@@ -60,6 +63,9 @@ public class UserController {
             @RequestParam(required = false)
             String query
     ) {
+        if (authenticatedUser == null) {
+            return ListDto.of(List.of());
+        }
         return ListDto.of(userService.getAllUsers(page, limit, sort, city, query));
     }
 

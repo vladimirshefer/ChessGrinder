@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {useQuery} from "@tanstack/react-query";
 import {useLoc} from "strings/loc";
 import useSearchParam from "lib/react/hooks/useSearchParam";
@@ -7,9 +7,15 @@ import MemberList from "pages/MainPage/MemberList";
 import {FaSortAmountDown} from "react-icons/fa";
 import {IoLocationSharp} from "react-icons/io5";
 import {FaArrowLeft, FaArrowRight} from "react-icons/fa6";
+import {useNavigate} from "react-router-dom";
+import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
+import {useAuthData} from "lib/auth/AuthService";
 
 export default function UsersPage() {
     let loc = useLoc();
+    let navigate = useNavigate();
+    let loginPageLink = useLoginPageLink();
+    let authData = useAuthData();
     const [sort, setSort] = useSearchParam("sort");
     const [city, setCity] = useSearchParam("city");
     const [pageParam, setPageParam] = useSearchParam("page");
@@ -17,8 +23,15 @@ export default function UsersPage() {
     const page = Number(pageParam || 0) || 0;
     const pageSize = 50;
 
+    useEffect(() => {
+        if (!authData) {
+            navigate(loginPageLink, {replace: true});
+        }
+    }, [authData, loginPageLink, navigate]);
+
     let usersQuery = useQuery({
         queryKey: ["members", city, sort, page],
+        enabled: !!authData,
         queryFn: async () => {
             try {
                 return await userRepository.getUsers(pageSize, page, city ?? undefined, (sort as any)?.toUpperCase() ?? "RATING");
@@ -31,6 +44,10 @@ export default function UsersPage() {
     })
 
     let users = usersQuery.data?.values;
+
+    if (!authData) {
+        return <>Redirecting to login...</>
+    }
 
     if (!users) {
         return <>Loading...</>

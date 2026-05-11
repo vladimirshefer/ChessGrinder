@@ -32,9 +32,9 @@ export default function LoginPage() {
 
     useEffect(() => {
         if (!!authenticatedUser) {
-            navigate("/user")
+            navigate(referer || "/user")
         }
-    }, [authenticatedUser, navigate])
+    }, [authenticatedUser, navigate, referer])
 
     async function signIn(username: string, password: string) {
         await loginPageRepository.signIn(username, password)
