@@ -46,6 +46,10 @@ public class TournamentService {
 
     @Transactional
     public TournamentDto createTournament(LocalDateTime date, UserEntity owner) {
+        if (date != null && date.isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(400, "Tournament date can not be in the past.", null);
+        }
+
         TournamentEntity tournamentEntity = TournamentEntity.builder()
                 .date(date)
                 .status(TournamentStatus.PLANNED)
