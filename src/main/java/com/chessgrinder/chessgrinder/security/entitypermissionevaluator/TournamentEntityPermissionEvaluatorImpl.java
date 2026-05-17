@@ -34,7 +34,8 @@ public class TournamentEntityPermissionEvaluatorImpl implements EntityPermission
             return false;
         }
 
-        if (!tournamentRepository.existsById(tournamentId)) {
+        TournamentEntity tournamentEntity = tournamentRepository.findById(tournamentId).orElse(null);
+        if (tournamentEntity == null) {
             return false;
         }
 
@@ -45,6 +46,14 @@ public class TournamentEntityPermissionEvaluatorImpl implements EntityPermission
         ParticipantEntity byTournamentIdAndUserId = participantRepository.findByTournamentIdAndUserId(tournamentId, userId);
 
         if (SecurityUtil.hasRole(userEntity, RoleEntity.Roles.ADMIN)) {
+            return true;
+        }
+
+        boolean isOwner = tournamentEntity.getOwner() != null
+                && Objects.equals(tournamentEntity.getOwner().getId(), userId);
+
+        if (isOwner && (Objects.equals(permission, Permissions.OWNER.name())
+                || Objects.equals(permission, Permissions.MODERATOR.name()))) {
             return true;
         }
 
