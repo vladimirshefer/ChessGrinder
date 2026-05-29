@@ -137,10 +137,10 @@ class TrfServiceTest {
                 .rounds(new ArrayList<>())
                 .build();
 
-        ParticipantEntity participantA = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("A").initialEloPoints(1500).build();
-        ParticipantEntity participantB = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("B").initialEloPoints(1400).build();
-        ParticipantEntity participantC = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("C").initialEloPoints(1300).build();
-        ParticipantEntity participantD = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("D").initialEloPoints(1200).build();
+        ParticipantEntity participantA = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("NewcomerA").initialEloPoints(1500).build();
+        ParticipantEntity participantB = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("NewcomerB").initialEloPoints(1400).build();
+        ParticipantEntity participantC = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("NewcomerC").initialEloPoints(1300).build();
+        ParticipantEntity participantD = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("NewcomerD").initialEloPoints(1200).build();
 
         // Round 1
         RoundEntity round1 = RoundEntity.builder().tournament(tournament).number(1).isFinished(true).build();
@@ -151,7 +151,7 @@ class TrfServiceTest {
         tournament.getRounds().add(round1);
 
         // Add E before Round 2 (so E did not play Round 1)
-        ParticipantEntity participantE = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("E").initialEloPoints(1100).build();
+        ParticipantEntity participantE = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("NewcomerE").initialEloPoints(1100).build();
 
         // Round 2
         RoundEntity round2 = RoundEntity.builder().tournament(tournament).number(2).isFinished(true).build();
@@ -163,7 +163,7 @@ class TrfServiceTest {
         tournament.getRounds().add(round2);
 
         // Add F before Round 3 (so F did not play Round 1 and Round 2)
-        ParticipantEntity participantF = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("F").initialEloPoints(1000).build();
+        ParticipantEntity participantF = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("NewcomerF").initialEloPoints(1000).build();
 
         List<ParticipantEntity> participantEntities = List.of(
                 participantA, participantB, participantC, participantD, participantE, participantF

@@ -15,6 +15,8 @@
     <description>ChessGrinder</description>
     <properties>
         <java.version>17</java.version>
+        <mockito.version>5.14.2</mockito.version>
+        <byte-buddy.version>1.17.0</byte-buddy.version>
     </properties>
     <dependencies>
         <dependency>
@@ -85,7 +87,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
+            <version>1.18.46</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -130,7 +132,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.36</version>
+                            <version>1.18.46</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -191,6 +193,15 @@
                         <exclude>**/dto/*.class</exclude>
                         <exclude>**/entities/*.class</exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
                 </configuration>
             </plugin>
         </plugins>
