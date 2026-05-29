@@ -200,6 +200,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
+                    <!-- javafo utilizes static/global state inside the JVM, so we must run test classes in separate JVM forks to prevent state pollution -->
                     <reuseForks>false</reuseForks>
                     <forkCount>1</forkCount>
                 </configuration>

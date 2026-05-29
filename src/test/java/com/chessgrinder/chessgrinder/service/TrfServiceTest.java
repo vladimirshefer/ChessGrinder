@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
 import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,6 +65,16 @@ class TrfServiceTest {
     }
 
     @Test
+    void testEmpty() {
+        TournamentEntity tournament = TournamentEntity.builder()
+                .rounds(Collections.emptyList())
+                .build();
+        List<ParticipantEntity> participantEntities = List.of();
+        List<TrfLine> trfTournament = TrfService.toTrfTournament(participantEntities, tournament);
+        assertEquals("", TrfUtil.writeTrfLines(trfTournament));
+    }
+
+    @Test
     void testLateEntrantJavafoFailure() {
         TournamentEntity tournament = TournamentEntity.builder()
                 .id(UUID.randomUUID())
@@ -98,7 +109,10 @@ class TrfServiceTest {
         // Pair Round 2
         List<TrfLine> trfTournament2 = TrfService.toTrfTournament(participantEntities, tournament);
         var pairings2 = new JaVaFoPairingStrategyImpl().makePairings(trfTournament2);
-        System.out.println("Round 2 Pairings: " + pairings2);
+        
+        org.junit.jupiter.api.Assertions.assertNotNull(pairings2);
+        org.junit.jupiter.api.Assertions.assertEquals(3, pairings2.size());
+        org.junit.jupiter.api.Assertions.assertEquals(Map.of(4, 2, 3, 1, 5, 0), pairings2);
 
         // Now simulate playing Round 2 and finishing it
         // Pairings: {4=2, 3=1, 5=0} (C vs A, B vs E, D vs Bye)
@@ -123,10 +137,11 @@ class TrfServiceTest {
 
         // Now pair Round 3
         List<TrfLine> trfTournament3 = TrfService.toTrfTournament(participantEntities, tournament);
-        System.out.println("Generated TRF for Round 3:\n" + TrfUtil.writeTrfLines(trfTournament3));
 
         var pairings3 = new JaVaFoPairingStrategyImpl().makePairings(trfTournament3);
-        System.out.println("Round 3 Pairings: " + pairings3);
+        org.junit.jupiter.api.Assertions.assertNotNull(pairings3);
+        org.junit.jupiter.api.Assertions.assertEquals(3, pairings3.size());
+        org.junit.jupiter.api.Assertions.assertTrue(pairings3.containsValue(0));
     }
 
     @Test
@@ -174,7 +189,9 @@ class TrfServiceTest {
 
         // Verify that serialization works successfully without NPE
         String trfString = TrfUtil.writeTrfLines(trfLines);
-        System.out.println("Generated TRF:\n" + trfString);
+        org.junit.jupiter.api.Assertions.assertFalse(trfString.isEmpty());
+        org.junit.jupiter.api.Assertions.assertTrue(trfString.contains("NewcomerE"));
+        org.junit.jupiter.api.Assertions.assertTrue(trfString.contains("NewcomerF"));
 
         // Check that E and F match lists do not contain nulls
         for (TrfLine line : trfLines) {

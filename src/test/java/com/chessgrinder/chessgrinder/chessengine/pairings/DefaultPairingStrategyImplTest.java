@@ -42,6 +42,7 @@ class DefaultPairingStrategyImplTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testJavafoFailsFirstThenSucceedsWithRetry() throws Exception {
         List<TrfLine> trf = List.of(RoundsNumberXxrTrfLine.of(3));
         Map<Integer, Integer> expectedPairings = Map.of(1, 2);

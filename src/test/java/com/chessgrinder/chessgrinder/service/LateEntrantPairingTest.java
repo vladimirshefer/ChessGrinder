@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 class LateEntrantPairingTest {
@@ -82,9 +83,10 @@ class LateEntrantPairingTest {
         );
 
         List<TrfLine> trfLines = TrfService.toTrfTournament(participantEntities, tournament);
-        System.out.println("Generated TRF for Round 4:\n" + TrfUtil.writeTrfLines(trfLines));
 
         var pairings4 = new JaVaFoPairingStrategyImpl().makePairings(trfLines);
-        System.out.println("Round 4 Pairings: " + pairings4);
+        org.junit.jupiter.api.Assertions.assertNotNull(pairings4);
+        org.junit.jupiter.api.Assertions.assertEquals(4, pairings4.size());
+        org.junit.jupiter.api.Assertions.assertEquals(Map.of(4, 1, 5, 3, 2, 7, 6, 0), pairings4);
     }
 }

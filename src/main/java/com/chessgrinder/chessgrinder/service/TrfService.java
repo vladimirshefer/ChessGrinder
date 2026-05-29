@@ -113,6 +113,11 @@ public class TrfService {
                 while (player.getMatches().size() < roundIndex + 1) {
                     player.getMatches().add(new Player001TrfLine.Match(0, '-', Player001TrfLine.TrfMatchResult.ZERO_POINT_BYE.getCharCode()));
                 }
+                for (int i = 0; i < player.getMatches().size(); i++) {
+                    if (player.getMatches().get(i) == null) {
+                        player.getMatches().set(i, new Player001TrfLine.Match(0, '-', Player001TrfLine.TrfMatchResult.ZERO_POINT_BYE.getCharCode()));
+                    }
+                }
             }
         }
 
