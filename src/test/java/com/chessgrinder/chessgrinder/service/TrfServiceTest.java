@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.Map;
 import com.chessgrinder.chessgrinder.chessengine.pairings.JaVaFoPairingStrategyImpl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TrfServiceTest {
 
@@ -110,9 +110,9 @@ class TrfServiceTest {
         List<TrfLine> trfTournament2 = TrfService.toTrfTournament(participantEntities, tournament);
         var pairings2 = new JaVaFoPairingStrategyImpl().makePairings(trfTournament2);
         
-        org.junit.jupiter.api.Assertions.assertNotNull(pairings2);
-        org.junit.jupiter.api.Assertions.assertEquals(3, pairings2.size());
-        org.junit.jupiter.api.Assertions.assertEquals(Map.of(4, 2, 3, 1, 5, 0), pairings2);
+        assertNotNull(pairings2);
+        assertEquals(3, pairings2.size());
+        assertEquals(Map.of(4, 2, 3, 1, 5, 0), pairings2);
 
         // Now simulate playing Round 2 and finishing it
         // Pairings: {4=2, 3=1, 5=0} (C vs A, B vs E, D vs Bye)
@@ -139,9 +139,9 @@ class TrfServiceTest {
         List<TrfLine> trfTournament3 = TrfService.toTrfTournament(participantEntities, tournament);
 
         var pairings3 = new JaVaFoPairingStrategyImpl().makePairings(trfTournament3);
-        org.junit.jupiter.api.Assertions.assertNotNull(pairings3);
-        org.junit.jupiter.api.Assertions.assertEquals(3, pairings3.size());
-        org.junit.jupiter.api.Assertions.assertTrue(pairings3.containsValue(0));
+        assertNotNull(pairings3);
+        assertEquals(3, pairings3.size());
+        assertTrue(pairings3.containsValue(0));
     }
 
     @Test
@@ -189,17 +189,17 @@ class TrfServiceTest {
 
         // Verify that serialization works successfully without NPE
         String trfString = TrfUtil.writeTrfLines(trfLines);
-        org.junit.jupiter.api.Assertions.assertFalse(trfString.isEmpty());
-        org.junit.jupiter.api.Assertions.assertTrue(trfString.contains("NewcomerE"));
-        org.junit.jupiter.api.Assertions.assertTrue(trfString.contains("NewcomerF"));
+        assertFalse(trfString.isEmpty());
+        assertTrue(trfString.contains("NewcomerE"));
+        assertTrue(trfString.contains("NewcomerF"));
 
         // Check that E and F match lists do not contain nulls
         for (TrfLine line : trfLines) {
             if (line instanceof Player001TrfLine playerLine) {
                 List<Player001TrfLine.Match> matches = playerLine.getMatches();
-                org.junit.jupiter.api.Assertions.assertNotNull(matches);
+                assertNotNull(matches);
                 for (Player001TrfLine.Match match : matches) {
-                    org.junit.jupiter.api.Assertions.assertNotNull(match, "Match should not be null for player " + playerLine.getName());
+                    assertNotNull(match, "Match should not be null for player " + playerLine.getName());
                 }
             }
         }

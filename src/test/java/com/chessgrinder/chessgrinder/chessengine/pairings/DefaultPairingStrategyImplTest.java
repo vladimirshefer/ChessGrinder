@@ -42,7 +42,6 @@ class DefaultPairingStrategyImplTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void testJavafoFailsFirstThenSucceedsWithRetry() throws Exception {
         List<TrfLine> trf = List.of(RoundsNumberXxrTrfLine.of(3));
         Map<Integer, Integer> expectedPairings = Map.of(1, 2);
@@ -66,7 +65,9 @@ class DefaultPairingStrategyImplTest {
         assertEquals(expectedPairings, result);
 
         // Verify javafo was called three times with the correct incremented rounds (3, 4, then 5)
-        ArgumentCaptor<List<TrfLine>> captor = ArgumentCaptor.forClass(List.class);
+        @SuppressWarnings("unchecked")
+        Class<List<TrfLine>> listClass = (Class<List<TrfLine>>) (Class<?>) List.class;
+        ArgumentCaptor<List<TrfLine>> captor = ArgumentCaptor.forClass(listClass);
         verify(javaFoPairingStrategy, times(3)).makePairings(captor.capture());
 
         List<List<TrfLine>> allValues = captor.getAllValues();
@@ -83,6 +84,21 @@ class DefaultPairingStrategyImplTest {
         Map<Integer, Integer> expectedPairings = Map.of(3, 4);
 
         when(javaFoPairingStrategy.makePairings(any())).thenThrow(new PairingException("Simulated javafo failure"));
+        when(simplePairingStrategy.makePairings(any())).thenReturn(expectedPairings);
+
+        Map<Integer, Integer> result = defaultPairingStrategy.makePairings(trf);
+
+        assertEquals(expectedPairings, result);
+        verify(javaFoPairingStrategy, times(5)).makePairings(any()); // 0, 1, 2, 10, 50 retries
+        verify(simplePairingStrategy, times(1)).makePairings(trf);
+    }
+
+    @Test
+    void testJavafoReturnsEmptyAndFallsBackToSimple() throws Exception {
+        List<TrfLine> trf = List.of(RoundsNumberXxrTrfLine.of(3));
+        Map<Integer, Integer> expectedPairings = Map.of(3, 4);
+
+        when(javaFoPairingStrategy.makePairings(any())).thenReturn(Map.of());
         when(simplePairingStrategy.makePairings(any())).thenReturn(expectedPairings);
 
         Map<Integer, Integer> result = defaultPairingStrategy.makePairings(trf);

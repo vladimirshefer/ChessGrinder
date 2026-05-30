@@ -15,6 +15,7 @@
     <description>ChessGrinder</description>
     <properties>
         <java.version>17</java.version>
+        <!-- Overriding parent managed versions for JDK 21+ and JDK 25 compatibility -->
         <mockito.version>5.14.2</mockito.version>
         <byte-buddy.version>1.17.0</byte-buddy.version>
     </properties>
@@ -195,16 +196,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
-                <configuration>
-                    <!-- javafo utilizes static/global state inside the JVM, so we must run test classes in separate JVM forks to prevent state pollution -->
-                    <reuseForks>false</reuseForks>
-                    <forkCount>1</forkCount>
-                </configuration>
-            </plugin>
+            
         </plugins>
     </build>
 
