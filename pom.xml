@@ -15,9 +15,6 @@
     <description>ChessGrinder</description>
     <properties>
         <java.version>17</java.version>
-        <!-- Overriding parent managed versions for JDK 21+ and JDK 25 compatibility -->
-        <mockito.version>5.14.2</mockito.version>
-        <byte-buddy.version>1.17.0</byte-buddy.version>
     </properties>
     <dependencies>
         <dependency>
@@ -88,7 +85,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.46</version>
             <optional>true</optional>
         </dependency>
         <dependency>
