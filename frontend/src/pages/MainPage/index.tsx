@@ -7,6 +7,7 @@ import {useLoc} from "strings/loc";
 import {Link, useNavigate} from "react-router-dom";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
 import dayjs from "dayjs";
+import ChessariumBanner from "@/pages/MainPage/ChessariumBanner";
 
 function MainPage() {
     let loc = useLoc()
@@ -40,7 +41,7 @@ function MainPage() {
 
     return <>
         <MyActiveTournamentPane/>
-        <div className={"p-3"}>
+        <div className={"flex flex-col p-3"}>
             <TournamentsList tournaments={tournamentsVisible} createTournament={createTournament}/>
             <div className={"grid py-2"}>
                 <Link to={"/tournaments"}>
@@ -48,6 +49,9 @@ function MainPage() {
                         {loc("All tournaments")}
                     </button>
                 </Link>
+            </div>
+            <div className={"mb-4 flex justify-center mt-4"}>
+                <ChessariumBanner/>
             </div>
         </div>
     </>
