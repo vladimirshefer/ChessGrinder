@@ -60,15 +60,12 @@ class TournamentControllerTest {
                 .countByTournament(any());
 
         TournamentMapper tournamentMapper = new TournamentMapper();
-        ParticipantMapper participantMapper = new ParticipantMapper(tournamentMapper);
         tournamentService = Mockito.mock(TournamentService.class);
         tournamentController = new TournamentController(
                 tournamentService,
                 tournamentRepository,
                 participantRepository,
-                tournamentMapper,
-                new MatchMapper(participantMapper),
-                participantMapper
+                tournamentMapper
         );
 
         mockMvc = MockMvcBuilders.standaloneSetup(tournamentController)
@@ -89,14 +86,14 @@ class TournamentControllerTest {
                 .status(TournamentStatus.PLANNED)
                 .roundsNumber(6)
                 .build();
-        when(tournamentService.createTournament(any(), eq(userEntity))).thenReturn(dto);
+        when(tournamentService.createTournament(eq(userEntity))).thenReturn(dto);
 
         mockMvc.perform(post("/tournament")
                         .principal(mockAuth(username, true)))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"id\":\"" + dto.getId() + "\"}", false));
 
-        verify(tournamentService).createTournament(any(), eq(userEntity));
+        verify(tournamentService).createTournament(eq(userEntity));
     }
 
     @Test
