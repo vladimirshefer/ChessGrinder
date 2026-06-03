@@ -35,7 +35,11 @@ public class DefaultPairingStrategyImpl implements PairingStrategy {
                 }
                 clone.removeAll(xxr);
                 clone.add(RoundsNumberXxrTrfLine.of(roundsNumber + i));
-                result = javaFoPairingStrategy.makePairings(trf);
+                result = javaFoPairingStrategy.makePairings(clone);
+                if (result == null || result.isEmpty()) {
+                    throw new PairingException("JaVaFo returned empty pairings");
+                }
+                break;
             } catch (PairingException pairingException) {
                 log.error("Could not do pairing via javafo. Trying other pairing instead. {}", pairingException.getMessage(), pairingException);
             } catch (Exception e) {

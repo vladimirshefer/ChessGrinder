@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static com.chessgrinder.chessgrinder.testutil.trf.TrfTestUtil.assertTrfEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -104,5 +105,22 @@ class JaVaFoPairingStrategyImplTest {
                 001   14      Player14                                                           5.0          7 b 1     6 b 1     4 w 0     2 b 1    11 w 0    10 b 1    13 w 0     5 w 0    15 b 1    12 b 1 \s
                 001   15      Player15                                                           5.0       0000 - U     8 b 1    10 b 1     6 w 0    12 b 1    13 w 0     2 b 1    11 w 0    14 w 0     7 b 1 \s
                 """, TrfUtil.writeTrfLines(trf));
+    }
+
+    @Test
+    void testLateEntrantAtRound4Pairing() {
+        var trf = """
+                XXR 4
+                001    1      Round4A                           1500                             3.0          2 w 1     3 w 1     5 w 1
+                001    2      Round4B                           1400                             0.0          1 b 0     5 b 0     3 b 0
+                001    3      Round4C                           1300                             2.0          4 w 1     1 b 0     2 w 1
+                001    4      Round4D                           1200                             2.0          3 b 0     6 w 1     6 w 1
+                001    5      Round4E                           1100                             2.0          6 w 1     2 w 1     1 b 0
+                001    6      Round4F                           1000                             0.0          5 b 0     4 b 0     4 b 0
+                001    7      Round4G                            900                             0.0       0000 - Z  0000 - Z  0000 - Z
+                """;
+        var pairings = swissEngine.makePairings(TrfUtil.readTrf(trf));
+        assertEquals(4, pairings.size());
+        assertEquals(Map.of(4, 1, 5, 3, 2, 7, 6, 0), pairings);
     }
 }

@@ -87,7 +87,7 @@ public class TrfService {
                     int opponentId = match.getParticipant2() != null ? playerIds.indexOf(match.getParticipant2().getId()) + 1 : 0;
                     char color = isWhite ? 'w' : '-';
                     trfMatch = new Player001TrfLine.Match(opponentId, color, result);
-                    setOrAdd(playerTrfLines.get(playerPairingId).getMatches(), roundNumber - 1, trfMatch);
+                    setOrAdd(playerTrfLines.get(playerPairingId).getMatches(), roundIndex, trfMatch);
                 }
                 if (match.getParticipant2() != null) {
                     int playerPairingId = playerIds.indexOf(match.getParticipant2().getId());
@@ -110,9 +110,12 @@ public class TrfService {
             }
             // Fill the gaps
             for (Player001TrfLine player : playerTrfLines) {
-                if (player.getMatches().size() < roundNumber) {
-                    for (int i = player.getMatches().size(); i < roundNumber; i++) {
-                        setOrAdd(player.getMatches(), roundIndex, new Player001TrfLine.Match(0, '-', Player001TrfLine.TrfMatchResult.ZERO_POINT_BYE.getCharCode()));
+                while (player.getMatches().size() < roundIndex + 1) {
+                    player.getMatches().add(new Player001TrfLine.Match(0, '-', Player001TrfLine.TrfMatchResult.ZERO_POINT_BYE.getCharCode()));
+                }
+                for (int i = 0; i < player.getMatches().size(); i++) {
+                    if (player.getMatches().get(i) == null) {
+                        player.getMatches().set(i, new Player001TrfLine.Match(0, '-', Player001TrfLine.TrfMatchResult.ZERO_POINT_BYE.getCharCode()));
                     }
                 }
             }
