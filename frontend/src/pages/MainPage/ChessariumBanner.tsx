@@ -28,7 +28,7 @@ function DoorShowcase() {
             <div className={"relative h-[118px] w-[108px]"}>
                 <div className={"absolute inset-x-2 bottom-2 h-14 rounded-full bg-primary-300/30 blur-2xl"}/>
                 <DoorPreview
-                    src={"/public/chessarium/door-opening.jpg"}
+                    src={"/chessarium/door-opening.webp"}
                     alt={"Opening training door"}
                     className={"h-[118px]"}
                 />
@@ -51,17 +51,17 @@ function DoorShowcase() {
                 <div className={"absolute inset-x-4 bottom-2 h-16 rounded-full bg-primary-300/30 blur-2xl"}/>
                 <div className={"absolute inset-x-0 bottom-0 grid h-full grid-cols-3 items-end gap-1.5"}>
                     <DoorPreview
-                        src={"/public/chessarium/door-opening.jpg"}
+                        src={"/chessarium/door-opening.webp"}
                         alt={"Opening training door"}
                         className={"h-[104px] -rotate-3 opacity-95 md:h-[122px]"}
                     />
                     <DoorPreview
-                        src={"/public/chessarium/door-boss.jpg"}
+                        src={"/chessarium/door-boss.webp"}
                         alt={"Boss challenge door"}
                         className={"h-[132px] md:h-[154px]"}
                     />
                     <DoorPreview
-                        src={"/public/chessarium/door-tactic.jpg"}
+                        src={"/chessarium/door-tactic.webp"}
                         alt={"Tactics training door"}
                         className={"h-[108px] rotate-3 opacity-95 md:h-[126px]"}
                     />
@@ -85,7 +85,7 @@ function DoorShowcase() {
     </>
 }
 
-function MainBanner() {
+function ChessariumBanner() {
     return <section className={"w-full overflow-hidden rounded-[18px] border border-primary-200 bg-[#fffdf8] shadow-sm sm:w-fit"}>
         <div className={"grid grid-cols-[minmax(0,1fr)_auto] items-center justify-items-start gap-4 p-5 sm:grid-cols-[340px_auto] sm:gap-5 sm:p-6"}>
             <div className={"flex min-w-0 flex-col items-start gap-4 text-left"}>
@@ -123,4 +123,4 @@ function MainBanner() {
     </section>
 }
 
-export default MainBanner
+export default ChessariumBanner
