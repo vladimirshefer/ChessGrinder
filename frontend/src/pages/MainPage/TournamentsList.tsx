@@ -1,5 +1,5 @@
-import {TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
-import ConditionalOnUserRole, {Conditional} from "components/Conditional";
+import {TournamentDto} from "lib/api/dto/MainPageData";
+import {Conditional, ConditionalOnAuthorized} from "components/Conditional";
 import {useLoc} from "strings/loc";
 import "pages/MainPage/TournamentsList.css"
 import {TournamentPane} from "pages/MainPage/TournamentPane";
@@ -37,13 +37,13 @@ export function TournamentsList(
     return <div>
         <div className={"flex gap-3 items-stretch my-2"}>
             <h2 className={"text-xl uppercase text-left font-semibold"}>{loc("Tournaments")}</h2>
-            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+            <ConditionalOnAuthorized>
                 <button className={"bg-primary-400 text-white px-3 uppercase text-sm"}
                     onClick={createTournament}
                 >
                     + {loc("Create")}
                 </button>
-            </ConditionalOnUserRole>
+            </ConditionalOnAuthorized>
         </div>
         <ul className={"grid grid-cols-12 gap-2"}>
             <Conditional on={!sortedTournaments || sortedTournaments.length === 0}>

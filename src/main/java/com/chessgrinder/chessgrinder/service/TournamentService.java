@@ -2,19 +2,26 @@ package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.dto.TournamentDto;
 import com.chessgrinder.chessgrinder.entities.RoundEntity;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
 import com.chessgrinder.chessgrinder.mappers.TournamentMapper;
 import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +41,9 @@ public class TournamentService {
     private static final int MIN_ROUNDS_NUMBER = 0;
     private static final int MAX_ROUNDS_NUMBER = 99;
 
+    @Value("${chessgrinder.tournament.creation.cooldown.days:28}")
+    private int tournamentCreationCooldownDays;
+
     public List<TournamentDto> findTournaments() {
         return tournamentRepository.findAll().stream()
                 .sorted(
@@ -45,13 +55,36 @@ public class TournamentService {
     }
 
     @Transactional
-    public TournamentDto createTournament(LocalDateTime date, UserEntity owner) {
-        if (date != null && date.isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(400, "Tournament date can not be in the past.", null);
+    public TournamentDto createTournament(UserEntity owner) {
+        if (!tournamentRepository.findAllByOwnerAndStatusAndDateAfter(
+                owner,
+                List.of(TournamentStatus.PLANNED, TournamentStatus.ACTIVE),
+                Instant.EPOCH
+        ).isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Finish or delete your active or planned tournament before creating a new one."
+            );
+        }
+
+        boolean isAdmin = SecurityUtil.hasRole(owner, RoleEntity.Roles.ADMIN);
+        if (!isAdmin && tournamentCreationCooldownDays > 0) {
+            Instant cooldownStartedAt = Instant.now().minus(tournamentCreationCooldownDays, ChronoUnit.DAYS);
+            List<TournamentEntity> recentTournaments = tournamentRepository.findAllByOwnerAndStatusAndDateAfter(
+                    owner,
+                    Arrays.asList(TournamentStatus.values()),
+                    cooldownStartedAt
+            );
+            if (!recentTournaments.isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "You can create only one tournament every " + tournamentCreationCooldownDays + " days."
+                );
+            }
         }
 
         TournamentEntity tournamentEntity = TournamentEntity.builder()
-                .date(date)
+                .date(LocalDateTime.now())
                 .status(TournamentStatus.PLANNED)
                 .roundsNumber(DEFAULT_ROUNDS_NUMBER)
                 .owner(owner)
@@ -145,6 +178,9 @@ public class TournamentService {
     public void updateTournament(UUID tournamentId, TournamentDto tournamentDto) {
         TournamentEntity tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
+        if (tournamentDto.getDate() != null && tournamentDto.getDate().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(400, "Tournament date can not be in the past.", null);
+        }
         tournament.setName(tournamentDto.getName());
         tournament.setDate(tournamentDto.getDate());
         tournament.setLocationName(tournamentDto.getLocationName());
