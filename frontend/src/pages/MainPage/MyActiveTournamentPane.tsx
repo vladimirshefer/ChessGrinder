@@ -241,7 +241,7 @@ function MyActiveTournamentPaneImpl(
     return <div className={`grid justify-items-start w-full p-4 overflow-hidden tournament-active`}>
         <div className={"grid w-full justify-items-start"}>
             <Link className={"flex w-full gap-2 text-lg text-left justify-between items-center"}
-                  to={`/tournament/${tournament.id}/round/${roundNumber}`}
+                  to={`/tournament/${tournament.id}/pairings/round/${roundNumber}`}
             >
                 <div className="flex gap-2 hover:underline font-semibold">
                     <span className={"grow"}>

@@ -14,6 +14,7 @@ import BadgesPage from "pages/BadgesPage";
 import UsersPage from "pages/UsersPage";
 import AllTournamentsPage from "pages/AllTournamentsPage";
 import TournamentEditPage, {TournamentCreatePage} from "pages/TournamentEditPage";
+import TournamentOverviewPage from "pages/TournamentPage/TournamentOverviewPage";
 import BadgePage from "pages/BadgePage";
 import UserProfileEditPage from "pages/UserProfileEditPage";
 import {AuthenticatedUserContextProvider} from "contexts/AuthenticatedUserContext";
@@ -43,9 +44,10 @@ function App() {
                                 <Route element={<DefaultLayout/>}>
                                     <Route path="/" element={<MainPage/>}/>
                                     <Route path="/about" element={<AboutPage/>}/>
-                                    <Route path="/tournament/:id" element={<TournamentPage/>}/>
+                                    <Route path="/tournament/:id" element={<TournamentOverviewPage/>}/>
+                                    <Route path="/tournament/:id/pairings" element={<TournamentPage/>}/>
+                                    <Route path="/tournament/:id/pairings/round/:roundId" element={<TournamentPage/>}/>
                                     <Route path="/event/:city/:date" element={<EventPage/>}/>
-                                    <Route path="/tournament/:id/round/:roundId" element={<TournamentPage />}/>
                                     <Route path="/tournament/:tournamentId/participant/:participantId"
                                            element={<ParticipantPage/>}/>
                                     <Route path="/tournament/:tournamentId/edit"
