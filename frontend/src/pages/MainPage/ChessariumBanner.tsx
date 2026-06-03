@@ -24,8 +24,8 @@ function DoorPreview(
 
 function DoorShowcase() {
     return <>
-        <div className={"flex w-[112px] flex-col items-center gap-2 sm:hidden"}>
-            <div className={"relative h-[118px] w-[108px]"}>
+        <div className={"flex w-28 flex-col items-center gap-2 sm:hidden"}>
+            <div className={"relative h-[118px] w-27"}>
                 <div className={"absolute inset-x-2 bottom-2 h-14 rounded-full bg-primary-300/30 blur-2xl"}/>
                 <DoorPreview
                     src={"/chessarium/door-opening.webp"}
@@ -47,30 +47,30 @@ function DoorShowcase() {
         </div>
 
         <div className={"hidden flex-col items-center gap-2 sm:flex"}>
-            <div className={"relative h-[132px] w-[242px] md:h-[154px] md:w-[284px]"}>
+            <div className={"relative h-33 w-[242px] md:h-[154px] md:w-71"}>
                 <div className={"absolute inset-x-4 bottom-2 h-16 rounded-full bg-primary-300/30 blur-2xl"}/>
                 <div className={"absolute inset-x-0 bottom-0 grid h-full grid-cols-3 items-end gap-1.5"}>
                     <DoorPreview
                         src={"/chessarium/door-opening.webp"}
                         alt={"Opening training door"}
-                        className={"h-[104px] -rotate-3 opacity-95 md:h-[122px]"}
+                        className={"h-26 -rotate-3 opacity-95 md:h-[122px]"}
                     />
                     <DoorPreview
                         src={"/chessarium/door-boss.webp"}
                         alt={"Boss challenge door"}
-                        className={"h-[132px] md:h-[154px]"}
+                        className={"h-33 md:h-[154px]"}
                     />
                     <DoorPreview
                         src={"/chessarium/door-tactic.webp"}
                         alt={"Tactics training door"}
-                        className={"h-[108px] rotate-3 opacity-95 md:h-[126px]"}
+                        className={"h-27 rotate-3 opacity-95 md:h-[126px]"}
                     />
                 </div>
                 <div className={"absolute right-4 top-3 rounded-full border border-primary-200 bg-white/90 px-2 py-1 text-xs font-bold text-primary-800 shadow-sm"}>
                     +XP
                 </div>
             </div>
-            <div className={"flex items-center gap-2 rounded-[12px] border border-primary-200 bg-white/90 px-3 py-1.5 text-center shadow-sm"}>
+            <div className={"flex items-center gap-2 rounded-xl border border-primary-200 bg-white/90 px-3 py-1.5 text-center shadow-sm"}>
                 <span className={"text-[11px] font-semibold uppercase tracking-wide text-primary-700"}>
                     USE
                 </span>
@@ -108,7 +108,7 @@ function ChessariumBanner() {
                         href={"https://chessarium.com"}
                         target={"_blank"}
                         rel={"noreferrer"}
-                        className={"btn bg-primary-400 text-black font-semibold inline-flex items-center gap-2 rounded-[12px] px-5 py-2.5 shadow-sm transition-colors hover:bg-primary-300"}
+                        className={"bg-primary-400 text-black font-semibold inline-flex items-center gap-2 rounded-xl px-5 py-2 shadow-sm transition-colors hover:bg-primary-300"}
                     >
                         Start training
                         <AiOutlineRight/>

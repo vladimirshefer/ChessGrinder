@@ -42,19 +42,17 @@ function MainPage() {
     return <>
         <MyActiveTournamentPane/>
         <div className={"flex flex-col p-3"}>
-            <div className={"order-2"}>
-                <TournamentsList tournaments={tournamentsVisible} createTournament={createTournament}/>
-            </div>
-            <div className={"order-3 grid py-2 lg:order-2"}>
+            <TournamentsList tournaments={tournamentsVisible} createTournament={createTournament}/>
+            <div className={"grid py-2"}>
                 <Link to={"/tournaments"}>
                     <button className={"btn bg-primary-400 w-full"}>
                         {loc("All tournaments")}
                     </button>
                 </Link>
             </div>
-        </div>
-        <div className={"order-1 mb-4 flex justify-center lg:order-3 lg:mb-0 lg:mt-4 p-2"}>
-            <ChessariumBanner/>
+            <div className={"mb-4 flex justify-center mt-4"}>
+                <ChessariumBanner/>
+            </div>
         </div>
     </>
 }
