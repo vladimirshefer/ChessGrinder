@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,15 +49,13 @@ public class TournamentController {
     private final TournamentRepository tournamentRepository;
     private final ParticipantRepository participantRepository;
     private final TournamentMapper tournamentMapper;
-    private final MatchMapper matchMapper;
-    private final ParticipantMapper participantMapper;
 
-    @Secured(RoleEntity.Roles.ADMIN)
+
     @PostMapping
     public TournamentDto createTournament(
             @AuthenticatedUser UserEntity owner
     ) {
-        return tournamentService.createTournament(LocalDateTime.now(), owner);
+        return tournamentService.createTournament(owner);
     }
 
     @PreAuthorize("hasPermission(#tournamentId,'TournamentEntity','MODERATOR')")
