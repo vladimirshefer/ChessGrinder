@@ -1,10 +1,6 @@
 import {AiOutlineRight} from "react-icons/ai";
 import {FaCrown} from "react-icons/fa";
 
-import bossDoor from "./assets/door-boss.webp";
-import openingDoor from "./assets/door-opening.webp";
-import tacticDoor from "./assets/door-tactic.webp";
-
 function DoorPreview(
     {
         src,
@@ -32,7 +28,7 @@ function DoorShowcase() {
             <div className={"relative h-[118px] w-[108px]"}>
                 <div className={"absolute inset-x-2 bottom-2 h-14 rounded-full bg-primary-300/30 blur-2xl"}/>
                 <DoorPreview
-                    src={openingDoor}
+                    src={"/public/chessarium/door-opening.jpg"}
                     alt={"Opening training door"}
                     className={"h-[118px]"}
                 />
@@ -55,17 +51,17 @@ function DoorShowcase() {
                 <div className={"absolute inset-x-4 bottom-2 h-16 rounded-full bg-primary-300/30 blur-2xl"}/>
                 <div className={"absolute inset-x-0 bottom-0 grid h-full grid-cols-3 items-end gap-1.5"}>
                     <DoorPreview
-                        src={openingDoor}
+                        src={"/public/chessarium/door-opening.jpg"}
                         alt={"Opening training door"}
                         className={"h-[104px] -rotate-3 opacity-95 md:h-[122px]"}
                     />
                     <DoorPreview
-                        src={bossDoor}
+                        src={"/public/chessarium/door-boss.jpg"}
                         alt={"Boss challenge door"}
                         className={"h-[132px] md:h-[154px]"}
                     />
                     <DoorPreview
-                        src={tacticDoor}
+                        src={"/public/chessarium/door-tactic.jpg"}
                         alt={"Tactics training door"}
                         className={"h-[108px] rotate-3 opacity-95 md:h-[126px]"}
                     />
