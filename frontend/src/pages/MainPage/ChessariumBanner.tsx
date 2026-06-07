@@ -113,6 +113,9 @@ function ChessariumBanner() {
                         Start training
                         <AiOutlineRight/>
                     </a>
+                    <span className={"text-xs text-gray-500"}>
+                        * Unbezahlte Werbung
+                    </span>
                 </div>
             </div>
 
