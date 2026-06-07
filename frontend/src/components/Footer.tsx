@@ -35,6 +35,15 @@ function Footer() {
                     <Link className={"underline hover:text-gray-800"} to={'https://chessarium.com'} target={"_blank"} rel={"noreferrer noopener"}>Train through chess dungeons →</Link>
                 </li>
             </ul>
+            <ul>
+                <li>
+                    <Link className={"underline hover:text-gray-800"} to={'https://t.me/chess_grinder_de'} target={"_blank"} rel={"noreferrer noopener"}>Telegram Group - Germany →</Link>
+                    <Link className={"underline hover:text-gray-800"} to={'https://t.me/chess_grinder_cy'} target={"_blank"} rel={"noreferrer noopener"}>Telegram Chat - Cyprus →</Link>
+                    <Link className={"underline hover:text-gray-800"} to={'https://t.me/chess_grinder_for_life'} target={"_blank"} rel={"noreferrer noopener"}>Telegram Group - Georgia →</Link>
+                    <Link className={"underline hover:text-gray-800"} to={'https://instagrem.com/chess_grinder_tbilisi'} target={"_blank"} rel={"noreferrer noopener"}>Instagram - Georgia →</Link>
+                    <Link className={"underline hover:text-gray-800"} to={'https://instagram.com/chessgrinder'} target={"_blank"} rel={"noreferrer noopener"}>Instagram - Global →</Link>
+                </li>
+            </ul>
         </footer>
     );
 }
