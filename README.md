@@ -42,3 +42,4 @@ docker compose up -d --build
 - [Umar Shabazov](https://github.com/UmarShabazov)
 - [Yana Shefer](https://github.com/yshefer)
 - [Fyodor Likhachev](https://github.com/FyodorLikhachev)
+- [Anton Kogun](https://github.com/Anton15K)
