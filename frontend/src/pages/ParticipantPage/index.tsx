@@ -248,7 +248,7 @@ export default function ParticipantPage() {
                     <UserPane user={userQuery.data!}/>
                 </div>
             </Conditional>
-            {userQuery.isLoading ? <>Loading user data</> : null}
+            {userQuery.isLoading && userQuery.fetchStatus !== "idle" ? <>Loading user data</> : null}
             {userQuery.isError ? <>Error loading user data</> : null}
 
             {!!matches && matches.length > 0 &&
