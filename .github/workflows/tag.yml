@@ -17,3 +17,15 @@ jobs:
     with:
       tag: ${{ github.ref_name }}
       version: ${{ github.ref_name }}
+
+  release:
+    needs: [test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release create "${{ github.ref_name }}" --generate-notes
