@@ -1,0 +1,19 @@
+name: Tag
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+
+  publish:
+    needs: [test]
+    uses: ./.github/workflows/dockerhub-push.yml
+    secrets: inherit
+    with:
+      tag: ${{ github.ref_name }}
+      version: ${{ github.ref_name }}
