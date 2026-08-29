@@ -70,7 +70,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserDto addParticipantToTournament(@PathVariable String userId) throws UserNotFoundException {
+    public UserDto addParticipantToTournament(
+            @PathVariable String userId,
+            @AuthenticatedUser UserEntity authenticatedUser
+    ) throws UserNotFoundException {
         try {
             UserDto user = userService.getUserByUserId(userId);
             if (user != null) {
