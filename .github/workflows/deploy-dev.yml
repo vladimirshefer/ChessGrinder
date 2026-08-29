@@ -10,6 +10,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: dev
 
     steps:
       - uses: appleboy/ssh-action@master
