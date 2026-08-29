@@ -18,6 +18,19 @@ jobs:
       tag: ${{ github.ref_name }}
       version: ${{ github.ref_name }}
 
+  publish-latest:
+    needs: [test]
+    uses: ./.github/workflows/dockerhub-push.yml
+    secrets: inherit
+    with:
+      tag: 'latest'
+      version: ${{ github.ref_name }}
+
+  deploy-dev:
+    needs: [publish-latest]
+    uses: ./.github/workflows/deploy-dev.yml
+    secrets: inherit
+
   release:
     needs: [test]
     runs-on: ubuntu-latest

@@ -5,12 +5,12 @@ on:
     inputs:
       tag:
         description: 'A Docker Image Tag'
-        default: 'latest'
+        default: 'dev'
         required: false
         type: string
       version:
         description: "A version of the Application"
-        default: "0.0.1"
+        default: 'dev'
         required: false
         type: string
 
