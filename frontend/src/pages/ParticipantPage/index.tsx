@@ -44,6 +44,7 @@ export default function ParticipantPage() {
             if (!participantId || !participantQuery.isSuccess || !participantQuery.data?.userId) return null
             return await userRepository.getUser(participantQuery.data.userId)
         },
+        enabled: !!authenticatedUser,
     })
 
     let tournamentQuery = useQuery({
