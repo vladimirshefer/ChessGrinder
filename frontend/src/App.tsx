@@ -24,6 +24,7 @@ import {ConfigurationContextProvider} from "contexts/ConfigurationContext";
 import Footer from "components/Footer";
 import AboutPage from "./pages/AboutPage";
 import EventPage from "./pages/TournamentPage/EventPage";
+import RouteErrorBoundary from "components/RouteErrorBoundary";
 
 const queryClient = new QueryClient()
 
@@ -64,7 +65,7 @@ function App() {
                                     <Route path="/privacyPolicy" element={<PrivacyPolicyPage/>}/>
                                     <Route path='*' element={<NotFoundPage/>}/>
                                     </Route>
-                                    <Route path="/clock" element={<ChessClockPage/>}/>
+                                    <Route path="/clock" element={<RouteErrorBoundary><ChessClockPage/></RouteErrorBoundary>}/>
                                 </Routes>
                             </React.StrictMode>
                         </ApplicationRouter>
@@ -80,7 +81,9 @@ function DefaultLayout() {
     return <>
                 <Header/>
                 <div className="grow">
-                    <Outlet/>
+                    <RouteErrorBoundary>
+                        <Outlet/>
+                    </RouteErrorBoundary>
                 </div>
                 <Footer/>
     </>;
