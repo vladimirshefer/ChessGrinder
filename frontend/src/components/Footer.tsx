@@ -49,7 +49,10 @@ function Footer() {
                     <Link className={"underline hover:text-gray-800"} to={'https://instagrem.com/chess_grinder_tbilisi'} target={"_blank"} rel={"noreferrer noopener"}>Instagram - Georgia →</Link>
                 </li>
                 <li>
-                    <Link className={"underline hover:text-gray-800"} to={'https://instagram.com/chessgrinder'} target={"_blank"} rel={"noreferrer noopener"}>Instagram - Global →</Link>
+                    <Link className={"underline hover:text-gray-800"} to={'https://instagram.com/chessgrinder'} target={"_blank"} rel={"noreferrer noopener"}>Instagram - Germany →</Link>
+                </li>
+                <li>
+                    <Link className={"underline hover:text-gray-800"} to={'https://instagram.com/chessgrinder_cyprus'} target={"_blank"} rel={"noreferrer noopener"}>Instagram - Cyprus →</Link>
                 </li>
             </ul>
         </footer>
