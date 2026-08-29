@@ -16,8 +16,8 @@ jobs:
     secrets: inherit
     with:
       tags: |
-        ${{ github.ref_name }}
-        latest
+        vshefer/chessgrinder:${{ github.ref_name }}
+        vshefer/chessgrinder:latest
       version: ${{ github.ref_name }}
 
   deploy-dev:

@@ -4,8 +4,8 @@ on:
   workflow_call:
     inputs:
       tags:
-        description: 'Docker Image Tags (newline-separated, e.g. "dev" or "v1.2.3\nlatest")'
-        default: 'dev'
+        description: 'Full Docker image references, newline-separated (e.g. "vshefer/chessgrinder:dev" or "vshefer/chessgrinder:v1.2.3\nvshefer/chessgrinder:latest")'
+        default: 'vshefer/chessgrinder:dev'
         required: false
         type: string
       version:
@@ -23,18 +23,10 @@ jobs:
         with:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
-      - name: Build tags list
-        id: tags
-        run: |
-          {
-            echo 'list<<EOF'
-            echo "${{ inputs.tags }}" | sed 's/^/vshefer\/chessgrinder:/'
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
       - uses: docker/build-push-action@v5
         with:
           context: ./
           push: true
-          tags: ${{ steps.tags.outputs.list }}
+          tags: ${{ inputs.tags }}
           build-args: |
             VERSION=${{ inputs.version }}
