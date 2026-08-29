@@ -11,3 +11,19 @@ deploy-dev: ## Move dev tag to current commit and push it
 	git tag -f dev
 	git push origin dev --force
 	@echo https://github.com/vladimirshefer/ChessGrinder/tree/dev
+
+ls-release: ## List release tags (vX.Y.Z) in descending order
+	@git tag --list 'v[0-9]*.[0-9]*.[0-9]*' | sort -Vr
+
+get-next-release: ## Print the next patch release version based on `make ls-release`
+	@latest_tag=$$($(MAKE) -s ls-release | head -n 1); \
+	if [ -z "$$latest_tag" ]; then \
+		echo "No existing tag matching v<major>.<minor>.<patch> found. Failing." >&2; \
+		exit 1; \
+	fi; \
+	version=$${latest_tag#v}; \
+	major=$$(echo "$$version" | cut -d. -f1); \
+	minor=$$(echo "$$version" | cut -d. -f2); \
+	patch=$$(echo "$$version" | cut -d. -f3); \
+	next_patch=$$((patch + 1)); \
+	echo "v$${major}.$${minor}.$${next_patch}"

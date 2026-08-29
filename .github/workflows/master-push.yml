@@ -1,0 +1,27 @@
+name: Master Push
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  bump-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute next release version
+        id: next_version
+        run: echo "next_tag=$(make get-next-release)" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push tag
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@chessgrinder.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          git tag "${{ steps.next_version.outputs.next_tag }}"
+          git push origin "${{ steps.next_version.outputs.next_tag }}"
