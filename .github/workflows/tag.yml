@@ -15,19 +15,13 @@ jobs:
     uses: ./.github/workflows/dockerhub-push.yml
     secrets: inherit
     with:
-      tag: ${{ github.ref_name }}
-      version: ${{ github.ref_name }}
-
-  publish-latest:
-    needs: [test]
-    uses: ./.github/workflows/dockerhub-push.yml
-    secrets: inherit
-    with:
-      tag: 'latest'
+      tags: |
+        ${{ github.ref_name }}
+        latest
       version: ${{ github.ref_name }}
 
   deploy-dev:
-    needs: [publish-latest]
+    needs: [publish]
     uses: ./.github/workflows/deploy-dev.yml
     secrets: inherit
 

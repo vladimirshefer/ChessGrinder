@@ -3,8 +3,8 @@ name: DockerHub Publish
 on:
   workflow_call:
     inputs:
-      tag:
-        description: 'A Docker Image Tag'
+      tags:
+        description: 'Docker Image Tags (newline-separated, e.g. "dev" or "v1.2.3\nlatest")'
         default: 'dev'
         required: false
         type: string
@@ -23,10 +23,18 @@ jobs:
         with:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
+      - name: Build tags list
+        id: tags
+        run: |
+          {
+            echo 'list<<EOF'
+            echo "${{ inputs.tags }}" | sed 's/^/vshefer\/chessgrinder:/'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
       - uses: docker/build-push-action@v5
         with:
           context: ./
           push: true
-          tags: vshefer/chessgrinder:${{ inputs.tag }}
+          tags: ${{ steps.tags.outputs.list }}
           build-args: |
             VERSION=${{ inputs.version }}
