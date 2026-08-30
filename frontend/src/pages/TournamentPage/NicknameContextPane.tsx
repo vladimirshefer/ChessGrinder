@@ -13,7 +13,7 @@ function NicknameContextPane({ tournamentId }: { tournamentId: string }) {
         retry: false,
     })
 
-    if (pollQuery.isLoading) return <Skeleton />
+    if (pollQuery.isLoading) return null
     if (pollQuery.isError || !pollQuery.data) return null
 
     return (
@@ -49,10 +49,6 @@ function NicknameContextPane({ tournamentId }: { tournamentId: string }) {
             </div>)}
         </div>
     )
-}
-
-function Skeleton() {
-    return <div className="h-15 animate-pulse bg-primary-300/40" />
 }
 
 export default NicknameContextPane
