@@ -5,12 +5,10 @@ import {useMemo} from "react";
 import {Link} from "react-router-dom";
 import {BsBookmarkCheckFill, BsFillRecordFill} from "react-icons/bs";
 import dayjs from "dayjs";
-import {Conditional, ConditionalOnAuthorized} from "components/Conditional";
+import {Conditional} from "components/Conditional";
 import {AiFillClockCircle} from "react-icons/ai";
 import {IoLocationSharp} from "react-icons/io5";
-import tournamentRepository from "lib/api/repository/TournamentRepository";
 import participantRepository from "lib/api/repository/ParticipantRepository";
-import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import {FaUserCheck, FaUsers} from "react-icons/fa6";
 
 export function TournamentPane(
@@ -21,7 +19,6 @@ export function TournamentPane(
     }
 ) {
     let loc = useLoc();
-    let loginPageLink = useLoginPageLink();
 
     let winnerQuery = useQuery({
         queryKey: ["tournamentWinner", tournament.id],
@@ -145,39 +142,9 @@ export function TournamentPane(
         </Conditional>
         <div className={"p-1"}></div>
         <Conditional on={isPlanned}>
-            <div className={"w-full flex"}>
-                <ConditionalOnAuthorized>{() =>
-                    !isMeParticipating ? (
-                        <button className={"btn-primary w-full uppercase"}
-                                onClick={async () => {
-                                    let nickname = window.prompt("Please enter your nickname");
-                                    if (!nickname) {
-                                        alert("Nickname is not provided. Registration is cancelled.")
-                                    } else {
-                                        await tournamentRepository.participate(tournament.id, nickname)
-                                            .catch(() => alert("Could not participate in tournament"));
-                                        await meParticipantQuery.refetch()
-                                    }
-                                }}
-                        >
-                            {loc("Participate")}
-                        </button>
-                    ) : (
-                        <Link className={"btn-primary w-full uppercase"} to={`/tournament/${tournament.id}`}>
-                            {loc("Open")}
-                        </Link>
-                    )
-                }
-                </ConditionalOnAuthorized>
-                <ConditionalOnAuthorized authorized={false}>{() =>
-                    <Link to={loginPageLink} className={"w-full"}>
-                        <button className={"btn-primary w-full uppercase"}>
-                            {loc("Participate")}
-                        </button>
-                    </Link>
-                }
-                </ConditionalOnAuthorized>
-            </div>
+            <Link className={"btn-primary w-full uppercase"} to={`/tournament/${tournament.id}`}>
+                {loc("Open")}
+            </Link>
         </Conditional>
         <Conditional on={isActive}>
             <Link className={"btn-primary w-full uppercase"}

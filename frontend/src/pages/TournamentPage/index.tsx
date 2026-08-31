@@ -14,7 +14,6 @@ import dayjs from "dayjs";
 import roundRepository from "lib/api/repository/RoundRepository";
 import AddParticipantTournamentPageSection from "pages/TournamentPage/AddParticipantTournamentPageSection";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
-import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
 import restApiClient from "lib/api/RestApiClient";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
@@ -52,7 +51,6 @@ export function TournamentPageImpl(
     }) {
     let loc = useLoc()
     let id = tournament.id;
-    let loginPageLink = useLoginPageLink();
     let tournamentQuery = useQuery({
         queryKey: ["tournamentPageData", id],
         queryFn: () => id ? tournamentPageRepository.getData(id) : Promise.reject<TournamentPageData>(new Error())
@@ -99,7 +97,7 @@ export function TournamentPageImpl(
         try {
             await roundRepository.postRound(id)
             await tournamentQuery.refetch();
-            let newRoundSubPath = tournamentData && tournamentData.rounds ? `/round/${tournamentData.rounds.length + 1}` : "";
+            let newRoundSubPath = tournamentData && tournamentData.rounds ? `/pairings/round/${tournamentData.rounds.length + 1}` : "/pairings";
             navigate(`/tournament/${id}${newRoundSubPath}`, {replace: true});
         } catch (e: any) {
             alert("Could not create round. " +
@@ -148,7 +146,6 @@ export function TournamentPageImpl(
         await restApiClient.post(`/nickname-contest/${tournament.id}`);
     }
 
-    let hideParticipateButton = !meParticipantQuery.isSuccess || !!meParticipantQuery.data
     let isTournamentFinished = tournament.status === "FINISHED"
 
     async function startTournament() {
@@ -178,29 +175,6 @@ export function TournamentPageImpl(
         navigate("/");
     }
 
-    async function participate() {
-        let nickname = window.prompt("Please enter your nickname");
-        if (!nickname) {
-            alert("Nickname is not provided. Registration is cancelled.")
-        } else {
-            await tournamentRepository.participate(tournament.id, nickname)
-                .catch(() => alert("Could not participate in tournament"));
-            await meParticipantQuery.refetch()
-            await tournamentQuery.refetch()
-        }
-    }
-
-    async function leaveTournament() {
-        if (!window.confirm("You want to be removed from the tournament?")) {
-            alert("You stay in the tournament.")
-        } else {
-            await participantRepository.missMe(tournament.id)
-                .catch(() => alert(`Could not withdraw from tournament`));
-            await meParticipantQuery.refetch()
-            await tournamentQuery.refetch()
-        }
-    }
-
     return <>
         <div className={"flex mt-4 p-2 items-top content-center"}>
             <h2 className={"text-lg font-semibold text-left grow"}>
@@ -221,24 +195,6 @@ export function TournamentPageImpl(
         <div className={"p-2"}>
             <NicknameContextPane tournamentId={tournament.id}/>
         </div>
-        {!hideParticipateButton && tournament.status === "PLANNED" && (
-            <div className={"px-2"}>
-                {isAuthenticatedUser ?
-                    (
-                        <button className={"btn-primary w-full uppercase"} onClick={participate}>
-                            {loc("Participate")}
-                        </button>
-                    ) : (
-                        <Link to={loginPageLink} className={"w-full"}>
-                            <button className={"btn-primary w-full uppercase"}>
-                                {loc("Participate")}
-                            </button>
-                        </Link>
-                    )
-                }
-            </div>
-        )}
-
         <Conditional on={isMeModerator}>
             <Conditional on={tournament.status !== "FINISHED"}>
                 <AddParticipantTournamentPageSection participants={participants} addParticipant={addParticipant}/>
@@ -246,7 +202,7 @@ export function TournamentPageImpl(
         </Conditional>
 
         <div className={"flex flex-wrap text-sm justify-start place-items-stretch w-full px-2 my-4"}>
-            <Link className={"lg:col-span-1"} to={`/tournament/${id}`} replace={true}>
+            <Link className={"lg:col-span-1"} to={`/tournament/${id}/pairings`} replace={true}>
                 <button
                     className={`w-full h-full py-1 px-3 border border-black uppercase ${isMain ? "bg-primary-400 text-white" : "hover:bg-gray-300 text-black"}`}
                     title={loc("Tournament page")}
@@ -256,7 +212,7 @@ export function TournamentPageImpl(
             </Link>
             {roundNumbers.map(rid => {
                 return <Link
-                    to={`/tournament/${id}/round/${rid}`} title={loc(`Open round`) + " " + rid}
+                    to={`/tournament/${id}/pairings/round/${rid}`} title={loc(`Open round`) + " " + rid}
                     key={rid}
                     replace={!!roundId} // Write history only if navigating from home page
                 >
@@ -297,21 +253,6 @@ export function TournamentPageImpl(
                 </div>
             </Conditional>
         </>
-        <Conditional on={isMain}>
-            <Conditional on={isAuthenticatedUser && !!meParticipantQuery.data && !meParticipantQuery.data?.isMissing}>
-                <Conditional on={!isTournamentFinished}>
-                    <div className={"grid 2-full p-2"}>
-                        <button
-                            className={"btn-light uppercase w-full"}
-                            onClick={leaveTournament}
-                            title={loc("Leave the tournament")}
-                        >
-                            {loc("Leave the tournament")}
-                        </button>
-                    </div>
-                </Conditional>
-            </Conditional>
-        </Conditional>
         <Conditional on={isMain && isMeModerator}>
             <ControlButtons
                 startNicknameContest={startNicknameContest}
