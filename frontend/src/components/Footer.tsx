@@ -32,11 +32,6 @@ function Footer() {
             </ul>
             <ul>
                 <li>
-                    <Link className={"underline hover:text-gray-800"} to={'https://chessarium.com'} target={"_blank"} rel={"noreferrer noopener"}>Train through chess dungeons →</Link>
-                </li>
-            </ul>
-            <ul>
-                <li>
                     <Link className={"underline hover:text-gray-800"} to={'https://t.me/chess_grinder_de'} target={"_blank"} rel={"noreferrer noopener"}>Telegram Group - Germany →</Link>
                 </li>
                 <li>
