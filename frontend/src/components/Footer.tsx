@@ -10,7 +10,7 @@ function Footer() {
         <footer className={"text-left grid md:grid-cols-2 xl:grid-cols-3 gap-4 text-xs text-gray-500 w-full border-t border-black p-2"}>
             <ul>
                 <li>
-                    <span>{"ChessGrinder © Vladimir Shefer, 2023-2026."}</span>
+                    <span>{"ChessGrinder © Vladimir Shefer, 2023-2027."}</span>
                 </li>
                 <li>
                     <span>{`Build ${buildVersion} (${buildTime})`}</span>
