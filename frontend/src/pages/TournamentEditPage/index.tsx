@@ -127,6 +127,7 @@ export function TournamentCreatePage() {
             />
         </div>
         <TournamentEditPageImpl
+            key={copyFrom?.id || "new"}
             tournament={tournament}
             saveTournament={saveTournament}
             cancelLink={`/`}
