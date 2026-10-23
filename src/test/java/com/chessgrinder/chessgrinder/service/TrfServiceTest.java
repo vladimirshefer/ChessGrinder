@@ -65,6 +65,22 @@ class TrfServiceTest {
     }
 
     @Test
+    void testToTrf_shouldUseNicknameAndNeverRealName() {
+        TournamentEntity tournament = TournamentEntity.builder()
+                .id(UUID.randomUUID())
+                .roundsNumber(6)
+                .build();
+        com.chessgrinder.chessgrinder.entities.UserEntity user = new com.chessgrinder.chessgrinder.entities.UserEntity();
+        user.setName("Secret Realname");
+        ParticipantEntity participant = ParticipantEntity.builder().id(UUID.randomUUID()).nickname("CoolNick").user(user).build();
+
+        String trf = TrfUtil.writeTrfLines(TrfService.toTrfTournament(List.of(participant), tournament));
+
+        assertTrue(trf.contains("CoolNick"));
+        assertFalse(trf.contains("Secret"));
+    }
+
+    @Test
     void testEmpty() {
         TournamentEntity tournament = TournamentEntity.builder()
                 .rounds(Collections.emptyList())

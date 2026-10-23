@@ -45,7 +45,7 @@ public class TrfService {
                     int playerId = playerIds.indexOf(participant.getId()) + 1;
                     return Player001TrfLine.builder()
                             .startingRank(playerId)
-                            .name(participant.getUser() != null && participant.getUser().getName() != null ? participant.getUser().getName() : participant.getNickname())
+                            .name(participant.getNickname())
                             .rating(participant.getInitialEloPoints() != 0 && participant.getInitialEloPoints() > 0 ? participant.getInitialEloPoints() : null)
                             .points(participant.getScore() != null ? participant.getScore().floatValue() : null)
                             .matches(new ArrayList<>())

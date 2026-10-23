@@ -4,9 +4,12 @@ import com.chessgrinder.chessgrinder.chessengine.trf.dto.Player001TrfLine;
 import com.chessgrinder.chessgrinder.chessengine.trf.dto.TrfLine;
 import jakarta.annotation.Nullable;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PlayerTrfLineParser implements TrfLineParser<Player001TrfLine> {
 
@@ -71,8 +74,11 @@ public class PlayerTrfLineParser implements TrfLineParser<Player001TrfLine> {
         trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(playerLine.getSex()), 1, ' '));
         trfConsumer.accept(toFixedLengthLeft(toStringOrEmpty(playerLine.getTitle()), 3, ' '));
         trfConsumer.accept(" ");
-        String name = playerLine.getName() != null ? playerLine.getName() : playerLine.getStartingRank() + "";
-        trfConsumer.accept(toFixedLengthLeft(name, 33, ' '));
+        String name = sanitizeName(playerLine.getName(), NAME_LENGTH);
+        if (name.isEmpty()) {
+            name = "Player " + playerLine.getStartingRank();
+        }
+        trfConsumer.accept(toFixedLengthLeft(name, NAME_LENGTH, ' '));
         trfConsumer.accept(" ");
         trfConsumer.accept(toFixedLengthRight(toStringOrEmpty(playerLine.getRating()), 4, ' '));
         trfConsumer.accept(toFixedLengthLeft("", 29, ' ')); // TODO insert federation, FIDE number, birthday
@@ -87,6 +93,35 @@ public class PlayerTrfLineParser implements TrfLineParser<Player001TrfLine> {
                 trfConsumer.accept(" " + match.getColor() + " " + match.getResult() + "  ");
             }
         }
+    }
+
+    public static final int NAME_LENGTH = 33;
+    private static final Pattern LINE_BREAK_CHARS = Pattern.compile("[\\p{Cc}\\p{Zl}\\p{Zp}]");
+    private static final Pattern INVISIBLE_CHARS = Pattern.compile("[\\p{Cf}&&[^\\u200C\\u200D]]");
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+    private static final Pattern GRAPHEME = Pattern.compile("\\X");
+
+    /**
+     * Makes a player name safe to be written to a fixed-width TRF line.
+     * Keeps non-ASCII letters, removes control and invisible characters (prevents line injection),
+     * cuts to {@code maxLength} chars without splitting a character.
+     * Returns an empty string if nothing is left; the caller decides on the fallback.
+     */
+    public static String sanitizeName(@Nullable String name, int maxLength) {
+        String result = name == null ? "" : Normalizer.normalize(name, Normalizer.Form.NFC);
+        result = LINE_BREAK_CHARS.matcher(result).replaceAll(" ");
+        result = INVISIBLE_CHARS.matcher(result).replaceAll("");
+        result = WHITESPACE.matcher(result).replaceAll(" ").trim();
+
+        StringBuilder cut = new StringBuilder();
+        Matcher graphemes = GRAPHEME.matcher(result);
+        while (graphemes.find()) {
+            if (cut.length() + graphemes.group().length() > maxLength) {
+                break;
+            }
+            cut.append(graphemes.group());
+        }
+        return cut.toString().trim();
     }
 
     public static String toFixedLengthRight(Object original, int targetLength, char gapChar) {

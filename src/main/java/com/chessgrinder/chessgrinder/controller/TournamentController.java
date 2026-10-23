@@ -86,7 +86,7 @@ public class TournamentController {
         return tournamentMapper.toDto(tournamentEntity);
     }
 
-    @GetMapping(value = "/{tournamentId}/export/trf", produces = "text/plain")
+    @GetMapping(value = "/{tournamentId}/export/trf", produces = "text/plain;charset=UTF-8")
     public String getTournamentExportTrf(
             @PathVariable UUID tournamentId
     ) {
