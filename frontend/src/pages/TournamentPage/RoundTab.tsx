@@ -2,7 +2,7 @@ import {MatchDto, MatchResult, RoundDto} from "lib/api/dto/TournamentPageData";
 import MatchesTable from "pages/TournamentPage/MatchesTable";
 import React from "react";
 import {Conditional, usePermissionGranted} from "components/Conditional";
-import {useLoc} from "strings/loc";
+import RoundControlButtons from "pages/TournamentPage/RoundControlButtons";
 
 export default function RoundTab(
     {
@@ -13,6 +13,7 @@ export default function RoundTab(
         deleteRound,
         reopenRound,
         runPairing,
+        hideControls = false,
     }: {
         tournamentId: string,
         round: RoundDto,
@@ -21,9 +22,9 @@ export default function RoundTab(
         deleteRound: () => void,
         reopenRound: () => void,
         runPairing: () => void,
+        hideControls?: boolean,
     }
 ) {
-    let loc = useLoc();
     let isMeModerator = usePermissionGranted(tournamentId, "TournamentEntity", "MODERATOR");
 
     if (!round) {
@@ -37,34 +38,15 @@ export default function RoundTab(
                           submitMatchResult(match, result!!);
                       }}
         />
-        <Conditional on={isMeModerator}>
-            <div className={"mt-2 w-full flex justify-end gap-2"}>
-                <Conditional on={!round.isFinished}>
-                    <button className={"btn-dark p-1 px-1"}
-                            onClick={() => runPairing()}
-                    >{loc("Pairing")}
-                    </button>
-                </Conditional>
-                {
-                    !round.isFinished ?
-                        <button className={"btn-dark p-1"}
-                                onClick={() => submitRoundFinished()}
-                        >{loc("Finish")}
-                        </button> :
-                        <button
-                            className={"btn-dark p-1"}
-                            onClick={() => reopenRound()}
-                        >{loc("Reopen")}</button>
-                }
-                <button className={"btn-danger p-1 px-1"}
-                        onClick={() => {
-                            if (window.confirm("Delete round?")) {
-                                deleteRound();
-                            }
-                        }}
-                >{loc("Delete")}
-                </button>
-            </div>
+        <Conditional on={isMeModerator && !hideControls}>
+            <RoundControlButtons
+                hasUnfinishedRounds={!round.isFinished}
+                hasFinishedRounds={!!round.isFinished}
+                runPairing={runPairing}
+                submitRoundFinished={submitRoundFinished}
+                reopenRound={reopenRound}
+                deleteRound={deleteRound}
+            />
         </Conditional>
     </div>
 }
