@@ -5,7 +5,7 @@ import {useQuery} from "@tanstack/react-query";
 import tournamentPageRepository from "lib/api/repository/TournamentPageRepository";
 import {MatchDto, MatchResult, ParticipantDto, TournamentPageData} from "lib/api/dto/TournamentPageData";
 import RoundTab from "pages/TournamentPage/RoundTab";
-import {Conditional, usePermissionGranted} from "components/Conditional";
+import ConditionalOnUserRole, {Conditional, usePermissionGranted} from "components/Conditional";
 import participantRepository from "lib/api/repository/ParticipantRepository";
 import {AiOutlineDelete, AiOutlineEdit, AiOutlineHome, AiOutlinePlus} from "react-icons/ai";
 import {useLoc} from "strings/loc";
@@ -18,7 +18,7 @@ import useLoginPageLink from "lib/react/hooks/useLoginPageLink";
 import MyActiveTournamentPane from "pages/MainPage/MyActiveTournamentPane";
 import restApiClient from "lib/api/RestApiClient";
 import {usePageTitle} from "lib/react/hooks/usePageTitle";
-import {DEFAULT_DATETIME_FORMAT, TournamentDto} from "lib/api/dto/MainPageData";
+import {DEFAULT_DATETIME_FORMAT, TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
 import NicknameContextPane from "./NicknameContextPane";
 import ShareDropdownButton from "pages/TournamentPage/ShareDropdownButton";
 
@@ -342,6 +342,19 @@ function ControlButtons(props: {
                 {"Run nickname contest!"}
             </button>
         </div>
+
+        <Conditional on={!!props.tournament.city && !!props.tournament.date}>
+            <ConditionalOnUserRole role={UserRoles.ADMIN}>
+                <Link
+                    to={`/event/${encodeURIComponent(props.tournament.city || "")}/${dayjs(props.tournament.date).format("YYYY-MM-DD")}`}
+                    title={loc("Event")}
+                >
+                    <button className={"btn-light uppercase h-full"}>
+                        {loc("Event")}
+                    </button>
+                </Link>
+            </ConditionalOnUserRole>
+        </Conditional>
 
         <div className={"flex gap-2 justify-end"}>
             <Conditional on={props.tournament.status !== "ACTIVE"}>
