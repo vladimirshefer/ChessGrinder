@@ -150,7 +150,7 @@ public class TournamentController {
                 .place(-1)
                 .build();
 
-        if (SecurityUtil.hasRole(user, RoleEntity.Roles.ADMIN)) {
+        if (SecurityUtil.hasRole(user, RoleEntity.Roles.ADMIN) || SecurityUtil.hasRole(user, RoleEntity.Roles.MODERATOR)) {
             participant.setModerator(true);
         }
 

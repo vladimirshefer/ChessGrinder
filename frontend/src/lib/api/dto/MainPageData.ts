@@ -55,7 +55,8 @@ export interface TournamentListDto {
 }
 
 export enum UserRoles {
-    ADMIN = "ROLE_ADMIN"
+    ADMIN = "ROLE_ADMIN",
+    MODERATOR = "ROLE_MODERATOR"
 }
 
 export interface UserReputationHistoryRecordDto{

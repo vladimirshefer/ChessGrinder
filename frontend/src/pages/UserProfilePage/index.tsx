@@ -221,7 +221,9 @@ export default function UserProfilePage() {
     return <div className={"grid p-4"}>
         <div className={"flex gap-1 items-center"}>
             <span className={"text-left uppercase grow"}>
-                {userProfile.roles?.includes(UserRoles.ADMIN) ? loc("Administrator") : loc("User")}
+                {userProfile.roles?.includes(UserRoles.ADMIN)
+                    ? loc("Administrator")
+                    : userProfile.roles?.includes(UserRoles.MODERATOR) ? loc("Moderator") : loc("User")}
             </span>
             <Conditional on={isMyProfile}>
                 <Link to={"/user/me/edit"} className={"p-2"} title={loc("Edit profile")}><BsPencilFill/></Link>

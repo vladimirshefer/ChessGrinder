@@ -10,6 +10,7 @@ let locale_ru: { [key: string]: string } = {
     "Badges": "Значки",
     "Admin": "Админ",
     "Administrator": "Администратор",
+    "Moderator": "Модератор",
     "Participant": "Участник",
     "Add participant": "Добавить участника",
     "Guest": "Гость",

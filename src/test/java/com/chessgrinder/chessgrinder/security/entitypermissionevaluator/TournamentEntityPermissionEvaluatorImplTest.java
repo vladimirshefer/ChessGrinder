@@ -103,4 +103,19 @@ class TournamentEntityPermissionEvaluatorImplTest {
         assertTrue(evaluator.hasPermission(user.getId(), tournament.getId().toString(), TournamentEntityPermissionEvaluatorImpl.Permissions.MODERATOR.name()));
         assertFalse(evaluator.hasPermission(user.getId(), tournament.getId().toString(), TournamentEntityPermissionEvaluatorImpl.Permissions.OWNER.name()));
     }
+
+    @Test
+    void hasPermission_shouldReturnFalse_forModeratorRoleUserWhoIsNotParticipant() {
+        UserEntity user = userRepository.save(UserEntity.builder()
+                .id(UUID.randomUUID())
+                .roles(List.of(RoleEntity.builder().name(RoleEntity.Roles.MODERATOR).build()))
+                .build());
+        TournamentEntity tournament = tournamentRepository.save(TournamentEntity.builder()
+                .id(UUID.randomUUID())
+                .status(TournamentStatus.PLANNED)
+                .build());
+
+        assertFalse(evaluator.hasPermission(user.getId(), tournament.getId().toString(), TournamentEntityPermissionEvaluatorImpl.Permissions.MODERATOR.name()));
+        assertFalse(evaluator.hasPermission(user.getId(), tournament.getId().toString(), TournamentEntityPermissionEvaluatorImpl.Permissions.OWNER.name()));
+    }
 }

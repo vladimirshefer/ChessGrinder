@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.dto.ParticipantDto;
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.mappers.ParticipantMapper;
@@ -9,6 +10,7 @@ import com.chessgrinder.chessgrinder.repositories.ParticipantRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.repositories.UserRepository;
 import com.chessgrinder.chessgrinder.security.entitypermissionevaluator.EntityPermissionEvaluator;
+import com.chessgrinder.chessgrinder.security.util.SecurityUtil;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,6 +52,8 @@ public class ParticipantService {
                 .score(BigDecimal.ZERO)
                 .buchholz(BigDecimal.ZERO)
                 .place(-1)
+                .isModerator(SecurityUtil.hasRole(userEntity, RoleEntity.Roles.ADMIN)
+                        || SecurityUtil.hasRole(userEntity, RoleEntity.Roles.MODERATOR))
                 .build();
 
         participantRepository.save(participantEntity);

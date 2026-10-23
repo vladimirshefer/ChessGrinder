@@ -1,6 +1,7 @@
 package com.chessgrinder.chessgrinder.controller;
 
 import com.chessgrinder.chessgrinder.entities.ParticipantEntity;
+import com.chessgrinder.chessgrinder.entities.RoleEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.entities.UserEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.chessgrinder.chessgrinder.security.AuthenticatedUserArgumentResolver;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -127,6 +129,50 @@ class TournamentControllerTest {
                 .orElseThrow();
 
         assertThat(savedParticipant.isMissing()).isFalse();
+    }
+
+    @Test
+    void participate_shouldMakeParticipantModerator_whenUserHasModeratorRole() throws Exception {
+        assertThat(participateWithRoles(RoleEntity.Roles.MODERATOR).isModerator()).isTrue();
+    }
+
+    @Test
+    void participate_shouldMakeParticipantModerator_whenUserIsAdmin() throws Exception {
+        assertThat(participateWithRoles(RoleEntity.Roles.ADMIN).isModerator()).isTrue();
+    }
+
+    @Test
+    void participate_shouldNotMakeParticipantModerator_whenUserHasNoSpecialRole() throws Exception {
+        assertThat(participateWithRoles(RoleEntity.Roles.USER).isModerator()).isFalse();
+        // user without any roles
+        setUp();
+        assertThat(participateWithRoles().isModerator()).isFalse();
+    }
+
+    private ParticipantEntity participateWithRoles(String... roles) throws Exception {
+        String username = "user@user.user";
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
+        userEntity.setRoles(Arrays.stream(roles).map(it -> RoleEntity.builder().name(it).build()).toList());
+        when(userRepository.findByUsername(username)).thenReturn(userEntity);
+
+        TournamentEntity tournament = tournamentRepository.save(
+                TournamentEntity.builder()
+                        .status(TournamentStatus.PLANNED)
+                        .build()
+        );
+
+        mockMvc.perform(post("/tournament/{tournamentId}/action/participate", tournament.getId())
+                        .param("nickname", "nick")
+                        .principal(mockAuth(username, true)))
+                .andExpect(status().isOk());
+
+        return TestJpaRepository.getData(participantRepository)
+                .values()
+                .stream()
+                .findFirst()
+                .orElseThrow();
     }
 
     @Test
