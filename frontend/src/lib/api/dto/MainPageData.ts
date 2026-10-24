@@ -44,6 +44,7 @@ export interface TournamentDto {
     locationName?: string
     locationUrl?: string
     city?: string
+    description?: string
     roundsNumber: number
     registrationLimit?: number
     pairingStrategy: PairingStrategy
