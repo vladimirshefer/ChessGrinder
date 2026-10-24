@@ -15,7 +15,7 @@ import {useLoc} from "strings/loc";
 import badgeRepository from "lib/api/repository/BadgeRepository";
 import {BadgeIcon, UserAvatarImg} from "components/Gravatar";
 import {BsPencilFill} from "react-icons/bs";
-import {FiLogOut} from "react-icons/fi";
+import {FiExternalLink, FiLogOut} from "react-icons/fi";
 import useSearchParam from "lib/react/hooks/useSearchParam";
 import DropdownSelect from "components/DropdownSelect";
 import {useAuthenticatedUser} from "contexts/AuthenticatedUserContext";
@@ -246,6 +246,15 @@ export default function UserProfilePage() {
                          {userProfile.username}
                     </span>
                 </ConditionalOnUserRole>
+                <Conditional on={!!userProfile.chesscomUsername}>
+                    <a href={`https://www.chess.com/member/${encodeURIComponent(userProfile.chesscomUsername || "")}`}
+                       target={"_blank"} rel={"noopener noreferrer"}
+                       className={"text-sm flex gap-1 items-center"} title={"Chess.com"}>
+                        <img src={"/chesscom_logo.svg"} alt={"Chess.com"} className={"h-4 w-auto"}/>
+                        <span className={"underline"}>{userProfile.chesscomUsername}</span>
+                        <FiExternalLink/>
+                    </a>
+                </Conditional>
                 <div className={"flex font-semibold gap-4 items-center"}>
                     {!!userProfile.reputation && (
                         <div className={"flex gap-1 items-center"} title={loc("Reputation")}>

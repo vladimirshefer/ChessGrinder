@@ -24,10 +24,14 @@ export function UserPane(
             <UserAvatarImg emailHash={user.emailHash} size={150} className={"rounded-full"}/>
         </div>
         <div className={"grid w-full content-left items-left"}>
-            <div className={"text-left font-semibold"}>
+            <div className={"text-left font-semibold flex gap-1 items-center"}>
                 <Link to={user.usertag ? `/user/${user.usertag}` : `/user/${user.id}`}>
                     {transliterate(user.name)}
                 </Link>
+                {!!user.chesscomUsername && (
+                    <img src={"/chesscom_logo.svg"} alt={"Chess.com"} title={`Chess.com: ${user.chesscomUsername}`}
+                         className={"h-4 w-auto"}/>
+                )}
             </div>
             <div className={"h-[1em] text-sm flex gap-2 items-start"}>
                 {eloServiceEnabled && !!user.eloPoints && (
