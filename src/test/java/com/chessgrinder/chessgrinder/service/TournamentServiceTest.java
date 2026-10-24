@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,6 +74,38 @@ class TournamentServiceTest {
         ArgumentCaptor<TournamentEntity> saved = ArgumentCaptor.forClass(TournamentEntity.class);
         verify(tournamentRepository).save(saved.capture());
         assertThat(saved.getValue().getRepeatable()).isNull();
+    }
+
+    @Test
+    void updateTournament_shouldPersistDescriptionAndStoreBlankAsNull() {
+        UUID tournamentId = UUID.randomUUID();
+        TournamentEntity tournament = TournamentEntity.builder()
+                .id(tournamentId)
+                .status(TournamentStatus.PLANNED)
+                .roundsNumber(6)
+                .build();
+        when(tournamentRepository.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        tournamentService.updateTournament(tournamentId, dto(null).toBuilder().description("**Bring** a clock").build());
+        assertThat(tournament.getDescription()).isEqualTo("**Bring** a clock");
+
+        tournamentService.updateTournament(tournamentId, dto(null).toBuilder().description("   ").build());
+        assertThat(tournament.getDescription()).isNull();
+    }
+
+    @Test
+    void updateTournament_shouldRejectTooLongDescription() {
+        UUID tournamentId = UUID.randomUUID();
+        TournamentEntity tournament = TournamentEntity.builder()
+                .id(tournamentId)
+                .status(TournamentStatus.PLANNED)
+                .roundsNumber(6)
+                .build();
+        when(tournamentRepository.findById(tournamentId)).thenReturn(Optional.of(tournament));
+
+        assertThatThrownBy(() -> tournamentService.updateTournament(tournamentId,
+                dto(null).toBuilder().description("a".repeat(5001)).build()))
+                .isInstanceOf(ResponseStatusException.class);
     }
 
     private static TournamentDto dto(RepeatableType repeatable) {

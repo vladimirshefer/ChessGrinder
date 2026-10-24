@@ -58,6 +58,13 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Column(name = "city")
     private String city;
 
+    /**
+     * Basic markdown (bold, italic, links) written by the organizers. Rendered on the frontend.
+     */
+    @Nullable
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "date")
     private LocalDateTime date;
 

@@ -40,6 +40,7 @@ public class TournamentService {
     private static final int DEFAULT_ROUNDS_NUMBER = 6;
     private static final int MIN_ROUNDS_NUMBER = 0;
     private static final int MAX_ROUNDS_NUMBER = 99;
+    private static final int MAX_DESCRIPTION_LENGTH = 5000;
 
     @Value("${chessgrinder.tournament.creation.cooldown.days:28}")
     private int tournamentCreationCooldownDays;
@@ -183,6 +184,9 @@ public class TournamentService {
         if (tournamentDto.getDate() != null && tournamentDto.getDate().isBefore(LocalDateTime.now())) {
             throw new ResponseStatusException(400, "Tournament date can not be in the past.", null);
         }
+        if (tournamentDto.getDescription() != null && tournamentDto.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
+            throw new ResponseStatusException(400, "Tournament description is too long.", null);
+        }
         tournament.setName(tournamentDto.getName());
         tournament.setDate(tournamentDto.getDate());
         tournament.setLocationName(tournamentDto.getLocationName());
@@ -190,6 +194,8 @@ public class TournamentService {
         tournament.setPairingStrategy(tournamentDto.getPairingStrategy());
         tournament.setRegistrationLimit(tournamentDto.getRegistrationLimit());
         tournament.setCity(tournamentDto.getCity());
+        tournament.setDescription(tournamentDto.getDescription() == null || tournamentDto.getDescription().isBlank()
+                ? null : tournamentDto.getDescription());
         tournament.setRepeatable(tournamentDto.getRepeatable());
         final var roundsNum = tournamentDto.getRoundsNumber();
         if (roundsNum < MIN_ROUNDS_NUMBER || roundsNum > MAX_ROUNDS_NUMBER) {
