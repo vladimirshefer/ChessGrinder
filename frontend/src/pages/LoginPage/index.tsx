@@ -23,6 +23,7 @@ export default function LoginPage() {
     let instantSignInForm = useForm()
     let signUpForm = useForm()
     let [referer] = useSearchParam("referer", "")
+    let [loginError] = useSearchParam("loginError", "")
     const captchaRef = useRef<ReCAPTCHA>(null);
 
     let [ENABLE_LOGIN_USERNAME_PASSWORD] = useConfigurationPropertyEnabled("auth.password", mode === "local")
@@ -110,6 +111,16 @@ export default function LoginPage() {
     }
 
     return <div className={"grid p-2 gap-5 text-left"}>
+        <Conditional on={loginError === "email_not_shared"}>
+            <div className={"bg-yellow-100 p-2"}>
+                <p className={"font-semibold"}>We couldn't sign you in with Chess.com</p>
+                <p>
+                    ChessGrinder needs your email to create your account. It helps us keep the club free of spam,
+                    and we never show it publicly. Please try again and keep the "Share email" checkbox ticked
+                    on the Chess.com permission screen.
+                </p>
+            </div>
+        </Conditional>
         <div className={"grid gap-2"}>
             <ConditionalOnMode mode={"production"}>
                 <h3 className={"font-semibold uppercase"}>Social login</h3>

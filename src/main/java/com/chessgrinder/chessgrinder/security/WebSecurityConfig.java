@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
@@ -87,6 +88,11 @@ public class WebSecurityConfig {
                                 })
                                 .failureHandler((request, response, exception) -> {
                                     log.warn("Could not login user vis oauth2", exception);
+                                    if (exception instanceof OAuth2AuthenticationException oauthException
+                                            && LoginService.EMAIL_NOT_SHARED_ERROR.equals(oauthException.getError().getErrorCode())) {
+                                        response.sendRedirect("/login?loginError=" + LoginService.EMAIL_NOT_SHARED_ERROR);
+                                        return;
+                                    }
                                     response.sendRedirect(HOME_PAGE);
                                 })
                 )

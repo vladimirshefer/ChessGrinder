@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class LoginService {
+
+    public static final String EMAIL_NOT_SHARED_ERROR = "email_not_shared";
 
     private final UserRepository userRepository;
     private final RoleService roleService;
@@ -56,6 +59,7 @@ public class LoginService {
     public OidcUser loadOidcUser(OidcUserRequest userRequest) {
         OidcUser principal = oidcUserService.loadUser(userRequest);
         String email = principal.getAttribute("email");
+        requireEmail(email);
         String preferredUsertag = firstNonBlank(
                 principal.getPreferredUsername(),
                 principal.getAttribute("preferred_username"),
@@ -75,6 +79,7 @@ public class LoginService {
     public OAuth2User loadOauth2User(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User principal = oAuth2UserService.loadUser(userRequest);
         String email = principal.getAttribute("email");
+        requireEmail(email);
         String preferredUsertag = firstNonBlank(
                 principal.getAttribute("preferred_username"),
                 principal.getAttribute("username"),
@@ -87,6 +92,12 @@ public class LoginService {
         UserEntity.Provider provider = LoginService.mapProvider(userRequest.getClientRegistration().getRegistrationId());
         UserEntity userEntity = loginOrRegister(email, preferredUsertag, fullName, null, provider);
         return CustomOAuth2User.builder().delegate(principal).user(userEntity).build();
+    }
+
+    private static void requireEmail(String email) {
+        if (StringUtils.isBlank(email)) {
+            throw new OAuth2AuthenticationException(new OAuth2Error(EMAIL_NOT_SHARED_ERROR));
+        }
     }
 
     public UserEntity loginOrRegister(
