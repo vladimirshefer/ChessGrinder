@@ -31,13 +31,15 @@ export function useTransliterate(): (key: string) => string {
         return (key: string): string => key
     }
 
+    const table = language === "de" ? translit_ru_de : translit_ru_en;
+
     return (key: string): string => {
         if (!key) return "";
         let result = '';
         let translitedChar;
         for (let i = 0; i < key.length; i++) {
             const char = key[i];
-            translitedChar = translit_ru_en[char];
+            translitedChar = table[char];
             result += (translitedChar === undefined) ? char : translitedChar;
         }
 
@@ -57,5 +59,14 @@ const translit_ru_en: { [key: string]: string } = {
     'Ч': 'Ch', 'ч': 'ch', 'Ш': 'Sh', 'ш': 'sh', 'Щ': 'Sch', 'щ': 'sch',
     'Ъ': '', 'ъ': '', 'Ы': 'Y', 'ы': 'y', 'Ь': '', 'ь': '',
     'Э': 'E', 'э': 'e', 'Ю': 'Yu', 'ю': 'yu', 'Я': 'Ya', 'я': 'ya',
+}
+
+/** German (Duden-like) romanization of Russian letters: differences from the English table. */
+const translit_ru_de: { [key: string]: string } = {
+    ...translit_ru_en,
+    'В': 'W', 'в': 'w', 'Ё': 'Jo', 'ё': 'jo', 'Ж': 'Sch', 'ж': 'sch',
+    'З': 'S', 'з': 's', 'Х': 'Ch', 'х': 'ch',
+    'Ц': 'Z', 'ц': 'z', 'Ч': 'Tsch', 'ч': 'tsch', 'Ш': 'Sch', 'ш': 'sch',
+    'Щ': 'Schtsch', 'щ': 'schtsch', 'Ю': 'Ju', 'ю': 'ju', 'Я': 'Ja', 'я': 'ja',
 }
 
