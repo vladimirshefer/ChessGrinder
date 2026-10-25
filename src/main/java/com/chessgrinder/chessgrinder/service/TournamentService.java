@@ -180,7 +180,7 @@ public class TournamentService {
     public void updateTournament(UUID tournamentId, TournamentDto tournamentDto) {
         TournamentEntity tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new ResponseStatusException(404, "No tournament with id " + tournamentId, null));
-        if (tournamentDto.getDate() != null && tournamentDto.getDate().isBefore(LocalDateTime.now())) {
+        if (isMovedIntoThePast(tournament.getDate(), tournamentDto.getDate())) {
             throw new ResponseStatusException(400, "Tournament date can not be in the past.", null);
         }
         tournament.setName(tournamentDto.getName());
@@ -200,6 +200,21 @@ public class TournamentService {
         }
         tournament.setRoundsNumber(roundsNum);
         tournamentRepository.save(tournament);
+    }
+
+    /**
+     * @return true if the new date is in the past and is not just the old date kept or moved forward.
+     * A tournament without a stored date accepts any date that is not in the past.
+     */
+    private static boolean isMovedIntoThePast(LocalDateTime oldDate, LocalDateTime newDate) {
+        if (newDate == null || !newDate.isBefore(LocalDateTime.now())) {
+            return false;
+        }
+        if (oldDate == null) {
+            return true;
+        }
+        // The edit form sends minute precision, so compare by minutes.
+        return newDate.truncatedTo(ChronoUnit.MINUTES).isBefore(oldDate.truncatedTo(ChronoUnit.MINUTES));
     }
 
     /**
