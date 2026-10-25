@@ -95,8 +95,9 @@ function Header() {
                 <NavLink onClick={() => navigate(loginPageLink)} text={loc("Login")}/>
             </ConditionalOnAuthorized>
             <li className={"flex gap-2 justify-center p-2"}>
-                <button onClick={() => setLanguage("ru")}>RU</button>
                 <button onClick={() => setLanguage("en")}>EN</button>
+                <button onClick={() => setLanguage("de")}>DE</button>
+                <button onClick={() => setLanguage("ru")}>RU</button>
             </li>
             <ConditionalOnUserRole role={UserRoles.ADMIN}>
                 <NavLink to={"/badges"} text={loc("Badges")} isAdminOnly={true}/>

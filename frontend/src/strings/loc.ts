@@ -1,10 +1,12 @@
 import locale_default from "strings/locale_default";
 import locale_ru from "strings/locale_ru";
+import locale_de from "strings/locale_de";
 import {useContext} from "react";
 import {LanguageContext} from "contexts/LanguageContext";
 
 let locales: { [lang: string]: { [word: string]: string } } = {
     "ru": locale_ru,
+    "de": locale_de,
     "en": locale_default,
     "default": locale_default,
 }
