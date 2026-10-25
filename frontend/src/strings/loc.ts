@@ -31,7 +31,7 @@ export function useTransliterate(): (key: string) => string {
         return (key: string): string => key
     }
 
-    const table = language === "de" ? translit_ru_de : translit_ru_en;
+    const table = language === "de" ? translit_ru_de : translit_to_en;
 
     return (key: string): string => {
         if (!key) return "";
@@ -59,6 +59,17 @@ const translit_ru_en: { [key: string]: string } = {
     'Ч': 'Ch', 'ч': 'ch', 'Ш': 'Sh', 'ш': 'sh', 'Щ': 'Sch', 'щ': 'sch',
     'Ъ': '', 'ъ': '', 'Ы': 'Y', 'ы': 'y', 'Ь': '', 'ь': '',
     'Э': 'E', 'э': 'e', 'Ю': 'Yu', 'ю': 'yu', 'Я': 'Ya', 'я': 'ya',
+}
+
+/** German letters to English (ASCII) spelling, e.g. umlauts: "Müller" -> "Mueller". */
+const translit_de_en: { [key: string]: string } = {
+    'Ä': 'Ae', 'ä': 'ae', 'Ö': 'Oe', 'ö': 'oe', 'Ü': 'Ue', 'ü': 'ue', 'ß': 'ss', 'ẞ': 'SS',
+}
+
+/** Table for non-RU, non-DE languages: Cyrillic and German letters to English. */
+const translit_to_en: { [key: string]: string } = {
+    ...translit_ru_en,
+    ...translit_de_en,
 }
 
 /** German (Duden-like) romanization of Russian letters: differences from the English table. */
