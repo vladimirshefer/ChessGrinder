@@ -172,6 +172,15 @@ public class UserController {
             authenticatedUser.setUsertag(newUsertag);
         }
 
+        // Allow updating active city if provided. Blank value clears it.
+        if (userDto.getActiveCity() != null) {
+            String newActiveCity = userDto.getActiveCity().trim();
+            if (newActiveCity.length() > 255) {
+                throw new ResponseStatusException(400, "City is too long", null);
+            }
+            authenticatedUser.setActiveCity(newActiveCity.isEmpty() ? null : newActiveCity);
+        }
+
         userRepository.save(authenticatedUser);
     }
 

@@ -32,6 +32,8 @@ export default function UserProfileEditPage() {
     async function saveUserData(data: { [key: string]: string}) {
         let userPageData = {
             name : data.fullName?.trim() || undefined,
+            // Empty string clears the city on the backend
+            activeCity: data.activeCity === "Other" ? "" : data.activeCity,
         } as UserDto;
 
         const desiredUsertagRaw = data.usertag?.trim();
@@ -111,6 +113,14 @@ export default function UserProfileEditPage() {
                 <p className={"text-xs text-left text-gray-600"}>
                     {loc("Choose a public username for your profile link (letters and digits, must start with a letter).")}
                 </p>
+                <label htmlFor={"activeCity"} className={"text-sm"}>{loc("City")}</label>
+                <select id={"activeCity"} {...register("activeCity")}
+                        defaultValue={authenticatedUser.activeCity || "Other"} className={"text-sm border-b-2"}>
+                    <option value="Berlin">Berlin</option>
+                    <option value="Tbilisi">Tbilisi</option>
+                    <option value="Limassol">Limassol</option>
+                    <option value="Other">Other</option>
+                </select>
                 <div className="p-2"></div>
                 <div className={"hidden"}>
                     <h3 className={"text-sm uppercase font-semibold"}>{loc("Change password")}</h3>

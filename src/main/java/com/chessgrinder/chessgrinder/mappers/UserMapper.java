@@ -43,6 +43,7 @@ public class UserMapper {
                 .reputation(user.getReputation())
                 .eloPoints(user.getEloPoints())
                 .chesscomUsername(user.getChesscomUsername())
+                .activeCity(user.getActiveCity())
                 .build();
     }
 

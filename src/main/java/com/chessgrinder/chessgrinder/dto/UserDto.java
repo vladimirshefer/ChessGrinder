@@ -56,4 +56,10 @@ public class UserDto {
     @Nullable
     private String chesscomUsername;
 
+    /**
+     * The city where the user plays most. E.g. "Berlin". In update requests null means "do not change", blank means "clear".
+     */
+    @Nullable
+    private String activeCity;
+
 }

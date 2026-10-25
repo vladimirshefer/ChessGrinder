@@ -15,6 +15,7 @@ export interface UserDto {
     username?: string
     usertag?: string
     chesscomUsername?: string | null
+    activeCity?: string | null
     name?: string
     badges: BadgeDto[]
     roles?: string[]

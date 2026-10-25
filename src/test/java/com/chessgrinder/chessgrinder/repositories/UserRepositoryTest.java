@@ -8,10 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +34,8 @@ class UserRepositoryTest {
     private RoundRepository roundRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
+    @Autowired
+    private TestEntityManager entityManager;
 
     @Test
     void testStatsVsUser() {
@@ -162,6 +167,44 @@ class UserRepositoryTest {
 
         assertThat(result).extracting(UserEntity::getId)
                 .containsExactly(first.getId(), second.getId(), third.getId());
+    }
+
+    @Test
+    void activeCityBackfillMigration_shouldUseCityOfLatestFinishedTournament() throws Exception {
+        UserEntity player = userRepository.save(createUser("player@example.com", "player", "Player", 1500, 0));
+        UserEntity noFinished = userRepository.save(createUser("nofinished@example.com", "nofin", "No Finished", 1500, 0));
+        UserEntity noTournaments = userRepository.save(createUser("nobody@example.com", "nobody", "Nobody", 1500, 0));
+
+        LocalDateTime now = LocalDateTime.now();
+        TournamentEntity oldBerlin = tournamentRepository.save(createTournament("Berlin", TournamentStatus.FINISHED, now.minusDays(30)));
+        TournamentEntity latestTbilisi = tournamentRepository.save(createTournament("Tbilisi", TournamentStatus.FINISHED, now.minusDays(10)));
+        TournamentEntity latestNoCity = tournamentRepository.save(createTournament(null, TournamentStatus.FINISHED, now.minusDays(5)));
+        TournamentEntity plannedLimassol = tournamentRepository.save(createTournament("Limassol", TournamentStatus.PLANNED, now.plusDays(5)));
+        participantRepository.save(createParticipant(player, oldBerlin));
+        participantRepository.save(createParticipant(player, latestTbilisi));
+        participantRepository.save(createParticipant(player, latestNoCity));
+        participantRepository.save(createParticipant(player, plannedLimassol));
+        participantRepository.save(createParticipant(noFinished, plannedLimassol));
+        entityManager.flush();
+
+        String migration = new String(new ClassPathResource("db/migration/V202610251800__alter_table__users_table__add_active_city.sql")
+                .getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        String update = migration.substring(migration.indexOf("UPDATE users_table"));
+        entityManager.getEntityManager().createNativeQuery(update.replace(";", "")).executeUpdate();
+        entityManager.clear();
+
+        assertThat(userRepository.findById(player.getId()).orElseThrow().getActiveCity()).isEqualTo("Tbilisi");
+        assertThat(userRepository.findById(noFinished.getId()).orElseThrow().getActiveCity()).isNull();
+        assertThat(userRepository.findById(noTournaments.getId()).orElseThrow().getActiveCity()).isNull();
+    }
+
+    private static TournamentEntity createTournament(String city, TournamentStatus status, LocalDateTime date) {
+        return TournamentEntity.builder()
+                .status(status)
+                .date(date)
+                .roundsNumber(6)
+                .city(city)
+                .build();
     }
 
     private static MatchEntity createMatch(ParticipantEntity comparableUserParticipant, ParticipantEntity opponentUserParticipant, RoundEntity roundEntity, MatchResult matchResult) {

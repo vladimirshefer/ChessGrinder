@@ -61,6 +61,13 @@ public class UserEntity extends AbstractAuditingEntity {
     @Column(name = "chesscom_username")
     private String chesscomUsername;
 
+    /**
+     * The city where the user plays most. Initially filled by a migration, later changed by the user.
+     */
+    @Nullable
+    @Column(name = "active_city")
+    private String activeCity;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @ToString.Exclude
