@@ -18,6 +18,7 @@ public class TournamentMapper {
                 .locationName(tournamentEntity.getLocationName())
                 .locationUrl(tournamentEntity.getLocationUrl())
                 .city(tournamentEntity.getCity())
+                .description(tournamentEntity.getDescription())
                 .date(tournamentEntity.getDate())
                 .status(tournamentEntity.getStatus())
                 .roundsNumber(tournamentEntity.getRoundsNumber())

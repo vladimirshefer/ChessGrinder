@@ -21,6 +21,7 @@ import {usePageTitle} from "lib/react/hooks/usePageTitle";
 import {DEFAULT_DATETIME_FORMAT, TournamentDto, UserRoles} from "lib/api/dto/MainPageData";
 import NicknameContextPane from "./NicknameContextPane";
 import ShareDropdownButton from "pages/TournamentPage/ShareDropdownButton";
+import Markdown from "components/Markdown";
 
 function TournamentPage() {
     let {id, roundId: roundIdStr} = useParams();
@@ -215,6 +216,9 @@ export function TournamentPageImpl(
                 </div>
             </div>
         </div>
+        <Conditional on={isMain && !!tournament.description}>
+            <Markdown source={tournament.description} className={"px-2 text-left"}/>
+        </Conditional>
         {tournament.status === "ACTIVE" && !meParticipantQuery.data?.isMissing && (
             <MyActiveTournamentPane tournamentId={tournament.id}/>
         )}

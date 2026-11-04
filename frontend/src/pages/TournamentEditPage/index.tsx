@@ -82,6 +82,7 @@ export function TournamentCreatePage() {
             registrationLimit: undefined,
             roundsNumber: 6,
             status: undefined,
+            description: undefined,
             date: dayjs(new Date()).format(DEFAULT_DATETIME_FORMAT),
             city: undefined,
         };
@@ -182,6 +183,12 @@ function TournamentEditPageImpl(
                 <option value="Limassol">Limassol</option>
                 <option value="Other">Other</option>
             </select>
+            <label htmlFor={"description"}>{loc("Description")}</label>
+            <textarea id={"description"} rows={6} maxLength={5000}
+                      placeholder={"**bold**, *italic*, [link](https://example.com), - list item"}
+                      {...register("description")}
+                      className={"border p-1"}
+                      defaultValue={tournament.description || ""}/>
             <label htmlFor={"roundsNumber"}>{loc("Rounds number")}</label>
             <input type={"number"} id={"roundsNumber"} placeholder={loc("Rounds number")}
                     {...register("roundsNumber")}
@@ -258,6 +265,7 @@ function setModifiedTournamentData(tournament: TournamentDto, data: { [p: string
     tournament.name = data.name
     tournament.locationUrl = data.locationUrl
     tournament.locationName = data.locationName
+    tournament.description = data.description
     tournament.city = data.city !== "Other" ? data.city : undefined;
     tournament.roundsNumber = parseInt(data.roundsNumber, 10);
     tournament.pairingStrategy = data.pairingStrategy as PairingStrategy;

@@ -10,7 +10,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class TournamentDto {
     public static final String API_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm";
 
@@ -24,6 +24,8 @@ public class TournamentDto {
     private String locationUrl;
     @Nullable
     private String city;
+    @Nullable
+    private String description;
     @Nullable
     private String pairingStrategy;
 
