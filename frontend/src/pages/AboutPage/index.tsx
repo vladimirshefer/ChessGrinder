@@ -38,7 +38,7 @@ export default function AboutPage() {
 
 
         <h2 className={"text-2xl font-bold"}>How it works</h2>
-        <div className={"grid gap-5 md2:grid-cols-3 lg2:grid-cols-3 text-center"}>
+        <div className={"grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 text-center"}>
             <div
                 className={"grid ring-2 ring-primary-200 bg-primary-200 px-3 py-5 gap-2 content-center place-items-center"}>
                 <h5 className={"text-xl"}>Rapid tournament</h5>
