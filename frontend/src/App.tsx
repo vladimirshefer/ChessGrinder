@@ -22,7 +22,6 @@ import PrivacyPolicyPage from "pages/PrivacyPolicy";
 import NotFoundPage from "pages/NotFoundPage";
 import {ConfigurationContextProvider} from "contexts/ConfigurationContext";
 import Footer from "components/Footer";
-import AboutPage from "./pages/AboutPage";
 import EventPage from "./pages/TournamentPage/EventPage";
 import RouteErrorBoundary from "components/RouteErrorBoundary";
 
@@ -43,7 +42,6 @@ function App() {
                                 <Routes>
                                 <Route element={<DefaultLayout/>}>
                                     <Route path="/" element={<MainPage/>}/>
-                                    <Route path="/about" element={<AboutPage/>}/>
                                     <Route path="/tournament/:id" element={<TournamentPage/>}/>
                                     <Route path="/event/:city/:date" element={<EventPage/>}/>
                                     <Route path="/event/:city/:date/round/:roundId" element={<EventPage/>}/>

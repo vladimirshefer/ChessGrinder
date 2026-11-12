@@ -53,8 +53,7 @@ export function TournamentsList(
             </Conditional>
             {sortedTournaments.map(tournament => {
                 return <li key={tournament.id}
-                           className={`col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 
-                                       flex content-center`}>
+                           className={"col-span-12 flex content-center"}>
                     <TournamentPane tournament={tournament}/>
                 </li>
             })}
