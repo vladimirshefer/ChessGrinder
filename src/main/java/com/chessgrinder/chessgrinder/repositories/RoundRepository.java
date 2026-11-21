@@ -14,6 +14,8 @@ public interface RoundRepository extends JpaRepository<RoundEntity, UUID> {
 
     RoundEntity findFirstByTournamentIdOrderByNumberDesc(UUID tournamentId);
 
+    boolean existsByTournamentId(UUID tournamentId);
+
     @Query("SELECT r FROM RoundEntity r WHERE r.tournament.id = :tournamentId and r.number = :roundNumber")
     RoundEntity findByTournamentIdAndNumber(UUID tournamentId, Integer roundNumber);
 

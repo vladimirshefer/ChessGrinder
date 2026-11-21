@@ -3,6 +3,7 @@ package com.chessgrinder.chessgrinder.service;
 import com.chessgrinder.chessgrinder.entities.RoundEntity;
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
+import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import com.chessgrinder.chessgrinder.testutil.repository.TestJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,13 +22,15 @@ class TournamentJobsTest {
 
     private TournamentJobs tournamentJobs;
     private TournamentRepository tournamentRepository;
+    private RoundRepository roundRepository;
     private TournamentService tournamentService;
 
     @BeforeEach
     void setUp() {
         tournamentRepository = Mockito.mock(TournamentRepository.class);
+        roundRepository = Mockito.mock(RoundRepository.class);
         tournamentService = Mockito.mock(TournamentService.class);
-        tournamentJobs = new TournamentJobs(tournamentRepository, tournamentService);
+        tournamentJobs = new TournamentJobs(tournamentRepository, roundRepository, tournamentService);
     }
 
     @Test
@@ -196,6 +199,8 @@ class TournamentJobsTest {
                 .date(date)
                 .rounds(rounds)
                 .build();
+
+        when(roundRepository.existsByTournamentId(tournament.getId())).thenReturn(!rounds.isEmpty());
 
         // Set up bidirectional relationship
         for (RoundEntity round : rounds) {

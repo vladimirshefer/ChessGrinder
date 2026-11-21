@@ -2,6 +2,7 @@ package com.chessgrinder.chessgrinder.service;
 
 import com.chessgrinder.chessgrinder.entities.TournamentEntity;
 import com.chessgrinder.chessgrinder.enums.TournamentStatus;
+import com.chessgrinder.chessgrinder.repositories.RoundRepository;
 import com.chessgrinder.chessgrinder.repositories.TournamentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.util.List;
 public class TournamentJobs {
 
     private final TournamentRepository tournamentRepository;
+    private final RoundRepository roundRepository;
     private final TournamentService tournamentService;
 
     /**
@@ -52,7 +54,7 @@ public class TournamentJobs {
 
     private void deleteTournamentIfAbandoned(TournamentEntity tournament) {
         LocalDateTime date = tournament.getDate();
-        if (date.isBefore(LocalDateTime.now().minusDays(1)) && tournament.getRounds().isEmpty()) {
+        if (date.isBefore(LocalDateTime.now().minusDays(1)) && !roundRepository.existsByTournamentId(tournament.getId())) {
             try {
                 tournamentService.deleteTournament(tournament.getId());
                 log.info("Deleted abandoned tournament with ID {} during cleanup", tournament.getId());
