@@ -172,12 +172,14 @@ function TournamentEditPageImpl(
             <input type={"text"} id={"locationUrl"} placeholder={loc("Location Link")} {...register("locationUrl")}
                    className={"border-b"}
                    defaultValue={tournament.locationUrl}/>
-            <input type={"date"} id={"startDate"} placeholder={"Start Date"} {...register("startDate")}
-                   className={"border-b"}
-                   defaultValue={tournamentStartDate}/>
-            <input type={"time"} id={"startTime"} placeholder={"Start Time"} {...register("startTime")}
-                   className={"border-b"}
-                   defaultValue={tournamentStartTime}/>
+            <div className={"flex gap-2"}>
+                <input type={"date"} id={"startDate"} placeholder={"Start Date"} {...register("startDate")}
+                       className={"border-b flex-1 min-w-0"}
+                       defaultValue={tournamentStartDate}/>
+                <input type={"time"} id={"startTime"} placeholder={"Start Time"} {...register("startTime")}
+                       className={"border-b flex-1 min-w-0"}
+                       defaultValue={tournamentStartTime}/>
+            </div>
             <label htmlFor={"city"}>{loc("City")}</label>
             <select id={"city"} {...register("city")} defaultValue={tournament.city || "Other"} className={"border-b"}>
                 <option value="Berlin">Berlin</option>
