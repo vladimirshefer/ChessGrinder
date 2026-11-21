@@ -72,7 +72,10 @@ export function TournamentCreatePage() {
     let [copyFrom, setCopyFrom] = useState<TournamentDto | undefined>()
 
     let tournament: TournamentDto = useMemo(() => {
-        return copyFrom || {
+        let thursday = dayjs().day(4).hour(20).minute(0).second(0).millisecond(0);
+        let date = (thursday.isAfter(dayjs()) ? thursday : thursday.add(7, "day")).format(DEFAULT_DATETIME_FORMAT);
+        if (copyFrom) return {...copyFrom, date};
+        return {
             id: "",
             name: "",
             repeatable: undefined,
@@ -82,7 +85,7 @@ export function TournamentCreatePage() {
             registrationLimit: undefined,
             roundsNumber: 6,
             status: undefined,
-            date: dayjs(new Date()).format(DEFAULT_DATETIME_FORMAT),
+            date: date,
             city: undefined,
         };
     }, [copyFrom])
