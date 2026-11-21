@@ -62,6 +62,8 @@ let locale_de: { [key: string]: string } = {
     "Open": "Öffnen",
     "Participating": "Ich nehme teil",
     "Rounds number": "Anzahl der Runden",
+    "Serial number": "Laufende Nummer",
+    "Other settings": "Weitere Einstellungen",
     "Wrong rounds number range": "Ungültige Rundenanzahl",
     "Can't add new round. Change rounds number in settings":
         "Neue Runde kann nicht hinzugefügt werden. Ändere die Rundenanzahl in den Einstellungen",

@@ -62,6 +62,12 @@ let locale_ru: { [key: string]: string } = {
     "Open": "Открыть",
     "Participating": "Участвую",
     "Rounds number": "Количество раундов",
+    "Serial number": "Порядковый номер",
+    "Other settings": "Другие настройки",
+    "Registration limit": "Лимит участников",
+    "Pairing Strategy": "Способ жеребьёвки",
+    "Repeatable": "Повторяющийся",
+    "Weekly": "Каждую неделю",
     "Wrong rounds number range": "Некорректное значение кол-ва раундов",
     "Can't add new round. Change rounds number in settings":
         "Невозможно добавить новый раунд. Измените кол-во раундов в настройках",

@@ -74,14 +74,14 @@ export function TournamentCreatePage() {
     let tournament: TournamentDto = useMemo(() => {
         let thursday = dayjs().day(4).hour(20).minute(0).second(0).millisecond(0);
         let date = (thursday.isAfter(dayjs()) ? thursday : thursday.add(7, "day")).format(DEFAULT_DATETIME_FORMAT);
-        if (copyFrom) return {...copyFrom, date};
+        if (copyFrom) return {...copyFrom, date, serialNumber: copyFrom.serialNumber ? copyFrom.serialNumber + 1 : null};
         return {
             id: "",
             name: "",
             repeatable: undefined,
             locationName: undefined,
             locationUrl: undefined,
-            pairingStrategy: "DEFAULT",
+            pairingStrategy: "SWISS",
             registrationLimit: undefined,
             roundsNumber: 6,
             status: undefined,
@@ -180,20 +180,39 @@ function TournamentEditPageImpl(
                        className={"border-b flex-1 min-w-0"}
                        defaultValue={tournamentStartTime}/>
             </div>
-            <label htmlFor={"city"}>{loc("City")}</label>
-            <select id={"city"} {...register("city")} defaultValue={tournament.city || "Other"} className={"border-b"}>
-                <option value="Berlin">Berlin</option>
-                <option value="Tbilisi">Tbilisi</option>
-                <option value="Limassol">Limassol</option>
-                <option value="Other">Other</option>
-            </select>
+            <div className={"flex gap-2 items-center"}>
+                <label htmlFor={"city"} className={"grow"}>{loc("City")}</label>
+                <select id={"city"} {...register("city")} defaultValue={tournament.city || "Other"}
+                        className={"border-b w-32"}>
+                    <option value="Berlin">Berlin</option>
+                    <option value="Tbilisi">Tbilisi</option>
+                    <option value="Limassol">Limassol</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
             <label htmlFor={"roundsNumber"}>{loc("Rounds number")}</label>
             <input type={"number"} id={"roundsNumber"} placeholder={loc("Rounds number")}
                     {...register("roundsNumber")}
                    defaultValue={tournament.roundsNumber || 0}/>
-            <input type={"number"} id={"registrationLimit"} placeholder={loc("Registration limit")}
-                    {...register("registrationLimit")}
-                   defaultValue={tournament.registrationLimit || 0}/>
+
+            <details className={"grid gap-2"}>
+            <summary className={"cursor-pointer uppercase font-semibold"}>{loc("Other settings")}</summary>
+            <div className={"grid gap-2 pt-2"}>
+            <div className={"flex gap-2 items-center"}>
+                <label htmlFor={"serialNumber"} className={"grow"}>{loc("Serial number")}</label>
+                <input type={"number"} id={"serialNumber"} placeholder={loc("Serial number")}
+                       {...register("serialNumber")}
+                       className={"border-b w-24"}
+                       defaultValue={tournament.serialNumber ?? ""}/>
+            </div>
+
+            <div className={"flex gap-2 items-center"}>
+                <label htmlFor={"registrationLimit"} className={"grow"}>{loc("Registration limit")}</label>
+                <input type={"number"} id={"registrationLimit"} placeholder={loc("Registration limit")}
+                       {...register("registrationLimit")}
+                       className={"border-b w-24"}
+                       defaultValue={tournament.registrationLimit || 0}/>
+            </div>
 
             <label htmlFor={"pairingStrategy"}>{loc("Pairing Strategy")}</label>
             <div className="flex overflow-x-auto gap-4 p-2" id={"pairingStrategy"}>
@@ -244,6 +263,8 @@ function TournamentEditPageImpl(
                        <option value="">{loc("None")}</option>
                        <option value="WEEKLY">{loc("Weekly")}</option>
             </select>
+            </div>
+            </details>
 
             <div className={"flex gap-2 justify-end"}>
                 <button type={"submit"} className={"btn-primary uppercase font-semibold"}>
@@ -268,6 +289,7 @@ function setModifiedTournamentData(tournament: TournamentDto, data: { [p: string
     tournament.pairingStrategy = data.pairingStrategy as PairingStrategy;
     tournament.registrationLimit = !!data.registrationLimit ? parseInt(data.registrationLimit, 10) : undefined;
     tournament.repeatable = data.repeatable as RepeatableType || null;
+    tournament.serialNumber = !!data.serialNumber ? parseInt(data.serialNumber, 10) : null;
     let startTime: string = data.startTime || "20:00";
     let startDate: string = data.startDate || "2023-10-11"
     tournament.date = dayjs(startDate + "T" + startTime, DEFAULT_DATETIME_FORMAT).format(DEFAULT_DATETIME_FORMAT)
