@@ -189,12 +189,12 @@ export default function UserProfilePage() {
     })
 
     let statsAgainstMeQuery = useQuery({
-        queryKey: ["stats-against-me", username, authenticatedUser?.id],
+        queryKey: ["stats-against-me", userProfile?.id, authenticatedUser?.id],
         queryFn: async () => {
-            if (!username) return null;
-            return userRepository.getUserStats(username);
+            if (!userProfile) return null;
+            return userRepository.getUserStats(userProfile.id);
         },
-        enabled: !!username && username !== "me" && username !== authenticatedUser?.id,
+        enabled: !!userProfile && userProfile.id !== authenticatedUser?.id,
     })
 
     async function logout() {
