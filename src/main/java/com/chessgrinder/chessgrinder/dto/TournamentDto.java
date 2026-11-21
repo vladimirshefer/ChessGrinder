@@ -38,4 +38,13 @@ public class TournamentDto {
 
     @Nullable
     private RepeatableType repeatable;
+
+    @Nullable
+    private Integer serialNumber;
+
+    /**
+     * "CHILL" / "TRYHARD"
+     */
+    @Nullable
+    private String bracket;
 }

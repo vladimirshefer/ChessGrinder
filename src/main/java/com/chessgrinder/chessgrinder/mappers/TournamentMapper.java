@@ -24,6 +24,8 @@ public class TournamentMapper {
                 .pairingStrategy(tournamentEntity.getPairingStrategy()==null ? "SWISS" : tournamentEntity.getPairingStrategy())
                 .registrationLimit(tournamentEntity.getRegistrationLimit())
                 .repeatable(tournamentEntity.getRepeatable())
+                .serialNumber(tournamentEntity.getSerialNumber())
+                .bracket(tournamentEntity.getBracket())
                 .build();
     }
 

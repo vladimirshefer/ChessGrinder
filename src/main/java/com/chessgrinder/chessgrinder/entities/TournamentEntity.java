@@ -89,6 +89,18 @@ public class TournamentEntity extends AbstractAuditingEntity {
     @Enumerated(EnumType.STRING)
     private RepeatableType repeatable;
 
+    @Nullable
+    @Column(name = "serial_number")
+    private Integer serialNumber;
+
+    /**
+     * Bracket (league) of the tournament inside an event.
+     * Expected values: "CHILL" / "TRYHARD".
+     */
+    @Nullable
+    @Column(name = "bracket")
+    private String bracket;
+
     @ToString.Exclude
     @OneToMany(mappedBy = "tournament")
     @Builder.Default
