@@ -49,6 +49,8 @@ export interface TournamentDto {
     registrationLimit?: number
     pairingStrategy: PairingStrategy
     repeatable?: RepeatableType
+    serialNumber?: number | null
+    bracket?: string | null
 }
 
 export interface TournamentListDto {

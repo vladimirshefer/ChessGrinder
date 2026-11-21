@@ -73,6 +73,8 @@ export function TournamentPane(
         return participantsQuery.data?.values?.length ?? null;
     }, [participantsQuery.data]);
 
+    let tournamentDate = dayjs(tournament.date, DEFAULT_DATETIME_FORMAT);
+
     let locationGeneratedUrl = !!tournament.locationName
         ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tournament.locationName + " " + (tournament.city || ""))}`
         : undefined;
@@ -84,9 +86,12 @@ export function TournamentPane(
                   to={`/tournament/${tournament.id}`}
             >
                 <div className="flex gap-2 hover:underline font-semibold">
-                    <span className={"grow"}>
-                        {tournament.name || [tournament.city, dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")].filter(Boolean).join(", ")}
-                    </span>
+                    <div className={"flex gap-1 grow"}>
+                        {!!tournament.name && <span>{tournament.name}</span>}
+                        {!tournament.name && !!tournament.city && <span>{tournament.city}</span>}
+                        {!tournament.name && !!tournament.serialNumber && <span>#{tournament.serialNumber}</span>}
+                        {!tournament.name && <span>{tournamentDate.format(tournamentDate.isSame(dayjs(), "year") ? "DD.MM" : "DD.MM.YYYY")}</span>}
+                    </div>
                     <Conditional on={tournament.status === "ACTIVE"}>
                         <span className={"text-red-500"}><BsFillRecordFill/></span>
                     </Conditional>
@@ -97,8 +102,9 @@ export function TournamentPane(
             </Link>
             <Conditional on={!!tournament.name}>
                 <small className={"flex gap-1 font-bold text-left"}>
-                    {!!tournament.city && <span>{tournament.city},</span>}
-                    <span>{dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}</span>
+                    {!!tournament.city && <span>{tournament.city}</span>}
+                    {!!tournament.serialNumber && <span>#{tournament.serialNumber}</span>}
+                    <span>{tournamentDate.format(tournamentDate.isSame(dayjs(), "year") ? "DD.MM" : "DD.MM.YYYY")}</span>
                 </small>
             </Conditional>
         </div>
