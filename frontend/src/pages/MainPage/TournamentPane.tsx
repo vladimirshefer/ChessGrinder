@@ -85,7 +85,7 @@ export function TournamentPane(
             >
                 <div className="flex gap-2 hover:underline font-semibold">
                     <span className={"grow"}>
-                        {tournament.name || loc("Unnamed Tournament")}
+                        {tournament.name || [tournament.city, dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")].filter(Boolean).join(", ")}
                     </span>
                     <Conditional on={tournament.status === "ACTIVE"}>
                         <span className={"text-red-500"}><BsFillRecordFill/></span>
@@ -95,10 +95,12 @@ export function TournamentPane(
                     <BsBookmarkCheckFill title={loc("Participating")}/>
                 </Conditional>
             </Link>
-            <small className={"flex gap-1 font-bold text-left"}>
-                {!!tournament.city && <span>{tournament.city},</span>}
-                <span>{dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}</span>
-            </small>
+            <Conditional on={!!tournament.name}>
+                <small className={"flex gap-1 font-bold text-left"}>
+                    {!!tournament.city && <span>{tournament.city},</span>}
+                    <span>{dayjs(tournament.date, DEFAULT_DATETIME_FORMAT).format("DD.MM.YYYY")}</span>
+                </small>
+            </Conditional>
         </div>
         <div className={"p-1"}></div>
         <Conditional on={isPlanned || isActive}>
